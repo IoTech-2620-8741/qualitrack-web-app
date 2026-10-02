@@ -1,4 +1,4 @@
-import { BaseResource, BaseResponse } from '../../shared/infrastructure/base-response';
+import { BaseResource } from '../../shared/infrastructure/base-response';
 export interface LegacyMaterialResource extends BaseResource {
   id: number;
   code: string;
@@ -9,6 +9,7 @@ export interface LegacyMaterialResource extends BaseResource {
   batchNumber: string;
   expiresOn: string;
 }
-export interface LegacyImportResponse extends BaseResponse {
-  materialId: number;
+/** Request for POST .../environments/{environmentId}/raw-material-imports. */
+export interface ImportRawMaterialRequest {
+  legacyId: number;
 }

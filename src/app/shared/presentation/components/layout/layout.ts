@@ -122,6 +122,7 @@ export class Layout {
       link: '/laboratories',
       children: [
         { label: 'lab-profile.title', link: '/laboratories/lab-profile' },
+        { label: 'environments.title', link: '/laboratories/environments' },
         { label: 'staff-list.title', link: '/laboratories/staff-list' },
         { label: 'staff-form.title', link: '/laboratories/staff-form' },
         { label: 'product-catalog.title', link: '/laboratories/product-catalog' },
@@ -133,8 +134,7 @@ export class Layout {
       icon: 'inventory_2',
       link: '/inventory',
       children: [
-        { label: 'inventory.catalogue', link: '/inventory/inventory-catalogue' },
-        { label: 'inventory.registerMaterial', link: '/inventory/register-material' },
+        { label: 'inventory.catalogue', link: '/inventory' },
       ],
     },
     {

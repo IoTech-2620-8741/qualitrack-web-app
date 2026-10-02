@@ -70,7 +70,14 @@
       "REVIEW": "Quality review",
       "CONSUMPTION": "Consumption",
       "OPENING_BALANCE": "Opening balance"
-    }
+    },
+    "noEnvironments": "No environments registered yet",
+    "noEnvironmentsNotice": "Raw materials are kept in an environment of the laboratory or warehouse. Register an environment to start the inventory.",
+    "nearExpiry": "Near expiry",
+    "nearExpiryNotice": "Lots with available stock that expire within the near expiry period of the platform (30 days unless configured otherwise).",
+    "nearExpiryEmpty": "No lots expire soon in this environment.",
+    "notFound": "The raw material is not registered in this environment.",
+    "noEnvironment": "Select an environment to continue."
   },
   "onboarding.no-plans": "No subscription plans are available yet. Please contact the service administrator.",
   "operational-metrics": {
@@ -1084,5 +1091,34 @@
     "after": "Stock after",
     "legacy": "Legacy usage",
     "unrecorded": "Not recorded"
+  },
+  "environments": {
+    "title": "Environments",
+    "subtitle": "Physical areas of the laboratory or warehouse where materials, products and devices are located.",
+    "register": "Register environment",
+    "code": "Code",
+    "name": "Name",
+    "description": "Description",
+    "usage": "Usage",
+    "usage-not-assigned": "Not assigned",
+    "assign-usage": "Assign usage",
+    "empty": "No environments registered yet.",
+    "form": {
+      "create-title": "Register environment",
+      "edit-title": "Edit environment",
+      "subtitle": "Identify the zone that QualiTrack will organize and monitor.",
+      "code-hint": "Unique within the laboratory, for example WH-RM-01.",
+      "usage-hint": "Main use of the zone. You can assign it later.",
+      "usage-edit-hint": "Change the usage from the environment list.",
+      "max-length": "Use at most {{max}} characters."
+    },
+    "selector": "Environment"
+  },
+  "environment-usage": {
+    "LABORATORY": "Laboratory",
+    "PRODUCTION": "Production",
+    "RAW_MATERIAL_STORAGE": "Raw material storage",
+    "PRODUCT_STORAGE": "Product storage",
+    "OTHER": "Other"
   }
 }

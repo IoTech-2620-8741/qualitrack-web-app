@@ -57,6 +57,14 @@ export class IamStore {
       .replace(/\b\w/g, (letter) => letter.toUpperCase());
   });
 
+  /**
+   * Indicates whether the current user holds a quality management role
+   * (ROLE_QA_MANAGER or ROLE_ADMIN), required by the backend for quality decisions.
+   */
+  readonly canManageQuality = computed(() =>
+    this.currentRoles().some((role) => ['ROLE_ADMIN', 'ROLE_QA_MANAGER'].includes(role)),
+  );
+
   readonly currentUserInitials = computed(() => {
     const username = this.currentUsername();
 

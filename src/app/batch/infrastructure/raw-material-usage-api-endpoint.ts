@@ -46,6 +46,25 @@ export class RawMaterialUsageApiEndpoint extends BaseApiEndpoint<
   }
 
   /**
+   * Retrieves the product batches that consumed lots of an Inventory raw material (TS79, US89).
+   *
+   * @param laboratoryId - The laboratory that owns the environment.
+   * @param environmentId - The environment where the raw material is kept.
+   * @param rawMaterialId - The Inventory raw material identifier.
+   * @returns An Observable emitting the usages, newest first.
+   */
+  getUsageByEnvironmentMaterial(laboratoryId: number, environmentId: number, rawMaterialId: number): Observable<RawMaterialUsage[]> {
+    return this.http
+      .get<RawMaterialUsageResource[]>(
+        `${environment.serverBasePath}${environment.laboratoryLabsEndpointPath}/${laboratoryId}${environment.laboratoryEnvironmentsEndpointPath}/${environmentId}${environment.inventoryRawMaterialsEndpointPath}/${rawMaterialId}${environment.inventoryRawMaterialUsagesEndpointPath}`,
+      )
+      .pipe(
+        map((resources) => resources.map((resource) => this.assembler.toEntityFromResource(resource))),
+        catchError(this.handleError(`Failed to fetch usages of raw material ${rawMaterialId}`)),
+      );
+  }
+
+  /**
    * Retrieves the collection of raw material usage records for a specific production batch.
    *
    * @param batchId - The unique numeric identifier of the batch.
