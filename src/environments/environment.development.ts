@@ -18,6 +18,8 @@ export const environment = {
   laboratoryStaffEndpointPath: '/staff',
   laboratoryProductsEndpointPath: '/products',
   laboratoryRawMaterialsEndpointPath: '/raw-materials',
+  laboratoryEnvironmentsEndpointPath: '/environments',
+  laboratoryEnvironmentUsageAssignmentsEndpointPath: '/usage-assignments',
 
   // Inventory
   inventoryEndpointPath: '/inventory',
