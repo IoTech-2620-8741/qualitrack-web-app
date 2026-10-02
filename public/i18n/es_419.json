@@ -1084,5 +1084,33 @@
     "after": "Stock restante",
     "legacy": "Uso anterior",
     "unrecorded": "No registrado"
+  },
+  "environments": {
+    "title": "Ambientes",
+    "subtitle": "Áreas físicas del laboratorio o almacén donde se ubican materiales, productos y dispositivos.",
+    "register": "Registrar ambiente",
+    "code": "Código",
+    "name": "Nombre",
+    "description": "Descripción",
+    "usage": "Uso",
+    "usage-not-assigned": "Sin asignar",
+    "assign-usage": "Asignar uso",
+    "empty": "Aún no hay ambientes registrados.",
+    "form": {
+      "create-title": "Registrar ambiente",
+      "edit-title": "Editar ambiente",
+      "subtitle": "Identifica la zona que QualiTrack organizará y monitoreará.",
+      "code-hint": "Único dentro del laboratorio, por ejemplo WH-RM-01.",
+      "usage-hint": "Uso principal de la zona. Puedes asignarlo después.",
+      "usage-edit-hint": "Cambia el uso desde la lista de ambientes.",
+      "max-length": "Usa como máximo {{max}} caracteres."
+    }
+  },
+  "environment-usage": {
+    "LABORATORY": "Laboratorio",
+    "PRODUCTION": "Producción",
+    "RAW_MATERIAL_STORAGE": "Almacén de materias primas",
+    "PRODUCT_STORAGE": "Almacén de productos",
+    "OTHER": "Otro"
   }
 }

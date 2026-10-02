@@ -47,9 +47,7 @@ export class InventoryStore {
   readonly selected = computed(
     () => this.materials().find((material) => material.id === this.selectedId()) ?? null,
   );
-  readonly canReview = computed(() =>
-    this.iam.currentRoles().some((role) => ['ROLE_ADMIN', 'ROLE_QA_MANAGER'].includes(role)),
-  );
+  readonly canReview = this.iam.canManageQuality;
   private generation = 0;
   get lab(): number {
     return this.iam.requireLaboratoryId();
