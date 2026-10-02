@@ -1104,7 +1104,8 @@
       "usage-hint": "Uso principal de la zona. Puedes asignarlo después.",
       "usage-edit-hint": "Cambia el uso desde la lista de ambientes.",
       "max-length": "Usa como máximo {{max}} caracteres."
-    }
+    },
+    "selector": "Ambiente"
   },
   "environment-usage": {
     "LABORATORY": "Laboratorio",

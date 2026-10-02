@@ -1104,7 +1104,8 @@
       "usage-hint": "Main use of the zone. You can assign it later.",
       "usage-edit-hint": "Change the usage from the environment list.",
       "max-length": "Use at most {{max}} characters."
-    }
+    },
+    "selector": "Environment"
   },
   "environment-usage": {
     "LABORATORY": "Laboratory",
