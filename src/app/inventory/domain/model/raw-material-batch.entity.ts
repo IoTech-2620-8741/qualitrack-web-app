@@ -2,6 +2,9 @@ import { BaseEntity } from '../../../shared/domain/model/base-entity';
 import { InventoryUnit } from './raw-material.entity';
 export type RawMaterialBatchStatus = 'QUARANTINED' | 'RELEASED' | 'OBSERVED' | 'REJECTED';
 
+/** Expiration classification computed by the server for the configured near expiry period (US42). */
+export type ExpirationStatus = 'VALID' | 'NEAR_EXPIRY' | 'EXPIRED';
+
 /** Domain state, independent from HTTP resources. Stock values are supplied by the server. */
 export class RawMaterialBatch implements BaseEntity {
   readonly id: number;
@@ -17,6 +20,7 @@ export class RawMaterialBatch implements BaseEntity {
   readonly status: RawMaterialBatchStatus;
   readonly usable?: boolean;
   readonly availability?: string;
+  readonly expirationStatus?: ExpirationStatus;
   constructor(params: {
     id: number;
     laboratoryId: number;
@@ -31,6 +35,7 @@ export class RawMaterialBatch implements BaseEntity {
     status: RawMaterialBatchStatus;
     usable?: boolean;
     availability?: string;
+    expirationStatus?: ExpirationStatus;
   }) {
     this.id = params.id;
     this.laboratoryId = params.laboratoryId;
@@ -45,5 +50,6 @@ export class RawMaterialBatch implements BaseEntity {
     this.status = params.status;
     this.usable = params.usable;
     this.availability = params.availability;
+    this.expirationStatus = params.expirationStatus;
   }
 }

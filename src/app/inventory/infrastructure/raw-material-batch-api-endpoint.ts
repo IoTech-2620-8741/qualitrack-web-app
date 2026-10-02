@@ -1,11 +1,12 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { catchError, map } from 'rxjs';
 import { BaseApiEndpoint } from '../../shared/infrastructure/base-api-endpoint';
 import { environment } from '../../../environments/environment';
-import { RawMaterialBatch } from '../domain/model/raw-material-batch.entity';
+import { ExpirationStatus, RawMaterialBatch } from '../domain/model/raw-material-batch.entity';
 import {
   RawMaterialBatchResource,
   RawMaterialBatchesResponse,
+  RawMaterialBatchReviewResource,
 } from './raw-material-batch-response';
 import { RawMaterialBatchAssembler } from './raw-material-batch-assembler';
 import {
@@ -22,6 +23,11 @@ import type { RawMaterialBatchConsumption } from '../application/raw-material-ba
 
 const laboratoriesEndpointUrl = `${environment.serverBasePath}${environment.laboratoryLabsEndpointPath}`;
 
+/**
+ * HTTP client for raw material lots (TS23, TS24, TS25, TS28).
+ * Maps to /laboratories/{laboratoryId}/environments/{environmentId}/raw-materials/{rawMaterialId}/batches
+ * and /laboratories/{laboratoryId}/environments/{environmentId}/raw-material-batches.
+ */
 export class RawMaterialBatchApiEndpoint extends BaseApiEndpoint<
   RawMaterialBatch,
   RawMaterialBatchResource,
@@ -31,25 +37,50 @@ export class RawMaterialBatchApiEndpoint extends BaseApiEndpoint<
   constructor(http: HttpClient) {
     super(http, laboratoriesEndpointUrl, new RawMaterialBatchAssembler());
   }
-  private root(lab: number) {
-    return `${this.endpointUrl}/${lab}${environment.inventoryEndpointPath}`;
+
+  getByMaterial(lab: number, environmentId: number, material: number) {
+    return this.http.get<RawMaterialBatchResource[]>(this.batches(lab, environmentId, material)).pipe(
+      map((resources) => resources.map((resource) => this.assembler.toEntityFromResource(resource))),
+      catchError(this.handleError('Failed to load supplier receipts')),
+    );
   }
-  getByMaterial(lab: number, material: number) {
+
+  getByEnvironment(lab: number, environmentId: number, expirationStatus?: ExpirationStatus, withinDays?: number) {
+    let params = new HttpParams();
+    if (expirationStatus) params = params.set('expirationStatus', expirationStatus);
+    if (withinDays !== undefined) params = params.set('withinDays', withinDays);
     return this.http
       .get<RawMaterialBatchResource[]>(
-        `${this.root(lab)}${environment.inventoryMaterialsEndpointPath}/${material}${environment.inventoryReceiptsEndpointPath}`,
+        `${this.environmentRoot(lab, environmentId)}${environment.inventoryEnvironmentRawMaterialBatchesEndpointPath}`,
+        { params },
       )
       .pipe(
-        map((resources) =>
-          resources.map((resource) => this.assembler.toEntityFromResource(resource)),
-        ),
-        catchError(this.handleError('Failed to load supplier receipts')),
+        map((resources) => resources.map((resource) => this.assembler.toEntityFromResource(resource))),
+        catchError(this.handleError('Failed to load raw material lots')),
       );
   }
+
+  receive(lab: number, environmentId: number, material: number, request: ReceiveRawMaterialBatchRequest) {
+    return this.http.post<RawMaterialBatchResource>(this.batches(lab, environmentId, material), request).pipe(
+      map((resource) => this.assembler.toEntityFromResource(resource)),
+      catchError(this.handleError('Failed to register receipt')),
+    );
+  }
+
+  review(lab: number, environmentId: number, material: number, batch: number, request: ReviewRawMaterialBatchRequest) {
+    return this.http
+      .post<RawMaterialBatchReviewResource>(
+        `${this.batches(lab, environmentId, material)}/${batch}${environment.inventoryRawMaterialBatchReviewsEndpointPath}`,
+        request,
+      )
+      .pipe(catchError(this.handleError('Failed to review receipt')));
+  }
+
+  /** Laboratory-wide usable lots kept for product batch consumption (deprecated backend read). */
   getUsable(lab: number, material: number) {
     return this.http
       .get<AvailableReceiptResource[]>(
-        `${this.root(lab)}${environment.inventoryMaterialsEndpointPath}/${material}${environment.inventoryUsableReceiptsEndpointPath}`,
+        `${this.laboratoryInventory(lab)}${environment.inventoryMaterialsEndpointPath}/${material}${environment.inventoryUsableReceiptsEndpointPath}`,
       )
       .pipe(
         map((resources) =>
@@ -65,32 +96,12 @@ export class RawMaterialBatchApiEndpoint extends BaseApiEndpoint<
         catchError(this.handleError('Failed to load available receipts')),
       );
   }
-  receive(lab: number, material: number, request: ReceiveRawMaterialBatchRequest) {
-    return this.http
-      .post<RawMaterialBatchResource>(
-        `${this.root(lab)}${environment.inventoryMaterialsEndpointPath}/${material}${environment.inventoryReceiptsEndpointPath}`,
-        request,
-      )
-      .pipe(
-        map((resource) => this.assembler.toEntityFromResource(resource)),
-        catchError(this.handleError('Failed to register receipt')),
-      );
-  }
-  review(lab: number, receipt: number, request: ReviewRawMaterialBatchRequest) {
-    return this.http
-      .post<RawMaterialBatchResource>(
-        `${this.root(lab)}${environment.inventoryReceiptsEndpointPath}/${receipt}${environment.inventoryReceiptReviewsEndpointPath}`,
-        request,
-      )
-      .pipe(
-        map((resource) => this.assembler.toEntityFromResource(resource)),
-        catchError(this.handleError('Failed to review receipt')),
-      );
-  }
+
+  /** Atomic consumption for a product batch; moves to product batch raw material usages in a later phase. */
   consume(lab: number, request: ConsumeRawMaterialBatchRequest) {
     return this.http
       .post<ReceiptConsumptionResponse>(
-        `${this.root(lab)}${environment.inventoryConsumptionsEndpointPath}`,
+        `${this.laboratoryInventory(lab)}${environment.inventoryConsumptionsEndpointPath}`,
         request,
       )
       .pipe(
@@ -105,5 +116,17 @@ export class RawMaterialBatchApiEndpoint extends BaseApiEndpoint<
         })),
         catchError(this.handleError('Failed to consume receipt')),
       );
+  }
+
+  private environmentRoot(lab: number, environmentId: number) {
+    return `${this.endpointUrl}/${lab}${environment.laboratoryEnvironmentsEndpointPath}/${environmentId}`;
+  }
+
+  private batches(lab: number, environmentId: number, material: number) {
+    return `${this.environmentRoot(lab, environmentId)}${environment.inventoryRawMaterialsEndpointPath}/${material}${environment.inventoryRawMaterialBatchesEndpointPath}`;
+  }
+
+  private laboratoryInventory(lab: number) {
+    return `${this.endpointUrl}/${lab}${environment.inventoryEndpointPath}`;
   }
 }

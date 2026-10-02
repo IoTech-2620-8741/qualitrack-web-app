@@ -1,14 +1,18 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { catchError, map } from 'rxjs';
 import { BaseApiEndpoint } from '../../shared/infrastructure/base-api-endpoint';
 import { environment } from '../../../environments/environment';
-import { RawMaterial } from '../domain/model/raw-material.entity';
+import { RawMaterial, StockStatus } from '../domain/model/raw-material.entity';
 import { RawMaterialResource, RawMaterialsResponse } from './raw-material-response';
 import { RawMaterialAssembler } from './raw-material-assembler';
 import { SaveRawMaterialRequest } from './raw-material.request';
 
 const laboratoriesEndpointUrl = `${environment.serverBasePath}${environment.laboratoryLabsEndpointPath}`;
 
+/**
+ * HTTP client for raw materials kept in an environment (TS21, TS22, TS27).
+ * Maps to /laboratories/{laboratoryId}/environments/{environmentId}/raw-materials.
+ */
 export class RawMaterialApiEndpoint extends BaseApiEndpoint<
   RawMaterial,
   RawMaterialResource,
@@ -18,20 +22,24 @@ export class RawMaterialApiEndpoint extends BaseApiEndpoint<
   constructor(http: HttpClient) {
     super(http, laboratoriesEndpointUrl, new RawMaterialAssembler());
   }
-  getByLaboratory(lab: number) {
-    return this.http
-      .get<RawMaterialResource[]>(
-        `${this.endpointUrl}/${lab}${environment.inventoryEndpointPath}${environment.inventoryMaterialsEndpointPath}`,
-      )
-      .pipe(
-        map((resources) =>
-          resources.map((resource) => this.assembler.toEntityFromResource(resource)),
-        ),
-        catchError(this.handleError('Failed to load inventory catalogue')),
-      );
+
+  getByEnvironment(lab: number, environmentId: number, stockStatus?: StockStatus) {
+    const params = stockStatus ? new HttpParams().set('stockStatus', stockStatus) : undefined;
+    return this.http.get<RawMaterialResource[]>(this.collection(lab, environmentId), { params }).pipe(
+      map((resources) => resources.map((resource) => this.assembler.toEntityFromResource(resource))),
+      catchError(this.handleError('Failed to load inventory catalogue')),
+    );
   }
-  saveMaterial(lab: number, request: SaveRawMaterialRequest, id?: number) {
-    const url = `${this.endpointUrl}/${lab}${environment.inventoryEndpointPath}${environment.inventoryMaterialsEndpointPath}`;
+
+  getRawMaterial(lab: number, environmentId: number, id: number) {
+    return this.http.get<RawMaterialResource>(`${this.collection(lab, environmentId)}/${id}`).pipe(
+      map((resource) => this.assembler.toEntityFromResource(resource)),
+      catchError(this.handleError('Failed to load inventory material')),
+    );
+  }
+
+  saveMaterial(lab: number, environmentId: number, request: SaveRawMaterialRequest, id?: number) {
+    const url = this.collection(lab, environmentId);
     const response = id
       ? this.http.put<RawMaterialResource>(`${url}/${id}`, request)
       : this.http.post<RawMaterialResource>(url, request);
@@ -39,5 +47,24 @@ export class RawMaterialApiEndpoint extends BaseApiEndpoint<
       map((resource) => this.assembler.toEntityFromResource(resource)),
       catchError(this.handleError('Failed to save inventory material')),
     );
+  }
+
+  /**
+   * Laboratory-wide read kept for product batch consumption and the dashboard
+   * until product batches expose raw material usages per environment.
+   */
+  getByLaboratory(lab: number) {
+    return this.http
+      .get<RawMaterialResource[]>(
+        `${this.endpointUrl}/${lab}${environment.inventoryEndpointPath}${environment.inventoryMaterialsEndpointPath}`,
+      )
+      .pipe(
+        map((resources) => resources.map((resource) => this.assembler.toEntityFromResource(resource))),
+        catchError(this.handleError('Failed to load inventory catalogue')),
+      );
+  }
+
+  private collection(lab: number, environmentId: number) {
+    return `${this.endpointUrl}/${lab}${environment.laboratoryEnvironmentsEndpointPath}/${environmentId}${environment.inventoryRawMaterialsEndpointPath}`;
   }
 }

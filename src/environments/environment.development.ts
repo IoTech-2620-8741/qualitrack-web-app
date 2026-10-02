@@ -22,15 +22,19 @@ export const environment = {
   laboratoryEnvironmentUsageAssignmentsEndpointPath: '/usage-assignments',
 
   // Inventory
+  inventoryRawMaterialsEndpointPath: '/raw-materials',
+  inventoryRawMaterialBatchesEndpointPath: '/batches',
+  inventoryRawMaterialBatchReviewsEndpointPath: '/reviews',
+  inventoryRawMaterialMovementsEndpointPath: '/movements',
+  inventoryRawMaterialUsagesEndpointPath: '/usages',
+  inventoryEnvironmentRawMaterialBatchesEndpointPath: '/raw-material-batches',
+  inventoryRawMaterialImportsEndpointPath: '/raw-material-imports',
+  // Laboratory-wide inventory reads and consumption (deprecated until product batch raw material usages exist)
   inventoryEndpointPath: '/inventory',
   inventoryMaterialsEndpointPath: '/materials',
-  inventoryReceiptsEndpointPath: '/receipts',
   inventoryUsableReceiptsEndpointPath: '/usable-receipts',
-  inventoryReceiptReviewsEndpointPath: '/reviews',
   inventoryConsumptionsEndpointPath: '/consumptions',
-  inventoryMovementsEndpointPath: '/movements',
   inventoryLegacyMaterialsEndpointPath: '/legacy-materials',
-  inventoryLegacyImportEndpointPath: '/import',
 
   // Equipment
   equipmentEndpointPath: '/equipments',

@@ -31,7 +31,7 @@ export class ReceiptConsumptionStore {
     this.materialsLoading.set(true);
     this.error.set('');
     try {
-      this.materials.set(await firstValueFrom(this.api.materials(this.iam.requireLaboratoryId())));
+      this.materials.set(await firstValueFrom(this.api.laboratoryMaterials(this.iam.requireLaboratoryId())));
     } catch (error) {
       this.materials.set([]);
       this.error.set(inventoryError(error));

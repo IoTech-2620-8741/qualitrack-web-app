@@ -169,10 +169,52 @@ export class EnvironmentStore {
   }
 
   /**
+   * Picks the environment to open by default: the last one used in this browser, otherwise the first
+   * environment with the preferred usage, otherwise the first environment.
+   *
+   * @param preferredUsage - Usage that fits the calling feature, for example RAW_MATERIAL_STORAGE
+   * @returns The environment to open, or null when the laboratory has no environments
+   */
+  preferredEnvironment(preferredUsage?: EnvironmentUsage): Environment | null {
+    const environments = this._environments();
+    const remembered = this.rememberedEnvironmentId();
+    return environments.find((environment) => environment.id === remembered)
+      ?? environments.find((environment) => environment.usage === preferredUsage)
+      ?? environments[0]
+      ?? null;
+  }
+
+  /**
+   * Remembers the environment the user is working with, only as a per-browser convenience.
+   *
+   * @param environmentId - Numeric identifier of the environment
+   */
+  rememberEnvironment(environmentId: number): void {
+    try {
+      localStorage.setItem(this.preferenceKey(), String(environmentId));
+    } catch {
+      // Storage can be unavailable (private mode); the preference is optional.
+    }
+  }
+
+  /**
    * Clears the latest error message.
    */
   clearError(): void {
     this._error.set(null);
+  }
+
+  private rememberedEnvironmentId(): number | null {
+    try {
+      const value = Number(localStorage.getItem(this.preferenceKey()));
+      return Number.isInteger(value) && value > 0 ? value : null;
+    } catch {
+      return null;
+    }
+  }
+
+  private preferenceKey(): string {
+    return `qualitrack.environment.${this.laboratoryId}`;
   }
 
   private async refresh(): Promise<void> {
