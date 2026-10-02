@@ -44,7 +44,7 @@
       ><button
         mat-button
         type="button"
-        routerLink="/inventory/inventory-catalogue"
+        [routerLink]="catalogueLink"
         [disabled]="store.saving()"
       >
         {{ 'inventory.cancel' | translate }}

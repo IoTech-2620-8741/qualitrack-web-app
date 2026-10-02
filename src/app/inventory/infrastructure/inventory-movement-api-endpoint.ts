@@ -11,6 +11,7 @@ import { InventoryMovementAssembler } from './inventory-movement-assembler';
 
 const laboratoriesEndpointUrl = `${environment.serverBasePath}${environment.laboratoryLabsEndpointPath}`;
 
+/** HTTP client for the append-only movements of a raw material kept in an environment. */
 export class InventoryMovementApiEndpoint extends BaseApiEndpoint<
   InventoryMovement,
   InventoryMovementResource,
@@ -20,10 +21,10 @@ export class InventoryMovementApiEndpoint extends BaseApiEndpoint<
   constructor(http: HttpClient) {
     super(http, laboratoriesEndpointUrl, new InventoryMovementAssembler());
   }
-  getByMaterial(lab: number, material: number) {
+  getByMaterial(lab: number, environmentId: number, material: number) {
     return this.http
       .get<InventoryMovementResource[]>(
-        `${this.endpointUrl}/${lab}${environment.inventoryEndpointPath}${environment.inventoryMaterialsEndpointPath}/${material}${environment.inventoryMovementsEndpointPath}`,
+        `${this.endpointUrl}/${lab}${environment.laboratoryEnvironmentsEndpointPath}/${environmentId}${environment.inventoryRawMaterialsEndpointPath}/${material}${environment.inventoryRawMaterialMovementsEndpointPath}`,
       )
       .pipe(
         map((resources) =>

@@ -51,7 +51,7 @@ export class DashboardStore {
     .sort((a, b) => Number(b.severity === 'CRITICAL') - Number(a.severity === 'CRITICAL')
       || Date.parse(b.timestamp) - Date.parse(a.timestamp)));
   readonly lowStock = computed(() => (this.materials().data ?? [])
-    .filter(material => material.usableStock < material.minimumStock));
+    .filter(material => material.isLowStock));
   readonly currentPlan = computed(() => {
     const sub = this.subscription().data;
     return this.plans().data?.find(plan => plan.code === sub?.planCode && plan.billingPeriod === sub.billingCycle) ?? null;
@@ -84,7 +84,7 @@ export class DashboardStore {
     this.measurements.set({ status: 'idle', data: null });
     this.alerts.set({ status: 'loading', data: null });
     this.load(this.laboratory, this.labApi.getLaboratory(id));
-    this.load(this.materials, this.inventoryApi.materials(id).pipe(map(items => items.filter(item => item.laboratoryId === id))));
+    this.load(this.materials, this.inventoryApi.laboratoryMaterials(id).pipe(map(items => items.filter(item => item.laboratoryId === id))));
     this.load(this.batches, this.batchApi.getBatches(id).pipe(map(items => items.filter(item => item.labId === id))));
     this.load(this.equipment, this.equipmentApi.getEquipment(id).pipe(map(items => items.filter(item => item.labId === id))), items => {
       this.selectEquipment(items.find(item => item.id === preferredEquipment)?.id ?? items[0]?.id ?? null);

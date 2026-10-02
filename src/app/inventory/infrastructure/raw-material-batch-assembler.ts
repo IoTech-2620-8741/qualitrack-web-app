@@ -25,6 +25,7 @@ export class RawMaterialBatchAssembler implements BaseAssembler<
       status: resource.status,
       usable: resource.usable,
       availability: resource.availability,
+      expirationStatus: resource.expirationStatus,
     });
   }
   toResourceFromEntity(entity: RawMaterialBatch): RawMaterialBatchResource {
@@ -42,6 +43,7 @@ export class RawMaterialBatchAssembler implements BaseAssembler<
       status: entity.status,
       usable: entity.usable,
       availability: entity.availability,
+      expirationStatus: entity.expirationStatus,
     };
   }
   toEntitiesFromResponse(response: RawMaterialBatchesResponse): RawMaterialBatch[] {

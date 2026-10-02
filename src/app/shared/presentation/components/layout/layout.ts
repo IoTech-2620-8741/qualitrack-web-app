@@ -134,8 +134,7 @@ export class Layout {
       icon: 'inventory_2',
       link: '/inventory',
       children: [
-        { label: 'inventory.catalogue', link: '/inventory/inventory-catalogue' },
-        { label: 'inventory.registerMaterial', link: '/inventory/register-material' },
+        { label: 'inventory.catalogue', link: '/inventory' },
       ],
     },
     {

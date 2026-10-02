@@ -70,7 +70,14 @@
       "REVIEW": "Quality review",
       "CONSUMPTION": "Consumption",
       "OPENING_BALANCE": "Opening balance"
-    }
+    },
+    "noEnvironments": "No environments registered yet",
+    "noEnvironmentsNotice": "Raw materials are kept in an environment of the laboratory or warehouse. Register an environment to start the inventory.",
+    "nearExpiry": "Near expiry",
+    "nearExpiryNotice": "Lots with available stock that expire within the near expiry period of the platform (30 days unless configured otherwise).",
+    "nearExpiryEmpty": "No lots expire soon in this environment.",
+    "notFound": "The raw material is not registered in this environment.",
+    "noEnvironment": "Select an environment to continue."
   },
   "onboarding.no-plans": "No subscription plans are available yet. Please contact the service administrator.",
   "operational-metrics": {

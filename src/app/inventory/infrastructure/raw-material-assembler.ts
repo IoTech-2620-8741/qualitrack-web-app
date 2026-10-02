@@ -11,12 +11,14 @@ export class RawMaterialAssembler implements BaseAssembler<
     return new RawMaterial({
       id: resource.id,
       laboratoryId: resource.laboratoryId,
+      environmentId: resource.environmentId ?? null,
       code: resource.code,
       name: resource.name,
       unit: resource.unit,
       minimumStock: resource.minimumStock,
       usableStock: resource.usableStock,
       physicalStock: resource.physicalStock,
+      stockStatus: resource.stockStatus,
       legacyId: resource.legacyId,
     });
   }
@@ -24,12 +26,14 @@ export class RawMaterialAssembler implements BaseAssembler<
     return {
       id: entity.id,
       laboratoryId: entity.laboratoryId,
+      environmentId: entity.environmentId,
       code: entity.code,
       name: entity.name,
       unit: entity.unit,
       minimumStock: entity.minimumStock,
       usableStock: entity.usableStock,
       physicalStock: entity.physicalStock,
+      stockStatus: entity.stockStatus,
       legacyId: entity.legacyId,
     };
   }
