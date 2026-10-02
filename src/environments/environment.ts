@@ -22,6 +22,8 @@ export const environment = {
   laboratoryEnvironmentUsageAssignmentsEndpointPath: '/usage-assignments',
 
   // Inventory
+  inventoryRawMaterialsEndpointPath: '/raw-materials',
+  inventoryRawMaterialUsagesEndpointPath: '/usages',
   inventoryEndpointPath: '/inventory',
   inventoryMaterialsEndpointPath: '/materials',
   inventoryReceiptsEndpointPath: '/receipts',

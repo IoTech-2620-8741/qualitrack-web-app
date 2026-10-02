@@ -40,6 +40,12 @@ export class BatchApi extends BaseApi {
     return this._usageEndpoint.getUsageByMaterial(rawMaterialId);
   }
   /**
+   * Product batches that consumed lots of an Inventory raw material kept in an environment (TS79).
+   */
+  getRawMaterialUsages(laboratoryId: number, environmentId: number, rawMaterialId: number): Observable<RawMaterialUsage[]> {
+    return this._usageEndpoint.getUsageByEnvironmentMaterial(laboratoryId, environmentId, rawMaterialId);
+  }
+  /**
    * Endpoint client responsible for batch lifecycle operations.
    */
   private readonly _batchEndpoint: BatchApiEndpoint;
