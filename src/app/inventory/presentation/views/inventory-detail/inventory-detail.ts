@@ -14,7 +14,7 @@ import {
   RawMaterialBatch,
   RawMaterialBatchStatus,
 } from '../../../domain/model/raw-material-batch.entity';
-import { stockQuantityValidator } from '../../../../shared/presentation/stock-quantity-validator';
+import { stockQuantityValidator } from '../../../../shared/presentation/validators/stock-quantity.validator';
 
 @Component({
   selector: 'app-inventory-detail',

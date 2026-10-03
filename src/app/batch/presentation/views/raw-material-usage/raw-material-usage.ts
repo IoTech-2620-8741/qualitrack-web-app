@@ -14,7 +14,7 @@ import { BatchPath } from '../../../infrastructure/batch-api-endpoint';
 import { TracedRawMaterialUsage } from '../../../domain/model/batch-traceability.entity';
 import { EnvironmentStore } from '../../../../laboratory/application/environment.store';
 import { EnvironmentSelector } from '../../../../laboratory/presentation/components/environment-selector/environment-selector';
-import { stockQuantityValidator } from '../../../../shared/presentation/stock-quantity-validator';
+import { stockQuantityValidator } from '../../../../shared/presentation/validators/stock-quantity.validator';
 
 /**
  * Raw material lots consumed by a batch (US75), with the consumption form while the batch is open.
