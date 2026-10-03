@@ -38,7 +38,8 @@ export class StaffAssembler implements BaseAssembler<
       role: resource.role,
       email: resource.email,
       active: resource.active,
-      createdAt: resource.createdAt,
+      accessRole: resource.accessRole ?? null,
+      userId: resource.userId ?? null,
     });
   }
 
@@ -56,7 +57,8 @@ export class StaffAssembler implements BaseAssembler<
       role: entity.role,
       email: entity.email,
       active: entity.active,
-      createdAt: entity.createdAt,
+      accessRole: entity.accessRole,
+      userId: entity.userId,
     };
   }
 }

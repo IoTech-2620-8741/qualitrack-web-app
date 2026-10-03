@@ -1,0 +1,25 @@
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 16px;
+  text-decoration: none;
+}
+
+.page-heading p {
+  margin: 6px 0 0;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  padding: 48px 0;
+}
+
+.state {
+  color: #087957;
+}
+
+.state.inactive {
+  color: #a12d2d;
+}
