@@ -20,7 +20,6 @@ import { EnvironmentApiEndpoint } from './environment-api-endpoint';
 import { CreateLaboratoryRequest, UpdateLaboratoryRequest } from './laboratory.request';
 import { RegisterStaffRequest } from './staff.request';
 import { CreateProductRequest } from './product.request';
-import { CreateRawMaterialRequest } from './raw-material.request';
 import {
   AssignEnvironmentUsageRequest,
   CreateEnvironmentRequest,
@@ -168,30 +167,6 @@ export class LaboratoryApi extends BaseApi {
    */
   getRawMaterials(laboratoryId: number): Observable<RawMaterial[]> {
     return this.materialsEndpoint.getRawMaterialsByLaboratoryId(laboratoryId);
-  }
-
-  /**
-   * Retrieves low-stock raw materials for a laboratory.
-   *
-   * @param laboratoryId - Numeric identifier of the laboratory
-   * @returns Observable stream emitting low-stock RawMaterial domain entities
-   */
-  getLowStockMaterials(laboratoryId: number): Observable<RawMaterial[]> {
-    return this.materialsEndpoint.getLowStockMaterials(laboratoryId);
-  }
-
-  /**
-   * Creates a new raw material under a laboratory.
-   *
-   * @param laboratoryId - Numeric identifier of the laboratory
-   * @param request - Request payload containing raw material registration data
-   * @returns Observable stream emitting a message response
-   */
-  createRawMaterial(
-    laboratoryId: number,
-    request: CreateRawMaterialRequest,
-  ): Observable<MessageResource> {
-    return this.materialsEndpoint.createRawMaterial(laboratoryId, request);
   }
 
   /**

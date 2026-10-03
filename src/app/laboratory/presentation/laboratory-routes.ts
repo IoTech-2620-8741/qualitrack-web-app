@@ -18,12 +18,6 @@ const productCatalog = () =>
 
 const productForm = () => import('./views/product-form/product-form').then((m) => m.ProductForm);
 
-const rawMaterialList = () =>
-  import('./views/raw-material-list/raw-material-list').then((m) => m.RawMaterialList);
-
-const rawMaterialForm = () =>
-  import('./views/raw-material-form/raw-material-form').then((m) => m.RawMaterialForm);
-
 export const laboratoryRoutes: Routes = [
   { path: 'create', loadComponent: labForm, canActivate: [laboratorySetupGuard] },
   { path: 'lab-form', redirectTo: 'create', pathMatch: 'full' },

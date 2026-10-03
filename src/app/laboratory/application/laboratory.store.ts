@@ -1,18 +1,16 @@
 import { Injectable, computed, signal } from '@angular/core';
-import { firstValueFrom, retry } from 'rxjs';
+import { retry } from 'rxjs';
 
 import { LaboratoryApi } from '../infrastructure/laboratory-api';
 
 import { Laboratory } from '../domain/model/laboratory.entity';
 import { StaffMember } from '../domain/model/staff-member.entity';
 import { PharmaceuticalProduct } from '../domain/model/pharmaceutical-product.entity';
-import { RawMaterial } from '../domain/model/raw-material.entity';
 
 import { CreateLaboratoryCommand } from '../domain/model/create-laboratory.command';
 import { UpdateLaboratoryCommand } from '../domain/model/update-laboratory.command';
 import { RegisterStaffCommand } from '../domain/model/register-staff.command';
 import { CreateProductCommand } from '../domain/model/create-product.command';
-import { CreateRawMaterialCommand } from '../domain/model/create-raw-material.command';
 
 /**
  * Application store for managing Laboratory bounded context state.
@@ -38,16 +36,6 @@ export class LaboratoryStore {
    * Internal signal containing pharmaceutical products for the current laboratory.
    */
   private readonly _products = signal<PharmaceuticalProduct[]>([]);
-
-  /**
-   * Internal signal containing raw materials for the current laboratory.
-   */
-  private readonly _rawMaterials = signal<RawMaterial[]>([]);
-
-  /**
-   * Internal signal containing raw materials below or equal to their minimum stock threshold.
-   */
-  private readonly _lowStock = signal<RawMaterial[]>([]);
 
   /**
    * Internal signal indicating whether an API operation is running.
@@ -80,16 +68,6 @@ export class LaboratoryStore {
   readonly products = this._products.asReadonly();
 
   /**
-   * Readonly signal exposing raw materials.
-   */
-  readonly rawMaterials = this._rawMaterials.asReadonly();
-
-  /**
-   * Readonly signal exposing low-stock raw materials.
-   */
-  readonly lowStock = this._lowStock.asReadonly();
-
-  /**
    * Readonly signal exposing loading state.
    */
   readonly isLoading = this._isLoading.asReadonly();
@@ -103,11 +81,6 @@ export class LaboratoryStore {
    * Readonly signal exposing the latest success message.
    */
   readonly successMsg = this._successMsg.asReadonly();
-
-  /**
-   * Computed signal indicating whether there are low-stock raw materials.
-   */
-  readonly hasLowStock = computed(() => this._lowStock().length > 0);
 
   /**
    * Computed signal exposing only active staff members.
@@ -307,48 +280,6 @@ export class LaboratoryStore {
           this.failOperation(error, 'Failed to create product');
         },
       });
-  }
-
-  /**
-   * Loads raw materials and low-stock materials for a laboratory.
-   *
-   * @param laboratoryId - Numeric identifier of the laboratory
-   */
-  loadRawMaterials(laboratoryId: number): void {
-    this.startOperation();
-
-    this.api
-      .getRawMaterials(laboratoryId)
-      .pipe(retry(2))
-      .subscribe({
-        next: (materials: RawMaterial[]) => {
-          this._rawMaterials.set(materials);
-          this._lowStock.set(materials.filter(material => material.quantityInStock <= material.minimumStock));
-          this.finishOperation();
-        },
-        error: (error: unknown) => {
-          this.failOperation(error, 'Failed to load raw materials');
-        },
-      });
-
-  }
-
-  /**
-   * Creates a new raw material under a laboratory.
-   *
-   * @param laboratoryId - Numeric identifier of the laboratory
-   * @param command - Command containing raw material registration data
-   */
-  async createRawMaterial(laboratoryId: number, command: CreateRawMaterialCommand): Promise<boolean> {
-    this.startOperation();
-    try {
-      await firstValueFrom(this.api.createRawMaterial(laboratoryId, { ...command, laboratoryId }));
-      this.finishOperation();
-      return true;
-    } catch (error) {
-      this.failOperation(error, 'Failed to register raw material');
-      return false;
-    }
   }
 
   /**
