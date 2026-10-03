@@ -1,5 +1,6 @@
 import { Component, OnInit, effect, untracked, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
@@ -32,6 +33,7 @@ import { IamStore } from '../../../../iam/application/iam.store';
   standalone: true,
   imports: [
     CommonModule,
+    RouterLink,
     FormsModule,
     TranslateModule,
     MatCardModule,
@@ -72,12 +74,15 @@ export class TelemetryDashboardComponent implements OnInit {
    */
   protected readonly selectedEquipmentId = signal<number>(0);
 
+  protected readonly selectedDevice = computed(() =>
+    this.equipmentStore.iotDevices().find((device) => device.id === this.selectedEquipmentId()) ?? null);
+
   /**
    * Selects the first recorded equipment once the server response is available.
    */
   constructor() {
     effect(() => {
-      const first = this.equipmentStore.equipmentList()[0];
+      const first = this.equipmentStore.iotDevices()[0];
       if (this.equipmentStore.isLoading() || this.equipmentStore.error() || !first) return;
       untracked(() => {
         if (this.selectedEquipmentId()) return;
@@ -180,7 +185,8 @@ export class TelemetryDashboardComponent implements OnInit {
     const equipmentId = this.selectedEquipmentId();
     if (!equipmentId) return;
 
-    this.store.loadEquipmentStatus(equipmentId);
+    const device = this.equipmentStore.iotDevices().find((item) => item.id === equipmentId);
+    if (device) this.store.loadDeviceConnection(device);
     this.store.loadLatestMeasurements(equipmentId);
     this.store.loadTelemetryHistory({ equipmentId });
   }

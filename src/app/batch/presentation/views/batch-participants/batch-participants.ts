@@ -41,10 +41,10 @@ export class BatchParticipants implements OnInit {
   protected readonly loadError = signal<string | null>(null);
   protected equipmentId: number | null = null;
   protected staffId: number | null = null;
-  /** Operational equipment not associated with the batch yet. */
+  /** Operational process equipment not associated with the batch yet; IoT devices only monitor conditions. */
   protected readonly availableEquipment = computed(() => {
     const used = new Set((this.store.traceability()?.equipment ?? []).map((usage) => usage.equipmentId));
-    return this.equipment().filter((item) => item.status === 'OPERATIONAL' && !used.has(item.id));
+    return this.equipment().filter((item) => !item.isIotDevice && item.status === 'OPERATIONAL' && !used.has(item.id));
   });
   /** Active staff members not associated with the batch yet. */
   protected readonly availableStaff = computed(() => {

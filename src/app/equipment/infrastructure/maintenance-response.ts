@@ -39,6 +39,8 @@ export interface MaintenanceResource extends BaseResource {
    */
   equipmentId: number;
 
+  environmentId: number | null;
+
   /**
    * The date when the maintenance activity was performed.
    *

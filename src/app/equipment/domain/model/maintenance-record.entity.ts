@@ -42,6 +42,9 @@ export class MaintenanceRecord implements BaseEntity {
    */
   equipmentId: number;
 
+  /** Environment where the equipment was located when the maintenance was registered, if known. */
+  environmentId: number | null;
+
   /**
    * The date when the maintenance activity was performed.
    *
@@ -105,6 +108,7 @@ export class MaintenanceRecord implements BaseEntity {
   constructor(params: {
     id: number;
     equipmentId: number;
+    environmentId: number | null;
     maintenanceDate: string;
     technicianName: string;
     description: string;
@@ -113,6 +117,7 @@ export class MaintenanceRecord implements BaseEntity {
   }) {
     this.id = params.id;
     this.equipmentId = params.equipmentId;
+    this.environmentId = params.environmentId;
     this.maintenanceDate = params.maintenanceDate;
     this.technicianName = params.technicianName;
     this.description = params.description;

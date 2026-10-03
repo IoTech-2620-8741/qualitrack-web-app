@@ -19,7 +19,7 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(withFetch(), withInterceptors([authenticationInterceptor])),
     provideTranslateService({
       loader: provideTranslateHttpLoader({ prefix: './i18n/', suffix: '.json' }),
-      fallbackLang: 'en_US',
+      fallbackLang: 'en',
     }),
     provideCharts(withDefaultRegisterables()),
   ],

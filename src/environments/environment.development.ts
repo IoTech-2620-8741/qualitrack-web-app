@@ -32,10 +32,15 @@ export const environment = {
   inventoryEndpointPath: '/inventory',
   inventoryLegacyMaterialsEndpointPath: '/legacy-materials',
 
-  // Equipment
+  // Equipment, under /laboratories/{laboratoryId} and .../environments/{environmentId}
   equipmentEndpointPath: '/equipments',
-  equipmentBpmConfigEndpointPath: '/bpm-configs',
+  equipmentStatusChangesEndpointPath: '/status-changes',
   equipmentMaintenanceEndpointPath: '/maintenance-records',
+  devicesEndpointPath: '/devices',
+  environmentalDevicesEndpointPath: '/environmental-devices',
+  containerMonitorsEndpointPath: '/container-monitors',
+  // Flat routes under /equipments/{equipmentId} kept until the Tracking, Compliance and Reporting phases
+  equipmentBpmConfigEndpointPath: '/bpm-configs',
   equipmentTelemetryStatusEndpointPath: '/telemetry-status',
   equipmentTelemetryMeasurementsEndpointPath: '/telemetry-measurements',
   equipmentTelemetryHistoryEndpointPath: '/telemetry-history',

@@ -50,16 +50,10 @@ const bpmConfigForm = () =>
   import('./views/bpm-config-form/bpm-config-form').then((m) => m.BpmConfigForm);
 
 /**
- * Lazy loads the maintenance history view component.
- *
- * @returns A Promise that resolves to the MaintenanceHistory component.
- *
- * @remarks
- * This function loads the maintenance history view when the user accesses the
- * route associated with the maintenance records of a specific equipment.
+ * Lazy loads the IoT device registration form (environmental devices and container monitors).
  */
-const maintenanceHistory = () =>
-  import('./views/maintenance-history/maintenance-history').then((m) => m.MaintenanceHistory);
+const deviceForm = () =>
+  import('./views/device-form/device-form').then((m) => m.DeviceForm);
 
 /**
  * Lazy loads the maintenance registration form view component.
@@ -94,9 +88,11 @@ const equipmentRoutes: Routes = [
     children: [
       { path: 'equipment-list', loadComponent: equipmentList },
       { path: 'register-equipment', loadComponent: equipmentForm },
+      { path: 'register-device', loadComponent: deviceForm },
       { path: 'equipment-detail/:id', loadComponent: equipmentDetail },
       { path: 'bpm-config-form/:id', loadComponent: bpmConfigForm },
-      { path: 'maintenance-history/:id', loadComponent: maintenanceHistory },
+      // The maintenance history is shown in the equipment detail.
+      { path: 'maintenance-history/:id', redirectTo: 'equipment-detail/:id' },
       { path: 'maintenance-form/:id', loadComponent: maintenanceForm },
       { path: '', redirectTo: 'equipment-list', pathMatch: 'full' },
     ],

@@ -6,7 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { TranslateModule } from '@ngx-translate/core';
-import { localIsoDate } from '../../../../shared/presentation/local-date';
+import { localIsoDate } from '../../../../shared/presentation/utils/local-date';
 import { BatchStore } from '../../../application/batch.store';
 import { ProductStore } from '../../../application/product.store';
 import { IamStore } from '../../../../iam/application/iam.store';

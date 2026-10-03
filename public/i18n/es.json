@@ -263,7 +263,6 @@
       "telemetry": "Telemetría de equipos",
       "parameter": "Parámetro",
       "latest": "Última lectura registrada",
-      "no-equipment": "No hay equipos registrados.",
       "no-readings": "No hay lecturas registradas para este equipo.",
       "reading-summary": "{{count}} lecturas recientes · Mín {{min}} {{unit}} · Máx {{max}} {{unit}}",
       "cycle": "Ciclo de facturación",
@@ -292,7 +291,8 @@
         "IN_PROGRESS": "En proceso",
         "RELEASED": "Liberado",
         "REJECTED": "Rechazado"
-      }
+      },
+      "no-devices": "No hay dispositivos IoT registrados."
     },
     "command-center": "Centro de Control QualiTrack",
     "fallback-title": "Operaciones del Laboratorio",
@@ -705,8 +705,7 @@
     "legacy": "Registrado antes de Inventario"
   },
   "equipment-list": {
-    "title": "Catálogo de Equipos",
-    "subtitle": "Gestión y monitoreo de activos industriales del laboratorio",
+    "title": "Equipos",
     "add-button": "Registrar Equipo",
     "empty": "No se encontraron equipos en este laboratorio",
     "fields": {
@@ -714,10 +713,24 @@
       "type": "Tipo",
       "model": "Modelo",
       "serial": "Número de Serie",
-      "status": "Estado"
+      "status": "Estado",
+      "environment": "Ambiente"
     },
     "actions": {
       "view-detail": "Ver detalle del equipo"
+    },
+    "not-located": "Sin ubicar",
+    "filter": {
+      "label": "Mostrar",
+      "all": "Todos",
+      "equipment": "Equipos",
+      "devices": "Dispositivos IoT"
+    },
+    "search": "Buscar por nombre, modelo, serie o identificador",
+    "summary": {
+      "equipment": "Equipos de proceso",
+      "devices": "Dispositivos IoT",
+      "attention": "En mantenimiento o fuera de servicio"
     }
   },
   "equipment-form": {
@@ -731,7 +744,8 @@
     "errors": {
       "name-minlength": "El nombre del equipo debe tener al menos 3 caracteres",
       "serial-pattern": "Solo se permiten letras, números y guiones"
-    }
+    },
+    "quality-only": "Solo los responsables de calidad y administradores pueden registrar equipos y dispositivos IoT."
   },
   "equipment-detail": {
     "title": "Ficha Técnica",
@@ -740,9 +754,21 @@
       "bpm": "Configuración BPM",
       "maintenance": "Mantenimiento"
     },
-    "fields": {
-      "sensor": "ID Externo del Sensor",
-      "created-at": "Creado En"
+    "requires-location": "Asocia el equipo con un ambiente para registrar cambios de estado y mantenimientos.",
+    "location": {
+      "title": "Ubicación",
+      "hint": "Asocia el equipo con el ambiente donde está instalado.",
+      "move-hint": "Elige otro ambiente si el equipo fue trasladado.",
+      "associate": "Asociar",
+      "move": "Trasladar",
+      "not-recorded": "El dispositivo se registró, pero no se guardó su ambiente."
+    },
+    "status-change": {
+      "title": "Estado operativo",
+      "hint": "El cambio queda registrado en el historial del equipo.",
+      "new-status": "Nuevo estado",
+      "reason": "Motivo (opcional)",
+      "register": "Registrar cambio"
     }
   },
   "bpm-config": {
@@ -758,7 +784,8 @@
     "placeholders": {
       "parameter": "Ej. Temperatura Interna",
       "unit": "Ej. °C, %, bar, RPM"
-    }
+    },
+    "saved": "Parámetro BPM guardado."
   },
   "maintenance-history": {
     "title": "Historial de Mantenimiento",
@@ -775,7 +802,8 @@
       "preventive": "Preventivo",
       "corrective": "Correctivo",
       "calibration": "Calibración",
-      "inspection": "Inspección"
+      "inspection": "Inspección",
+      "other": "Otro"
     }
   },
   "maintenance-form": {
@@ -787,22 +815,17 @@
     },
     "errors": {
       "technician-minlength": "El nombre del técnico debe tener al menos 3 caracteres",
-      "description-maxlength": "La descripción no puede exceder los 500 caracteres"
+      "description-maxlength": "La descripción no puede exceder los 1000 caracteres",
+      "future-date": "La fecha del mantenimiento no puede ser futura"
     }
-  },
-  "equipment-alert": {
-    "title": "Alertas de Calibración",
-    "subtitle": "Equipos que requieren intervención técnica inmediata",
-    "action-tooltip": "Registrar Calibración",
-    "view-all": "VER TODOS LOS EQUIPOS"
   },
   "equipment-status": {
     "operational": "Operativo",
     "maintenance": "Mantenimiento",
     "out_of_service": "Fuera de Servicio",
-    "calibration_required": "Calibración Requerida",
     "unknown": "Estado Desconocido",
-    "loading": "Cargando equipo..."
+    "loading": "Cargando equipo...",
+    "inactive": "Inactivo"
   },
   "lab-profile": {
     "title": "Perfil del Laboratorio",
@@ -1062,7 +1085,7 @@
     },
     "dashboard": {
       "title": "Panel de Telemetría",
-      "select-equipment": "Seleccionar Equipo",
+      "select-equipment": "Seleccionar dispositivo IoT",
       "connection-status": "Estado de Conexión",
       "anomalies": "Anomalías Detectadas",
       "events": "Eventos",
@@ -1092,6 +1115,14 @@
         "deviated": "Desviación BPM",
         "normal": "Normal"
       }
+    },
+    "no-devices": "Solo los dispositivos IoT envían telemetría y no hay ninguno registrado en este laboratorio.",
+    "connection": {
+      "CONNECTED": "Conectado",
+      "REQUIRES_REVIEW": "Requiere revisión",
+      "last": "Última comunicación:",
+      "never": "Aún no se recibió comunicación",
+      "not-located": "Asocia el dispositivo con un ambiente para conocer su estado de conexión."
     }
   },
   "material-history": {
@@ -1173,5 +1204,46 @@
     "released": "Liberado el {{date}} y firmado por el usuario #{{user}}.",
     "rejected": "Rechazado el {{date}}:",
     "pending": "El lote aún no ha sido liberado ni rechazado."
+  },
+  "equipment": {
+    "errors": {
+      "connection": "No se pudo conectar con el servidor. Revisa tu conexión e inténtalo de nuevo.",
+      "forbidden": "Tu cuenta no puede realizar esta acción.",
+      "not-found": "No se encontró el equipo o el ambiente en este laboratorio.",
+      "failed": "No se pudo completar la operación."
+    }
+  },
+  "device-form": {
+    "add-button": "Registrar dispositivo IoT",
+    "title": "Nuevo Dispositivo IoT",
+    "subtitle": "Dispositivo ambiental o monitor de contenedor ESP32 y la identidad con la que Edge lo reconoce",
+    "save": "Registrar dispositivo",
+    "fields": {
+      "device-type": "Tipo de dispositivo",
+      "identifier": "Identificador del dispositivo",
+      "serial": "Dirección MAC o número de serie",
+      "firmware": "Versión de firmware",
+      "environment": "Ambiente donde está instalado"
+    },
+    "placeholders": {
+      "name": "Ej. Monitor de espacio - Almacén de materias primas",
+      "identifier": "Ej. ENV-001",
+      "serial": "Ej. 24:6F:28:AA:10:01",
+      "firmware": "Ej. 1.0.3"
+    },
+    "hints": {
+      "identifier": "Único en QualiTrack; Edge lo usa para reconocer el dispositivo.",
+      "environment": "Opcional; también se puede asociar después desde el detalle del dispositivo."
+    },
+    "no-environment": "Asociar después",
+    "occupied": "ya tiene un dispositivo ambiental"
+  },
+  "device-types": {
+    "ENVIRONMENTAL_DEVICE": "Dispositivo ambiental",
+    "CONTAINER_MONITOR": "Monitor de contenedor",
+    "hints": {
+      "ENVIRONMENTAL_DEVICE": "Supervisa todo el ambiente (monitor de espacio); uno por ambiente.",
+      "CONTAINER_MONITOR": "Supervisa un contenedor donde se guardan materias primas o productos."
+    }
   }
 }

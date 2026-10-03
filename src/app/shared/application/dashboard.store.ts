@@ -43,6 +43,8 @@ export class DashboardStore {
   readonly subscription = resource<Subscription | null>();
   readonly plans = resource<SubscriptionPlan[]>();
   readonly selectedEquipmentId = signal<number | null>(null);
+  /** IoT devices of the laboratory, the only equipment with telemetry. */
+  readonly devices = computed(() => (this.equipment().data ?? []).filter(item => item.isIotDevice));
   readonly selectedSeriesKey = signal('');
   readonly isLoading = computed(() => [this.laboratory(), this.equipment(), this.batches(),
     this.materials(), this.alerts(), this.measurements(), this.subscription(), this.plans()]
@@ -91,7 +93,8 @@ export class DashboardStore {
         toArray(), map(groups => groups.flat())))));
     this.load(this.batches, this.batchApi.getBatches(id));
     this.load(this.equipment, this.equipmentApi.getEquipment(id).pipe(map(items => items.filter(item => item.labId === id))), items => {
-      this.selectEquipment(items.find(item => item.id === preferredEquipment)?.id ?? items[0]?.id ?? null);
+      const devices = items.filter(item => item.isIotDevice);
+      this.selectEquipment(devices.find(item => item.id === preferredEquipment)?.id ?? devices[0]?.id ?? null);
       this.loadAlerts();
     }, () => this.alerts.set({ status: 'error', data: null }));
     this.loadSubscription();
@@ -114,7 +117,7 @@ export class DashboardStore {
       toArray(), map(groups => [...new Map(groups.flat().map(alert => [alert.id, alert])).values()])));
   }
   selectEquipment(id: number | null): void {
-    if (id !== null && !this.equipment().data?.some(item => item.id === id)) return;
+    if (id !== null && !this.devices().some(item => item.id === id)) return;
     this.requests.get(this.measurements)?.unsubscribe();
     this.selectedEquipmentId.set(id);
     this.measurements.set({ status: 'idle', data: null });
