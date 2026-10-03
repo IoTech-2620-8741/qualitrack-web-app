@@ -3,7 +3,6 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 import { BaseApi } from '../../shared/infrastructure/base-api';
-import { MessageResource } from '../../shared/infrastructure/message-response';
 
 import { Laboratory } from '../domain/model/laboratory.entity';
 import { StaffMember } from '../domain/model/staff-member.entity';
@@ -17,6 +16,7 @@ import { EnvironmentApiEndpoint } from './environment-api-endpoint';
 
 import { CreateLaboratoryRequest, UpdateLaboratoryRequest } from './laboratory.request';
 import { RegisterStaffRequest } from './staff.request';
+import { RegisteredStaff } from '../domain/model/register-staff.command';
 import {
   AssignEnvironmentUsageRequest,
   CreateEnvironmentRequest,
@@ -109,24 +109,36 @@ export class LaboratoryApi extends BaseApi {
   }
 
   /**
-   * Registers a new staff member under a laboratory.
+   * Retrieves one staff member of a laboratory.
+   *
+   * @param laboratoryId - Numeric identifier of the laboratory
+   * @param staffId - Numeric identifier of the staff member
+   * @returns Observable stream emitting the StaffMember domain entity
+   */
+  getStaffMember(laboratoryId: number, staffId: number): Observable<StaffMember> {
+    return this.staffEndpoint.getStaffMember(laboratoryId, staffId);
+  }
+
+  /**
+   * Registers a new staff member under a laboratory; the platform creates their account.
    *
    * @param laboratoryId - Numeric identifier of the laboratory
    * @param request - Request payload containing staff registration data
-   * @returns Observable stream emitting a message response
+   * @returns Observable stream emitting the staff member and the delivery of their credentials
    */
-  registerStaff(laboratoryId: number, request: RegisterStaffRequest): Observable<MessageResource> {
+  registerStaff(laboratoryId: number, request: RegisterStaffRequest): Observable<RegisteredStaff> {
     return this.staffEndpoint.registerStaff(laboratoryId, request);
   }
 
   /**
-   * Deactivates an existing staff member.
+   * Deactivates an existing staff member and disables their account.
    *
+   * @param laboratoryId - Numeric identifier of the laboratory
    * @param staffId - Numeric identifier of the staff member to deactivate
-   * @returns Observable stream completing when the deactivation succeeds
+   * @returns Observable stream emitting the deactivated staff member
    */
-  deactivateStaff(staffId: number): Observable<void> {
-    return this.staffEndpoint.deactivateStaff(staffId);
+  deactivateStaff(laboratoryId: number, staffId: number): Observable<StaffMember> {
+    return this.staffEndpoint.deactivateStaff(laboratoryId, staffId);
   }
 
   /**

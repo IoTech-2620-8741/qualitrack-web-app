@@ -6,11 +6,13 @@
   @if (products.product(); as product) {
     <header class="page-heading">
       <h1><mat-icon aria-hidden="true">medication</mat-icon>{{ product.name }}</h1>
-      <div class="actions">
-        <a mat-flat-button [routerLink]="batchLink('new')">
-          <mat-icon>add</mat-icon>{{ 'batches.add-button' | translate }}
-        </a>
-      </div>
+      @if (batches.canOperate()) {
+        <div class="actions">
+          <a mat-flat-button [routerLink]="batchLink('new')">
+            <mat-icon>add</mat-icon>{{ 'batches.add-button' | translate }}
+          </a>
+        </div>
+      }
     </header>
     <section class="summary-strip">
       <div><span>{{ 'product-form.code' | translate }}</span><strong>{{ product.code }}</strong></div>

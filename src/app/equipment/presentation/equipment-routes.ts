@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { Layout } from '../../shared/presentation/components/layout/layout';
+import { operatorGuard } from '../../iam/infrastructure/role-guards';
 
 /**
  * Lazy loads the equipment list view component.
@@ -90,10 +91,10 @@ const equipmentRoutes: Routes = [
       { path: 'register-equipment', loadComponent: equipmentForm },
       { path: 'register-device', loadComponent: deviceForm },
       { path: 'equipment-detail/:id', loadComponent: equipmentDetail },
-      { path: 'bpm-config-form/:id', loadComponent: bpmConfigForm },
+      { path: 'bpm-config-form/:id', loadComponent: bpmConfigForm, canActivate: [operatorGuard] },
       // The maintenance history is shown in the equipment detail.
       { path: 'maintenance-history/:id', redirectTo: 'equipment-detail/:id' },
-      { path: 'maintenance-form/:id', loadComponent: maintenanceForm },
+      { path: 'maintenance-form/:id', loadComponent: maintenanceForm, canActivate: [operatorGuard] },
       { path: '', redirectTo: 'equipment-list', pathMatch: 'full' },
     ],
   },

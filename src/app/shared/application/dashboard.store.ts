@@ -42,6 +42,8 @@ export class DashboardStore {
   readonly measurements = resource<Measurement[]>();
   readonly subscription = resource<Subscription | null>();
   readonly plans = resource<SubscriptionPlan[]>();
+  /** The subscription belongs to quality managers; staff members do not see it. */
+  readonly managesSubscription = this.iam.canManageQuality;
   readonly selectedEquipmentId = signal<number | null>(null);
   /** IoT devices of the laboratory, the only equipment with telemetry. */
   readonly devices = computed(() => (this.equipment().data ?? []).filter(item => item.isIotDevice));
@@ -97,8 +99,10 @@ export class DashboardStore {
       this.selectEquipment(devices.find(item => item.id === preferredEquipment)?.id ?? devices[0]?.id ?? null);
       this.loadAlerts();
     }, () => this.alerts.set({ status: 'error', data: null }));
-    this.loadSubscription();
-    this.loadPlans();
+    if (this.managesSubscription()) {
+      this.loadSubscription();
+      this.loadPlans();
+    }
   }
   loadSubscription(): void {
     const id = this.iam.requireLaboratoryId();

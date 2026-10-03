@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatIconModule } from '@angular/material/icon';
@@ -21,7 +21,7 @@ import { Toolbar } from '../../../../shared/presentation/components/toolbar/tool
 @Component({
   selector: 'app-sign-in',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, TranslatePipe, MatProgressSpinnerModule, MatIconModule, Toolbar],
+  imports: [CommonModule, ReactiveFormsModule, TranslatePipe, MatProgressSpinnerModule, MatIconModule, RouterLink, Toolbar],
   templateUrl: './sign-in-form.html',
   styleUrls: ['./sign-in-form.css'],
 })
@@ -77,15 +77,6 @@ export class SignInForm {
    */
   protected togglePasswordVisibility(): void {
     this.hidePassword = !this.hidePassword;
-  }
-
-  /**
-   * Navigates to the sign-up view for a selected role.
-   *
-   * @param role - Registration role mode to pass through query parameters
-   */
-  protected performSignUp(role: string): void {
-    this.router.navigate(['/iam/sign-up'], { queryParams: { role } }).then();
   }
 
   /**

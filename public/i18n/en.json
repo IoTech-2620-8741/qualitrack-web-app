@@ -105,7 +105,9 @@
     "system": "System",
     "batch-telemetry-unavailable": "Batch telemetry requires an equipment association that is not available yet.",
     "no-status": "No equipment status has been recorded.",
-    "no-plans": "No subscription plans are available yet."
+    "no-plans": "No subscription plans are available yet.",
+    "subscription-paused-title": "Laboratory access paused",
+    "subscription-paused": "Your laboratory does not have an active subscription. Ask your quality manager to renew it and try again."
   },
   "home": {
     "title": "We care about accuracy, we ensure quality.",
@@ -120,7 +122,8 @@
     "auth": {
       "already-have-account": "Already have an account?",
       "sign-in": "Sign In",
-      "or-create-account": "Or create an account"
+      "or-create-account": "Or create an account",
+      "staff-hint": "Operators and auditors sign in with the account their quality manager created for them."
     },
     "sign-in": {
       "title": "Sign In",
@@ -155,8 +158,7 @@
       "show-password": "Show password",
       "hide-password": "Hide password",
       "roles": {
-        "manager": "QA Manager / Supervisor",
-        "operator": "Lab Operator"
+        "manager": "QA Manager / Supervisor"
       },
       "errors": {
         "username-required": "Username is required",
@@ -166,6 +168,23 @@
         "password-strength": "Password must contain letters and numbers",
         "confirm-password-required": "Confirm password is required",
         "password-mismatch": "Passwords do not match"
+      }
+    },
+    "change-password": {
+      "title": "Change your password",
+      "subtitle": "Your account was created with a temporary password. Choose your own password to continue.",
+      "current": "Temporary or current password",
+      "new": "New password",
+      "confirm": "Confirm the new password",
+      "button": "Change password",
+      "errors": {
+        "required": "This field is required",
+        "length": "Use between 8 and 72 characters",
+        "strength": "Use letters and numbers",
+        "same-password": "The new password must be different from the current one",
+        "mismatch": "The passwords do not match",
+        "current-password": "The current password is not correct.",
+        "unavailable": "The password could not be changed. Please try again."
       }
     }
   },
@@ -810,14 +829,14 @@
     "title": "Technical Activity Record",
     "subtitle": "Complete the details of the intervention performed",
     "placeholders": {
-      "technician": "Technician name",
       "description": "Describe the maintenance activity"
     },
     "errors": {
-      "technician-minlength": "The technician name must have at least 3 characters",
       "description-maxlength": "The description cannot exceed 1000 characters",
       "future-date": "The maintenance date cannot be in the future"
-    }
+    },
+    "technician-hint": "Operators can only register the maintenance they performed.",
+    "no-technicians": "There is no active operator to choose. Register the staff of the laboratory first."
   },
   "equipment-status": {
     "operational": "Operational",
@@ -850,17 +869,42 @@
     "title": "Personnel Management",
     "register": "Add Staff",
     "name": "Full Name",
-    "role": "Position / Role",
+    "role": "Job title",
     "email": "Corporate Email",
     "status": "Employment Status",
-    "empty": "No staff members registered yet."
+    "empty": "No staff members registered yet.",
+    "access-role": "Access",
+    "activity-hint": "Select a name to see what that person has registered.",
+    "deactivate": "Deactivate",
+    "deactivate-confirm": "Deactivate {{name}}? They will no longer be able to sign in.",
+    "deactivate-error": "The staff member could not be deactivated. Please try again."
   },
   "staff-form": {
     "title": "Register Staff Member",
-    "subtitle": "Create a staff profile and assign its operational role.",
+    "subtitle": "The platform creates their account with the e-mail as username and sends them the credentials.",
     "fullName": "Full Name",
-    "role": "Assigned Role",
-    "email": "Email Address"
+    "role": "Job title",
+    "email": "Corporate e-mail",
+    "role-placeholder": "For example: Production operator",
+    "email-hint": "It will be their username.",
+    "access-role": "What can they do?",
+    "register-another": "Register another",
+    "back-to-list": "Back to staff",
+    "credentials": {
+      "registered": "{{name}} was registered.",
+      "emailed": "The username and a temporary password were sent to {{email}}.",
+      "shown-once": "The e-mail could not be sent. Give these credentials to the staff member: the password will not be shown again.",
+      "username": "Username",
+      "temporary-password": "Temporary password",
+      "copy": "Copy",
+      "first-sign-in": "They will be asked to choose their own password the first time they sign in."
+    },
+    "errors": {
+      "email-taken": "There is already an account with this e-mail.",
+      "invalid": "Review the data of the staff member.",
+      "forbidden": "Only quality managers register staff.",
+      "unavailable": "The staff member could not be registered. Please try again."
+    }
   },
   "product-catalog": {
     "title": "Pharmaceutical products",
@@ -1193,7 +1237,11 @@
     "no-equipment": "No equipment associated with this batch.",
     "no-staff": "No staff associated with this batch.",
     "equipment-saved": "Equipment associated with the batch.",
-    "staff-saved": "Staff member associated with the batch."
+    "staff-saved": "Staff member associated with the batch.",
+    "staff-hint": "Active operators of the laboratory.",
+    "assign-myself": "Assign myself",
+    "already-joined": "You already take part in this batch.",
+    "no-staff-record": "Your account is not linked to an active operator of the laboratory."
   },
   "batch-traceability": {
     "title": "Traceability summary",
@@ -1244,6 +1292,57 @@
     "hints": {
       "ENVIRONMENTAL_DEVICE": "Supervises the whole environment (space monitor); one per environment.",
       "CONTAINER_MONITOR": "Supervises a container where raw materials or products are kept."
+    }
+  },
+  "staff": {
+    "access-roles": {
+      "operator": "Operator",
+      "operator-hint": "Registers the operations assigned to them: maintenance, receipts, batches and usages.",
+      "auditor": "Auditor",
+      "auditor-hint": "Consults the records and reports without changing them."
+    },
+    "no-account": "No account",
+    "detail": {
+      "load-error": "The staff member could not be loaded.",
+      "activities": "Registered activities",
+      "last-activity": "Last activity",
+      "history": "Activity history",
+      "filter": "Type of record",
+      "all-activity": "All activity",
+      "no-activity": "This person has not registered any activity yet."
+    },
+    "activity": {
+      "entities": {
+        "batch": "Product batch",
+        "bpm_parameter_config": "BPM parameter limits",
+        "deviation_alert": "Deviation alert",
+        "environment": "Environment",
+        "equipment": "Equipment",
+        "equipment_telemetry_status": "Equipment telemetry status",
+        "laboratory": "Laboratory",
+        "maintenance_record": "Maintenance",
+        "notification_preference": "Notification preferences",
+        "pharmaceutical_product": "Product",
+        "raw_material": "Raw material",
+        "raw_material_batch": "Raw material receipt",
+        "raw_material_usage": "Raw material usage",
+        "staff_member": "Staff member",
+        "telemetry_anomaly": "Telemetry anomaly",
+        "telemetry_history_point": "Telemetry history",
+        "telemetry_measurement": "Telemetry measurement"
+      },
+      "actions": {
+        "create": "Created",
+        "update": "Updated",
+        "delete": "Deleted",
+        "release": "Released",
+        "reject": "Rejected",
+        "approve": "Approved",
+        "register": "Registered",
+        "remove": "Removed",
+        "export": "Exported",
+        "generate": "Generated"
+      }
     }
   }
 }

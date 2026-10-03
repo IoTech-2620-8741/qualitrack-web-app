@@ -65,6 +65,18 @@ export class IamStore {
     this.currentRoles().some((role) => ['ROLE_ADMIN', 'ROLE_QA_MANAGER'].includes(role)),
   );
 
+  /**
+   * Indicates whether the current user is an auditor without another role: the platform only lets
+   * them read, so the views hide the actions that register or change records.
+   */
+  readonly isAuditor = computed(() => {
+    const roles = this.currentRoles();
+    return roles.length > 0 && roles.every((role) => role === 'ROLE_AUDITOR');
+  });
+
+  /** Indicates whether the current user can register operational records (everyone but auditors). */
+  readonly canOperate = computed(() => this.isSignedIn() && !this.isAuditor());
+
   readonly currentUserInitials = computed(() => {
     const username = this.currentUsername();
 
@@ -157,6 +169,16 @@ export class IamStore {
         this.failRequest('onboarding.sign-up-error');
       },
     });
+  }
+
+  /**
+   * Replaces the password of the signed-in user. Staff members do it with the temporary password
+   * received when their quality manager registered them, before using the platform.
+   */
+  changePassword(currentPassword: string, newPassword: string): Observable<void> {
+    return this.iamApi.changePassword({ currentPassword, newPassword }).pipe(
+      tap(() => this.invalidateOnboarding()),
+    );
   }
 
   signOut(router: Router): void {

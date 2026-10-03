@@ -1,60 +1,46 @@
 import { BaseResource, BaseResponse } from '../../shared/infrastructure/base-response';
 
 /**
- * Resource representation of a staff member for API communication.
- *
- * @remarks
- * This interface belongs to the infrastructure layer and mirrors the backend
- * staff resource contract. It is converted into a StaffMember domain entity
- * by the corresponding assembler.
+ * Staff member returned by /laboratories/{laboratoryId}/staff.
  */
 export interface StaffMemberResource extends BaseResource {
-  /**
-   * The unique numeric identifier of the staff member.
-   */
   id: number;
 
-  /**
-   * The numeric identifier of the laboratory this staff member belongs to.
-   */
   laboratoryId: number;
 
-  /**
-   * The full legal name of the staff member.
-   */
   fullName: string;
 
-  /**
-   * The professional role assigned to the staff member.
-   */
   role: string;
 
-  /**
-   * The institutional email address of the staff member.
-   */
   email: string;
 
-  /**
-   * Indicates whether the staff member is active.
-   */
   active: boolean;
 
-  /**
-   * The ISO 8601 timestamp indicating when the staff member was created.
-   */
-  createdAt: string;
+  accessRole: 'OPERATOR' | 'AUDITOR' | null;
+
+  userId: number | null;
+}
+
+export interface StaffMembersResponse extends BaseResponse {
+  staffMembers: StaffMemberResource[];
 }
 
 /**
- * Response envelope for staff collection queries.
- *
- * @remarks
- * This response is used when the backend returns staff members inside a
- * collection wrapper.
+ * Credentials of the account created for a staff member.
  */
-export interface StaffMembersResponse extends BaseResponse {
-  /**
-   * Array of staff member resources returned by the API.
-   */
-  staffMembers: StaffMemberResource[];
+export interface StaffCredentialsResource {
+  username: string;
+
+  delivery: 'EMAIL' | 'SHOWN_ONCE';
+
+  temporaryPassword: string | null;
+}
+
+/**
+ * Body of 201 Created after registering a staff member.
+ */
+export interface RegisteredStaffResource {
+  staffMember: StaffMemberResource;
+
+  credentials: StaffCredentialsResource;
 }

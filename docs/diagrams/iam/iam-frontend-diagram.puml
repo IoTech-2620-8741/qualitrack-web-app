@@ -77,6 +77,13 @@ package "iam.application" {
     + loading
     + error
     + isLoadingUsers
+    + onboarding: Signal<OnboardingState | null>
+    + canManageQuality: Signal<boolean>
+    + isAuditor: Signal<boolean>
+    + canOperate: Signal<boolean>
+    + loadOnboarding(force?: boolean): Observable<OnboardingState>
+    + invalidateOnboarding(): void
+    + changePassword(currentPassword: string, newPassword: string): Observable<void>
     + recoverPassword(command: RecoverPasswordCommand, router: Router): void
     + signIn(command: SignInCommand, router: Router): void
     + signUp(command: SignUpCommand, router: Router): void
@@ -99,6 +106,26 @@ IamStore ..> SignUpRequest
 IamStore ..> RecoverPasswordRequest
 IamStore --> Router
 IamStore o-- User
+IamStore ..> OnboardingState
+note right of IamStore
+  isAuditor: every role of the account is ROLE_AUDITOR (read-only).
+  canOperate: signed in and not an auditor.
+end note
+
+package "iam.domain.model.onboarding" {
+  interface OnboardingState {
+    + userId: number
+    + laboratoryId: number | null
+    + subscriptionStatus: 'ACTIVE' | 'INACTIVE'
+    + nextStep: 'PASSWORD_CHANGE' | 'SUBSCRIPTION' | 'LABORATORY' | 'READY'
+  }
+  class onboardingDestination <<function>>
+}
+note bottom of onboardingDestination
+  PASSWORD_CHANGE -> /iam/change-password
+  inactive subscription -> /subscriptions/plans (quality managers)
+  or the onboarding view with "access paused" (staff members)
+end note
 
 package "iam.infrastructure" {
   class IamApi {
@@ -108,7 +135,20 @@ package "iam.infrastructure" {
     + signIn(request: SignInRequest): Observable<SignInResource>
     + signUp(request: SignUpRequest): Observable<SignUpResource>
     + recoverPassword(request: RecoverPasswordRequest): Observable<RecoverPasswordResource>
+    + getOnboarding(): Observable<OnboardingState>
+    + changePassword(request: ChangePasswordRequest): Observable<void>
   }
+  interface ChangePasswordRequest {
+    + currentPassword: string
+    + newPassword: string
+  }
+  class onboardingGuard <<CanActivateFn>>
+  class laboratorySetupGuard <<CanActivateFn>>
+  class subscriptionGuard <<CanActivateFn>>
+  class passwordChangeGuard <<CanActivateFn>>
+  class qualityManagerGuard <<CanActivateFn>>
+  class operatorGuard <<CanActivateFn>>
+  class staffActivityGuard <<CanActivateFn>>
 
   class SignInApiEndpoint {
     - http: HttpClient
@@ -126,7 +166,20 @@ package "iam.infrastructure" {
     - http: HttpClient
     - assembler: RecoverPasswordAssembler
     + recoverPassword(request: RecoverPasswordRequest): Observable<RecoverPasswordResource>
+    + getOnboarding(): Observable<OnboardingState>
+    + changePassword(request: ChangePasswordRequest): Observable<void>
   }
+  interface ChangePasswordRequest {
+    + currentPassword: string
+    + newPassword: string
+  }
+  class onboardingGuard <<CanActivateFn>>
+  class laboratorySetupGuard <<CanActivateFn>>
+  class subscriptionGuard <<CanActivateFn>>
+  class passwordChangeGuard <<CanActivateFn>>
+  class qualityManagerGuard <<CanActivateFn>>
+  class operatorGuard <<CanActivateFn>>
+  class staffActivityGuard <<CanActivateFn>>
 
   class SignInAssembler {
     + toResourceFromResponse(response: SignInResponse): SignInResource
@@ -227,6 +280,17 @@ RecoverPasswordResponse --|> RecoverPasswordResource
 
 authenticationInterceptor ..|> HttpInterceptorFn
 authenticationInterceptor --> IamStore
+IamApi ..> ChangePasswordRequest
+onboardingGuard --> IamStore
+passwordChangeGuard --> IamStore
+qualityManagerGuard --> IamStore
+operatorGuard --> IamStore
+staffActivityGuard --> IamStore
+note bottom of qualityManagerGuard
+  qualityManagerGuard: subscriptions, billing and staff registration.
+  operatorGuard: maintenance, BPM limits and new batches (not auditors).
+  staffActivityGuard: staff activity history (quality managers and auditors).
+end note
 
 package "iam.presentation.routes" {
   class iamRoutes <<Routes>>
@@ -235,6 +299,34 @@ package "iam.presentation.routes" {
 iamRoutes ..|> Routes
 iamRoutes ..> SignInForm
 iamRoutes ..> SignUpForm
+iamRoutes ..> Onboarding
+iamRoutes ..> ChangePasswordForm
+note right of iamRoutes
+  /iam/onboarding, /iam/sign-in, /iam/sign-up (quality managers only),
+  /iam/change-password (first sign in of a staff account)
+end note
+
+package "iam.presentation.views.onboarding" {
+  class Onboarding {
+    # loading: Signal<boolean>
+    # subscriptionPaused: Signal<boolean>
+    # resolve(): void
+    # signOut(): void
+  }
+}
+
+package "iam.presentation.views.change-password-form" {
+  class ChangePasswordForm {
+    # form: FormGroup
+    # saving: Signal<boolean>
+    # error: Signal<string | null>
+    # submit(): void
+    # signOut(): void
+  }
+}
+
+Onboarding --> IamStore
+ChangePasswordForm --> IamStore
 
 package "iam.presentation.components.authentication-section" {
   class AuthenticationSection {
@@ -251,7 +343,6 @@ package "iam.presentation.views.sign-in-form" {
     # hidePassword: boolean
     # onSubmit(): void
     # togglePasswordVisibility(): void
-    # performSignUp(role: string): void
     # getUsernameErrorKey(): string
     # getPasswordErrorKey(): string
     - markFormGroupTouched(formGroup: FormGroup): void
@@ -269,12 +360,9 @@ SignInForm ..> Toolbar
 package "iam.presentation.views.sign-up-form" {
   class SignUpForm {
     - router: Router
-    - route: ActivatedRoute
     # store: IamStore
-    # role: string
-    # selectedRole: string
-    # selectedRoleKey: 'manager' | 'operator'
-    - defaultLaboratoryId: number
+    # selectedRole: 'ROLE_QA_MANAGER'
+    # selectedRoleKey: 'manager'
     # form: FormGroup
     # hidePassword: boolean
     # hideConfirmPassword: boolean
@@ -292,11 +380,14 @@ package "iam.presentation.views.sign-up-form" {
 
 SignUpForm --> IamStore
 SignUpForm --> Router
-SignUpForm --> ActivatedRoute
 SignUpForm --> FormGroup
 SignUpForm --> FormControl
 SignUpForm ..> Validators
 SignUpForm ..> SignUpCommand
 SignUpForm ..> Toolbar
+note bottom of SignUpForm
+  Public registration creates quality manager accounts only; operators and
+  auditors receive the account their quality manager creates.
+end note
 
 @enduml

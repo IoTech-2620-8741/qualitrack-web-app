@@ -75,7 +75,8 @@ package "shared" {
       -router: Router
       #sidenavMode: 'side' | 'over'
       #sidenavOpened: boolean
-      #options: NavigationOption[]
+      -options: NavigationOption[]
+      #visibleOptions: Signal<NavigationOption[]>
       #navigateTo(link: string): void
       #isActive(link: string): boolean
     }
@@ -84,13 +85,19 @@ package "shared" {
       +label: string
       +icon: string
       +link: string
+      +qualityOnly?: boolean
       +children?: NavigationChild[]
     }
 
     class NavigationChild <<type>> {
       +label: string
       +link: string
+      +qualityOnly?: boolean
     }
+    note bottom of NavigationChild
+      Entries marked qualityOnly (subscription, equipment and staff registration)
+      are only listed for quality managers.
+    end note
   }
 
   package "presentation.views" {

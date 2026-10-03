@@ -35,7 +35,7 @@ export class BatchParticipants implements OnInit {
   protected readonly store = inject(BatchStore);
   private readonly equipmentApi = inject(EquipmentApi);
   private readonly laboratoryApi = inject(LaboratoryApi);
-  private readonly iam = inject(IamStore);
+  protected readonly iam = inject(IamStore);
   protected readonly equipment = signal<Equipment[]>([]);
   protected readonly staff = signal<StaffMember[]>([]);
   protected readonly loadError = signal<string | null>(null);
@@ -49,11 +49,21 @@ export class BatchParticipants implements OnInit {
   /** Active staff members not associated with the batch yet. */
   protected readonly availableStaff = computed(() => {
     const joined = new Set((this.store.traceability()?.staff ?? []).map((participation) => participation.staffId));
-    return this.staff().filter((member) => member.active && !joined.has(member.id));
+    return this.staff().filter((member) => member.assignable && !joined.has(member.id));
   });
+  /** Staff record of the signed-in operator, who can only assign themselves to the batch. */
+  protected readonly ownStaffMember = computed(() =>
+    this.staff().find((member) => member.userId === this.iam.currentUserId()) ?? null);
+  /** Whether the signed-in operator already takes part in the batch. */
+  protected readonly ownParticipation = computed(() => {
+    const member = this.ownStaffMember();
+    return member !== null && (this.store.traceability()?.staff ?? []).some((item) => item.staffId === member.id);
+  });
+  /** Forms are only shown on open batches and to users who register operations (not auditors). */
+  protected readonly editable = computed(() => this.open() && this.iam.canOperate());
 
   async ngOnInit(): Promise<void> {
-    if (!this.open()) return;
+    if (!this.editable()) return;
     const laboratoryId = this.iam.requireLaboratoryId();
     try {
       const [equipment, staff] = await Promise.all([
@@ -75,5 +85,9 @@ export class BatchParticipants implements OnInit {
   protected async addStaff(): Promise<void> {
     if (this.staffId === null) return;
     if (await this.store.registerStaff(this.path(), this.batchId(), this.staffId)) this.staffId = null;
+  }
+
+  protected async assignMyself(member: StaffMember): Promise<void> {
+    await this.store.registerStaff(this.path(), this.batchId(), member.id);
   }
 }

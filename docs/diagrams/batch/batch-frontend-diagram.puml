@@ -231,6 +231,11 @@ RawMaterialUsageComponent --> EnvironmentSelector
 BatchParticipants --> BatchStore
 BatchParticipants --> EquipmentApi
 BatchParticipants --> LaboratoryApi
+BatchParticipants --> IamStore
+note bottom of BatchParticipants
+  Quality managers add any active operator; an operator can only assign themselves.
+  Auditors only consult the batch (no usage or participation forms).
+end note
 BatchTraceabilityView --> BatchStore
 BatchRedirect --> BatchApi
 BatchForm ..> localIsoDate

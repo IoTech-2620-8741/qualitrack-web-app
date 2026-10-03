@@ -49,20 +49,25 @@
 
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>{{ 'maintenance-history.fields.technician' | translate }}</mat-label>
-            <input
-              matInput
-              formControlName="technicianName"
-              [placeholder]="'maintenance-form.placeholders.technician' | translate">
+            <mat-select formControlName="technicianStaffId">
+              @for (member of technicians(); track member.id) {
+                <mat-option [value]="member.id">{{ member.fullName }} · {{ member.role }}</mat-option>
+              }
+            </mat-select>
             <mat-icon matSuffix>person_outline</mat-icon>
+            <mat-hint>{{ 'maintenance-form.technician-hint' | translate }}</mat-hint>
 
-            @if (form.get('technicianName')?.hasError('required')) {
+            @if (form.get('technicianStaffId')?.hasError('required')) {
               <mat-error>{{ 'common.required' | translate }}</mat-error>
             }
-
-            @if (form.get('technicianName')?.hasError('minlength')) {
-              <mat-error>{{ 'maintenance-form.errors.technician-minlength' | translate }}</mat-error>
-            }
           </mat-form-field>
+
+          @if (staffLoaded() && technicians().length === 0) {
+            <p class="error-msg full-width" role="alert">
+              <mat-icon>person_off</mat-icon>
+              <span>{{ 'maintenance-form.no-technicians' | translate }}</span>
+            </p>
+          }
 
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>{{ 'maintenance-history.fields.description' | translate }}</mat-label>

@@ -1,29 +1,48 @@
+import { StaffAccessRole, StaffMember } from './staff-member.entity';
+
 /**
- * Command for registering a new staff member.
+ * Command for registering a new staff member, who receives an account to sign in.
  *
  * @remarks
- * In CQRS, this command represents the user's intent to create a staff member
- * under a specific laboratory. It carries only the data required by the
- * registration use case.
+ * In CQRS, this command represents the quality manager's intent to create a staff member
+ * under their laboratory. The e-mail becomes the username of the account.
  */
 export interface RegisterStaffCommand {
-  /**
-   * The numeric identifier of the laboratory where the staff member will be registered.
-   */
-  laboratoryId: number;
-
   /**
    * The full legal name of the staff member.
    */
   fullName: string;
 
   /**
-   * The professional role assigned to the staff member.
+   * The job title of the staff member in the laboratory.
    */
   role: string;
 
   /**
-   * The institutional email address of the staff member.
+   * The corporate email address; the credentials are sent to it.
    */
   email: string;
+
+  /**
+   * What the staff member can do with their account.
+   */
+  accessRole: StaffAccessRole;
+}
+
+/**
+ * How the staff member receives the credentials of their account: by e-mail, or shown once to
+ * the quality manager when they could not be e-mailed.
+ */
+export interface StaffCredentials {
+  username: string;
+  delivery: 'EMAIL' | 'SHOWN_ONCE';
+  temporaryPassword: string | null;
+}
+
+/**
+ * Staff member registered with the delivery of their credentials.
+ */
+export interface RegisteredStaff {
+  staffMember: StaffMember;
+  credentials: StaffCredentials;
 }
