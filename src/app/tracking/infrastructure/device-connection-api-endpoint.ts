@@ -21,7 +21,7 @@ export class DeviceConnectionApiEndpoint extends BaseApiEndpoint<
 
   getConnection(laboratoryId: number, environmentId: number, deviceId: number): Observable<DeviceConnection> {
     const url = `${this.endpointUrl}/${laboratoryId}${environment.laboratoryEnvironmentsEndpointPath}/${environmentId}`
-      + `${environment.devicesEndpointPath}/${deviceId}${environment.equipmentTelemetryStatusEndpointPath}`;
+      + `${environment.devicesEndpointPath}/${deviceId}${environment.trackingTelemetryStatusEndpointPath}`;
     return this.http.get<DeviceConnectionResource>(url).pipe(
       map((resource) => this.assembler.toEntityFromResource(resource)),
       catchError(this.handleError(`Failed to fetch the connection status of device ${deviceId}`)),
