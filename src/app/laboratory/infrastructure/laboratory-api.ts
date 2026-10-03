@@ -7,19 +7,16 @@ import { MessageResource } from '../../shared/infrastructure/message-response';
 
 import { Laboratory } from '../domain/model/laboratory.entity';
 import { StaffMember } from '../domain/model/staff-member.entity';
-import { PharmaceuticalProduct } from '../domain/model/pharmaceutical-product.entity';
 import { RawMaterial } from '../domain/model/raw-material.entity';
 import { Environment } from '../domain/model/environment.entity';
 
 import { LaboratoryApiEndpoint } from './laboratory-api-endpoint';
 import { StaffApiEndpoint } from './staff-api-endpoint';
-import { ProductApiEndpoint } from './product-api-endpoint';
 import { RawMaterialApiEndpoint } from './raw-material-api-endpoint';
 import { EnvironmentApiEndpoint } from './environment-api-endpoint';
 
 import { CreateLaboratoryRequest, UpdateLaboratoryRequest } from './laboratory.request';
 import { RegisterStaffRequest } from './staff.request';
-import { CreateProductRequest } from './product.request';
 import {
   AssignEnvironmentUsageRequest,
   CreateEnvironmentRequest,
@@ -48,11 +45,6 @@ export class LaboratoryApi extends BaseApi {
   private readonly staffEndpoint: StaffApiEndpoint;
 
   /**
-   * Endpoint client for pharmaceutical product operations.
-   */
-  private readonly productsEndpoint: ProductApiEndpoint;
-
-  /**
    * Endpoint client for raw material inventory operations.
    */
   private readonly materialsEndpoint: RawMaterialApiEndpoint;
@@ -71,7 +63,6 @@ export class LaboratoryApi extends BaseApi {
     super();
     this.laboratoryEndpoint = new LaboratoryApiEndpoint(http);
     this.staffEndpoint = new StaffApiEndpoint(http);
-    this.productsEndpoint = new ProductApiEndpoint(http);
     this.materialsEndpoint = new RawMaterialApiEndpoint(http);
     this.environmentsEndpoint = new EnvironmentApiEndpoint(http);
   }
@@ -139,28 +130,7 @@ export class LaboratoryApi extends BaseApi {
   }
 
   /**
-   * Retrieves all pharmaceutical products registered under a laboratory.
-   *
-   * @param laboratoryId - Numeric identifier of the laboratory
-   * @returns Observable stream emitting PharmaceuticalProduct domain entities
-   */
-  getProducts(laboratoryId: number): Observable<PharmaceuticalProduct[]> {
-    return this.productsEndpoint.getProductsByLaboratoryId(laboratoryId);
-  }
-
-  /**
-   * Creates a new pharmaceutical product under a laboratory.
-   *
-   * @param laboratoryId - Numeric identifier of the laboratory
-   * @param request - Request payload containing product creation data
-   * @returns Observable stream emitting a message response
-   */
-  createProduct(laboratoryId: number, request: CreateProductRequest): Observable<MessageResource> {
-    return this.productsEndpoint.createProduct(laboratoryId, request);
-  }
-
-  /**
-   * Retrieves all raw materials registered under a laboratory.
+   * Retrieves the raw materials registered before Inventory Management existed (read-only).
    *
    * @param laboratoryId - Numeric identifier of the laboratory
    * @returns Observable stream emitting RawMaterial domain entities

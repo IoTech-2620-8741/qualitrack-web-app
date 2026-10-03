@@ -2,140 +2,94 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { BaseApi } from '../../shared/infrastructure/base-api';
-
 import { Batch } from '../domain/model/batch.entity';
+import { BatchTraceability } from '../domain/model/batch-traceability.entity';
+import { EquipmentUsage, StaffParticipation } from '../domain/model/batch-participation.entity';
+import { PharmaceuticalProduct } from '../domain/model/pharmaceutical-product.entity';
 import { RawMaterialUsage } from '../domain/model/raw-material-usage.entity';
-
-import { BatchApiEndpoint } from './batch-api-endpoint';
+import { BatchApiEndpoint, BatchPath } from './batch-api-endpoint';
+import { ProductApiEndpoint } from './product-api-endpoint';
 import { RawMaterialUsageApiEndpoint } from './raw-material-usage-api-endpoint';
-
-import { CreateBatchRequest, ReleaseBatchRequest, RejectBatchRequest } from './batch.request';
-import { LinkRawMaterialRequest } from './raw-material-usage.request';
+import { CreateBatchRequest, RejectBatchRequest, ReleaseBatchRequest } from './batch.request';
+import { CreateProductRequest } from './product.request';
+import { RegisterRawMaterialUsageRequest } from './raw-material-usage.request';
 
 /**
- * HTTP API facade for Batch and Raw Material Usage operations.
- *
- * @remarks
- * In a Domain-Driven Design (DDD) architecture, this service belongs to the
- * infrastructure layer and acts as a facade over HTTP endpoint clients.
- *
- * It exposes a clean API to the application layer while delegating concrete
- * HTTP communication and resource-to-entity transformation to specialized
- * endpoint classes.
- *
- * This facade coordinates:
- * - Batch lifecycle operations
- * - Raw material usage traceability operations
- *
- * @example
- * ```typescript
- * this.batchApi.getBatches(1).subscribe((batches) => {
- *   console.log(batches);
- * });
- * ```
+ * Facade of the Product Batch Management API: products, batches, manufacturing records and traceability.
  */
 @Injectable({ providedIn: 'root' })
 export class BatchApi extends BaseApi {
-  getMaterialHistory(rawMaterialId: number): Observable<RawMaterialUsage[]> {
-    return this._usageEndpoint.getUsageByMaterial(rawMaterialId);
-  }
-  /**
-   * Product batches that consumed lots of an Inventory raw material kept in an environment (TS79).
-   */
-  getRawMaterialUsages(laboratoryId: number, environmentId: number, rawMaterialId: number): Observable<RawMaterialUsage[]> {
-    return this._usageEndpoint.getUsageByEnvironmentMaterial(laboratoryId, environmentId, rawMaterialId);
-  }
-  /**
-   * Endpoint client responsible for batch lifecycle operations.
-   */
-  private readonly _batchEndpoint: BatchApiEndpoint;
+  private readonly batchEndpoint: BatchApiEndpoint;
+  private readonly productEndpoint: ProductApiEndpoint;
+  private readonly usageEndpoint: RawMaterialUsageApiEndpoint;
 
-  /**
-   * Endpoint client responsible for raw material usage operations.
-   */
-  private readonly _usageEndpoint: RawMaterialUsageApiEndpoint;
-
-  /**
-   * Creates a new BatchApi facade.
-   *
-   * @param http - Angular HttpClient used by endpoint clients to perform HTTP requests
-   */
   constructor(http: HttpClient) {
     super();
-    this._batchEndpoint = new BatchApiEndpoint(http);
-    this._usageEndpoint = new RawMaterialUsageApiEndpoint(http);
+    this.batchEndpoint = new BatchApiEndpoint(http);
+    this.productEndpoint = new ProductApiEndpoint(http);
+    this.usageEndpoint = new RawMaterialUsageApiEndpoint(http);
   }
 
-  /**
-   * Retrieves a single production batch by its numeric identifier.
-   *
-   * @param batchId - The unique numeric identifier of the batch
-   * @returns Observable stream emitting the matching Batch domain entity
-   */
-  getBatchById(batchId: number): Observable<Batch> {
-    return this._batchEndpoint.getBatchById(batchId);
+  getProducts(laboratoryId: number, environmentId: number): Observable<PharmaceuticalProduct[]> {
+    return this.productEndpoint.getProducts(laboratoryId, environmentId);
   }
 
-  /**
-   * Retrieves all production batches associated with a laboratory.
-   *
-   * @param labId - The unique numeric identifier of the laboratory
-   * @returns Observable stream emitting an array of Batch domain entities
-   */
-  getBatches(labId: number): Observable<Batch[]> {
-    return this._batchEndpoint.getBatchesByLab(labId);
+  getProduct(laboratoryId: number, environmentId: number, productId: number): Observable<PharmaceuticalProduct> {
+    return this.productEndpoint.getProduct(laboratoryId, environmentId, productId);
   }
 
-  /**
-   * Registers a new production batch.
-   *
-   * @param request - Request payload containing the batch creation data
-   * @returns Observable stream emitting the created Batch domain entity
-   */
-  createBatch(request: CreateBatchRequest): Observable<Batch> {
-    return this._batchEndpoint.createBatch(request);
+  createProduct(laboratoryId: number, environmentId: number, request: CreateProductRequest): Observable<PharmaceuticalProduct> {
+    return this.productEndpoint.createProduct(laboratoryId, environmentId, request);
   }
 
-  /**
-   * Releases a production batch after successful quality control.
-   *
-   * @param batchId - The unique numeric identifier of the batch to release
-   * @param request - Request payload containing release date and quality notes
-   * @returns Observable stream emitting the updated Batch domain entity
-   */
-  releaseBatch(batchId: number, request: ReleaseBatchRequest): Observable<Batch> {
-    return this._batchEndpoint.releaseBatch(batchId, request);
+  /** Batches of every product of the laboratory, used by lists and dashboards. */
+  getBatches(laboratoryId: number): Observable<Batch[]> {
+    return this.batchEndpoint.getLaboratoryBatches(laboratoryId);
   }
 
-  /**
-   * Rejects a production batch due to quality control or compliance failure.
-   *
-   * @param batchId - The unique numeric identifier of the batch to reject
-   * @param request - Request payload containing rejection date and reason
-   * @returns Observable stream emitting the updated Batch domain entity
-   */
-  rejectBatch(batchId: number, request: RejectBatchRequest): Observable<Batch> {
-    return this._batchEndpoint.rejectBatch(batchId, request);
+  getProductBatches(path: BatchPath): Observable<Batch[]> {
+    return this.batchEndpoint.getProductBatches(path);
   }
 
-  /**
-   * Retrieves the raw material usage records associated with a batch.
-   *
-   * @param batchId - The unique numeric identifier of the batch
-   * @returns Observable stream emitting an array of RawMaterialUsage domain entities
-   */
-  getRawMaterialUsage(batchId: number): Observable<RawMaterialUsage[]> {
-    return this._usageEndpoint.getUsageByBatch(batchId);
+  getBatch(path: BatchPath, batchId: number): Observable<Batch> {
+    return this.batchEndpoint.getBatch(path, batchId);
   }
 
-  /**
-   * Links a raw material consumption record to a production batch.
-   *
-   * @param batchId - The unique numeric identifier of the batch
-   * @param request - Request payload containing raw material and quantity data
-   * @returns Observable stream emitting the created RawMaterialUsage domain entity
-   */
-  linkRawMaterial(batchId: number, request: LinkRawMaterialRequest): Observable<RawMaterialUsage> {
-    return this._usageEndpoint.linkRawMaterial(batchId, request);
+  createBatch(path: BatchPath, request: CreateBatchRequest): Observable<Batch> {
+    return this.batchEndpoint.createBatch(path, request);
+  }
+
+  releaseBatch(path: BatchPath, batchId: number, request: ReleaseBatchRequest): Observable<unknown> {
+    return this.batchEndpoint.releaseBatch(path, batchId, request);
+  }
+
+  rejectBatch(path: BatchPath, batchId: number, request: RejectBatchRequest): Observable<unknown> {
+    return this.batchEndpoint.rejectBatch(path, batchId, request);
+  }
+
+  registerRawMaterialUsage(path: BatchPath, batchId: number, request: RegisterRawMaterialUsageRequest): Observable<RawMaterialUsage> {
+    return this.usageEndpoint.registerUsage(path, batchId, request);
+  }
+
+  registerEquipmentUsage(path: BatchPath, batchId: number, equipmentId: number): Observable<EquipmentUsage> {
+    return this.batchEndpoint.registerEquipmentUsage(path, batchId, { equipmentId });
+  }
+
+  registerStaffParticipation(path: BatchPath, batchId: number, staffId: number): Observable<StaffParticipation> {
+    return this.batchEndpoint.registerStaffParticipation(path, batchId, { staffId });
+  }
+
+  getTraceability(path: BatchPath, batchId: number): Observable<BatchTraceability> {
+    return this.batchEndpoint.getTraceability(path, batchId);
+  }
+
+  /** Batches that used a raw material registered before Inventory Management existed. */
+  getMaterialHistory(rawMaterialId: number): Observable<RawMaterialUsage[]> {
+    return this.usageEndpoint.getUsageByMaterial(rawMaterialId);
+  }
+
+  /** Product batches that consumed lots of an Inventory raw material kept in an environment (TS79). */
+  getRawMaterialUsages(laboratoryId: number, environmentId: number, rawMaterialId: number): Observable<RawMaterialUsage[]> {
+    return this.usageEndpoint.getUsageByEnvironmentMaterial(laboratoryId, environmentId, rawMaterialId);
   }
 }

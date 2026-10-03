@@ -3,56 +3,110 @@ import { Observable, catchError, map } from 'rxjs';
 import { BaseApiEndpoint } from '../../shared/infrastructure/base-api-endpoint';
 import { environment } from '../../../environments/environment';
 import { Batch } from '../domain/model/batch.entity';
-import { BatchResource, BatchesResponse } from './batch-response';
-import { BatchAssembler } from './batch-assembler';
-import { CreateBatchRequest, ReleaseBatchRequest, RejectBatchRequest } from './batch.request';
-
-const batchEndpointUrl = `${environment.serverBasePath}${environment.batchEndpointPath}`;
-
-export class BatchApiEndpoint extends BaseApiEndpoint<
-  Batch,
-  BatchResource,
+import { BatchTraceability } from '../domain/model/batch-traceability.entity';
+import { EquipmentUsage, StaffParticipation } from '../domain/model/batch-participation.entity';
+import {
   BatchesResponse,
-  BatchAssembler
-> {
+  BatchResource,
+  BatchTraceabilityResource,
+  EquipmentUsageResource,
+  StaffParticipationResource,
+} from './batch-response';
+import { BatchAssembler } from './batch-assembler';
+import {
+  CreateBatchRequest,
+  RegisterEquipmentUsageRequest,
+  RegisterStaffParticipationRequest,
+  RejectBatchRequest,
+  ReleaseBatchRequest,
+} from './batch.request';
+
+const laboratoriesEndpointUrl = `${environment.serverBasePath}${environment.laboratoryLabsEndpointPath}`;
+
+/** Path of a batch inside its laboratory, environment and product. */
+export interface BatchPath {
+  laboratoryId: number;
+  environmentId: number;
+  productId: number;
+}
+
+/**
+ * HTTP client of the product batches of a laboratory.
+ *
+ * @remarks
+ * Batches live under /laboratories/{laboratoryId}/environments/{environmentId}/products/{productId}/batches
+ * (TS63-TS72); the laboratory-wide list comes from /laboratories/{laboratoryId}/batches.
+ */
+export class BatchApiEndpoint extends BaseApiEndpoint<Batch, BatchResource, BatchesResponse, BatchAssembler> {
   constructor(http: HttpClient) {
-    super(http, batchEndpointUrl, new BatchAssembler());
+    super(http, laboratoriesEndpointUrl, new BatchAssembler());
   }
 
-  getBatchById(batchId: number): Observable<Batch> {
-    return this.http.get<BatchResource>(`${this.endpointUrl}/${batchId}`).pipe(
+  getLaboratoryBatches(laboratoryId: number): Observable<Batch[]> {
+    return this.http
+      .get<BatchResource[]>(`${this.endpointUrl}/${laboratoryId}${environment.productBatchesEndpointPath}`)
+      .pipe(
+        map((resources) => resources.map((resource) => this.assembler.toEntityFromResource(resource))),
+        catchError(this.handleError(`Failed to fetch batches for laboratory ${laboratoryId}`)),
+      );
+  }
+
+  getProductBatches(path: BatchPath): Observable<Batch[]> {
+    return this.http.get<BatchResource[]>(this.collection(path)).pipe(
+      map((resources) => resources.map((resource) => this.assembler.toEntityFromResource(resource))),
+      catchError(this.handleError(`Failed to fetch batches of product ${path.productId}`)),
+    );
+  }
+
+  getBatch(path: BatchPath, batchId: number): Observable<Batch> {
+    return this.http.get<BatchResource>(`${this.collection(path)}/${batchId}`).pipe(
       map((resource) => this.assembler.toEntityFromResource(resource)),
       catchError(this.handleError(`Failed to fetch batch ${batchId}`)),
     );
   }
 
-  getBatchesByLab(labId: number): Observable<Batch[]> {
-    return this.http.get<BatchResource[]>(`${this.endpointUrl}?labId=${labId}`).pipe(
-      map((resources) =>
-        resources.map((resource) => this.assembler.toEntityFromResource(resource)),
-      ),
-      catchError(this.handleError(`Failed to fetch batches for lab ${labId}`)),
+  createBatch(path: BatchPath, request: CreateBatchRequest): Observable<Batch> {
+    return this.http.post<BatchResource>(this.collection(path), request).pipe(
+      map((resource) => this.assembler.toEntityFromResource(resource)),
+      catchError(this.handleError('Failed to register batch')),
     );
   }
 
-  createBatch(request: CreateBatchRequest): Observable<Batch> {
-    return this.http.post<BatchResource>(this.endpointUrl, request).pipe(
-      map((resource) => this.assembler.toEntityFromResource(resource)),
-      catchError(this.handleError('Failed to create batch')),
-    );
+  releaseBatch(path: BatchPath, batchId: number, request: ReleaseBatchRequest): Observable<unknown> {
+    return this.http
+      .post(`${this.collection(path)}/${batchId}${environment.batchReleasesEndpointPath}`, request)
+      .pipe(catchError(this.handleError(`Failed to release batch ${batchId}`)));
   }
 
-  releaseBatch(batchId: number, request: ReleaseBatchRequest): Observable<Batch> {
-    return this.http.patch<BatchResource>(`${this.endpointUrl}/${batchId}`, request).pipe(
-      map((resource) => this.assembler.toEntityFromResource(resource)),
-      catchError(this.handleError(`Failed to release batch ${batchId}`)),
-    );
+  rejectBatch(path: BatchPath, batchId: number, request: RejectBatchRequest): Observable<unknown> {
+    return this.http
+      .post(`${this.collection(path)}/${batchId}${environment.batchRejectionsEndpointPath}`, request)
+      .pipe(catchError(this.handleError(`Failed to reject batch ${batchId}`)));
   }
 
-  rejectBatch(batchId: number, request: RejectBatchRequest): Observable<Batch> {
-    return this.http.patch<BatchResource>(`${this.endpointUrl}/${batchId}`, request).pipe(
-      map((resource) => this.assembler.toEntityFromResource(resource)),
-      catchError(this.handleError(`Failed to reject batch ${batchId}`)),
-    );
+  registerEquipmentUsage(path: BatchPath, batchId: number, request: RegisterEquipmentUsageRequest): Observable<EquipmentUsage> {
+    return this.http
+      .post<EquipmentUsageResource>(`${this.collection(path)}/${batchId}${environment.batchEquipmentUsagesEndpointPath}`, request)
+      .pipe(catchError(this.handleError('Failed to register equipment usage')));
+  }
+
+  registerStaffParticipation(path: BatchPath, batchId: number, request: RegisterStaffParticipationRequest): Observable<StaffParticipation> {
+    return this.http
+      .post<StaffParticipationResource>(`${this.collection(path)}/${batchId}${environment.batchStaffParticipationsEndpointPath}`, request)
+      .pipe(catchError(this.handleError('Failed to register staff participation')));
+  }
+
+  getTraceability(path: BatchPath, batchId: number): Observable<BatchTraceability> {
+    return this.http
+      .get<BatchTraceabilityResource>(`${this.collection(path)}/${batchId}${environment.batchTraceabilityEndpointPath}`)
+      .pipe(
+        map((resource) => this.assembler.toTraceabilityFromResource(resource)),
+        catchError(this.handleError(`Failed to fetch traceability of batch ${batchId}`)),
+      );
+  }
+
+  private collection(path: BatchPath): string {
+    return `${this.endpointUrl}/${path.laboratoryId}${environment.laboratoryEnvironmentsEndpointPath}/${path.environmentId}`
+      + `${environment.productsEndpointPath}/${path.productId}${environment.productBatchesEndpointPath}`;
   }
 }

@@ -5,12 +5,10 @@ import { LaboratoryApi } from '../infrastructure/laboratory-api';
 
 import { Laboratory } from '../domain/model/laboratory.entity';
 import { StaffMember } from '../domain/model/staff-member.entity';
-import { PharmaceuticalProduct } from '../domain/model/pharmaceutical-product.entity';
 
 import { CreateLaboratoryCommand } from '../domain/model/create-laboratory.command';
 import { UpdateLaboratoryCommand } from '../domain/model/update-laboratory.command';
 import { RegisterStaffCommand } from '../domain/model/register-staff.command';
-import { CreateProductCommand } from '../domain/model/create-product.command';
 
 /**
  * Application store for managing Laboratory bounded context state.
@@ -18,7 +16,8 @@ import { CreateProductCommand } from '../domain/model/create-product.command';
  * @remarks
  * This store coordinates the presentation layer with the Laboratory API facade.
  * It exposes readonly Angular signals for laboratory profile data, staff,
- * pharmaceutical products, raw materials, loading state, and user-facing messages.
+ * loading state, and user-facing messages. Products belong to Product Batch Management and
+ * raw materials to Inventory Management.
  */
 @Injectable({ providedIn: 'root' })
 export class LaboratoryStore {
@@ -31,11 +30,6 @@ export class LaboratoryStore {
    * Internal signal containing staff members for the current laboratory.
    */
   private readonly _staffList = signal<StaffMember[]>([]);
-
-  /**
-   * Internal signal containing pharmaceutical products for the current laboratory.
-   */
-  private readonly _products = signal<PharmaceuticalProduct[]>([]);
 
   /**
    * Internal signal indicating whether an API operation is running.
@@ -61,11 +55,6 @@ export class LaboratoryStore {
    * Readonly signal exposing staff members.
    */
   readonly staffList = this._staffList.asReadonly();
-
-  /**
-   * Readonly signal exposing pharmaceutical products.
-   */
-  readonly products = this._products.asReadonly();
 
   /**
    * Readonly signal exposing loading state.
@@ -232,52 +221,6 @@ export class LaboratoryStore {
         },
         error: (error: unknown) => {
           this.failOperation(error, 'Failed to deactivate staff');
-        },
-      });
-  }
-
-  /**
-   * Loads pharmaceutical products registered under a laboratory.
-   *
-   * @param laboratoryId - Numeric identifier of the laboratory
-   */
-  loadProducts(laboratoryId: number): void {
-    this.startOperation();
-
-    this.api
-      .getProducts(laboratoryId)
-      .pipe(retry(2))
-      .subscribe({
-        next: (products: PharmaceuticalProduct[]) => {
-          this._products.set(products);
-          this.finishOperation();
-        },
-        error: (error: unknown) => {
-          this.failOperation(error, 'Failed to load products');
-        },
-      });
-  }
-
-  /**
-   * Creates a new pharmaceutical product under a laboratory.
-   *
-   * @param laboratoryId - Numeric identifier of the laboratory
-   * @param command - Command containing product creation data
-   */
-  createProduct(laboratoryId: number, command: CreateProductCommand): void {
-    this.startOperation();
-
-    this.api
-      .createProduct(laboratoryId, { ...command, laboratoryId })
-      .pipe(retry(2))
-      .subscribe({
-        next: () => {
-          this._successMsg.set('Product created successfully');
-          this.finishOperation();
-          this.loadProducts(laboratoryId);
-        },
-        error: (error: unknown) => {
-          this.failOperation(error, 'Failed to create product');
         },
       });
   }

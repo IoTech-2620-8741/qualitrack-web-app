@@ -49,21 +49,6 @@ export class RawMaterialApiEndpoint extends BaseApiEndpoint<
     );
   }
 
-  /**
-   * Laboratory-wide read kept for product batch consumption and the dashboard
-   * until product batches expose raw material usages per environment.
-   */
-  getByLaboratory(lab: number) {
-    return this.http
-      .get<RawMaterialResource[]>(
-        `${this.endpointUrl}/${lab}${environment.inventoryEndpointPath}${environment.inventoryMaterialsEndpointPath}`,
-      )
-      .pipe(
-        map((resources) => resources.map((resource) => this.assembler.toEntityFromResource(resource))),
-        catchError(this.handleError('Failed to load inventory catalogue')),
-      );
-  }
-
   private collection(lab: number, environmentId: number) {
     return `${this.endpointUrl}/${lab}${environment.laboratoryEnvironmentsEndpointPath}/${environmentId}${environment.inventoryRawMaterialsEndpointPath}`;
   }

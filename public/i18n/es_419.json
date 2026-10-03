@@ -590,11 +590,19 @@
       "reject": "Rechazar Lote",
       "view": "Ver Trazabilidad",
       "view-detail": "Ver Detalle del Lote"
+    },
+    "all-statuses": "Todos los estados",
+    "no-environment": "Registrado antes de los ambientes; asígnale un ambiente para abrirlo.",
+    "errors": {
+      "connection": "No se pudo conectar con el servidor. Revisa tu conexión e inténtalo de nuevo.",
+      "forbidden": "Tu cuenta no puede realizar esta acción.",
+      "not-found": "No se encontró el lote o el producto en este laboratorio.",
+      "failed": "No se pudo completar la operación."
     }
   },
   "batch-form": {
     "title": "Crear Lote de Producción",
-    "subtitle": "Registra un nuevo ciclo de fabricación para un producto farmacéutico.",
+    "subtitle": "Registra una fabricación del producto. El lote empieza como pendiente.",
     "fields": {
       "product": "Producto Farmacéutico",
       "batch-number": "Número de Lote",
@@ -604,25 +612,29 @@
       "notes": "Notas BPM"
     },
     "placeholders": {
-      "batch-number": "LOT-2026-001",
+      "batch-number": "PB-2026-001",
       "notes": "Agrega observaciones de producción, calidad o instrucciones BPM."
     },
     "hints": {
-      "batch-number": "Formato: LOT-YYYY-NNN"
+      "batch-number": "Único en el laboratorio, por ejemplo PB-2026-001."
     },
     "errors": {
-      "batch-number-format": "El número de lote debe seguir el formato LOT-YYYY-NNN.",
       "quantity-min": "La cantidad debe ser mayor que 0."
-    }
+    },
+    "saved": "Lote registrado."
   },
   "batch-detail": {
     "title": "Detalle del Lote",
     "tabs": {
       "general": "Información General",
-      "materials": "Materias Primas Usadas"
+      "materials": "Materias Primas Usadas",
+      "participants": "Equipos y personal",
+      "traceability": "Trazabilidad"
     },
     "notes": "Notas BPM",
-    "no-notes": "No hay notas registradas para este lote."
+    "no-notes": "No hay notas registradas para este lote.",
+    "closed-on": "Cerrado el",
+    "closed-notice": "Este lote está cerrado: ya no se pueden agregar materias primas, equipos ni personal."
   },
   "batch-release": {
     "title": "Liberar Lote",
@@ -639,7 +651,10 @@
     },
     "actions": {
       "submit": "Liberar Lote"
-    }
+    },
+    "notice": "La liberación se firma con tu usuario y el lote ya no se podrá modificar.",
+    "quality-only": "Solo los responsables de calidad y los administradores pueden liberar o rechazar lotes.",
+    "saved": "Lote liberado y firmado."
   },
   "batch-reject": {
     "title": "Rechazar Lote",
@@ -656,7 +671,9 @@
     },
     "actions": {
       "submit": "Rechazar Lote"
-    }
+    },
+    "notice": "El motivo se conserva con el lote para la trazabilidad y las auditorías.",
+    "saved": "Lote rechazado."
   },
   "batch-usage": {
     "title": "Registrar Uso de Materia Prima",
@@ -666,7 +683,8 @@
       "raw-material": "Materia Prima",
       "stock": "Stock",
       "quantity-used": "Cantidad Usada",
-      "usage-date": "Fecha de Uso"
+      "usage-date": "Fecha de Uso",
+      "lot": "Lote"
     },
     "actions": {
       "add": "Agregar Material"
@@ -681,7 +699,10 @@
       "failed": "No se pudo confirmar el consumo. Revisa el historial antes de reintentarlo."
     },
     "available": "Disponible: {{stock}} {{unit}}",
-    "saved": "Consumo registrado y stock actualizado."
+    "saved": "Consumo registrado y stock actualizado.",
+    "notice": "Elige el ambiente donde se guarda la materia prima y un lote liberado. Inventario descuenta la cantidad de ese lote.",
+    "no-usable": "Esta materia prima no tiene lotes liberados con stock.",
+    "legacy": "Registrado antes de Inventario"
   },
   "equipment-list": {
     "title": "Catálogo de Equipos",
@@ -819,21 +840,25 @@
     "email": "Correo Electrónico"
   },
   "product-catalog": {
-    "title": "Catálogo de Productos Farmacéuticos",
+    "title": "Productos farmacéuticos",
     "add": "Nuevo Producto",
     "code": "SKU / Código",
     "name": "Nombre del Producto",
     "specifications": "Especificaciones BPM",
-    "empty": "No se encontraron productos farmacéuticos."
+    "empty": "No se encontraron productos farmacéuticos.",
+    "no-environments": "Aún no hay ambientes registrados",
+    "no-environments-notice": "Los productos se fabrican en un ambiente del laboratorio. Registra un ambiente de producción para empezar."
   },
   "product-form": {
-    "title": "Registrar Nuevo Producto / Lote",
-    "subtitle": "Define un producto farmacéutico y sus especificaciones de calidad BPM.",
+    "title": "Registrar producto",
+    "subtitle": "El producto se registra en el ambiente seleccionado. Su código y nombre deben ser únicos en el laboratorio.",
     "code": "Código Interno de Producto",
     "name": "Nombre Comercial",
     "description": "Descripción Terapéutica",
     "specifications": "Especificaciones de Calidad (BPM)",
-    "specifications-hint": "Incluye criterios de aceptación, límites y controles requeridos."
+    "specifications-hint": "Incluye criterios de aceptación, límites y controles requeridos.",
+    "description-hint": "Opcional.",
+    "quality-only": "Solo los responsables de calidad y los administradores pueden registrar productos."
   },
   "raw-material-list": {
     "title": "Inventario de Materias Primas",
@@ -1120,5 +1145,33 @@
     "RAW_MATERIAL_STORAGE": "Almacén de materias primas",
     "PRODUCT_STORAGE": "Almacén de productos",
     "OTHER": "Otro"
+  },
+  "product-detail": {
+    "no-batches": "No hay lotes registrados para este producto."
+  },
+  "batch-participants": {
+    "equipment-title": "Equipos utilizados",
+    "staff-title": "Personal que participó",
+    "equipment": "Equipo",
+    "staff": "Persona",
+    "role": "Rol",
+    "registered-at": "Registrado el",
+    "equipment-hint": "Solo se pueden usar equipos operativos.",
+    "add-equipment": "Agregar equipo",
+    "add-staff": "Agregar persona",
+    "no-equipment": "No hay equipos asociados a este lote.",
+    "no-staff": "No hay personal asociado a este lote.",
+    "equipment-saved": "Equipo asociado al lote.",
+    "staff-saved": "Persona asociada al lote."
+  },
+  "batch-traceability": {
+    "title": "Resumen de trazabilidad",
+    "raw-materials": "Materias primas",
+    "equipment": "Equipos",
+    "staff": "Personal",
+    "decision": "Decisión de calidad",
+    "released": "Liberado el {{date}} y firmado por el usuario #{{user}}.",
+    "rejected": "Rechazado el {{date}}:",
+    "pending": "El lote aún no ha sido liberado ni rechazado."
   }
 }

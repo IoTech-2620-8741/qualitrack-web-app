@@ -1,99 +1,59 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
 import { TranslateModule } from '@ngx-translate/core';
-
+import { localIsoDate } from '../../../../shared/presentation/local-date';
 import { BatchStore } from '../../../application/batch.store';
-import { RejectBatchCommand } from '../../../domain/model/reject-batch.command';
+import { IamStore } from '../../../../iam/application/iam.store';
+import { BatchPath } from '../../../infrastructure/batch-api-endpoint';
 
 /**
- * Component responsible for rejecting a production batch.
- *
- * @remarks
- * This standalone presentation component reads the batch identifier from the
- * route, collects rejection information through a reactive form, and sends a
- * {@link RejectBatchCommand} to the batch application store.
- *
- * The rejection operation records a BPM/GMP-relevant justification when a batch
- * fails quality control or cannot be released for distribution.
+ * Rejects a batch and keeps the reason (US82).
  */
 @Component({
   selector: 'app-batch-reject-form',
   standalone: true,
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatButtonModule,
-    MatIconModule,
-    TranslateModule,
-    RouterLink,
-  ],
+  imports: [ReactiveFormsModule, RouterLink, MatButtonModule, MatIconModule, MatInputModule, TranslateModule],
   templateUrl: './batch-reject-form.html',
-  styleUrl: './batch-reject-form.css',
+  styleUrl: '../../../../shared/presentation/styles/operations-page.css',
 })
 export class BatchRejectForm implements OnInit {
-  /**
-   * FormBuilder used to create and configure the reactive form.
-   */
-  private readonly fb = inject(FormBuilder);
-
-  /**
-   * Activated route used to read the batch identifier from the URL.
-   */
-  private readonly route = inject(ActivatedRoute);
-
-  /**
-   * Router used to return to the batch list after submitting the form.
-   */
-  private readonly router = inject(Router);
-
-  /**
-   * Store responsible for batch lifecycle operations.
-   */
   protected readonly store = inject(BatchStore);
+  private readonly iam = inject(IamStore);
+  private readonly fb = inject(FormBuilder);
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+  protected path!: BatchPath;
+  protected batchId = 0;
+  protected readonly form = this.fb.nonNullable.group({
+    rejectionDate: [localIsoDate(), Validators.required],
+    reason: ['', [Validators.required, Validators.minLength(15), Validators.maxLength(500)]],
+  });
 
-  /**
-   * Reactive form group for rejection data.
-   */
-  protected rejectForm!: FormGroup;
-
-  /**
-   * Unique numeric identifier of the batch being rejected.
-   */
-  protected batchId: number = 0;
-
-  /**
-   * Lifecycle hook that initializes the rejection form.
-   */
   ngOnInit(): void {
-    const idParam = this.route.snapshot.paramMap.get('id');
-    this.batchId = idParam ? Number(idParam) : 0;
-
-    this.rejectForm = this.fb.group({
-      rejectionDate: [new Date().toISOString().substring(0, 10), Validators.required],
-      reason: ['', [Validators.required, Validators.minLength(15)]],
-    });
+    const params = this.route.snapshot.paramMap;
+    this.path = {
+      laboratoryId: this.iam.requireLaboratoryId(),
+      environmentId: Number(params.get('environmentId')),
+      productId: Number(params.get('productId')),
+    };
+    this.batchId = Number(params.get('batchId'));
+    this.store.clearMessages();
   }
 
-  /**
-   * Submits the rejection command for the current batch.
-   */
-  protected onSubmit(): void {
-    if (this.rejectForm.invalid || !this.batchId) return;
+  protected get batchLink(): (string | number)[] {
+    return ['/batches/environments', this.path.environmentId, 'products', this.path.productId, 'batches', this.batchId];
+  }
 
-    const command: RejectBatchCommand = {
-      rejectionDate: this.rejectForm.value.rejectionDate,
-      reason: this.rejectForm.value.reason,
-    };
-
-    this.store.rejectBatch(this.batchId, command);
-    this.router.navigate(['/batches/batch-list']).then();
+  protected async submit(): Promise<void> {
+    this.form.markAllAsTouched();
+    if (this.form.invalid) return;
+    const value = this.form.getRawValue();
+    if (await this.store.rejectBatch(this.path, this.batchId, { rejectionDate: value.rejectionDate, reason: value.reason.trim() })) {
+      await this.router.navigate(this.batchLink);
+    }
   }
 }

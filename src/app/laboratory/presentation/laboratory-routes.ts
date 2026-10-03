@@ -13,11 +13,6 @@ const environmentForm = () =>
 const staffList = () => import('./views/staff-list/staff-list').then((m) => m.StaffList);
 const staffForm = () => import('./views/staff-form/staff-form').then((m) => m.StaffForm);
 
-const productCatalog = () =>
-  import('./views/product-catalog/product-catalog').then((m) => m.ProductCatalog);
-
-const productForm = () => import('./views/product-form/product-form').then((m) => m.ProductForm);
-
 export const laboratoryRoutes: Routes = [
   { path: 'create', loadComponent: labForm, canActivate: [laboratorySetupGuard] },
   { path: 'lab-form', redirectTo: 'create', pathMatch: 'full' },
@@ -33,8 +28,9 @@ export const laboratoryRoutes: Routes = [
       { path: 'environments/:environmentId/edit', loadComponent: environmentForm },
       { path: 'staff-list', loadComponent: staffList },
       { path: 'staff-form', loadComponent: staffForm },
-      { path: 'product-catalog', loadComponent: productCatalog },
-      { path: 'product-form', loadComponent: productForm },
+      // Products belong to Product Batch Management and are registered per environment.
+      { path: 'product-catalog', redirectTo: '/batches', pathMatch: 'full' },
+      { path: 'product-form', redirectTo: '/batches', pathMatch: 'full' },
       { path: 'raw-material-list', redirectTo: '/inventory', pathMatch: 'full' },
       { path: 'raw-material-form', redirectTo: '/inventory', pathMatch: 'full' },
       { path: 'raw-materials/:id', loadComponent: () => import('./views/raw-material-detail/raw-material-detail').then(m => m.RawMaterialDetail) },

@@ -82,8 +82,8 @@ export class Layout {
       icon: 'inventory',
       link: '/batches',
       children: [
+        { label: 'product-catalog.title', link: '/batches' },
         { label: 'batches.title', link: '/batches/batch-list' },
-        { label: 'batches.add-button', link: '/batches/batch-form' },
       ],
     },
     {
@@ -125,8 +125,6 @@ export class Layout {
         { label: 'environments.title', link: '/laboratories/environments' },
         { label: 'staff-list.title', link: '/laboratories/staff-list' },
         { label: 'staff-form.title', link: '/laboratories/staff-form' },
-        { label: 'product-catalog.title', link: '/laboratories/product-catalog' },
-        { label: 'product-form.title', link: '/laboratories/product-form' },
       ],
     },
     {
