@@ -105,7 +105,9 @@
     "system": "Sistema",
     "batch-telemetry-unavailable": "La telemetría del lote requiere una asociación con equipos que aún no está disponible.",
     "no-status": "Todavía no se ha registrado el estado del equipo.",
-    "no-plans": "Todavía no hay planes de suscripción disponibles."
+    "no-plans": "Todavía no hay planes de suscripción disponibles.",
+    "subscription-paused-title": "Acceso al laboratorio en pausa",
+    "subscription-paused": "Tu laboratorio no tiene una suscripción activa. Pide a tu QA Manager que la renueve e inténtalo nuevamente."
   },
   "home": {
     "title": "Nos preocupamos por la precisión, aseguramos la calidad.",
@@ -120,7 +122,8 @@
     "auth": {
       "already-have-account": "¿Ya tienes una cuenta?",
       "sign-in": "Iniciar Sesión",
-      "or-create-account": "O crea una cuenta"
+      "or-create-account": "O crea una cuenta",
+      "staff-hint": "Los operarios y auditores inician sesión con la cuenta que les creó su QA Manager."
     },
     "sign-in": {
       "title": "Iniciar Sesión",
@@ -155,8 +158,7 @@
       "show-password": "Mostrar contraseña",
       "hide-password": "Ocultar contraseña",
       "roles": {
-        "manager": "QA Manager / Supervisor",
-        "operator": "Operador de Laboratorio"
+        "manager": "QA Manager / Supervisor"
       },
       "errors": {
         "username-required": "El usuario es obligatorio",
@@ -166,6 +168,23 @@
         "password-strength": "La contraseña debe contener letras y números",
         "confirm-password-required": "La confirmación de contraseña es obligatoria",
         "password-mismatch": "Las contraseñas no coinciden"
+      }
+    },
+    "change-password": {
+      "title": "Cambia tu contraseña",
+      "subtitle": "Tu cuenta se creó con una contraseña temporal. Elige tu propia contraseña para continuar.",
+      "current": "Contraseña temporal o actual",
+      "new": "Nueva contraseña",
+      "confirm": "Confirma la nueva contraseña",
+      "button": "Cambiar contraseña",
+      "errors": {
+        "required": "Este campo es obligatorio",
+        "length": "Usa entre 8 y 72 caracteres",
+        "strength": "Usa letras y números",
+        "same-password": "La nueva contraseña debe ser distinta de la actual",
+        "mismatch": "Las contraseñas no coinciden",
+        "current-password": "La contraseña actual no es correcta.",
+        "unavailable": "No se pudo cambiar la contraseña. Inténtalo nuevamente."
       }
     }
   },
@@ -810,14 +829,14 @@
     "title": "Registro de Actividad Técnica",
     "subtitle": "Completa los detalles de la intervención realizada",
     "placeholders": {
-      "technician": "Nombre del técnico",
       "description": "Describe la actividad de mantenimiento"
     },
     "errors": {
-      "technician-minlength": "El nombre del técnico debe tener al menos 3 caracteres",
       "description-maxlength": "La descripción no puede exceder los 1000 caracteres",
       "future-date": "La fecha del mantenimiento no puede ser futura"
-    }
+    },
+    "technician-hint": "Los operarios solo pueden registrar los mantenimientos que realizaron.",
+    "no-technicians": "No hay operarios activos para elegir. Registra primero al personal del laboratorio."
   },
   "equipment-status": {
     "operational": "Operativo",
@@ -850,17 +869,42 @@
     "title": "Gestión de Personal",
     "register": "Añadir Personal",
     "name": "Nombre Completo",
-    "role": "Cargo / Rol",
+    "role": "Cargo",
     "email": "Correo Corporativo",
     "status": "Estado Laboral",
-    "empty": "No hay personal registrado aún."
+    "empty": "No hay personal registrado aún.",
+    "access-role": "Acceso",
+    "activity-hint": "Selecciona un nombre para ver lo que esa persona ha registrado.",
+    "deactivate": "Desactivar",
+    "deactivate-confirm": "¿Desactivar a {{name}}? Ya no podrá iniciar sesión.",
+    "deactivate-error": "No se pudo desactivar al miembro del personal. Inténtalo nuevamente."
   },
   "staff-form": {
     "title": "Registrar Miembro del Staff",
-    "subtitle": "Crea un perfil de personal y asigna su rol operativo.",
+    "subtitle": "La plataforma crea su cuenta con el correo como usuario y le envía las credenciales.",
     "fullName": "Nombre Completo",
-    "role": "Rol Asignado",
-    "email": "Correo Electrónico"
+    "role": "Cargo",
+    "email": "Correo corporativo",
+    "role-placeholder": "Por ejemplo: Operario de producción",
+    "email-hint": "Será su usuario.",
+    "access-role": "¿Qué podrá hacer?",
+    "register-another": "Registrar otro",
+    "back-to-list": "Volver al personal",
+    "credentials": {
+      "registered": "Se registró a {{name}}.",
+      "emailed": "El usuario y una contraseña temporal se enviaron a {{email}}.",
+      "shown-once": "No se pudo enviar el correo. Entrega estas credenciales al trabajador: la contraseña no se volverá a mostrar.",
+      "username": "Usuario",
+      "temporary-password": "Contraseña temporal",
+      "copy": "Copiar",
+      "first-sign-in": "La primera vez que inicie sesión se le pedirá elegir su propia contraseña."
+    },
+    "errors": {
+      "email-taken": "Ya existe una cuenta con este correo.",
+      "invalid": "Revisa los datos del trabajador.",
+      "forbidden": "Solo los QA Manager registran personal.",
+      "unavailable": "No se pudo registrar al trabajador. Inténtalo nuevamente."
+    }
   },
   "product-catalog": {
     "title": "Productos farmacéuticos",
@@ -1193,7 +1237,11 @@
     "no-equipment": "No hay equipos asociados a este lote.",
     "no-staff": "No hay personal asociado a este lote.",
     "equipment-saved": "Equipo asociado al lote.",
-    "staff-saved": "Persona asociada al lote."
+    "staff-saved": "Persona asociada al lote.",
+    "staff-hint": "Operarios activos del laboratorio.",
+    "assign-myself": "Asignarme",
+    "already-joined": "Ya participas en este lote.",
+    "no-staff-record": "Tu cuenta no está vinculada a un operario activo del laboratorio."
   },
   "batch-traceability": {
     "title": "Resumen de trazabilidad",
@@ -1244,6 +1292,57 @@
     "hints": {
       "ENVIRONMENTAL_DEVICE": "Supervisa todo el ambiente (monitor de espacio); uno por ambiente.",
       "CONTAINER_MONITOR": "Supervisa un contenedor donde se guardan materias primas o productos."
+    }
+  },
+  "staff": {
+    "access-roles": {
+      "operator": "Operario",
+      "operator-hint": "Registra las operaciones que se le asignan: mantenimientos, recepciones, lotes y consumos.",
+      "auditor": "Auditor",
+      "auditor-hint": "Consulta los registros y reportes sin modificarlos."
+    },
+    "no-account": "Sin cuenta",
+    "detail": {
+      "load-error": "No se pudo cargar al miembro del personal.",
+      "activities": "Actividades registradas",
+      "last-activity": "Última actividad",
+      "history": "Historial de actividad",
+      "filter": "Tipo de registro",
+      "all-activity": "Toda la actividad",
+      "no-activity": "Esta persona aún no ha registrado actividad."
+    },
+    "activity": {
+      "entities": {
+        "batch": "Lote de producto",
+        "bpm_parameter_config": "Límites de parámetro BPM",
+        "deviation_alert": "Alerta de desviación",
+        "environment": "Ambiente",
+        "equipment": "Equipo",
+        "equipment_telemetry_status": "Estado de telemetría del equipo",
+        "laboratory": "Laboratorio",
+        "maintenance_record": "Mantenimiento",
+        "notification_preference": "Preferencias de notificación",
+        "pharmaceutical_product": "Producto",
+        "raw_material": "Materia prima",
+        "raw_material_batch": "Recepción de materia prima",
+        "raw_material_usage": "Uso de materia prima",
+        "staff_member": "Miembro del personal",
+        "telemetry_anomaly": "Anomalía de telemetría",
+        "telemetry_history_point": "Historial de telemetría",
+        "telemetry_measurement": "Medición de telemetría"
+      },
+      "actions": {
+        "create": "Creó",
+        "update": "Actualizó",
+        "delete": "Eliminó",
+        "release": "Liberó",
+        "reject": "Rechazó",
+        "approve": "Aprobó",
+        "register": "Registró",
+        "remove": "Retiró",
+        "export": "Exportó",
+        "generate": "Generó"
+      }
     }
   }
 }

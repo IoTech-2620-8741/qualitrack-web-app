@@ -8,7 +8,7 @@ import {
   ValidationErrors,
   Validators,
 } from '@angular/forms';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatIconModule } from '@angular/material/icon';
@@ -53,28 +53,15 @@ export class SignUpForm {
   private readonly router = inject(Router);
 
   /**
-   * Activated route used to read the desired registration role.
+   * Public registration only creates quality manager accounts. Operators and auditors receive the
+   * account their quality manager creates when registering them as staff.
    */
-  private readonly route = inject(ActivatedRoute);
+  protected readonly selectedRole = 'ROLE_QA_MANAGER';
 
   /**
-   * Current registration mode passed through the route.
+   * Translation key suffix used to display the registered role.
    */
-  protected role: string = 'lab-operator';
-
-  /**
-   * Backend role selected for the new account.
-   */
-  protected selectedRole: string = 'ROLE_LAB_OPERATOR';
-
-  /**
-   * Translation key suffix used to display the selected role.
-   */
-  protected selectedRoleKey: 'manager' | 'operator' = 'operator';
-
-  /**
-   * Temporary laboratory identifier used while the laboratory ownership flow is completed.
-   */
+  protected readonly selectedRoleKey = 'manager';
 
   /**
    * Reactive form used to capture sign-up data.
@@ -106,24 +93,6 @@ export class SignUpForm {
    * Indicates whether the confirm-password input should be visually hidden.
    */
   protected hideConfirmPassword = true;
-
-  /**
-   * Creates the sign-up component and resolves the registration role from query params.
-   */
-  constructor() {
-    this.route.queryParams.subscribe((params) => {
-      if (params['role'] === 'qa-manager') {
-        this.role = 'qa-manager';
-        this.selectedRole = 'ROLE_QA_MANAGER';
-        this.selectedRoleKey = 'manager';
-        return;
-      }
-
-      this.role = 'lab-operator';
-      this.selectedRole = 'ROLE_LAB_OPERATOR';
-      this.selectedRoleKey = 'operator';
-    });
-  }
 
   /**
    * Submits the sign-up form.

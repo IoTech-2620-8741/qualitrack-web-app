@@ -14,6 +14,7 @@ import { SignUpApiEndpoint } from './sign-up-api-endpoint';
 import { SignUpAssembler } from './sign-up-assembler';
 import { SignUpRequest } from './sign-up.request';
 import { SignUpResource } from './sign-up-response';
+import { ChangePasswordRequest } from './change-password.request';
 
 import { RecoverPasswordApiEndpoint } from './recover-password-api-endpoint';
 import { RecoverPasswordAssembler } from './recover-password-assembler';
@@ -82,6 +83,19 @@ export class IamApi extends BaseApi {
    * @param request - Sign-up request payload
    * @returns Observable stream emitting the registered user resource
    */
+  /**
+   * Changes the password of the authenticated user.
+   *
+   * @param request - current password and the new password
+   * @returns completes when the platform answers 204 No Content
+   */
+  changePassword(request: ChangePasswordRequest): Observable<void> {
+    return this.http.post<void>(
+      `${environment.serverBasePath}${environment.usersEndpointPath}${environment.currentUserPasswordChangesEndpointPath}`,
+      request,
+    );
+  }
+
   signUp(request: SignUpRequest): Observable<SignUpResource> {
     return this.signUpEndpoint.signUp(request);
   }

@@ -5,7 +5,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TranslateModule } from '@ngx-translate/core';
 import { IamStore } from '../../../application/iam.store';
-import { onboardingDestination } from '../../../domain/model/onboarding-state';
+import { onboardingDestination, SUBSCRIPTION_PAUSED } from '../../../domain/model/onboarding-state';
 import { Toolbar } from '../../../../shared/presentation/components/toolbar/toolbar';
 
 @Component({
@@ -18,6 +18,11 @@ import { Toolbar } from '../../../../shared/presentation/components/toolbar/tool
       @if (loading()) {
         <mat-spinner diameter="40" [attr.aria-label]="'onboarding.loading' | translate" />
         <p>{{ 'onboarding.loading' | translate }}</p>
+      } @else if (subscriptionPaused()) {
+        <h1>{{ 'onboarding.subscription-paused-title' | translate }}</h1>
+        <p role="status">{{ 'onboarding.subscription-paused' | translate }}</p>
+        <button mat-flat-button (click)="resolve()">{{ 'onboarding.retry' | translate }}</button>
+        <button mat-button (click)="signOut()">{{ 'onboarding.sign-out' | translate }}</button>
       } @else {
         <h1>{{ 'onboarding.unavailable-title' | translate }}</h1>
         <p role="alert">{{ 'onboarding.connection-error' | translate }}</p>
@@ -34,13 +39,23 @@ export class Onboarding {
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
   protected readonly loading = signal(true);
+  protected readonly subscriptionPaused = signal(false);
 
   constructor() { this.resolve(); }
 
   protected resolve(): void {
     this.loading.set(true);
+    this.subscriptionPaused.set(false);
     this.iam.loadOnboarding(true).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (state) => void this.router.navigateByUrl(onboardingDestination(state), { replaceUrl: true }),
+      next: (state) => {
+        const destination = onboardingDestination(state, this.iam.canManageQuality());
+        if (destination !== SUBSCRIPTION_PAUSED) {
+          void this.router.navigateByUrl(destination, { replaceUrl: true });
+          return;
+        }
+        this.subscriptionPaused.set(true);
+        this.loading.set(false);
+      },
       error: () => {
         this.loading.set(false);
         if (!this.iam.isSignedIn()) void this.router.navigateByUrl('/iam/sign-in');
