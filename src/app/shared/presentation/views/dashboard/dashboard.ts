@@ -37,7 +37,7 @@ export class Dashboard {
   protected readonly batchDistribution = computed(() => this.batchStatuses.map(status => ({ status,
     count: this.store.batches().data?.filter(batch => batch.status === status).length ?? 0 })));
   protected readonly recentBatches = computed(() => [...(this.store.batches().data ?? [])]
-    .sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt)).slice(0, 4));
+    .sort((a, b) => b.id - a.id).slice(0, 4));
   protected readonly chartData = computed<ChartData<'line'>>(() => {
     this.language();
     return { datasets: [{ label: this.store.activeSeries()?.parameter,

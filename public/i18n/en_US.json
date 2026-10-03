@@ -590,11 +590,19 @@
       "reject": "Reject Batch",
       "view": "View Traceability",
       "view-detail": "View Batch Detail"
+    },
+    "all-statuses": "All statuses",
+    "no-environment": "Registered before environments; assign it an environment to open it.",
+    "errors": {
+      "connection": "The server could not be reached. Check your connection and try again.",
+      "forbidden": "Your account cannot perform this action.",
+      "not-found": "The batch or product was not found in this laboratory.",
+      "failed": "The operation could not be completed."
     }
   },
   "batch-form": {
     "title": "Create Production Batch",
-    "subtitle": "Register a new manufacturing cycle for a pharmaceutical product.",
+    "subtitle": "Register a manufacturing run of the product. The batch starts as pending.",
     "fields": {
       "product": "Pharmaceutical Product",
       "batch-number": "Batch Number",
@@ -604,25 +612,29 @@
       "notes": "BPM Notes"
     },
     "placeholders": {
-      "batch-number": "LOT-2026-001",
+      "batch-number": "PB-2026-001",
       "notes": "Add production observations, quality notes, or BPM instructions."
     },
     "hints": {
-      "batch-number": "Format: LOT-YYYY-NNN"
+      "batch-number": "Unique in the laboratory, for example PB-2026-001."
     },
     "errors": {
-      "batch-number-format": "The batch number must follow the LOT-YYYY-NNN format.",
       "quantity-min": "The quantity must be greater than 0."
-    }
+    },
+    "saved": "Batch registered."
   },
   "batch-detail": {
     "title": "Batch Detail",
     "tabs": {
       "general": "General Information",
-      "materials": "Raw Materials Used"
+      "materials": "Raw Materials Used",
+      "participants": "Equipment and staff",
+      "traceability": "Traceability"
     },
     "notes": "BPM Notes",
-    "no-notes": "No notes recorded for this batch."
+    "no-notes": "No notes recorded for this batch.",
+    "closed-on": "Closed on",
+    "closed-notice": "This batch is closed: no more raw materials, equipment or staff can be added."
   },
   "batch-release": {
     "title": "Release Batch",
@@ -639,7 +651,10 @@
     },
     "actions": {
       "submit": "Release Batch"
-    }
+    },
+    "notice": "The release is signed with your user and the batch can no longer be modified.",
+    "quality-only": "Only quality managers and administrators can release or reject batches.",
+    "saved": "Batch released and signed."
   },
   "batch-reject": {
     "title": "Reject Batch",
@@ -656,7 +671,9 @@
     },
     "actions": {
       "submit": "Reject Batch"
-    }
+    },
+    "notice": "The reason is kept with the batch for traceability and audits.",
+    "saved": "Batch rejected."
   },
   "batch-usage": {
     "title": "Register Raw Material Usage",
@@ -666,7 +683,8 @@
       "raw-material": "Raw Material",
       "stock": "Stock",
       "quantity-used": "Quantity Used",
-      "usage-date": "Usage Date"
+      "usage-date": "Usage Date",
+      "lot": "Lot"
     },
     "actions": {
       "add": "Add Material"
@@ -681,7 +699,10 @@
       "failed": "Consumption could not be confirmed. Check the history before trying again."
     },
     "available": "Available: {{stock}} {{unit}}",
-    "saved": "Consumption recorded and stock updated."
+    "saved": "Consumption recorded and stock updated.",
+    "notice": "Choose the environment where the raw material is kept and a released lot. Inventory discounts the amount from that lot.",
+    "no-usable": "This raw material has no released lots with stock.",
+    "legacy": "Recorded before Inventory"
   },
   "equipment-list": {
     "title": "Equipment Catalog",
@@ -819,21 +840,25 @@
     "email": "Email Address"
   },
   "product-catalog": {
-    "title": "Pharmaceutical Product Catalog",
+    "title": "Pharmaceutical products",
     "add": "New Product",
     "code": "SKU / Code",
     "name": "Product Name",
     "specifications": "BPM Specifications",
-    "empty": "No pharmaceutical products found."
+    "empty": "No pharmaceutical products found.",
+    "no-environments": "No environments registered yet",
+    "no-environments-notice": "Products are manufactured in an environment of the laboratory. Register a production environment to start."
   },
   "product-form": {
-    "title": "Register New Product / Batch",
-    "subtitle": "Define a pharmaceutical product and its BPM quality specifications.",
+    "title": "Register product",
+    "subtitle": "The product is registered in the selected environment. Its code and name must be unique in the laboratory.",
     "code": "Internal Product Code",
     "name": "Commercial Name",
     "description": "Therapeutic Description",
     "specifications": "Quality Specifications (BPM)",
-    "specifications-hint": "Include acceptance criteria, limits, and required controls."
+    "specifications-hint": "Include acceptance criteria, limits, and required controls.",
+    "description-hint": "Optional.",
+    "quality-only": "Only quality managers and administrators can register products."
   },
   "raw-material-list": {
     "title": "Raw Materials Inventory",
@@ -1120,5 +1145,33 @@
     "RAW_MATERIAL_STORAGE": "Raw material storage",
     "PRODUCT_STORAGE": "Product storage",
     "OTHER": "Other"
+  },
+  "product-detail": {
+    "no-batches": "No batches registered for this product."
+  },
+  "batch-participants": {
+    "equipment-title": "Equipment used",
+    "staff-title": "Staff who took part",
+    "equipment": "Equipment",
+    "staff": "Staff member",
+    "role": "Role",
+    "registered-at": "Registered at",
+    "equipment-hint": "Only operational equipment can be used.",
+    "add-equipment": "Add equipment",
+    "add-staff": "Add staff member",
+    "no-equipment": "No equipment associated with this batch.",
+    "no-staff": "No staff associated with this batch.",
+    "equipment-saved": "Equipment associated with the batch.",
+    "staff-saved": "Staff member associated with the batch."
+  },
+  "batch-traceability": {
+    "title": "Traceability summary",
+    "raw-materials": "Raw materials",
+    "equipment": "Equipment",
+    "staff": "Staff",
+    "decision": "Quality decision",
+    "released": "Released on {{date}} and signed by user #{{user}}.",
+    "rejected": "Rejected on {{date}}:",
+    "pending": "The batch has not been released or rejected yet."
   }
 }

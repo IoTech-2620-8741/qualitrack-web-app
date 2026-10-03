@@ -1,6 +1,5 @@
+/** Body of POST .../products/{productId}/batches (TS63). */
 export interface CreateBatchRequest {
-  labId: number;
-  productId: number;
   batchNumber: string;
   quantity: number;
   unit: string;
@@ -8,16 +7,24 @@ export interface CreateBatchRequest {
   notes?: string;
 }
 
+/** Body of POST .../batches/{batchId}/releases (TS71). */
 export interface ReleaseBatchRequest {
-  status: 'RELEASED';
   releaseDate: string;
   notes: string;
 }
 
+/** Body of POST .../batches/{batchId}/rejections (TS72). */
 export interface RejectBatchRequest {
-  status: 'REJECTED';
   rejectionDate: string;
   reason: string;
 }
 
-export type UpdateBatchStatusRequest = ReleaseBatchRequest | RejectBatchRequest;
+/** Body of POST .../batches/{batchId}/equipment-usages (TS66). */
+export interface RegisterEquipmentUsageRequest {
+  equipmentId: number;
+}
+
+/** Body of POST .../batches/{batchId}/staff-participations (TS67). */
+export interface RegisterStaffParticipationRequest {
+  staffId: number;
+}

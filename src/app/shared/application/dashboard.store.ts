@@ -84,8 +84,12 @@ export class DashboardStore {
     this.measurements.set({ status: 'idle', data: null });
     this.alerts.set({ status: 'loading', data: null });
     this.load(this.laboratory, this.labApi.getLaboratory(id));
-    this.load(this.materials, this.inventoryApi.laboratoryMaterials(id).pipe(map(items => items.filter(item => item.laboratoryId === id))));
-    this.load(this.batches, this.batchApi.getBatches(id).pipe(map(items => items.filter(item => item.labId === id))));
+    // Low stock is classified per environment by the server (TS27); the dashboard adds up every environment.
+    this.load(this.materials, this.labApi.getEnvironments(id).pipe(
+      mergeMap(environments => from(environments).pipe(
+        mergeMap(environment => this.inventoryApi.materials(id, environment.id, 'LOW'), 4),
+        toArray(), map(groups => groups.flat())))));
+    this.load(this.batches, this.batchApi.getBatches(id));
     this.load(this.equipment, this.equipmentApi.getEquipment(id).pipe(map(items => items.filter(item => item.labId === id))), items => {
       this.selectEquipment(items.find(item => item.id === preferredEquipment)?.id ?? items[0]?.id ?? null);
       this.loadAlerts();

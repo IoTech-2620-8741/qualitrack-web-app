@@ -112,7 +112,7 @@
           }
         </div>
         @for (batch of recentBatches(); track batch.id) {
-          <a class="record-row batch-row" [routerLink]="['/batches/batch-detail', batch.id]">
+          <a class="record-row batch-row" [routerLink]="batch.detailLink ?? ['/batches/batch-detail', batch.id]">
             <div class="record-main"><strong>{{ batch.batchNumber }}</strong><span>{{ batch.productName }}</span></div>
             <mat-icon>chevron_right</mat-icon></a>
         }

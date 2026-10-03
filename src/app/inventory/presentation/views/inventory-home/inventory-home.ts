@@ -17,7 +17,7 @@ import { EnvironmentStore } from '../../../../laboratory/application/environment
   standalone: true,
   imports: [RouterLink, MatButtonModule, MatIconModule, TranslateModule],
   template: `
-    <main class="inventory-page">
+    <main class="operations-page">
       <header class="page-heading">
         <h1><mat-icon aria-hidden="true">inventory_2</mat-icon>{{ 'inventory.title' | translate }}</h1>
       </header>
@@ -38,7 +38,7 @@ import { EnvironmentStore } from '../../../../laboratory/application/environment
       }
     </main>
   `,
-  styleUrl: '../inventory.css',
+  styleUrl: '../../../../shared/presentation/styles/operations-page.css',
 })
 export class InventoryHome implements OnInit {
   protected readonly environments = inject(EnvironmentStore);

@@ -32,7 +32,7 @@ import { stockQuantityValidator } from '../../../../shared/presentation/stock-qu
     TranslateModule,
   ],
   templateUrl: './inventory-detail.html',
-  styleUrl: '../inventory.css',
+  styleUrl: '../../../../shared/presentation/styles/operations-page.css',
 })
 export class InventoryDetail implements OnInit {
   readonly store = inject(InventoryStore);
