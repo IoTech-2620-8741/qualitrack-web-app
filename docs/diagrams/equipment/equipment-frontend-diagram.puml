@@ -176,6 +176,13 @@ DeviceForm --> EnvironmentStore
 EquipmentDetail --> EquipmentStore
 EquipmentDetail --> EnvironmentStore
 MaintenanceForm --> EquipmentStore
+MaintenanceForm --> LaboratoryApi
+MaintenanceForm --> IamStore
+note right of MaintenanceForm
+  The technician is chosen from the active operators of the laboratory;
+  an operator can only choose themselves (technicianStaffId).
+  Status changes, maintenance and BPM limits are hidden for auditors.
+end note
 BpmConfigForm --> EquipmentStore
 
 note bottom of EquipmentRoutes
