@@ -159,6 +159,7 @@ package "qualitrack-frontend" {
   package "equipment" {
     package "domain" {
       class Equipment
+      enum IotDeviceType
       class BpmParameterConfig
       class MaintenanceRecord
     }
@@ -180,10 +181,11 @@ package "qualitrack-frontend" {
     package "presentation" {
       class EquipmentRoutes <<Routes>>
       class EquipmentList
-      class RegisterEquipment
+      class EquipmentForm
+      class DeviceForm
       class EquipmentDetail
+      class MaintenanceForm
       class BpmConfigForm
-      class MaintenanceHistory
     }
   }
 
@@ -285,7 +287,7 @@ package "qualitrack-frontend" {
   package "tracking" {
     package "domain" {
       class Measurement
-      class EquipmentStatus
+      class DeviceConnection
       class TelemetryHistoryPoint
     }
 
@@ -296,10 +298,10 @@ package "qualitrack-frontend" {
     package "infrastructure" {
       class TrackingApi
       class MeasurementApiEndpoint
-      class EquipmentStatusApiEndpoint
+      class DeviceConnectionApiEndpoint
       class TelemetryHistoryApiEndpoint
       class MeasurementAssembler
-      class EquipmentStatusAssembler
+      class DeviceConnectionAssembler
       class TelemetryHistoryAssembler
     }
 
@@ -308,7 +310,6 @@ package "qualitrack-frontend" {
       class TelemetryDashboardComponent
       class TelemetryChartComponent
       class TelemetryHistoryComponent
-      class EquipmentStatusCardComponent
     }
   }
 
@@ -438,10 +439,10 @@ AuditLogApiEndpoint --|> BaseApiEndpoint
 
 TrackingStore --> TrackingApi
 TrackingApi --> MeasurementApiEndpoint
-TrackingApi --> EquipmentStatusApiEndpoint
+TrackingApi --> DeviceConnectionApiEndpoint
 TrackingApi --> TelemetryHistoryApiEndpoint
 MeasurementApiEndpoint --|> BaseApiEndpoint
-EquipmentStatusApiEndpoint --|> BaseApiEndpoint
+DeviceConnectionApiEndpoint --|> BaseApiEndpoint
 TelemetryHistoryApiEndpoint --|> BaseApiEndpoint
 
 SubscriptionStore --> SubscriptionApi
