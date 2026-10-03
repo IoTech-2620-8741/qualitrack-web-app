@@ -11,11 +11,14 @@ export const environment = {
 
   // Users / Roles
   usersEndpointPath: '/users',
+  // Password change of the signed-in user, under /users
+  currentUserPasswordChangesEndpointPath: '/me/password-changes',
   rolesEndpointPath: '/roles',
 
   // Laboratory
   laboratoryLabsEndpointPath: '/laboratories',
   laboratoryStaffEndpointPath: '/staff',
+  laboratoryStaffDeactivationsEndpointPath: '/deactivations',
   laboratoryRawMaterialsEndpointPath: '/raw-materials',
   laboratoryEnvironmentsEndpointPath: '/environments',
   laboratoryEnvironmentUsageAssignmentsEndpointPath: '/usage-assignments',

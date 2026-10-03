@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { Layout } from '../../shared/presentation/components/layout/layout';
 import { laboratorySetupGuard, onboardingGuard } from '../../iam/infrastructure/onboarding-guard';
+import { qualityManagerGuard, staffActivityGuard } from '../../iam/infrastructure/role-guards';
 
 const labProfile = () => import('./views/lab-profile/lab-profile').then((m) => m.LabProfile);
 const labForm = () => import('./views/lab-form/lab-form').then((m) => m.LabForm);
@@ -12,6 +13,7 @@ const environmentForm = () =>
 
 const staffList = () => import('./views/staff-list/staff-list').then((m) => m.StaffList);
 const staffForm = () => import('./views/staff-form/staff-form').then((m) => m.StaffForm);
+const staffDetail = () => import('./views/staff-detail/staff-detail').then((m) => m.StaffDetail);
 
 export const laboratoryRoutes: Routes = [
   { path: 'create', loadComponent: labForm, canActivate: [laboratorySetupGuard] },
@@ -27,7 +29,8 @@ export const laboratoryRoutes: Routes = [
       { path: 'environments/new', loadComponent: environmentForm },
       { path: 'environments/:environmentId/edit', loadComponent: environmentForm },
       { path: 'staff-list', loadComponent: staffList },
-      { path: 'staff-form', loadComponent: staffForm },
+      { path: 'staff-form', loadComponent: staffForm, canActivate: [qualityManagerGuard] },
+      { path: 'staff/:staffId', loadComponent: staffDetail, canActivate: [staffActivityGuard] },
       // Products belong to Product Batch Management and are registered per environment.
       { path: 'product-catalog', redirectTo: '/batches', pathMatch: 'full' },
       { path: 'product-form', redirectTo: '/batches', pathMatch: 'full' },

@@ -65,6 +65,8 @@ export class EquipmentStore {
 
   /** Equipment and devices are registered and located by quality managers and administrators (US45, US47). */
   readonly canManage = this.iam.canManageQuality;
+  /** Status changes and maintenance are registered by operators and quality managers, not auditors. */
+  readonly canOperate = this.iam.canOperate;
 
   /** IoT devices of the laboratory, the only equipment that sends telemetry. */
   readonly iotDevices = computed(() => this._equipmentList().filter((equipment) => equipment.isIotDevice));
@@ -190,7 +192,6 @@ export class EquipmentStore {
     const record = await this.save(() => firstValueFrom(this.api.registerMaintenance(
       this.laboratoryId, environmentId, equipment.id, {
         ...command,
-        technicianName: command.technicianName.trim(),
         description: command.description.trim(),
       })));
     if (record) this._maintenanceHistory.update((history) => [record, ...history]);

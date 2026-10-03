@@ -33,7 +33,7 @@
       (openedChange)="sidenavOpened.set($event)"
     >
       <nav class="nav-menu" [attr.aria-label]="'onboarding.navigation' | translate">
-        @for (option of options; track option.label) {
+        @for (option of visibleOptions(); track option.label) {
           @if (!option.children) {
             <button type="button"
               class="nav-item"

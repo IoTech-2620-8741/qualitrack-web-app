@@ -14,6 +14,9 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TranslatePipe } from '@ngx-translate/core';
 
 import { EquipmentStore } from '../../../application/equipment.store';
+import { IamStore } from '../../../../iam/application/iam.store';
+import { LaboratoryApi } from '../../../../laboratory/infrastructure/laboratory-api';
+import { StaffMember } from '../../../../laboratory/domain/model/staff-member.entity';
 import { localIsoDate } from '../../../../shared/presentation/utils/local-date';
 
 /**
@@ -46,6 +49,22 @@ export class MaintenanceForm implements OnInit {
   private readonly router = inject(Router);
 
   protected readonly store = inject(EquipmentStore);
+  private readonly iam = inject(IamStore);
+  private readonly laboratoryApi = inject(LaboratoryApi);
+
+  /** Staff of the laboratory that can perform maintenance: active operators with an account. */
+  private readonly staff = signal<StaffMember[]>([]);
+  protected readonly staffLoaded = signal(false);
+
+  /**
+   * Technicians the user can choose: a quality manager chooses any operator; an operator only
+   * registers the maintenance they performed.
+   */
+  protected readonly technicians = computed(() => {
+    const assignable = this.staff().filter((member) => member.assignable);
+    if (this.iam.canManageQuality()) return assignable;
+    return assignable.filter((member) => member.userId === this.iam.currentUserId());
+  });
   protected readonly equipmentId = signal<number | null>(null);
   protected readonly equipment = computed(() => {
     const selected = this.store.selectedEquipment();
@@ -59,7 +78,7 @@ export class MaintenanceForm implements OnInit {
 
   protected readonly form = this.fb.nonNullable.group({
     maintenanceDate: [new Date(), Validators.required],
-    technicianName: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(150)]],
+    technicianStaffId: [null as number | null, Validators.required],
     type: ['', Validators.required],
     description: ['', [Validators.required, Validators.maxLength(1000)]],
   });
@@ -73,14 +92,27 @@ export class MaintenanceForm implements OnInit {
     if (!Number.isSafeInteger(id) || id <= 0) return;
     this.equipmentId.set(id);
     if (!this.equipment()) void this.store.loadEquipmentById(id);
+    this.laboratoryApi.getStaff(this.iam.requireLaboratoryId()).subscribe({
+      next: (staff) => {
+        this.staff.set(staff);
+        this.staffLoaded.set(true);
+        const technicians = this.technicians();
+        if (!this.iam.canManageQuality() && technicians.length === 1) {
+          this.form.controls.technicianStaffId.setValue(technicians[0].id);
+        }
+      },
+      error: () => this.staffLoaded.set(true),
+    });
   }
 
   protected async onSave(): Promise<void> {
     const equipment = this.equipment();
     if (this.form.invalid || !equipment) return;
-    const { maintenanceDate, ...values } = this.form.getRawValue();
+    const { maintenanceDate, technicianStaffId, ...values } = this.form.getRawValue();
+    if (technicianStaffId === null) return;
     const saved = await this.store.registerMaintenance(equipment, {
       ...values,
+      technicianStaffId,
       maintenanceDate: localIsoDate(new Date(maintenanceDate)),
     });
     if (saved) await this.router.navigate(['/equipments/equipment-detail', equipment.id]);

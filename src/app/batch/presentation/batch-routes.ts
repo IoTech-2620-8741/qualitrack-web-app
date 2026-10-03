@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { Layout } from '../../shared/presentation/components/layout/layout';
+import { operatorGuard } from '../../iam/infrastructure/role-guards';
 
 const batchHome = () => import('./views/batch-home/batch-home').then((m) => m.BatchHome);
 const productCatalog = () => import('./views/product-catalog/product-catalog').then((m) => m.ProductCatalog);
@@ -35,7 +36,7 @@ export const batchRoutes: Routes = [
       { path: 'environments/:environmentId/products', loadComponent: productCatalog },
       { path: 'environments/:environmentId/products/new', loadComponent: productForm },
       { path: product, loadComponent: productDetail },
-      { path: `${product}/batches/new`, loadComponent: batchForm },
+      { path: `${product}/batches/new`, loadComponent: batchForm, canActivate: [operatorGuard] },
       { path: batch, loadComponent: batchDetail },
       { path: `${batch}/release`, loadComponent: batchReleaseForm },
       { path: `${batch}/reject`, loadComponent: batchRejectForm },

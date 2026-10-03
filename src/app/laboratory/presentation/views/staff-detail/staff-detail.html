@@ -1,0 +1,107 @@
+<section class="operations-page" [attr.aria-busy]="loading()">
+  <a class="back-link" routerLink="/laboratories/staff-list">
+    <mat-icon aria-hidden="true">arrow_back</mat-icon>
+    {{ 'staff-list.title' | translate }}
+  </a>
+
+  @if (loading()) {
+    <div class="loading">
+      <mat-spinner diameter="40" [attr.aria-label]="'onboarding.loading-data' | translate"></mat-spinner>
+    </div>
+  } @else if (member(); as current) {
+    <div class="page-heading">
+      <div>
+        <h1>
+          <mat-icon aria-hidden="true">badge</mat-icon>
+          {{ current.fullName }}
+        </h1>
+        <p class="muted">{{ current.role }} · {{ current.email }}</p>
+      </div>
+      @if (iam.canManageQuality() && current.active) {
+        <div class="actions">
+          <button mat-stroked-button color="warn" type="button" [disabled]="deactivating()" (click)="deactivate(current)">
+            <mat-icon>person_off</mat-icon>
+            {{ 'staff-list.deactivate' | translate }}
+          </button>
+        </div>
+      }
+    </div>
+
+    @if (error(); as message) {
+      <p class="error" role="alert">{{ message | translate }}</p>
+    }
+
+    <div class="summary-strip">
+      <div>
+        <span>{{ 'staff-list.access-role' | translate }}</span>
+        <strong>
+          {{ (current.accessRole ? 'staff.access-roles.' + current.accessRole.toLowerCase() : 'staff.no-account') | translate }}
+        </strong>
+      </div>
+      <div>
+        <span>{{ 'staff-list.status' | translate }}</span>
+        <strong class="state" [class.inactive]="!current.active">
+          {{ (current.active ? 'common.active' : 'common.inactive') | translate }}
+        </strong>
+      </div>
+      <div>
+        <span>{{ 'staff.detail.activities' | translate }}</span>
+        <strong>{{ activity().length }}</strong>
+      </div>
+      <div>
+        <span>{{ 'staff.detail.last-activity' | translate }}</span>
+        <strong>{{ lastActivity() ? (lastActivity() | date: 'medium') : '—' }}</strong>
+      </div>
+    </div>
+
+    <h2>{{ 'staff.detail.history' | translate }}</h2>
+
+    @if (activity().length > 0) {
+      <div class="filters">
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'staff.detail.filter' | translate }}</mat-label>
+          <mat-select [value]="entityFilter()" (selectionChange)="entityFilter.set($event.value)">
+            <mat-option value="ALL">{{ 'staff.detail.all-activity' | translate }}</mat-option>
+            @for (type of entityTypes(); track type) {
+              <mat-option [value]="type">
+                @if (entityKey(type); as key) { {{ key | translate }} } @else { {{ type }} }
+              </mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th scope="col">{{ 'audit-log.table.timestamp' | translate }}</th>
+            <th scope="col">{{ 'audit-log.table.action' | translate }}</th>
+            <th scope="col">{{ 'audit-log.table.entity' | translate }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (entry of visibleActivity(); track entry.id) {
+            <tr>
+              <td [attr.data-label]="'audit-log.table.timestamp' | translate">{{ entry.timestamp | date: 'medium' }}</td>
+              <td [attr.data-label]="'audit-log.table.action' | translate">
+                @if (actionKey(entry.action); as key) { {{ key | translate }} } @else { {{ entry.action }} }
+              </td>
+              <td [attr.data-label]="'audit-log.table.entity' | translate">
+                @if (entityKey(entry.entityType); as key) { {{ key | translate }} } @else { {{ entry.entityType }} }
+                @if (entry.entityType === 'EQUIPMENT') {
+                  <a [routerLink]="['/equipments/equipment-detail', entry.entityId]">#{{ entry.entityId }}</a>
+                } @else {
+                  <span class="muted">#{{ entry.entityId }}</span>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    } @else {
+      <p class="muted">{{ 'staff.detail.no-activity' | translate }}</p>
+    }
+  } @else {
+    <p class="error" role="alert">{{ (error() ?? 'staff.detail.load-error') | translate }}</p>
+  }
+</section>

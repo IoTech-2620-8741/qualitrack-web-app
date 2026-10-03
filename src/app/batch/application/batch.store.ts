@@ -59,6 +59,8 @@ export class BatchStore {
   readonly successMsg = this._successMsg.asReadonly();
   /** Releases and rejections are reserved to quality managers and administrators (US81, US82). */
   readonly canDecide = this.iam.canManageQuality;
+  /** Batches, usages and participations are registered by operators and quality managers, not auditors. */
+  readonly canOperate = this.iam.canOperate;
 
   /** Loads every batch of the laboratory, newest first. */
   loadBatches(labId: number): void {

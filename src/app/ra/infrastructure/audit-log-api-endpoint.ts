@@ -55,4 +55,20 @@ export class AuditLogApiEndpoint extends BaseApiEndpoint<
       catchError(this.handleError('Failed to fetch audit logs')),
     );
   }
+
+  /**
+   * Retrieves what a staff member did with their account, newest first.
+   *
+   * @param laboratoryId - Numeric identifier of the laboratory
+   * @param staffId - Numeric identifier of the staff member
+   * @returns Observable stream emitting the audit log entries performed by the staff member
+   */
+  getStaffActivity(laboratoryId: number, staffId: number): Observable<AuditLogEntry[]> {
+    const endpointUrl = `${this.endpointUrl}${environment.laboratoryLabsEndpointPath}/${laboratoryId}`
+      + `${environment.laboratoryStaffEndpointPath}/${staffId}${environment.raAuditLogsEndpointPath}`;
+    return this.http.get<AuditLogEntryResource[]>(endpointUrl).pipe(
+      map((resources) => this.assembler.toEntitiesFromResources(resources)),
+      catchError(this.handleError(`Failed to fetch the activity of staff member ${staffId}`)),
+    );
+  }
 }

@@ -74,6 +74,8 @@ export class InventoryStore {
     ];
   });
   readonly canReview = this.iam.canManageQuality;
+  /** Receipts are registered by operators and quality managers, not auditors. */
+  readonly canOperate = this.iam.canOperate;
   private generation = 0;
   get lab(): number {
     return this.iam.requireLaboratoryId();

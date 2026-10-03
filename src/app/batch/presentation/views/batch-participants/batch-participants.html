@@ -3,7 +3,7 @@
   @if (loadError()) {
     <p class="error" role="alert">{{ loadError()! | translate }}</p>
   }
-  @if (open()) {
+  @if (editable()) {
     <div class="filters">
       <mat-form-field appearance="outline" subscriptSizing="dynamic">
         <mat-label>{{ 'batch-participants.equipment' | translate }}</mat-label>
@@ -41,7 +41,7 @@
 
 <section aria-labelledby="staff-title">
   <h2 id="staff-title">{{ 'batch-participants.staff-title' | translate }}</h2>
-  @if (open()) {
+  @if (editable() && iam.canManageQuality()) {
     <div class="filters">
       <mat-form-field appearance="outline" subscriptSizing="dynamic">
         <mat-label>{{ 'batch-participants.staff' | translate }}</mat-label>
@@ -50,10 +50,23 @@
             <mat-option [value]="member.id">{{ member.fullName }} · {{ member.role }}</mat-option>
           }
         </mat-select>
+        <mat-hint>{{ 'batch-participants.staff-hint' | translate }}</mat-hint>
       </mat-form-field>
       <button mat-flat-button type="button" (click)="addStaff()" [disabled]="staffId === null || store.saving()">
         <mat-icon>badge</mat-icon>{{ 'batch-participants.add-staff' | translate }}
       </button>
+    </div>
+  } @else if (editable()) {
+    <div class="filters">
+      @if (ownParticipation()) {
+        <p class="muted">{{ 'batch-participants.already-joined' | translate }}</p>
+      } @else if (ownStaffMember()?.assignable) {
+        <button mat-flat-button type="button" (click)="assignMyself(ownStaffMember()!)" [disabled]="store.saving()">
+          <mat-icon>how_to_reg</mat-icon>{{ 'batch-participants.assign-myself' | translate }}
+        </button>
+      } @else {
+        <p class="muted">{{ 'batch-participants.no-staff-record' | translate }}</p>
+      }
     </div>
   }
   <table class="data-table">

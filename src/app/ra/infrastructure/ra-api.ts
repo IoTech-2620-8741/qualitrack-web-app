@@ -132,6 +132,17 @@ export class RaApi extends BaseApi {
    * Delegates the request to {@link ReportApiEndpoint}, which calls:
    * `POST /reports/batches`.
    */
+  /**
+   * Retrieves what a staff member did with their account.
+   *
+   * @param laboratoryId - Numeric identifier of the laboratory
+   * @param staffId - Numeric identifier of the staff member
+   * @returns Observable stream emitting the audit log entries performed by the staff member
+   */
+  getStaffActivity(laboratoryId: number, staffId: number): Observable<AuditLogEntry[]> {
+    return this._auditLogEndpoint.getStaffActivity(laboratoryId, staffId);
+  }
+
   generateBatchReport(request: GenerateBatchReportRequest): Observable<Blob> {
     return this._reportEndpoint.generateBatchReport(request);
   }

@@ -44,6 +44,22 @@ package "laboratory.domain.model" {
     +role: string
     +email: string
     +active: boolean
+    +accessRole: StaffAccessRole | null
+    +userId: number | null
+    +assignable: boolean
+  }
+  enum StaffAccessRole {
+    OPERATOR
+    AUDITOR
+  }
+  class StaffCredentials <<type>> {
+    +username: string
+    +delivery: 'EMAIL' | 'SHOWN_ONCE'
+    +temporaryPassword: string | null
+  }
+  class RegisteredStaff <<type>> {
+    +staffMember: StaffMember
+    +credentials: StaffCredentials
   }
   class Environment {
     +id: number
@@ -70,6 +86,9 @@ package "laboratory.domain.model" {
 
 Laboratory ..|> BaseEntity
 StaffMember ..|> BaseEntity
+StaffMember --> StaffAccessRole
+RegisteredStaff --> StaffMember
+RegisteredStaff --> StaffCredentials
 Environment ..|> BaseEntity
 Environment --> EnvironmentUsage
 
@@ -79,8 +98,9 @@ package "laboratory.infrastructure" {
     +getLaboratory(laboratoryId)
     +updateLaboratory(laboratoryId, request)
     +getStaff(laboratoryId)
-    +registerStaff(laboratoryId, request)
-    +deactivateStaff(staffId)
+    +getStaffMember(laboratoryId, staffId)
+    +registerStaff(laboratoryId, request): Observable<RegisteredStaff>
+    +deactivateStaff(laboratoryId, staffId): Observable<StaffMember>
     +getRawMaterials(laboratoryId)
     +getEnvironments(laboratoryId)
     +getEnvironment(laboratoryId, environmentId)
@@ -111,7 +131,10 @@ LaboratoryApiEndpoint --> LaboratoryAssembler
 StaffApiEndpoint --> StaffAssembler
 EnvironmentApiEndpoint --> EnvironmentAssembler
 RawMaterialApiEndpoint --> RawMaterialAssembler
-StaffApiEndpoint ..> MessageResource
+note bottom of StaffApiEndpoint
+  GET/POST /laboratories/{laboratoryId}/staff, GET .../staff/{staffId},
+  POST .../staff/{staffId}/deactivations
+end note
 
 package "laboratory.application" {
   class LaboratoryStore {
@@ -122,8 +145,8 @@ package "laboratory.application" {
     +createLaboratory(command)
     +updateLaboratory(laboratoryId, command)
     +loadStaff(laboratoryId)
-    +registerStaff(laboratoryId, command)
-    +deactivateStaff(laboratoryId, staffId)
+    +registerStaff(laboratoryId, command): Observable<RegisteredStaff>
+    +deactivateStaff(laboratoryId, staffId): Observable<StaffMember>
   }
   class EnvironmentStore <<root>> {
     +environments: Signal<Environment[]>
@@ -160,6 +183,7 @@ package "laboratory.presentation" {
   class EnvironmentSelector <<component>>
   class StaffList
   class StaffForm
+  class StaffDetail
   class RawMaterialDetail
   class LaboratoryRoutes
 }
@@ -171,11 +195,26 @@ EnvironmentForm --> EnvironmentStore
 EnvironmentSelector --> EnvironmentStore
 StaffList --> LaboratoryStore
 StaffForm --> LaboratoryStore
+StaffForm ..> RegisteredStaff
+StaffList --> IamStore
+StaffDetail --> LaboratoryApi
+StaffDetail --> LaboratoryStore
+StaffDetail --> RaApi
+StaffDetail ..> OperationsPage
+note right of StaffForm
+  Quality managers register operators and auditors; the credentials are e-mailed
+  or shown once (username and temporary password) when the e-mail cannot be sent.
+end note
+note right of StaffDetail
+  Profile and activity history of a staff member (audit log entries they performed),
+  for quality managers and auditors.
+end note
 RawMaterialDetail --> RawMaterialHistoryStore
 
 note bottom of LaboratoryRoutes
   /laboratories/lab-profile, environments[/new|/:environmentId/edit],
-  staff-list, staff-form, raw-materials/:id (legacy history).
+  staff-list, staff-form (quality managers), staff/:staffId (quality managers and auditors),
+  raw-materials/:id (legacy history).
   product-catalog and product-form redirect to /batches;
   raw-material-list and raw-material-form redirect to /inventory.
 end note

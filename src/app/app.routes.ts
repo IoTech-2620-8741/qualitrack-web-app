@@ -3,6 +3,7 @@ import { Home } from './shared/presentation/views/home/home';
 import { Layout } from './shared/presentation/components/layout/layout';
 import { iamGuard } from './iam/infrastructure/iam-guard';
 import { onboardingGuard } from './iam/infrastructure/onboarding-guard';
+import { qualityManagerGuard } from './iam/infrastructure/role-guards';
 
 const about = () => import('./shared/presentation/views/about/about').then((m) => m.About);
 
@@ -51,7 +52,7 @@ export const routes: Routes = [
   { path: 'alerts', loadChildren: caRoutes, canActivate: [onboardingGuard], canActivateChild: [onboardingGuard] },
   { path: 'reports', loadChildren: raRoutes, canActivate: [onboardingGuard], canActivateChild: [onboardingGuard] },
   { path: 'tracking', loadChildren: trackingRoutes, canActivate: [onboardingGuard], canActivateChild: [onboardingGuard] },
-  { path: 'subscriptions', loadChildren: subscriptionRoutes, canActivate: [iamGuard] },
+  { path: 'subscriptions', loadChildren: subscriptionRoutes, canActivate: [iamGuard, qualityManagerGuard] },
 
   { path: '', redirectTo: '/home', pathMatch: 'full' },
   { path: '**', loadComponent: pageNotFound, title: `Page Not Found - ${baseTitle}` },

@@ -1,5 +1,5 @@
 import { Injectable, computed, signal } from '@angular/core';
-import { retry } from 'rxjs';
+import { Observable, finalize, retry, tap } from 'rxjs';
 
 import { LaboratoryApi } from '../infrastructure/laboratory-api';
 
@@ -8,7 +8,7 @@ import { StaffMember } from '../domain/model/staff-member.entity';
 
 import { CreateLaboratoryCommand } from '../domain/model/create-laboratory.command';
 import { UpdateLaboratoryCommand } from '../domain/model/update-laboratory.command';
-import { RegisterStaffCommand } from '../domain/model/register-staff.command';
+import { RegisterStaffCommand, RegisteredStaff } from '../domain/model/register-staff.command';
 
 /**
  * Application store for managing Laboratory bounded context state.
@@ -175,54 +175,41 @@ export class LaboratoryStore {
   }
 
   /**
-   * Registers a new staff member under a laboratory.
+   * Registers a new staff member under a laboratory; the platform creates their account.
+   *
+   * @remarks
+   * The request is not retried: a repeated POST would try to register the same e-mail again.
+   * The caller shows the delivery of the credentials, which the platform returns only once.
    *
    * @param laboratoryId - Numeric identifier of the laboratory
    * @param command - Command containing staff registration data
+   * @returns Observable emitting the registered staff member and the delivery of their credentials
    */
-  registerStaff(laboratoryId: number, command: RegisterStaffCommand): void {
+  registerStaff(laboratoryId: number, command: RegisterStaffCommand): Observable<RegisteredStaff> {
     this.startOperation();
-
-    this.api
-      .registerStaff(laboratoryId, { ...command, laboratoryId })
-      .pipe(retry(2))
-      .subscribe({
-        next: () => {
-          this._successMsg.set('Staff member registered successfully');
-          this.finishOperation();
-          this.loadStaff(laboratoryId);
-        },
-        error: (error: unknown) => {
-          this.failOperation(error, 'Failed to register staff');
-        },
-      });
+    return this.api.registerStaff(laboratoryId, { ...command }).pipe(
+      tap((registered) => this._staffList.update((staffList) => [
+        ...staffList.filter((staff) => staff.id !== registered.staffMember.id), registered.staffMember,
+      ])),
+      finalize(() => this.finishOperation()),
+    );
   }
 
   /**
-   * Deactivates an existing staff member.
+   * Deactivates an existing staff member, who can no longer sign in.
    *
-   * @param laboratoryId - Numeric identifier of the laboratory used to update local state
+   * @param laboratoryId - Numeric identifier of the laboratory
    * @param staffId - Numeric identifier of the staff member to deactivate
+   * @returns Observable emitting the deactivated staff member
    */
-  deactivateStaff(laboratoryId: number, staffId: number): void {
+  deactivateStaff(laboratoryId: number, staffId: number): Observable<StaffMember> {
     this.startOperation();
-
-    this.api
-      .deactivateStaff(staffId)
-      .pipe(retry(2))
-      .subscribe({
-        next: () => {
-          this._staffList.update((staffList) =>
-            staffList.map((staff) => (staff.id === staffId ? { ...staff, active: false } : staff)),
-          );
-          this._successMsg.set('Staff member deactivated successfully');
-          this.finishOperation();
-          this.loadStaff(laboratoryId);
-        },
-        error: (error: unknown) => {
-          this.failOperation(error, 'Failed to deactivate staff');
-        },
-      });
+    return this.api.deactivateStaff(laboratoryId, staffId).pipe(
+      tap((deactivated) => this._staffList.update((staffList) =>
+        staffList.map((staff) => (staff.id === deactivated.id ? deactivated : staff)),
+      )),
+      finalize(() => this.finishOperation()),
+    );
   }
 
   /**
