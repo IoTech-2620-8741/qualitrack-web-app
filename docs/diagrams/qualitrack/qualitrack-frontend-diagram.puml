@@ -287,8 +287,9 @@ package "qualitrack-frontend" {
   package "tracking" {
     package "domain" {
       class Measurement
+      class ActuationEvent
+      class EnvironmentalProfile
       class DeviceConnection
-      class TelemetryHistoryPoint
     }
 
     package "application" {
@@ -298,18 +299,22 @@ package "qualitrack-frontend" {
     package "infrastructure" {
       class TrackingApi
       class MeasurementApiEndpoint
+      class ActuationEventApiEndpoint
+      class EnvironmentalProfileApiEndpoint
       class DeviceConnectionApiEndpoint
-      class TelemetryHistoryApiEndpoint
       class MeasurementAssembler
+      class ActuationEventAssembler
+      class EnvironmentalProfileAssembler
       class DeviceConnectionAssembler
-      class TelemetryHistoryAssembler
     }
 
     package "presentation" {
       class TrackingRoutes <<Routes>>
-      class TelemetryDashboardComponent
-      class TelemetryChartComponent
-      class TelemetryHistoryComponent
+      class EnvironmentalMonitoring
+      class TelemetryHistory
+      class EnvironmentalProfiles
+      class ThresholdEditor
+      class ActuationRulesEditor
     }
   }
 
@@ -439,11 +444,13 @@ AuditLogApiEndpoint --|> BaseApiEndpoint
 
 TrackingStore --> TrackingApi
 TrackingApi --> MeasurementApiEndpoint
+TrackingApi --> ActuationEventApiEndpoint
+TrackingApi --> EnvironmentalProfileApiEndpoint
 TrackingApi --> DeviceConnectionApiEndpoint
-TrackingApi --> TelemetryHistoryApiEndpoint
 MeasurementApiEndpoint --|> BaseApiEndpoint
+ActuationEventApiEndpoint --|> BaseApiEndpoint
+EnvironmentalProfileApiEndpoint --|> BaseApiEndpoint
 DeviceConnectionApiEndpoint --|> BaseApiEndpoint
-TelemetryHistoryApiEndpoint --|> BaseApiEndpoint
 
 SubscriptionStore --> SubscriptionApi
 SubscriptionApi --|> BaseApi
