@@ -9,6 +9,9 @@ import { EnvironmentUsage } from '../domain/model/environment-usage';
 import { RegisterEnvironmentCommand } from '../domain/model/register-environment.command';
 import { UpdateEnvironmentCommand } from '../domain/model/update-environment.command';
 
+/** Features that remember the environment the user works with. */
+export type EnvironmentScope = 'inventory' | 'production';
+
 /**
  * Application store for the environments of the current laboratory.
  *
@@ -173,11 +176,12 @@ export class EnvironmentStore {
    * environment with the preferred usage, otherwise the first environment.
    *
    * @param preferredUsage - Usage that fits the calling feature, for example RAW_MATERIAL_STORAGE
+   * @param scope - Feature that remembers its own environment, so inventory and production do not overwrite each other
    * @returns The environment to open, or null when the laboratory has no environments
    */
-  preferredEnvironment(preferredUsage?: EnvironmentUsage): Environment | null {
+  preferredEnvironment(preferredUsage?: EnvironmentUsage, scope: EnvironmentScope = 'inventory'): Environment | null {
     const environments = this._environments();
-    const remembered = this.rememberedEnvironmentId();
+    const remembered = this.rememberedEnvironmentId(scope);
     return environments.find((environment) => environment.id === remembered)
       ?? environments.find((environment) => environment.usage === preferredUsage)
       ?? environments[0]
@@ -188,10 +192,11 @@ export class EnvironmentStore {
    * Remembers the environment the user is working with, only as a per-browser convenience.
    *
    * @param environmentId - Numeric identifier of the environment
+   * @param scope - Feature that remembers the environment
    */
-  rememberEnvironment(environmentId: number): void {
+  rememberEnvironment(environmentId: number, scope: EnvironmentScope = 'inventory'): void {
     try {
-      localStorage.setItem(this.preferenceKey(), String(environmentId));
+      localStorage.setItem(this.preferenceKey(scope), String(environmentId));
     } catch {
       // Storage can be unavailable (private mode); the preference is optional.
     }
@@ -204,17 +209,17 @@ export class EnvironmentStore {
     this._error.set(null);
   }
 
-  private rememberedEnvironmentId(): number | null {
+  private rememberedEnvironmentId(scope: EnvironmentScope): number | null {
     try {
-      const value = Number(localStorage.getItem(this.preferenceKey()));
+      const value = Number(localStorage.getItem(this.preferenceKey(scope)));
       return Number.isInteger(value) && value > 0 ? value : null;
     } catch {
       return null;
     }
   }
 
-  private preferenceKey(): string {
-    return `qualitrack.environment.${this.laboratoryId}`;
+  private preferenceKey(scope: EnvironmentScope): string {
+    return `qualitrack.environment.${this.laboratoryId}.${scope}`;
   }
 
   private async refresh(): Promise<void> {
