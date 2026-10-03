@@ -3,11 +3,11 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 import { Measurement } from '../domain/model/measurement.entity';
-import { EquipmentStatus } from '../domain/model/equipment-status.entity';
+import { DeviceConnection } from '../domain/model/device-connection.entity';
 import { TelemetryHistoryPoint } from '../domain/model/telemetry-history-point.entity';
 
 import { MeasurementApiEndpoint } from './measurement-api-endpoint';
-import { EquipmentStatusApiEndpoint } from './equipment-status-api-endpoint';
+import { DeviceConnectionApiEndpoint } from './device-connection-api-endpoint';
 import { TelemetryHistoryApiEndpoint } from './telemetry-history-api-endpoint';
 
 /**
@@ -28,7 +28,7 @@ export class TrackingApi {
   /**
    * Endpoint client for equipment status operations.
    */
-  private readonly equipmentStatusEndpoint: EquipmentStatusApiEndpoint;
+  private readonly deviceConnectionEndpoint: DeviceConnectionApiEndpoint;
 
   /**
    * Endpoint client for telemetry history operations.
@@ -42,7 +42,7 @@ export class TrackingApi {
    */
   constructor(private readonly http: HttpClient) {
     this.measurementEndpoint = new MeasurementApiEndpoint(this.http);
-    this.equipmentStatusEndpoint = new EquipmentStatusApiEndpoint(this.http);
+    this.deviceConnectionEndpoint = new DeviceConnectionApiEndpoint(this.http);
     this.telemetryHistoryEndpoint = new TelemetryHistoryApiEndpoint(this.http);
   }
 
@@ -57,13 +57,10 @@ export class TrackingApi {
   }
 
   /**
-   * Retrieves the current telemetry status for a specific equipment.
-   *
-   * @param equipmentId - Numeric identifier of the equipment
-   * @returns Observable stream emitting the current EquipmentStatus
+   * Whether an IoT device located in the environment is communicating with Edge (TS41).
    */
-  getEquipmentStatus(equipmentId: number): Observable<EquipmentStatus | null> {
-    return this.equipmentStatusEndpoint.getStatusByEquipment(equipmentId);
+  getDeviceConnection(laboratoryId: number, environmentId: number, deviceId: number): Observable<DeviceConnection> {
+    return this.deviceConnectionEndpoint.getConnection(laboratoryId, environmentId, deviceId);
   }
 
   /**
