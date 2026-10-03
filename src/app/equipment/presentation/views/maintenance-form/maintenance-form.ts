@@ -1,6 +1,6 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -14,10 +14,10 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TranslatePipe } from '@ngx-translate/core';
 
 import { EquipmentStore } from '../../../application/equipment.store';
-import { RegisterMaintenanceCommand } from '../../../domain/model/register-maintenance.command';
+import { localIsoDate } from '../../../../shared/presentation/utils/local-date';
 
 /**
- * Component responsible for displaying and handling the maintenance registration form.
+ * Registers a maintenance performed on an equipment located in an environment (US49).
  */
 @Component({
   selector: 'app-maintenance-form',
@@ -47,55 +47,42 @@ export class MaintenanceForm implements OnInit {
 
   protected readonly store = inject(EquipmentStore);
   protected readonly equipmentId = signal<number | null>(null);
-
-  protected readonly maintenanceTypes = [
-    { value: 'PREVENTIVE', label: 'Preventive' },
-    { value: 'CORRECTIVE', label: 'Corrective' },
-    { value: 'CALIBRATION', label: 'Calibration' },
-    { value: 'INSPECTION', label: 'Inspection' },
-  ];
-
-  protected form: FormGroup = this.fb.group({
-    maintenanceDate: [new Date(), Validators.required],
-    technicianName: ['', [Validators.required, Validators.minLength(3)]],
-    type: ['', Validators.required],
-    description: ['', [Validators.required, Validators.maxLength(500)]],
+  protected readonly equipment = computed(() => {
+    const selected = this.store.selectedEquipment();
+    return selected?.id === this.equipmentId() ? selected : null;
   });
 
+  /** A performed maintenance cannot be dated in the future. */
+  protected readonly today = new Date();
+
+  protected readonly maintenanceTypes = ['PREVENTIVE', 'CORRECTIVE', 'CALIBRATION', 'INSPECTION', 'OTHER'];
+
+  protected readonly form = this.fb.nonNullable.group({
+    maintenanceDate: [new Date(), Validators.required],
+    technicianName: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(150)]],
+    type: ['', Validators.required],
+    description: ['', [Validators.required, Validators.maxLength(1000)]],
+  });
+
+  constructor() {
+    this.store.clearMessages();
+  }
+
   ngOnInit(): void {
-    const idParam = this.route.snapshot.paramMap.get('id');
-
-    if (idParam) {
-      this.equipmentId.set(Number(idParam));
-    }
+    const id = Number(this.route.snapshot.paramMap.get('id'));
+    if (!Number.isSafeInteger(id) || id <= 0) return;
+    this.equipmentId.set(id);
+    if (!this.equipment()) void this.store.loadEquipmentById(id);
   }
 
-  protected onSave(): void {
-    const equipmentId = this.equipmentId();
-
-    if (this.form.invalid || !equipmentId) return;
-
-    const formValue = this.form.getRawValue();
-
-    const command: RegisterMaintenanceCommand = {
-      equipmentId,
-      maintenanceDate: this.toLocalDateString(formValue.maintenanceDate),
-      technicianName: formValue.technicianName,
-      type: formValue.type,
-      description: formValue.description,
-    };
-
-    this.store.registerMaintenance(command);
-    this.router.navigate(['/equipments/equipment-detail', equipmentId]).then();
-  }
-
-  private toLocalDateString(value: Date | string): string {
-    const date = value instanceof Date ? value : new Date(value);
-
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-
-    return `${year}-${month}-${day}`;
+  protected async onSave(): Promise<void> {
+    const equipment = this.equipment();
+    if (this.form.invalid || !equipment) return;
+    const { maintenanceDate, ...values } = this.form.getRawValue();
+    const saved = await this.store.registerMaintenance(equipment, {
+      ...values,
+      maintenanceDate: localIsoDate(new Date(maintenanceDate)),
+    });
+    if (saved) await this.router.navigate(['/equipments/equipment-detail', equipment.id]);
   }
 }

@@ -17,12 +17,29 @@
         <mat-icon>refresh</mat-icon>
       </button>
 
-      <button mat-raised-button color="primary" routerLink="../register-equipment">
-        <mat-icon>add</mat-icon>
-        {{ 'equipment-list.add-button' | translate }}
-      </button>
+      @if (store.canManage()) {
+        <a mat-stroked-button routerLink="../register-device">
+          <mat-icon>sensors</mat-icon>
+          {{ 'device-form.add-button' | translate }}
+        </a>
+
+        <a mat-raised-button color="primary" routerLink="../register-equipment">
+          <mat-icon>add</mat-icon>
+          {{ 'equipment-list.add-button' | translate }}
+        </a>
+      }
     </div>
   </header>
+
+  <mat-button-toggle-group
+    class="equipment-filter"
+    [value]="filter()"
+    (change)="filter.set($event.value)"
+    [attr.aria-label]="'equipment-list.filter.label' | translate">
+    <mat-button-toggle value="all">{{ 'equipment-list.filter.all' | translate }}</mat-button-toggle>
+    <mat-button-toggle value="equipment">{{ 'equipment-list.filter.equipment' | translate }}</mat-button-toggle>
+    <mat-button-toggle value="devices">{{ 'equipment-list.filter.devices' | translate }}</mat-button-toggle>
+  </mat-button-toggle-group>
 
   @if (store.isLoading()) {
     <div class="loading-shade">
@@ -31,14 +48,14 @@
   }
 
   @if (store.error()) {
-    <div class="error-container">
+    <div class="error-container" role="alert">
       <mat-icon>error_outline</mat-icon>
-      <p>{{ store.error() }}</p>
+      <p>{{ store.error()! | translate }}</p>
     </div>
   }
 
   <div class="table-container mat-elevation-z2">
-    <table mat-table [dataSource]="store.equipmentList()">
+    <table mat-table [dataSource]="visibleEquipment()">
 
       <ng-container matColumnDef="name">
         <th mat-header-cell *matHeaderCellDef>{{ 'equipment-list.fields.name' | translate }}</th>
@@ -47,12 +64,24 @@
 
       <ng-container matColumnDef="type">
         <th mat-header-cell *matHeaderCellDef>{{ 'equipment-list.fields.type' | translate }}</th>
-        <td mat-cell *matCellDef="let element">{{ element.type }}</td>
+        <td mat-cell *matCellDef="let element">
+          @if (element.deviceType) {
+            <span class="device-type">
+              <mat-icon aria-hidden="true">sensors</mat-icon>
+              {{ 'device-types.' + element.deviceType | translate }}
+            </span>
+          } @else {
+            {{ element.type }}
+          }
+          <small class="model">{{ element.model }}</small>
+        </td>
       </ng-container>
 
-      <ng-container matColumnDef="model">
-        <th mat-header-cell *matHeaderCellDef>{{ 'equipment-list.fields.model' | translate }}</th>
-        <td mat-cell *matCellDef="let element">{{ element.model }}</td>
+      <ng-container matColumnDef="environment">
+        <th mat-header-cell *matHeaderCellDef>{{ 'equipment-list.fields.environment' | translate }}</th>
+        <td mat-cell *matCellDef="let element">
+          {{ environmentName(element) ?? ('equipment-list.not-located' | translate) }}
+        </td>
       </ng-container>
 
       <ng-container matColumnDef="serialNumber">
@@ -74,15 +103,16 @@
       </ng-container>
 
       <ng-container matColumnDef="actions">
-        <th mat-header-cell *matHeaderCellDef>{{ 'common.actions.label' | translate }}</th>        <td mat-cell *matCellDef="let element">
-          <button
+        <th mat-header-cell *matHeaderCellDef>{{ 'common.actions.label' | translate }}</th>
+        <td mat-cell *matCellDef="let element">
+          <a
             mat-icon-button
             color="primary"
             [routerLink]="['../equipment-detail', element.id]"
             [matTooltip]="'equipment-list.actions.view-detail' | translate"
             [attr.aria-label]="'equipment-list.actions.view-detail' | translate">
             <mat-icon>visibility</mat-icon>
-          </button>
+          </a>
         </td>
       </ng-container>
 

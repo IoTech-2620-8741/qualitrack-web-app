@@ -1,5 +1,7 @@
 import { BaseAssembler } from '../../shared/infrastructure/base-assembler';
 import { Equipment } from '../domain/model/equipment.entity';
+import { EquipmentStatus } from '../domain/model/equipment-status';
+import { IotDeviceType } from '../domain/model/iot-device-type';
 import { EquipmentResource, EquipmentsResponse } from './equipment-response';
 
 /**
@@ -67,12 +69,15 @@ export class EquipmentAssembler implements BaseAssembler<
     return new Equipment({
       id: resource.id,
       labId: resource.laboratoryId,
+      environmentId: resource.environmentId ?? null,
       name: resource.name,
       type: resource.type,
       model: resource.model,
       serialNumber: resource.serialNumber,
-      status: resource.status,
-      sensorExternalId: resource.sensorExternalId,
+      status: resource.status as EquipmentStatus,
+      deviceType: (resource.deviceType ?? null) as IotDeviceType | null,
+      sensorExternalId: resource.sensorExternalId ?? null,
+      firmwareVersion: resource.firmwareVersion ?? null,
       createdAt: resource.createdAt ?? ''
     });
   }
@@ -91,12 +96,15 @@ export class EquipmentAssembler implements BaseAssembler<
     return {
       id: entity.id,
       laboratoryId: entity.labId,
+      environmentId: entity.environmentId,
       name: entity.name,
       type: entity.type,
       model: entity.model,
       serialNumber: entity.serialNumber,
       status: entity.status,
+      deviceType: entity.deviceType,
       sensorExternalId: entity.sensorExternalId,
+      firmwareVersion: entity.firmwareVersion,
       createdAt: entity.createdAt,
     } as EquipmentResource;
   }

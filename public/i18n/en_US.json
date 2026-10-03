@@ -263,7 +263,6 @@
       "telemetry": "Equipment telemetry",
       "parameter": "Parameter",
       "latest": "Last recorded reading",
-      "no-equipment": "No equipment registered.",
       "no-readings": "No readings recorded for this equipment.",
       "reading-summary": "{{count}} recent readings · Min {{min}} {{unit}} · Max {{max}} {{unit}}",
       "cycle": "Billing cycle",
@@ -292,7 +291,8 @@
         "IN_PROGRESS": "In progress",
         "RELEASED": "Released",
         "REJECTED": "Rejected"
-      }
+      },
+      "no-devices": "There are no IoT devices registered."
     },
     "command-center": "QualiTrack Command Center",
     "fallback-title": "Laboratory Operations",
@@ -706,7 +706,7 @@
   },
   "equipment-list": {
     "title": "Equipment Catalog",
-    "subtitle": "Management and monitoring of industrial laboratory assets",
+    "subtitle": "Equipment and IoT devices of the laboratory, with their location and status",
     "add-button": "Register Equipment",
     "empty": "No equipment found in this laboratory",
     "fields": {
@@ -714,10 +714,18 @@
       "type": "Type",
       "model": "Model",
       "serial": "Serial Number",
-      "status": "Status"
+      "status": "Status",
+      "environment": "Environment"
     },
     "actions": {
       "view-detail": "View equipment detail"
+    },
+    "not-located": "Not located",
+    "filter": {
+      "label": "Show",
+      "all": "All",
+      "equipment": "Equipment",
+      "devices": "IoT devices"
     }
   },
   "equipment-form": {
@@ -731,7 +739,8 @@
     "errors": {
       "name-minlength": "The equipment name must have at least 3 characters",
       "serial-pattern": "Only letters, numbers, and hyphens are allowed"
-    }
+    },
+    "quality-only": "Only quality managers and administrators can register equipment and IoT devices."
   },
   "equipment-detail": {
     "title": "Technical File",
@@ -740,9 +749,21 @@
       "bpm": "BPM Config",
       "maintenance": "Maintenance"
     },
-    "fields": {
-      "sensor": "External Sensor ID",
-      "created-at": "Created At"
+    "requires-location": "Associate the equipment with an environment to register status changes and maintenance.",
+    "location": {
+      "title": "Location",
+      "hint": "Associate the equipment with the environment where it is installed.",
+      "move-hint": "Choose another environment if the equipment was moved.",
+      "associate": "Associate",
+      "move": "Move",
+      "not-recorded": "The device was registered but its environment was not recorded."
+    },
+    "status-change": {
+      "title": "Operational status",
+      "hint": "The change is kept in the equipment history.",
+      "new-status": "New status",
+      "reason": "Reason (optional)",
+      "register": "Register change"
     }
   },
   "bpm-config": {
@@ -758,7 +779,8 @@
     "placeholders": {
       "parameter": "E.g. Internal Temperature",
       "unit": "E.g. °C, %, bar, RPM"
-    }
+    },
+    "saved": "BPM parameter saved."
   },
   "maintenance-history": {
     "title": "Maintenance History",
@@ -775,7 +797,8 @@
       "preventive": "Preventive",
       "corrective": "Corrective",
       "calibration": "Calibration",
-      "inspection": "Inspection"
+      "inspection": "Inspection",
+      "other": "Other"
     }
   },
   "maintenance-form": {
@@ -787,7 +810,8 @@
     },
     "errors": {
       "technician-minlength": "The technician name must have at least 3 characters",
-      "description-maxlength": "The description cannot exceed 500 characters"
+      "description-maxlength": "The description cannot exceed 1000 characters",
+      "future-date": "The maintenance date cannot be in the future"
     }
   },
   "equipment-alert": {
@@ -800,9 +824,9 @@
     "operational": "Operational",
     "maintenance": "Maintenance",
     "out_of_service": "Out of Service",
-    "calibration_required": "Calibration Required",
     "unknown": "Unknown Status",
-    "loading": "Loading equipment..."
+    "loading": "Loading equipment...",
+    "inactive": "Inactive"
   },
   "lab-profile": {
     "title": "Laboratory Profile",
@@ -1062,7 +1086,7 @@
     },
     "dashboard": {
       "title": "Telemetry Dashboard",
-      "select-equipment": "Select Equipment",
+      "select-equipment": "Select IoT device",
       "connection-status": "Connection Status",
       "anomalies": "Detected Anomalies",
       "events": "Events",
@@ -1092,6 +1116,14 @@
         "deviated": "BPM Deviation",
         "normal": "Normal"
       }
+    },
+    "no-devices": "Only IoT devices send telemetry and there are none registered in this laboratory.",
+    "connection": {
+      "CONNECTED": "Connected",
+      "REQUIRES_REVIEW": "Requires review",
+      "last": "Last communication:",
+      "never": "No communication received yet",
+      "not-located": "Associate the device with an environment to know its connection status."
     }
   },
   "material-history": {
@@ -1173,5 +1205,46 @@
     "released": "Released on {{date}} and signed by user #{{user}}.",
     "rejected": "Rejected on {{date}}:",
     "pending": "The batch has not been released or rejected yet."
+  },
+  "equipment": {
+    "errors": {
+      "connection": "The server could not be reached. Check your connection and try again.",
+      "forbidden": "Your account cannot perform this action.",
+      "not-found": "The equipment or environment was not found in this laboratory.",
+      "failed": "The operation could not be completed."
+    }
+  },
+  "device-form": {
+    "add-button": "Register IoT device",
+    "title": "New IoT Device",
+    "subtitle": "ESP32 environmental device or container monitor and the identity Edge uses to recognise it",
+    "save": "Register device",
+    "fields": {
+      "device-type": "Device type",
+      "identifier": "Device identifier",
+      "serial": "MAC address or serial number",
+      "firmware": "Firmware version",
+      "environment": "Environment where it is installed"
+    },
+    "placeholders": {
+      "name": "e.g. Space monitor - Raw material warehouse",
+      "identifier": "e.g. ENV-001",
+      "serial": "e.g. 24:6F:28:AA:10:01",
+      "firmware": "e.g. 1.0.3"
+    },
+    "hints": {
+      "identifier": "Unique in QualiTrack; Edge uses it to recognise the device.",
+      "environment": "Optional; it can also be associated later from the device detail."
+    },
+    "no-environment": "Associate later",
+    "occupied": "already has an environmental device"
+  },
+  "device-types": {
+    "ENVIRONMENTAL_DEVICE": "Environmental device",
+    "CONTAINER_MONITOR": "Container monitor",
+    "hints": {
+      "ENVIRONMENTAL_DEVICE": "Supervises the whole environment (space monitor); one per environment.",
+      "CONTAINER_MONITOR": "Supervises a container where raw materials or products are kept."
+    }
   }
 }

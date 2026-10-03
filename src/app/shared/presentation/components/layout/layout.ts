@@ -93,6 +93,7 @@ export class Layout {
       children: [
         { label: 'equipment-list.title', link: '/equipments/equipment-list' },
         { label: 'equipment-list.add-button', link: '/equipments/register-equipment' },
+        { label: 'device-form.add-button', link: '/equipments/register-device' },
       ],
     },
     {

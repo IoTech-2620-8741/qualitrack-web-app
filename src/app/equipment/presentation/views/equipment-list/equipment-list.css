@@ -74,9 +74,34 @@ mat-chip.out_of_service {
   color: #c62828 !important;
 }
 
-mat-chip.calibration_required {
-  background-color: #e3f2fd !important;
-  color: #1565c0 !important;
+mat-chip.inactive {
+  background-color: #eceff1 !important;
+  color: #455a64 !important;
+}
+
+.equipment-filter {
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.device-type {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #006e76;
+  font-weight: 600;
+}
+
+.device-type mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+.model {
+  display: block;
+  color: #60727a;
+  margin-top: 2px;
 }
 
 .loading-shade {
