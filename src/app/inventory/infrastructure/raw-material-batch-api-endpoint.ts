@@ -12,14 +12,7 @@ import { RawMaterialBatchAssembler } from './raw-material-batch-assembler';
 import {
   ReceiveRawMaterialBatchRequest,
   ReviewRawMaterialBatchRequest,
-  ConsumeRawMaterialBatchRequest,
 } from './raw-material-batch.request';
-import {
-  AvailableReceiptResource,
-  ReceiptConsumptionResponse,
-} from './receipt-consumption-response';
-import { AvailableReceipt } from '../domain/model/available-receipt.entity';
-import type { RawMaterialBatchConsumption } from '../application/raw-material-batch-consumption.result';
 
 const laboratoriesEndpointUrl = `${environment.serverBasePath}${environment.laboratoryLabsEndpointPath}`;
 
@@ -38,8 +31,9 @@ export class RawMaterialBatchApiEndpoint extends BaseApiEndpoint<
     super(http, laboratoriesEndpointUrl, new RawMaterialBatchAssembler());
   }
 
-  getByMaterial(lab: number, environmentId: number, material: number) {
-    return this.http.get<RawMaterialBatchResource[]>(this.batches(lab, environmentId, material)).pipe(
+  getByMaterial(lab: number, environmentId: number, material: number, usable?: boolean) {
+    const params = usable ? new HttpParams().set('usable', true) : undefined;
+    return this.http.get<RawMaterialBatchResource[]>(this.batches(lab, environmentId, material), { params }).pipe(
       map((resources) => resources.map((resource) => this.assembler.toEntityFromResource(resource))),
       catchError(this.handleError('Failed to load supplier receipts')),
     );
@@ -76,48 +70,6 @@ export class RawMaterialBatchApiEndpoint extends BaseApiEndpoint<
       .pipe(catchError(this.handleError('Failed to review receipt')));
   }
 
-  /** Laboratory-wide usable lots kept for product batch consumption (deprecated backend read). */
-  getUsable(lab: number, material: number) {
-    return this.http
-      .get<AvailableReceiptResource[]>(
-        `${this.laboratoryInventory(lab)}${environment.inventoryMaterialsEndpointPath}/${material}${environment.inventoryUsableReceiptsEndpointPath}`,
-      )
-      .pipe(
-        map((resources) =>
-          resources.map((resource): AvailableReceipt => ({
-            id: resource.id,
-            rawMaterialId: resource.rawMaterialId,
-            batchNumber: resource.batchNumber,
-            unit: resource.unit,
-            availableAmount: resource.availableAmount,
-            expiresOn: resource.expiresOn,
-          })),
-        ),
-        catchError(this.handleError('Failed to load available receipts')),
-      );
-  }
-
-  /** Atomic consumption for a product batch; moves to product batch raw material usages in a later phase. */
-  consume(lab: number, request: ConsumeRawMaterialBatchRequest) {
-    return this.http
-      .post<ReceiptConsumptionResponse>(
-        `${this.laboratoryInventory(lab)}${environment.inventoryConsumptionsEndpointPath}`,
-        request,
-      )
-      .pipe(
-        map((resource): RawMaterialBatchConsumption => ({
-          rawMaterialBatchId: resource.rawMaterialBatchId,
-          productBatchId: resource.productBatchId,
-          amountUsed: resource.amountUsed,
-          unit: resource.unit,
-          stockBefore: resource.stockBefore,
-          stockAfter: resource.stockAfter,
-          operationId: resource.operationId,
-        })),
-        catchError(this.handleError('Failed to consume receipt')),
-      );
-  }
-
   private environmentRoot(lab: number, environmentId: number) {
     return `${this.endpointUrl}/${lab}${environment.laboratoryEnvironmentsEndpointPath}/${environmentId}`;
   }
@@ -126,7 +78,4 @@ export class RawMaterialBatchApiEndpoint extends BaseApiEndpoint<
     return `${this.environmentRoot(lab, environmentId)}${environment.inventoryRawMaterialsEndpointPath}/${material}${environment.inventoryRawMaterialBatchesEndpointPath}`;
   }
 
-  private laboratoryInventory(lab: number) {
-    return `${this.endpointUrl}/${lab}${environment.inventoryEndpointPath}`;
-  }
 }

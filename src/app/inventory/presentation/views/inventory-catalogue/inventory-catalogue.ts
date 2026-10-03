@@ -31,7 +31,7 @@ import { EnvironmentSelector } from '../../../../laboratory/presentation/compone
     EnvironmentSelector,
   ],
   templateUrl: './inventory-catalogue.html',
-  styleUrl: '../inventory.css',
+  styleUrl: '../../../../shared/presentation/styles/operations-page.css',
 })
 export class InventoryCatalogue implements OnInit {
   readonly store = inject(InventoryStore);

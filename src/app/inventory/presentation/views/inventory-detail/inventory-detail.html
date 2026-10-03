@@ -1,4 +1,4 @@
-<main class="inventory-page">
+<main class="operations-page">
   <a [routerLink]="['/inventory/environments', store.environmentId(), 'raw-materials']">{{ 'inventory.title' | translate }}</a>
   @if (store.error()) {
     <p class="error" role="alert">{{ store.error() | translate }}</p>

@@ -36,8 +36,9 @@ export class InventoryApi extends BaseApi {
   save(lab: number, environmentId: number, request: SaveRawMaterialRequest, id?: number) {
     return this.materialEndpoint.saveMaterial(lab, environmentId, request, id);
   }
-  receipts(lab: number, environmentId: number, material: number) {
-    return this.receiptEndpoint.getByMaterial(lab, environmentId, material);
+  /** Lots of a raw material; usable=true keeps only released, unexpired lots with stock. */
+  receipts(lab: number, environmentId: number, material: number, usable?: boolean) {
+    return this.receiptEndpoint.getByMaterial(lab, environmentId, material, usable);
   }
   environmentReceipts(lab: number, environmentId: number, expirationStatus?: ExpirationStatus, withinDays?: number) {
     return this.receiptEndpoint.getByEnvironment(lab, environmentId, expirationStatus, withinDays);
@@ -58,27 +59,4 @@ export class InventoryApi extends BaseApi {
     return this.legacyEndpoint.importMaterial(lab, environmentId, legacyId);
   }
   /** Laboratory-wide catalogue used by product batch consumption and the dashboard (deprecated backend read). */
-  laboratoryMaterials(lab: number) {
-    return this.materialEndpoint.getByLaboratory(lab);
-  }
-  /** Laboratory-wide usable lots used by product batch consumption (deprecated backend read). */
-  usable(lab: number, material: number) {
-    return this.receiptEndpoint.getUsable(lab, material);
-  }
-  consume(
-    lab: number,
-    receiptId: number,
-    productBatchId: number,
-    amount: number,
-    unit: string,
-    operationId: string,
-  ) {
-    return this.receiptEndpoint.consume(lab, {
-      receiptId,
-      productBatchId,
-      amount,
-      unit,
-      operationId,
-    });
-  }
 }

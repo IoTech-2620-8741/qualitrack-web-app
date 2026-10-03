@@ -16,7 +16,6 @@ export const environment = {
   // Laboratory
   laboratoryLabsEndpointPath: '/laboratories',
   laboratoryStaffEndpointPath: '/staff',
-  laboratoryProductsEndpointPath: '/products',
   laboratoryRawMaterialsEndpointPath: '/raw-materials',
   laboratoryEnvironmentsEndpointPath: '/environments',
   laboratoryEnvironmentUsageAssignmentsEndpointPath: '/usage-assignments',
@@ -29,11 +28,8 @@ export const environment = {
   inventoryRawMaterialUsagesEndpointPath: '/usages',
   inventoryEnvironmentRawMaterialBatchesEndpointPath: '/raw-material-batches',
   inventoryRawMaterialImportsEndpointPath: '/raw-material-imports',
-  // Laboratory-wide inventory reads and consumption (deprecated until product batch raw material usages exist)
+  // Pre-Inventory records pending import, under /laboratories/{laboratoryId}/inventory
   inventoryEndpointPath: '/inventory',
-  inventoryMaterialsEndpointPath: '/materials',
-  inventoryUsableReceiptsEndpointPath: '/usable-receipts',
-  inventoryConsumptionsEndpointPath: '/consumptions',
   inventoryLegacyMaterialsEndpointPath: '/legacy-materials',
 
   // Equipment
@@ -50,9 +46,17 @@ export const environment = {
   equipmentReportsEndpointPath: '/reports',
   equipmentLogReportsEndpointPath: '/log-reports',
 
-  // Batch
+  // Product Batch, under /laboratories/{laboratoryId}/environments/{environmentId}
+  productsEndpointPath: '/products',
+  productBatchesEndpointPath: '/batches',
+  batchReleasesEndpointPath: '/releases',
+  batchRejectionsEndpointPath: '/rejections',
+  batchRawMaterialUsagesEndpointPath: '/raw-material-usages',
+  batchEquipmentUsagesEndpointPath: '/equipment-usages',
+  batchStaffParticipationsEndpointPath: '/staff-participations',
+  batchTraceabilityEndpointPath: '/traceability',
+  // Batch records of other bounded contexts, under /batches/{batchId}
   batchEndpointPath: '/batches',
-  batchRawMaterialUsageEndpointPath: '/raw-materials',
   batchAuditLogsEndpointPath: '/audit-logs',
   batchDeviationAlertsEndpointPath: '/deviation-alerts',
   batchComplianceEventsEndpointPath: '/compliance-events',

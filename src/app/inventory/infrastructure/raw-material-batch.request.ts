@@ -12,10 +12,3 @@ export interface ReviewRawMaterialBatchRequest {
   status: RawMaterialBatchStatus;
   reason: string;
 }
-export interface ConsumeRawMaterialBatchRequest {
-  receiptId: number;
-  productBatchId: number;
-  amount: number;
-  unit: string;
-  operationId: string;
-}
