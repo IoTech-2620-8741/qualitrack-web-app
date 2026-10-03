@@ -165,13 +165,11 @@ package "equipment.presentation" {
   class EquipmentDetail
   class MaintenanceForm
   class BpmConfigForm
-  class CalibrationAlert
   class EquipmentRoutes
 }
 
 EquipmentList --> EquipmentStore
 EquipmentList --> EnvironmentStore
-EquipmentList *-- CalibrationAlert
 EquipmentForm --> EquipmentStore
 DeviceForm --> EquipmentStore
 DeviceForm --> EnvironmentStore
@@ -179,10 +177,10 @@ EquipmentDetail --> EquipmentStore
 EquipmentDetail --> EnvironmentStore
 MaintenanceForm --> EquipmentStore
 BpmConfigForm --> EquipmentStore
-CalibrationAlert --> EquipmentStore
 
 note bottom of EquipmentRoutes
-  /equipments/equipment-list (filter: all, equipment, IoT devices)
+  /equipments/equipment-list: summary (process equipment, IoT devices, in maintenance
+  or out of service), search and filters by kind and attention, like the inventory
   /equipments/register-equipment, /equipments/register-device
   /equipments/equipment-detail/:id (location, status change, BPM, maintenance)
   /equipments/maintenance-form/:id, /equipments/bpm-config-form/:id

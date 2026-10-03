@@ -1,44 +1,45 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatTableModule } from '@angular/material/table';
+import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
-import { MatChipsModule } from '@angular/material/chips';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { RouterModule } from '@angular/router';
+import { MatInputModule } from '@angular/material/input';
 import { TranslatePipe } from '@ngx-translate/core';
 
 import { EquipmentStore } from '../../../application/equipment.store';
 import { Equipment } from '../../../domain/model/equipment.entity';
+import { ATTENTION_STATUSES } from '../../../domain/model/equipment-status';
 import { EnvironmentStore } from '../../../../laboratory/application/environment.store';
-import { CalibrationAlert } from '../calibration-alert/calibration-alert';
 
 /** Which equipment the list shows: everything, process equipment or IoT devices. */
 type EquipmentFilter = 'all' | 'equipment' | 'devices';
 
 /**
  * Equipment and IoT devices of the laboratory with their location and status (US46).
+ *
+ * @remarks
+ * Equipment in maintenance or out of service is counted in the summary and can be filtered,
+ * like low stock materials in the inventory.
  */
 @Component({
   selector: 'app-equipment-list',
   standalone: true,
   imports: [
     CommonModule,
-    MatTableModule,
+    FormsModule,
+    RouterLink,
     MatButtonModule,
     MatButtonToggleModule,
+    MatCheckboxModule,
     MatIconModule,
-    MatChipsModule,
-    MatTooltipModule,
-    MatProgressSpinnerModule,
-    CalibrationAlert,
-    RouterModule,
+    MatInputModule,
     TranslatePipe,
   ],
   templateUrl: './equipment-list.html',
-  styleUrl: './equipment-list.css',
+  styleUrls: ['../../../../shared/presentation/styles/operations-page.css', './equipment-list.css'],
 })
 export class EquipmentList implements OnInit {
   protected readonly store = inject(EquipmentStore);
@@ -47,17 +48,18 @@ export class EquipmentList implements OnInit {
 
   protected readonly filter = signal<EquipmentFilter>('all');
 
-  protected readonly displayedColumns: string[] = ['name', 'type', 'environment', 'serialNumber', 'status', 'actions'];
+  protected readonly search = signal('');
+
+  protected readonly attentionOnly = signal(false);
 
   protected readonly visibleEquipment = computed(() => {
-    switch (this.filter()) {
-      case 'equipment':
-        return this.store.processEquipment();
-      case 'devices':
-        return this.store.iotDevices();
-      default:
-        return this.store.equipmentList();
-    }
+    const byType = this.filter() === 'equipment' ? this.store.processEquipment()
+      : this.filter() === 'devices' ? this.store.iotDevices() : this.store.equipmentList();
+    const text = this.search().trim().toLowerCase();
+    return byType
+      .filter((equipment) => !this.attentionOnly() || this.needsAttention(equipment))
+      .filter((equipment) => !text || [equipment.name, equipment.model, equipment.serialNumber, equipment.sensorExternalId ?? '']
+        .some((value) => value.toLowerCase().includes(text)));
   });
 
   ngOnInit(): void {
@@ -65,14 +67,18 @@ export class EquipmentList implements OnInit {
     void this.environments.loadEnvironments();
   }
 
-  protected onRefresh(): void {
+  protected reload(): void {
     this.store.loadEquipment();
+  }
+
+  protected needsAttention(equipment: Equipment): boolean {
+    return ATTENTION_STATUSES.includes(equipment.status);
   }
 
   /** Name of the environment where the equipment is located, if it is known. */
   protected environmentName(equipment: Equipment): string | null {
     if (equipment.environmentId === null) return null;
-    return this.environments.environments().find((environment) => environment.id === equipment.environmentId)?.name
-      ?? `#${equipment.environmentId}`;
+    const environment = this.environments.environments().find((item) => item.id === equipment.environmentId);
+    return environment ? `${environment.code} · ${environment.name}` : `#${equipment.environmentId}`;
   }
 }

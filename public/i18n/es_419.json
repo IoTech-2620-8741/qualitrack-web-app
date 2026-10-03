@@ -705,8 +705,7 @@
     "legacy": "Registrado antes de Inventario"
   },
   "equipment-list": {
-    "title": "Catálogo de Equipos",
-    "subtitle": "Equipos y dispositivos IoT del laboratorio, con su ubicación y estado",
+    "title": "Equipos",
     "add-button": "Registrar Equipo",
     "empty": "No se encontraron equipos en este laboratorio",
     "fields": {
@@ -726,6 +725,12 @@
       "all": "Todos",
       "equipment": "Equipos",
       "devices": "Dispositivos IoT"
+    },
+    "search": "Buscar por nombre, modelo, serie o identificador",
+    "summary": {
+      "equipment": "Equipos de proceso",
+      "devices": "Dispositivos IoT",
+      "attention": "En mantenimiento o fuera de servicio"
     }
   },
   "equipment-form": {
@@ -813,12 +818,6 @@
       "description-maxlength": "La descripción no puede exceder los 1000 caracteres",
       "future-date": "La fecha del mantenimiento no puede ser futura"
     }
-  },
-  "equipment-alert": {
-    "title": "Alertas de Calibración",
-    "subtitle": "Equipos que requieren intervención técnica inmediata",
-    "action-tooltip": "Registrar Calibración",
-    "view-all": "VER TODOS LOS EQUIPOS"
   },
   "equipment-status": {
     "operational": "Operativo",

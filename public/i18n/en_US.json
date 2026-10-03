@@ -705,8 +705,7 @@
     "legacy": "Recorded before Inventory"
   },
   "equipment-list": {
-    "title": "Equipment Catalog",
-    "subtitle": "Equipment and IoT devices of the laboratory, with their location and status",
+    "title": "Equipment",
     "add-button": "Register Equipment",
     "empty": "No equipment found in this laboratory",
     "fields": {
@@ -726,6 +725,12 @@
       "all": "All",
       "equipment": "Equipment",
       "devices": "IoT devices"
+    },
+    "search": "Search by name, model, serial or identifier",
+    "summary": {
+      "equipment": "Process equipment",
+      "devices": "IoT devices",
+      "attention": "In maintenance or out of service"
     }
   },
   "equipment-form": {
@@ -813,12 +818,6 @@
       "description-maxlength": "The description cannot exceed 1000 characters",
       "future-date": "The maintenance date cannot be in the future"
     }
-  },
-  "equipment-alert": {
-    "title": "Calibration Alerts",
-    "subtitle": "Equipment requiring immediate technical intervention",
-    "action-tooltip": "Register Calibration",
-    "view-all": "VIEW ALL EQUIPMENT"
   },
   "equipment-status": {
     "operational": "Operational",
