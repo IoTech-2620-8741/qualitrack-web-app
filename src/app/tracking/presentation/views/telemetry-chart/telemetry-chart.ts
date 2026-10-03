@@ -1,5 +1,6 @@
 import { Component, OnInit, effect, untracked, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
@@ -34,6 +35,7 @@ import { IamStore } from '../../../../iam/application/iam.store';
   standalone: true,
   imports: [
     CommonModule,
+    RouterLink,
     FormsModule,
     TranslateModule,
     MatCardModule,
@@ -89,7 +91,7 @@ export class TelemetryChartComponent implements OnInit {
    */
   constructor() {
     effect(() => {
-      const first = this.equipmentStore.equipmentList()[0];
+      const first = this.equipmentStore.iotDevices()[0];
       if (this.equipmentStore.isLoading() || this.equipmentStore.error() || !first) return;
       untracked(() => {
         if (this.filters.equipmentId) return;

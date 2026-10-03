@@ -1,330 +1,268 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable, computed, inject, signal } from '@angular/core';
-import { retry } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
+import { IamStore } from '../../iam/application/iam.store';
+import { ApiError } from '../../shared/infrastructure/api-error';
 import { EquipmentApi } from '../infrastructure/equipment-api';
 import { Equipment } from '../domain/model/equipment.entity';
 import { BpmParameterConfig } from '../domain/model/bpm-parameter-config.entity';
 import { MaintenanceRecord } from '../domain/model/maintenance-record.entity';
 import { RegisterEquipmentCommand } from '../domain/model/register-equipment.command';
+import { RegisterIotDeviceCommand } from '../domain/model/register-iot-device.command';
+import { ChangeEquipmentStatusCommand } from '../domain/model/change-equipment-status.command';
 import { ConfigureBpmCommand } from '../domain/model/configure-bpm.command';
 import { RegisterMaintenanceCommand } from '../domain/model/register-maintenance.command';
+import { ATTENTION_STATUSES } from '../domain/model/equipment-status';
 
 /**
- * Store service responsible for managing equipment-related application state.
+ * Maps an API failure to a translation key, or to the server message for business rule violations.
+ */
+export function equipmentError(error: unknown): string {
+  const status = error instanceof ApiError ? error.status : error instanceof HttpErrorResponse ? error.status : null;
+  if (status === 0) return 'equipment.errors.connection';
+  if (status === 403) return 'equipment.errors.forbidden';
+  if (status === 404) return 'equipment.errors.not-found';
+  if (error instanceof ApiError) return error.details || error.message;
+  if (error instanceof HttpErrorResponse) return error.error?.details || error.error?.message || 'equipment.errors.failed';
+  return 'equipment.errors.failed';
+}
+
+/**
+ * Application store of the equipment and IoT devices of the current laboratory (US45-US54).
  *
  * @remarks
- * This store centralizes the state and operations related to equipment,
- * BPM parameter configurations, and maintenance history.
- *
- * It uses Angular signals to manage reactive state, computed selectors to
- * derive filtered equipment lists, and the EquipmentApi service to communicate
- * with the infrastructure layer.
+ * Equipment belongs to the laboratory; once located in an environment, its status changes and
+ * maintenance are registered there. IoT devices (environmental devices and container monitors)
+ * are the only equipment shown in the tracking views.
  */
 @Injectable({ providedIn: 'root' })
 export class EquipmentStore {
-  /**
-   * API facade used to execute equipment, BPM configuration, and maintenance operations.
-   */
   private readonly api = inject(EquipmentApi);
+  private readonly iam = inject(IamStore);
+  /** Discards late responses: the list and the selected equipment load independently. */
+  private listGeneration = 0;
+  private itemGeneration = 0;
 
-  /**
-   * Internal signal that stores the complete list of equipment.
-   */
   private readonly _equipmentList = signal<Equipment[]>([]);
-
-  /**
-   * Internal signal that stores the currently selected equipment.
-   */
   private readonly _selectedEquipment = signal<Equipment | null>(null);
-
-  /**
-   * Internal signal that stores BPM parameter configurations.
-   */
   private readonly _bpmConfigs = signal<BpmParameterConfig[]>([]);
-
-  /**
-   * Internal signal that stores the maintenance history of an equipment.
-   */
   private readonly _maintenanceHistory = signal<MaintenanceRecord[]>([]);
-
-  /**
-   * Internal signal that indicates whether an asynchronous operation is running.
-   */
-  private readonly _isLoading = signal<boolean>(false);
-
-  /**
-   * Internal signal that stores the current error message.
-   */
+  private readonly _listLoading = signal<boolean>(false);
+  private readonly _itemLoading = signal<boolean>(false);
+  private readonly _saving = signal<boolean>(false);
   private readonly _error = signal<string | null>(null);
-
-  /**
-   * Internal signal that stores the current success message.
-   */
   private readonly _successMsg = signal<string | null>(null);
 
-  /**
-   * Readonly selector for the equipment list.
-   */
   readonly equipmentList = this._equipmentList.asReadonly();
-
-  /**
-   * Readonly selector for the selected equipment.
-   */
   readonly selectedEquipment = this._selectedEquipment.asReadonly();
-
-  /**
-   * Readonly selector for BPM parameter configurations.
-   */
   readonly bpmConfigs = this._bpmConfigs.asReadonly();
-
-  /**
-   * Readonly selector for maintenance history.
-   */
   readonly maintenanceHistory = this._maintenanceHistory.asReadonly();
-
-  /**
-   * Readonly selector for the loading state.
-   */
-  readonly isLoading = this._isLoading.asReadonly();
-
-  /**
-   * Readonly selector for the current error message.
-   */
+  readonly isLoading = computed(() => this._listLoading() || this._itemLoading());
+  readonly saving = this._saving.asReadonly();
+  /** Translation key or server message of the last failure. */
   readonly error = this._error.asReadonly();
-
-  /**
-   * Readonly selector for the current success message.
-   */
   readonly successMsg = this._successMsg.asReadonly();
 
-  /**
-   * Computed selector that returns only operational equipment.
-   */
+  /** Equipment and devices are registered and located by quality managers and administrators (US45, US47). */
+  readonly canManage = this.iam.canManageQuality;
+
+  /** IoT devices of the laboratory, the only equipment that sends telemetry. */
+  readonly iotDevices = computed(() => this._equipmentList().filter((equipment) => equipment.isIotDevice));
+
+  /** Equipment that is not an IoT device, used in manufacturing processes. */
+  readonly processEquipment = computed(() => this._equipmentList().filter((equipment) => !equipment.isIotDevice));
+
   readonly operationalEquipment = computed(() =>
     this._equipmentList().filter((equipment) => equipment.status === 'OPERATIONAL'),
   );
 
-  /**
-   * Computed selector that returns equipment requiring maintenance or service attention.
-   */
+  /** Equipment in maintenance or out of service. */
   readonly needsMaintenance = computed(() =>
-    this._equipmentList().filter(
-      (equipment) =>
-        equipment.status === 'MAINTENANCE' ||
-        equipment.status === 'OUT_OF_SERVICE' ||
-        equipment.status === 'CALIBRATION_REQUIRED',
-    ),
+    this._equipmentList().filter((equipment) => ATTENTION_STATUSES.includes(equipment.status)),
   );
 
   /**
-   * Loads the equipment registered in a specific laboratory.
+   * Loads the equipment and IoT devices of the laboratory.
    *
-   * @param labId - The numeric identifier of the laboratory whose equipment will be loaded
+   * @param labId - The laboratory to load; the laboratory of the session by default
    */
-  loadEquipment(labId: number): void {
-    this._isLoading.set(true);
-    this._error.set(null);
+  loadEquipment(labId: number = this.laboratoryId): void {
+    void this.refresh(labId);
+  }
 
-    this.api
-      .getEquipment(labId)
-      .pipe(retry(2))
-      .subscribe({
-        next: (equipment: Equipment[]) => {
-          this._equipmentList.set(equipment);
-          this._isLoading.set(false);
-        },
-        error: (err: unknown) => {
-          this._error.set(this.formatError(err, 'Failed to load equipment list'));
-          this._isLoading.set(false);
-        },
-      });
+  /** Loads one equipment of the laboratory and keeps it as the selected equipment. */
+  async loadEquipmentById(equipmentId: number): Promise<Equipment | null> {
+    const generation = ++this.itemGeneration;
+    this._selectedEquipment.set(null);
+    this._itemLoading.set(true);
+    this._error.set(null);
+    try {
+      const equipment = await firstValueFrom(this.api.getEquipmentById(this.laboratoryId, equipmentId));
+      if (generation !== this.itemGeneration) return null;
+      this.replace(equipment);
+      return equipment;
+    } catch (error) {
+      if (generation === this.itemGeneration) this._error.set(equipmentError(error));
+      return null;
+    } finally {
+      if (generation === this.itemGeneration) this._itemLoading.set(false);
+    }
+  }
+
+  /** Registers an equipment of the laboratory (US45). */
+  async registerEquipment(command: RegisterEquipmentCommand): Promise<Equipment | null> {
+    return this.save(async () => {
+      const equipment = await firstValueFrom(this.api.registerEquipment(this.laboratoryId, {
+        name: command.name.trim(),
+        type: command.type.trim(),
+        model: command.model.trim(),
+        serialNumber: command.serialNumber.trim(),
+      }));
+      this.replace(equipment);
+      return equipment;
+    });
   }
 
   /**
-   * Loads a specific equipment by its numeric identifier.
+   * Registers an environmental device or container monitor (US51, US53) and, when an environment is
+   * given, associates it with that environment (US52, US54).
    *
-   * @param equipmentId - The numeric identifier of the equipment to load
-   *
-   * @remarks
-   * This method supports direct navigation to the equipment detail view.
-   * If the user opens `/equipments/equipment-detail/:id` directly, the selected
-   * equipment is still retrieved even when the equipment list was not loaded first.
+   * @returns The device, or null when it could not be registered. When the association fails the
+   * device stays registered and the error explains why it was not located.
    */
-  loadEquipmentById(equipmentId: number): void {
-    this._isLoading.set(true);
-    this._error.set(null);
-
-    this.api
-      .getEquipmentById(equipmentId)
-      .pipe(retry(2))
-      .subscribe({
-        next: (equipment: Equipment) => {
-          this._selectedEquipment.set(equipment);
-
-          this._equipmentList.update((list) => {
-            const exists = list.some((item) => item.id === equipment.id);
-
-            if (exists) {
-              return list.map((item) => (item.id === equipment.id ? equipment : item));
-            }
-
-            return [...list, equipment];
-          });
-
-          this._isLoading.set(false);
-        },
-        error: (err: unknown) => {
-          this._error.set(this.formatError(err, `Failed to load equipment ${equipmentId}`));
-          this._isLoading.set(false);
-        },
-      });
+  async registerDevice(command: RegisterIotDeviceCommand, environmentId: number | null): Promise<Equipment | null> {
+    const device = await this.save(async () => {
+      const registered = await firstValueFrom(this.api.registerDevice(this.laboratoryId, command.deviceType, {
+        name: command.name.trim(),
+        sensorExternalId: command.sensorExternalId.trim(),
+        serialNumber: command.serialNumber.trim(),
+        model: command.model.trim(),
+        firmwareVersion: command.firmwareVersion?.trim() || null,
+      }));
+      this.replace(registered);
+      return registered;
+    });
+    if (!device || environmentId === null) return device;
+    return (await this.assignToEnvironment(device, environmentId)) ?? device;
   }
 
-  /**
-   * Registers a new equipment and updates the equipment list state.
-   *
-   * @param command - The command containing the required equipment registration data
-   */
-  registerEquipment(command: RegisterEquipmentCommand): void {
-    this._isLoading.set(true);
-    this._error.set(null);
-
-    this.api
-      .registerEquipment(command)
-      .pipe(retry(2))
-      .subscribe({
-        next: (equipment: Equipment) => {
-          this._equipmentList.update((list) => [...list, equipment]);
-          this._selectedEquipment.set(equipment);
-          this._successMsg.set('Equipment registered successfully');
-          this._isLoading.set(false);
-        },
-        error: (err: unknown) => {
-          this._error.set(this.formatError(err, 'Failed to register equipment'));
-          this._isLoading.set(false);
-        },
-      });
+  /** Locates the equipment or IoT device in an environment of the laboratory (US47, US52, US54). */
+  async assignToEnvironment(equipment: Equipment, environmentId: number): Promise<Equipment | null> {
+    return this.save(async () => {
+      const located = await firstValueFrom(this.api.assignToEnvironment(this.laboratoryId, environmentId, equipment));
+      this.replace(located);
+      return located;
+    });
   }
 
-  /**
-   * Loads BPM parameter configurations for a specific equipment.
-   *
-   * @param equipmentId - The numeric identifier of the equipment whose BPM configurations will be loaded
-   */
+  /** Registers a change of operational status of an equipment located in an environment (US48). */
+  async changeStatus(equipment: Equipment, command: ChangeEquipmentStatusCommand): Promise<boolean> {
+    if (equipment.environmentId === null) return false;
+    const environmentId = equipment.environmentId;
+    const updated = await this.save(async () => {
+      await firstValueFrom(this.api.changeStatus(this.laboratoryId, environmentId, equipment.id, {
+        status: command.status,
+        reason: command.reason?.trim() || null,
+      }));
+      const reloaded = await firstValueFrom(this.api.getEquipmentById(this.laboratoryId, equipment.id));
+      this.replace(reloaded);
+      return reloaded;
+    });
+    return updated !== null;
+  }
+
+  /** Loads the maintenance history of an equipment located in an environment (US50). */
+  async loadMaintenanceHistory(equipment: Equipment): Promise<void> {
+    this._maintenanceHistory.set([]);
+    if (equipment.environmentId === null) return;
+    try {
+      this._maintenanceHistory.set(await firstValueFrom(
+        this.api.getMaintenanceHistory(this.laboratoryId, equipment.environmentId, equipment.id)));
+    } catch (error) {
+      this._error.set(equipmentError(error));
+    }
+  }
+
+  /** Registers a maintenance performed on an equipment located in an environment (US49). */
+  async registerMaintenance(equipment: Equipment, command: RegisterMaintenanceCommand): Promise<boolean> {
+    if (equipment.environmentId === null) return false;
+    const environmentId = equipment.environmentId;
+    const record = await this.save(() => firstValueFrom(this.api.registerMaintenance(
+      this.laboratoryId, environmentId, equipment.id, {
+        ...command,
+        technicianName: command.technicianName.trim(),
+        description: command.description.trim(),
+      })));
+    if (record) this._maintenanceHistory.update((history) => [record, ...history]);
+    return record !== null;
+  }
+
+  /** Loads the BPM parameter limits of an equipment. */
   loadBpmConfig(equipmentId: number): void {
-    this._isLoading.set(true);
-    this._error.set(null);
-
-    this.api
-      .getBpmConfig(equipmentId)
-      .pipe(retry(2))
-      .subscribe({
-        next: (configs: BpmParameterConfig[]) => {
-          this._bpmConfigs.set(configs);
-          this._isLoading.set(false);
-        },
-        error: (err: unknown) => {
-          this._error.set(this.formatError(err, 'Failed to load BPM configurations'));
-          this._isLoading.set(false);
-        },
-      });
+    this.api.getBpmConfig(equipmentId).subscribe({
+      next: (configs) => this._bpmConfigs.set(configs),
+      error: (error: unknown) => this._error.set(equipmentError(error)),
+    });
   }
 
-  /**
-   * Configures a BPM parameter for an equipment.
-   *
-   * @param command - The command containing the BPM parameter configuration data
-   */
+  /** Configures the limits of a BPM parameter of an equipment. */
   configureBpm(command: ConfigureBpmCommand): void {
-    this._isLoading.set(true);
+    this._saving.set(true);
     this._error.set(null);
-
-    this.api
-      .configureBpm(command)
-      .pipe(retry(2))
-      .subscribe({
-        next: () => {
-          this.loadBpmConfig(command.equipmentId);
-          this._successMsg.set('BPM parameter configured successfully');
-          this._isLoading.set(false);
-        },
-        error: (err: unknown) => {
-          this._error.set(this.formatError(err, 'Failed to configure BPM parameter'));
-          this._isLoading.set(false);
-        },
-      });
+    this.api.configureBpm(command).subscribe({
+      next: () => {
+        this.loadBpmConfig(command.equipmentId);
+        this._successMsg.set('bpm-config.saved');
+        this._saving.set(false);
+      },
+      error: (error: unknown) => {
+        this._error.set(equipmentError(error));
+        this._saving.set(false);
+      },
+    });
   }
 
-  /**
-   * Loads the maintenance history for a specific equipment.
-   *
-   * @param equipmentId - The numeric identifier of the equipment whose maintenance history will be loaded
-   */
-  loadMaintenanceHistory(equipmentId: number): void {
-    this._isLoading.set(true);
-    this._error.set(null);
-
-    this.api
-      .getMaintenanceHistory(equipmentId)
-      .pipe(retry(2))
-      .subscribe({
-        next: (history: MaintenanceRecord[]) => {
-          this._maintenanceHistory.set(history);
-          this._isLoading.set(false);
-        },
-        error: (err: unknown) => {
-          this._error.set(this.formatError(err, 'Failed to load maintenance history'));
-          this._isLoading.set(false);
-        },
-      });
-  }
-
-  /**
-   * Registers a maintenance record for an equipment.
-   *
-   * @param command - The command containing the maintenance registration data
-   */
-  registerMaintenance(command: RegisterMaintenanceCommand): void {
-    this._isLoading.set(true);
-    this._error.set(null);
-
-    this.api
-      .registerMaintenance(command)
-      .pipe(retry(2))
-      .subscribe({
-        next: () => {
-          this.loadMaintenanceHistory(command.equipmentId);
-          this._successMsg.set('Maintenance record registered successfully');
-          this._isLoading.set(false);
-        },
-        error: (err: unknown) => {
-          this._error.set(this.formatError(err, 'Failed to register maintenance'));
-          this._isLoading.set(false);
-        },
-      });
-  }
-
-  /**
-   * Clears active error and success messages.
-   */
   clearMessages(): void {
     this._error.set(null);
     this._successMsg.set(null);
   }
 
-  /**
-   * Formats an error object into a readable message.
-   *
-   * @param error - The received error object
-   * @param fallback - The fallback message used when the error cannot be interpreted
-   * @returns A readable error message
-   */
-  private formatError(error: unknown, fallback: string): string {
-    if (error instanceof Error) {
-      return error.message.includes('Resource not found')
-        ? `${fallback}: Not Found`
-        : error.message;
+  private async refresh(labId: number): Promise<void> {
+    const generation = ++this.listGeneration;
+    this._listLoading.set(true);
+    this._error.set(null);
+    try {
+      const equipment = await firstValueFrom(this.api.getEquipment(labId));
+      if (generation === this.listGeneration) this._equipmentList.set(equipment);
+    } catch (error) {
+      if (generation === this.listGeneration) this._error.set(equipmentError(error));
+    } finally {
+      if (generation === this.listGeneration) this._listLoading.set(false);
     }
+  }
 
-    return fallback;
+  private async save<T>(operation: () => Promise<T>): Promise<T | null> {
+    if (this._saving()) return null;
+    this._saving.set(true);
+    this._error.set(null);
+    try {
+      return await operation();
+    } catch (error) {
+      this._error.set(equipmentError(error));
+      return null;
+    } finally {
+      this._saving.set(false);
+    }
+  }
+
+  private replace(equipment: Equipment): void {
+    this._selectedEquipment.set(equipment);
+    this._equipmentList.update((list) => list.some((item) => item.id === equipment.id)
+      ? list.map((item) => (item.id === equipment.id ? equipment : item))
+      : [...list, equipment].sort((a, b) => a.name.localeCompare(b.name)));
+  }
+
+  private get laboratoryId(): number {
+    return this.iam.requireLaboratoryId();
   }
 }

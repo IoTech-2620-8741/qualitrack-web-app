@@ -6,6 +6,13 @@
     </div>
   }
 
+  @if (!equipmentStore.isLoading() && !equipmentStore.error() && equipmentStore.iotDevices().length === 0) {
+    <p class="empty-devices" role="status">
+      {{ 'tracking.no-devices' | translate }}
+      <a routerLink="/equipments/register-device">{{ 'device-form.add-button' | translate }}</a>
+    </p>
+  }
+
   <div class="section-header">
     <div class="title-group">
       <mat-icon class="title-icon">cast_connected</mat-icon>
@@ -19,11 +26,11 @@
           [ngModel]="selectedEquipmentId()"
           (ngModelChange)="selectedEquipmentId.set($event); onEquipmentChange()"
         >
-          @for (eq of equipmentStore.equipmentList(); track eq.id) {
-            <mat-option [value]="eq.id">{{ eq.name }} ({{ eq.id }})</mat-option>
+          @for (eq of equipmentStore.iotDevices(); track eq.id) {
+            <mat-option [value]="eq.id">{{ eq.name }} · {{ 'device-types.' + eq.deviceType | translate }}</mat-option>
           }
         </mat-select>
-        <mat-icon matPrefix>precision_manufacturing</mat-icon>
+        <mat-icon matPrefix>sensors</mat-icon>
       </mat-form-field>
 
       <button
@@ -47,14 +54,14 @@
 
   @if (!store.isLoading() && !store.error() && selectedEquipmentId()) {
   <div class="status-grid">
-    @if (store.currentEquipmentStatus()) {
+    @if (store.deviceConnection(); as connection) {
     <mat-card
       class="status-card"
-      [ngClass]="'status-bg-' + store.equipmentTelemetryStatus().toLowerCase()"
+      [ngClass]="connection.isConnected ? 'status-bg-operational' : 'status-bg-offline'"
     >
       <mat-card-content class="status-content">
         <div class="status-icon-wrapper">
-          @if (store.isEquipmentOnline()) {
+          @if (connection.isConnected) {
             <mat-icon class="pulse-icon">wifi</mat-icon>
           } @else {
             <mat-icon>wifi_off</mat-icon>
@@ -63,10 +70,22 @@
 
         <div class="status-text">
           <span class="label">{{ 'tracking.dashboard.connection-status' | translate }}</span>
-          <h3>{{ 'tracking.status.' + store.equipmentTelemetryStatus().toLowerCase() | translate }}</h3>
+          <h3>{{ 'tracking.connection.' + connection.connectionStatus | translate }}</h3>
+          <small>
+            @if (connection.lastCommunicationAt) {
+              {{ 'tracking.connection.last' | translate }} {{ connection.lastCommunicationAt | date: 'short' }}
+            } @else {
+              {{ 'tracking.connection.never' | translate }}
+            }
+          </small>
         </div>
       </mat-card-content>
     </mat-card>
+    } @else if (selectedDevice() && selectedDevice()!.environmentId === null) {
+      <p class="empty-devices">
+        {{ 'tracking.connection.not-located' | translate }}
+        <a [routerLink]="['/equipments/equipment-detail', selectedDevice()!.id]">{{ 'equipment-list.actions.view-detail' | translate }}</a>
+      </p>
     } @else {
       <p>{{ 'onboarding.no-status' | translate }}</p>
     }

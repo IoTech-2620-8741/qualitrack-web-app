@@ -3,7 +3,8 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Observable, Subscription, finalize } from 'rxjs';
 import { TrackingApi } from '../infrastructure/tracking-api';
 import { Measurement } from '../domain/model/measurement.entity';
-import { EquipmentStatus } from '../domain/model/equipment-status.entity';
+import { DeviceConnection } from '../domain/model/device-connection.entity';
+import { IamStore } from '../../iam/application/iam.store';
 import { TelemetryHistoryPoint } from '../domain/model/telemetry-history-point.entity';
 
 @Injectable({ providedIn: 'root' })
@@ -11,7 +12,8 @@ export class TrackingStore {
   private readonly api = inject(TrackingApi);
   private readonly destroyRef = inject(DestroyRef);
   private readonly _measurements = signal<Measurement[]>([]);
-  private readonly _currentEquipmentStatus = signal<EquipmentStatus | null>(null);
+  private readonly iam = inject(IamStore);
+  private readonly _deviceConnection = signal<DeviceConnection | null>(null);
   private readonly _telemetryHistory = signal<TelemetryHistoryPoint[]>([]);
   private readonly pending = signal(0);
   private readonly failures = signal<Record<string, string>>({});
@@ -19,7 +21,8 @@ export class TrackingStore {
   private selectedEquipment: number | null = null;
 
   readonly measurements = this._measurements.asReadonly();
-  readonly currentEquipmentStatus = this._currentEquipmentStatus.asReadonly();
+  /** Connection status of the selected IoT device; null until it is loaded or when the device has no environment. */
+  readonly deviceConnection = this._deviceConnection.asReadonly();
   readonly telemetryHistory = this._telemetryHistory.asReadonly();
   readonly historyParameter = signal<string | null>(null);
   readonly historyParameters = computed(() => [...new Set(this._telemetryHistory().map(point => point.parameterName))]);
@@ -33,8 +36,6 @@ export class TrackingStore {
   readonly isLoading = computed(() => this.pending() > 0);
   readonly error = computed(() => Object.values(this.failures())[0] ?? null);
   readonly successMsg = signal<string | null>(null).asReadonly();
-  readonly isEquipmentOnline = computed(() => this._currentEquipmentStatus()?.isOnline ?? false);
-  readonly equipmentTelemetryStatus = computed(() => this._currentEquipmentStatus()?.currentStatus ?? 'UNKNOWN');
   readonly anomaliesHistory = computed(() => this._telemetryHistory().filter(point => point.isAnomaly));
 
   loadLatestMeasurements(equipmentId: number): void {
@@ -43,10 +44,13 @@ export class TrackingStore {
     this.load('measurements', this.api.getLatestMeasurements(equipmentId), value => this._measurements.set(value));
   }
 
-  loadEquipmentStatus(equipmentId: number): void {
-    this.selectEquipment(equipmentId);
-    this._currentEquipmentStatus.set(null);
-    this.load('status', this.api.getEquipmentStatus(equipmentId), value => this._currentEquipmentStatus.set(value));
+  /** Loads whether the IoT device, located in its environment, is communicating with Edge (US55). */
+  loadDeviceConnection(device: { id: number; environmentId: number | null }): void {
+    this.selectEquipment(device.id);
+    this._deviceConnection.set(null);
+    if (device.environmentId === null) return;
+    this.load('connection', this.api.getDeviceConnection(this.iam.requireLaboratoryId(), device.environmentId, device.id),
+      value => this._deviceConnection.set(value));
   }
 
   loadTelemetryHistory(filters: { equipmentId: number; from?: string; to?: string }): void {
@@ -64,7 +68,7 @@ export class TrackingStore {
     this.requests.clear();
     this.selectedEquipment = id;
     this._measurements.set([]);
-    this._currentEquipmentStatus.set(null);
+    this._deviceConnection.set(null);
     this._telemetryHistory.set([]);
     this.failures.set({});
   }

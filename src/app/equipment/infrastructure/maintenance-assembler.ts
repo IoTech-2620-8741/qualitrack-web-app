@@ -66,6 +66,7 @@ export class MaintenanceAssembler implements BaseAssembler<
     return new MaintenanceRecord({
       id: resource.id,
       equipmentId: resource.equipmentId,
+      environmentId: resource.environmentId ?? null,
       maintenanceDate: resource.maintenanceDate,
       technicianName: resource.technicianName,
       description: resource.description,
@@ -88,6 +89,7 @@ export class MaintenanceAssembler implements BaseAssembler<
     return {
       id: entity.id,
       equipmentId: entity.equipmentId,
+      environmentId: entity.environmentId,
       maintenanceDate: entity.maintenanceDate,
       technicianName: entity.technicianName,
       description: entity.description,

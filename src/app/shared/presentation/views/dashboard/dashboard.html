@@ -26,13 +26,13 @@
       @if (store.equipment().status === 'loading') { <ng-container *ngTemplateOutlet="loading" /> }
       @else if (store.equipment().status === 'error') {
         <ng-container *ngTemplateOutlet="error; context: { retry: reloadAll }" />
-      } @else if (!store.equipment().data?.length) { <p class="empty">{{ 'dashboard.overview.no-equipment' | translate }}</p> }
+      } @else if (!store.devices().length) { <p class="empty">{{ 'dashboard.overview.no-devices' | translate }}</p> }
       @else {
         <div class="telemetry-filters">
           <mat-form-field appearance="outline" subscriptSizing="dynamic">
             <mat-label>{{ 'dashboard.overview.equipment' | translate }}</mat-label>
             <mat-select [value]="store.selectedEquipmentId()" (selectionChange)="store.selectEquipment($event.value)">
-              @for (equipment of store.equipment().data; track equipment.id) { <mat-option [value]="equipment.id">{{ equipment.name }}</mat-option> }
+              @for (equipment of store.devices(); track equipment.id) { <mat-option [value]="equipment.id">{{ equipment.name }}</mat-option> }
             </mat-select>
           </mat-form-field>
           <mat-form-field appearance="outline" subscriptSizing="dynamic">

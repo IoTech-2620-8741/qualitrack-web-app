@@ -16,10 +16,10 @@ import { MatButtonToggle, MatButtonToggleGroup } from '@angular/material/button-
   styleUrl: './language-switcher.css',
 })
 export class LanguageSwitcher {
-  protected currentLang = 'en_US';
+  protected currentLang = 'en';
   protected languages = [
-    { code: 'en_US', label: 'EN', name: 'English' },
-    { code: 'es_419', label: 'ES', name: 'Español' },
+    { code: 'en', label: 'EN', name: 'English' },
+    { code: 'es', label: 'ES', name: 'Español' },
   ];
   protected translate: TranslateService;
 
@@ -31,6 +31,6 @@ export class LanguageSwitcher {
   useLanguage(language: string): void {
     this.translate.use(language);
     this.currentLang = language;
-    document.documentElement.lang = language.replace('_', '-');
+    document.documentElement.lang = language;
   }
 }

@@ -8,7 +8,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { TranslateModule } from '@ngx-translate/core';
 import { InventoryStore } from '../../../application/inventory.store';
 import { InventoryUnit } from '../../../domain/model/raw-material.entity';
-import { stockQuantityValidator } from '../../../../shared/presentation/stock-quantity-validator';
+import { stockQuantityValidator } from '../../../../shared/presentation/validators/stock-quantity.validator';
 
 @Component({
   selector: 'app-register-material',

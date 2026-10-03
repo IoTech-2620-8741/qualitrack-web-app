@@ -5,7 +5,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { TranslateModule } from '@ngx-translate/core';
-import { localIsoDate } from '../../../../shared/presentation/local-date';
+import { localIsoDate } from '../../../../shared/presentation/utils/local-date';
 import { BatchStore } from '../../../application/batch.store';
 import { IamStore } from '../../../../iam/application/iam.store';
 import { BatchPath } from '../../../infrastructure/batch-api-endpoint';
