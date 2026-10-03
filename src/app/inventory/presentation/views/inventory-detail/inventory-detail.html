@@ -24,9 +24,11 @@
             <mat-icon>edit</mat-icon>{{ 'inventory.edit' | translate }}
           </button>
         }
-        <button mat-flat-button (click)="receiving.set(!receiving())" [disabled]="store.saving()">
-          <mat-icon>add</mat-icon>{{ 'inventory.newReceipt' | translate }}
-        </button>
+        @if (store.canOperate()) {
+          <button mat-flat-button (click)="receiving.set(!receiving())" [disabled]="store.saving()">
+            <mat-icon>add</mat-icon>{{ 'inventory.newReceipt' | translate }}
+          </button>
+        }
       </div>
     </header>
     <section class="summary-strip">

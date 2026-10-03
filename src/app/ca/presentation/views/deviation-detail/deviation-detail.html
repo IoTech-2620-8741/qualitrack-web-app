@@ -73,7 +73,7 @@
 
           </div>
 
-          @if (alert()?.status === 'UNRESOLVED') {
+          @if (alert()?.status === 'UNRESOLVED' && iamStore.canOperate()) {
             <form [formGroup]="resolutionForm" class="resolution-form">
               <mat-form-field appearance="outline" class="full-width">
                 <mat-label>{{ 'ca-alerts.fields.resolution-notes' | translate }}</mat-label>
@@ -87,6 +87,7 @@
           <button mat-button routerLink="../../alert-dashboard">
             {{ 'common.cancel' | translate }}
           </button>
+          @if (iamStore.canOperate()) {
           <button
             mat-raised-button
             color="primary"
@@ -96,6 +97,7 @@
             <mat-icon>check_circle</mat-icon>
             {{ 'ca-alerts.actions.resolve' | translate }}
           </button>
+          }
         </mat-card-actions>
       </mat-card>
     </div>

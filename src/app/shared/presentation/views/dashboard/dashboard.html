@@ -58,6 +58,7 @@
         } @else { <p class="empty">{{ 'dashboard.overview.no-readings' | translate }}</p> }
       }
     </section>
+    @if (store.managesSubscription()) {
     <section class="subscription-section" aria-labelledby="subscription-title" data-testid="subscription">
       <header class="section-header"><h2 id="subscription-title"><mat-icon>credit_card</mat-icon>{{ 'dashboard.subscription.title' | translate }}</h2></header>
       @if (store.subscription().status === 'loading') { <ng-container *ngTemplateOutlet="loading" /> }
@@ -79,6 +80,7 @@
       } @else { <p class="empty">{{ 'dashboard.cards.no-subscription' | translate }}</p> }
       <a mat-stroked-button routerLink="/subscriptions/billing-summary"><mat-icon>receipt_long</mat-icon>{{ 'dashboard.overview.manage-billing' | translate }}</a>
     </section>
+    }
     <section class="alerts-section" aria-labelledby="alerts-title" data-testid="alerts">
       <header class="section-header"><h2 id="alerts-title"><mat-icon>warning_amber</mat-icon>{{ 'dashboard.overview.attention' | translate }}</h2>
         <a mat-icon-button routerLink="/alerts/alert-dashboard" [matTooltip]="'nav.alerts' | translate" [attr.aria-label]="'nav.alerts' | translate"><mat-icon>arrow_forward</mat-icon></a></header>

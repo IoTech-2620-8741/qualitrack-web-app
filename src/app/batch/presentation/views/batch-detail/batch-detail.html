@@ -45,12 +45,12 @@
       </mat-tab>
       <mat-tab [label]="'batch-detail.tabs.materials' | translate">
         <div class="tab-content">
-          <app-raw-material-usage [path]="path!" [batchId]="batch.id" [open]="batch.isOpen" />
+          <app-raw-material-usage [path]="path!" [batchId]="batch.id" [open]="batch.isOpen && store.canOperate()" />
         </div>
       </mat-tab>
       <mat-tab [label]="'batch-detail.tabs.participants' | translate">
         <div class="tab-content">
-          <app-batch-participants [path]="path!" [batchId]="batch.id" [open]="batch.isOpen" />
+          <app-batch-participants [path]="path!" [batchId]="batch.id" [open]="batch.isOpen && store.canOperate()" />
         </div>
       </mat-tab>
       <mat-tab [label]="'batch-detail.tabs.traceability' | translate">

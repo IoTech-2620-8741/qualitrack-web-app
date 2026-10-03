@@ -23,6 +23,15 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { LanguageSwitcher } from '../language-switcher/language-switcher';
 import { UserSessionSection } from '../../../../iam/presentation/components/user-session-section/user-session-section';
 
+/** Entry of the side navigation menu. */
+interface NavigationOption {
+  label: string;
+  icon?: string;
+  link: string;
+  qualityOnly?: boolean;
+  children?: NavigationOption[];
+}
+
 /**
  * Layout component for the main application shell.
  *
@@ -69,9 +78,10 @@ export class Layout {
   protected readonly sidenavOpened = signal(false);
 
   /**
-   * Navigation options rendered by the layout template.
+   * Navigation options rendered by the layout template. Entries marked qualityOnly (subscription,
+   * equipment and staff registration) are reserved to quality managers.
    */
-  protected readonly options = [
+  private readonly options: NavigationOption[] = [
     {
       label: 'nav.dashboard',
       icon: 'dashboard',
@@ -92,8 +102,8 @@ export class Layout {
       link: '/equipments',
       children: [
         { label: 'nav.equipment-list', link: '/equipments/equipment-list' },
-        { label: 'equipment-list.add-button', link: '/equipments/register-equipment' },
-        { label: 'device-form.add-button', link: '/equipments/register-device' },
+        { label: 'equipment-list.add-button', link: '/equipments/register-equipment', qualityOnly: true },
+        { label: 'device-form.add-button', link: '/equipments/register-device', qualityOnly: true },
       ],
     },
     {
@@ -125,7 +135,7 @@ export class Layout {
         { label: 'lab-profile.title', link: '/laboratories/lab-profile' },
         { label: 'environments.title', link: '/laboratories/environments' },
         { label: 'staff-list.title', link: '/laboratories/staff-list' },
-        { label: 'staff-form.title', link: '/laboratories/staff-form' },
+        { label: 'staff-form.title', link: '/laboratories/staff-form', qualityOnly: true },
       ],
     },
     {
@@ -150,6 +160,7 @@ export class Layout {
       label: 'nav.subscription',
       icon: 'payments',
       link: '/subscriptions',
+      qualityOnly: true,
       children: [
         { label: 'subscription.billing.title', link: '/subscriptions/billing-summary' },
         { label: 'subscription.plans.title', link: '/subscriptions/plans' },
@@ -162,6 +173,19 @@ export class Layout {
    *
    * @param router - Angular router used for navigation and active route checks
    */
+  /**
+   * Options visible to the signed-in user.
+   */
+  protected readonly visibleOptions = computed(() => {
+    const quality = this.iam.canManageQuality();
+    return this.options
+      .filter((option) => quality || !option.qualityOnly)
+      .map((option) => ({
+        ...option,
+        children: option.children?.filter((child) => quality || !child.qualityOnly),
+      }));
+  });
+
   constructor(private readonly router: Router) {
     effect(() => this.sidenavOpened.set(!this.mobile() && this.hasOperationalAccess()));
     router.events.pipe(filter((event) => event instanceof NavigationEnd),
