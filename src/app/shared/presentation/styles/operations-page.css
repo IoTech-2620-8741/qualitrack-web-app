@@ -1,9 +1,10 @@
+/* Shared layout of the operations pages (inventory, product batches): headings, tables, notices and editors. */
 :host {
   display: block;
   min-width: 0;
   color: #20343c;
 }
-.inventory-page {
+.operations-page {
   max-width: 1280px;
   margin: 0 auto;
   padding: 24px;
@@ -182,7 +183,7 @@ a {
   grid-column: 1 / -1;
 }
 @media (max-width: 760px) {
-  .inventory-page {
+  .operations-page {
     padding: 16px 10px;
   }
   h1 {
