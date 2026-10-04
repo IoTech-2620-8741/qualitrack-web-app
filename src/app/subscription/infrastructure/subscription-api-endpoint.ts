@@ -83,14 +83,17 @@ export class SubscriptionApiEndpoint extends ErrorHandlingEnabledBaseType {
     );
   }
 
-  /** Requests the cancellation of the subscription by the authenticated quality manager (TS11). */
-  cancelSubscription(subscriptionId: number): Observable<Subscription> {
+  /**
+   * Cancels the renewal of the subscription for the authenticated quality manager (US23, TS11); it keeps its access
+   * until the end of the paid period.
+   */
+  cancelRenewal(subscriptionId: number): Observable<Subscription> {
     return this.http
       .post<SubscriptionResource>(
         `${subscriptionsEndpointUrl}/${subscriptionId}${environment.subscriptionCancellationRequestsEndpointPath}`, null)
       .pipe(
         map((resource) => this.subscriptionAssembler.toEntityFromResource(resource)),
-        catchError(this.handleError(`Failed to cancel subscription ${subscriptionId}`)),
+        catchError(this.handleError(`Failed to cancel the renewal of subscription ${subscriptionId}`)),
       );
   }
 }

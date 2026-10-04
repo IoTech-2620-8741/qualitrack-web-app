@@ -76,7 +76,7 @@ export class SubscriptionApi extends BaseApi {
     return this.endpoint.createCheckoutSession(request);
   }
 
-  cancelSubscription(subscriptionId: number): Observable<Subscription> {
-    return this.endpoint.cancelSubscription(subscriptionId);
+  cancelRenewal(subscriptionId: number): Observable<Subscription> {
+    return this.endpoint.cancelRenewal(subscriptionId);
   }
 }
