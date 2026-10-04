@@ -151,7 +151,9 @@
         "username-minlength": "El usuario debe tener al menos 3 caracteres",
         "password-required": "La contraseña es obligatoria",
         "password-minlength": "La contraseña debe tener al menos 6 caracteres"
-      }
+      },
+      "forgot-password": "¿Olvidaste tu contraseña?",
+      "password-reset": "Tu contraseña se cambió. Inicia sesión con la nueva contraseña."
     },
     "sign-up": {
       "title": "Crear Cuenta",
@@ -174,11 +176,17 @@
         "username-required": "El usuario es obligatorio",
         "username-minlength": "El usuario debe tener al menos 3 caracteres",
         "password-required": "La contraseña es obligatoria",
-        "password-minlength": "La contraseña debe tener al menos 6 caracteres",
+        "password-minlength": "Usa entre 8 y 72 caracteres",
         "password-strength": "La contraseña debe contener letras y números",
         "confirm-password-required": "La confirmación de contraseña es obligatoria",
-        "password-mismatch": "Las contraseñas no coinciden"
-      }
+        "password-mismatch": "Las contraseñas no coinciden",
+        "email-required": "El correo es obligatorio",
+        "email-invalid": "Ingresa un correo válido",
+        "already-registered": "El usuario o el correo ya están registrados."
+      },
+      "email": "Correo electrónico",
+      "email-placeholder": "nombre@laboratorio.com",
+      "email-hint": "Enviaremos a este correo el código de verificación si olvidas tu contraseña."
     },
     "change-password": {
       "title": "Cambia tu contraseña",
@@ -195,6 +203,25 @@
         "mismatch": "Las contraseñas no coinciden",
         "current-password": "La contraseña actual no es correcta.",
         "unavailable": "No se pudo cambiar la contraseña. Inténtalo nuevamente."
+      }
+    },
+    "password-recovery": {
+      "title": "Recupera tu contraseña",
+      "subtitle": "Ingresa el usuario o el correo de tu cuenta. Enviaremos un código de 6 dígitos al correo de la cuenta.",
+      "code-sent": "Si la cuenta existe y tiene correo, le enviamos un código de 6 dígitos. Vence en {{minutes}} minutos.",
+      "account": "Usuario o correo",
+      "account-placeholder": "Ingresa tu usuario o correo",
+      "send-code": "Enviar código",
+      "code": "Código de verificación",
+      "resend": "Enviar un nuevo código",
+      "change-account": "Usar otra cuenta",
+      "code-resent": "Si la cuenta puede recibir códigos, se envió uno nuevo. Se envía como máximo un código por minuto.",
+      "back": "Volver a iniciar sesión",
+      "errors": {
+        "request": "No se pudo enviar la solicitud. Vuelve a intentarlo.",
+        "invalid-code": "El código no es válido o ya venció. Solicita un nuevo código.",
+        "reset": "No se pudo cambiar la contraseña. Vuelve a intentarlo.",
+        "code-format": "El código tiene 6 dígitos"
       }
     }
   },
@@ -464,7 +491,6 @@
       "title": "Resumen de Facturación",
       "subtitle": "Revisa tu suscripción activa y el historial de pagos.",
       "current-subscription": "Suscripción Actual",
-      "cancel-subscription": "Cancelar Suscripción",
       "no-active-subscription": "No hay una suscripción activa",
       "no-active-subscription-desc": "Elige un plan para activar la facturación de tu laboratorio.",
       "choose-plan": "Elegir Plan",
@@ -475,7 +501,6 @@
       "start-date": "Fecha de Inicio",
       "started-at": "Inició El",
       "end-date": "Fecha de Fin",
-      "period-ends": "Fin del Periodo",
       "payments-title": "Historial de Pagos",
       "payment-history": "Historial de Pagos",
       "empty-payments": "Aún no se han registrado pagos.",
@@ -487,6 +512,15 @@
         "status": "Estado",
         "provider": "Proveedor",
         "reference": "Referencia"
+      },
+      "cancel-renewal": "Cancelar renovación",
+      "cancel-renewal-confirm": "La suscripción no se renovará: seguirá activa hasta el {{end}} y no se harán nuevos cobros. ¿Cancelar la renovación?",
+      "renewal-cancelled": "La renovación está cancelada. La suscripción sigue activa hasta el {{date}} y no se volverá a cobrar.",
+      "renewal-cancelled-notice": "Se canceló la renovación.",
+      "renews-on": "Se renueva el",
+      "access-until": "Activa hasta",
+      "errors": {
+        "cancel-renewal": "No se pudo cancelar la renovación. Vuelve a intentarlo."
       }
     },
     "status": {

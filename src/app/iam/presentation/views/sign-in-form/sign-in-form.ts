@@ -55,6 +55,15 @@ export class SignInForm {
    */
   protected hidePassword = true;
 
+  /** Set when the person arrives after resetting the password with a recovery code. */
+  protected readonly passwordReset: boolean;
+
+  constructor() {
+    const state = this.router.currentNavigation()?.extras.state as { passwordReset?: boolean; username?: string } | undefined;
+    this.passwordReset = !!state?.passwordReset;
+    if (state?.username) this.form.controls.username.setValue(state.username);
+  }
+
   /**
    * Submits the sign-in form.
    */
