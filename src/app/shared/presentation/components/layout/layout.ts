@@ -151,9 +151,9 @@ export class Layout {
       icon: 'sensors',
       link: '/tracking',
       children: [
-        { label: 'tracking.dashboard.title', link: '/tracking/dashboard' },
+        { label: 'tracking.monitoring.title', link: '/tracking/dashboard' },
         { label: 'tracking.history.title', link: '/tracking/history' },
-        { label: 'tracking.analysis.title', link: '/tracking/analysis' },
+        { label: 'tracking.profiles.title', link: '/tracking/profiles' },
       ],
     },
     {

@@ -1,79 +1,60 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-
+import { BaseApi } from '../../shared/infrastructure/base-api';
 import { Measurement } from '../domain/model/measurement.entity';
 import { DeviceConnection } from '../domain/model/device-connection.entity';
-import { TelemetryHistoryPoint } from '../domain/model/telemetry-history-point.entity';
-
-import { MeasurementApiEndpoint } from './measurement-api-endpoint';
+import { ActuationEvent } from '../domain/model/actuation-event.entity';
+import { ActuationRule, EnvironmentalProfile, ThresholdInput } from '../domain/model/environmental-profile.entity';
+import { MonitoredMetric } from '../domain/model/monitored-metric';
 import { DeviceConnectionApiEndpoint } from './device-connection-api-endpoint';
-import { TelemetryHistoryApiEndpoint } from './telemetry-history-api-endpoint';
+import {
+  ActuationEventApiEndpoint,
+  DeviceTarget,
+  EnvironmentalProfileApiEndpoint,
+  MeasurementApiEndpoint,
+  TelemetryPeriod,
+} from './tracking-api-endpoints';
 
 /**
- * Facade service for Tracking infrastructure API operations.
- *
- * @remarks
- * This service centralizes access to the Tracking bounded context endpoints.
- * It hides endpoint-specific details from the application store and provides
- * a clean API for telemetry measurements, equipment status, and historical data.
+ * Facade of the Tracking & Telemetry API: environmental profiles, readings, actions and connection of the IoT devices.
  */
 @Injectable({ providedIn: 'root' })
-export class TrackingApi {
-  /**
-   * Endpoint client for telemetry measurement operations.
-   */
+export class TrackingApi extends BaseApi {
   private readonly measurementEndpoint: MeasurementApiEndpoint;
-
-  /**
-   * Endpoint client for equipment status operations.
-   */
+  private readonly actuationEventEndpoint: ActuationEventApiEndpoint;
+  private readonly profileEndpoint: EnvironmentalProfileApiEndpoint;
   private readonly deviceConnectionEndpoint: DeviceConnectionApiEndpoint;
 
-  /**
-   * Endpoint client for telemetry history operations.
-   */
-  private readonly telemetryHistoryEndpoint: TelemetryHistoryApiEndpoint;
-
-  /**
-   * Creates a new TrackingApi facade.
-   *
-   * @param http - Angular HttpClient used by the internal endpoint clients
-   */
-  constructor(private readonly http: HttpClient) {
-    this.measurementEndpoint = new MeasurementApiEndpoint(this.http);
-    this.deviceConnectionEndpoint = new DeviceConnectionApiEndpoint(this.http);
-    this.telemetryHistoryEndpoint = new TelemetryHistoryApiEndpoint(this.http);
+  constructor(http: HttpClient) {
+    super();
+    this.measurementEndpoint = new MeasurementApiEndpoint(http);
+    this.actuationEventEndpoint = new ActuationEventApiEndpoint(http);
+    this.profileEndpoint = new EnvironmentalProfileApiEndpoint(http);
+    this.deviceConnectionEndpoint = new DeviceConnectionApiEndpoint(http);
   }
 
-  /**
-   * Retrieves the latest telemetry measurements.
-   *
-   * @param equipmentId - Optional numeric equipment identifier used for filtering
-   * @returns Observable stream emitting Measurement domain entities
-   */
-  getLatestMeasurements(equipmentId: number): Observable<Measurement[]> {
-    return this.measurementEndpoint.getLatestMeasurements(equipmentId);
+  getMeasurements(target: DeviceTarget, period: TelemetryPeriod, metric?: MonitoredMetric | null): Observable<Measurement[]> {
+    return this.measurementEndpoint.getMeasurements(target, period, metric);
   }
 
-  /**
-   * Whether an IoT device located in the environment is communicating with Edge (TS41).
-   */
+  getActuationEvents(target: DeviceTarget, period: TelemetryPeriod): Observable<ActuationEvent[]> {
+    return this.actuationEventEndpoint.getActuationEvents(target, period);
+  }
+
+  getProfile(target: DeviceTarget): Observable<EnvironmentalProfile | null> {
+    return this.profileEndpoint.getProfile(target);
+  }
+
+  updateThresholds(target: DeviceTarget, thresholds: ThresholdInput[]): Observable<EnvironmentalProfile> {
+    return this.profileEndpoint.updateThresholds(target, thresholds);
+  }
+
+  updateActuationRules(target: DeviceTarget, rules: ActuationRule[]): Observable<EnvironmentalProfile> {
+    return this.profileEndpoint.updateActuationRules(target, rules);
+  }
+
   getDeviceConnection(laboratoryId: number, environmentId: number, deviceId: number): Observable<DeviceConnection> {
     return this.deviceConnectionEndpoint.getConnection(laboratoryId, environmentId, deviceId);
-  }
-
-  /**
-   * Retrieves historical telemetry points using optional filters.
-   *
-   * @param filters - Optional telemetry history filters
-   * @returns Observable stream emitting TelemetryHistoryPoint domain entities
-   */
-  getTelemetryHistory(filters: {
-    equipmentId: number;
-    from?: string;
-    to?: string;
-  }): Observable<TelemetryHistoryPoint[]> {
-    return this.telemetryHistoryEndpoint.getTelemetryHistory(filters);
   }
 }

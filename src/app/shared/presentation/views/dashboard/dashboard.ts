@@ -41,7 +41,7 @@ export class Dashboard {
   protected readonly chartData = computed<ChartData<'line'>>(() => {
     this.language();
     return { datasets: [{ label: this.store.activeSeries()?.parameter,
-      data: this.store.readings().map(point => ({ x: Date.parse(point.timestamp), y: point.value })),
+      data: this.store.readings().map(point => ({ x: Date.parse(point.measuredAt), y: point.value ?? 0 })),
       borderColor: '#158378', backgroundColor: '#15837818', pointRadius: 3,
       borderWidth: 2, fill: true, tension: 0 }] };
   });

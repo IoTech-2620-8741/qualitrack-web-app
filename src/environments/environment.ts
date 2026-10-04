@@ -44,9 +44,14 @@ export const environment = {
   containerMonitorsEndpointPath: '/container-monitors',
   // Records of an equipment, under /laboratories/{laboratoryId}/equipments/{equipmentId}
   equipmentBpmConfigEndpointPath: '/bpm-configs',
-  equipmentTelemetryStatusEndpointPath: '/telemetry-status',
-  equipmentTelemetryMeasurementsEndpointPath: '/telemetry-measurements',
-  equipmentTelemetryHistoryEndpointPath: '/telemetry-history',
+
+  // Tracking, under .../environments/{environmentId}[/container-monitors/{deviceId} | /devices/{deviceId}]
+  trackingTelemetryStatusEndpointPath: '/telemetry-status',
+  trackingTelemetryMeasurementsEndpointPath: '/telemetry-measurements',
+  trackingActuationEventsEndpointPath: '/actuation-events',
+  trackingEnvironmentalProfileEndpointPath: '/environmental-profile',
+  trackingThresholdsEndpointPath: '/thresholds',
+  trackingActuationRulesEndpointPath: '/actuation-rules',
   equipmentDeviationTrendsEndpointPath: '/deviation-trends',
   equipmentDeviationAlertsEndpointPath: '/deviation-alerts',
   equipmentComplianceEventsEndpointPath: '/compliance-events',

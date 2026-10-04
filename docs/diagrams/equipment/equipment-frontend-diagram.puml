@@ -127,7 +127,8 @@ note right of MaintenanceApiEndpoint
 end note
 note bottom of BpmConfigApiEndpoint
   /laboratories/{laboratoryId}/equipments/{equipmentId}/bpm-configs
-  PUT .../bpm-configs/{parameterName} creates or replaces the range.
+  PUT .../bpm-configs/{parameterName} creates or replaces the range: process
+  parameters of the equipment (Report); environmental thresholds live in Tracking.
 end note
 
 package "equipment.application" {
