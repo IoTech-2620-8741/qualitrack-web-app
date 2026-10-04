@@ -151,7 +151,9 @@
         "username-minlength": "Username must be at least 3 characters",
         "password-required": "Password is required",
         "password-minlength": "Password must be at least 6 characters"
-      }
+      },
+      "forgot-password": "Forgot your password?",
+      "password-reset": "Your password was changed. Sign in with the new password."
     },
     "sign-up": {
       "title": "Create Account",
@@ -174,11 +176,17 @@
         "username-required": "Username is required",
         "username-minlength": "Username must be at least 3 characters",
         "password-required": "Password is required",
-        "password-minlength": "Password must be at least 6 characters",
+        "password-minlength": "Use between 8 and 72 characters",
         "password-strength": "Password must contain letters and numbers",
         "confirm-password-required": "Confirm password is required",
-        "password-mismatch": "Passwords do not match"
-      }
+        "password-mismatch": "Passwords do not match",
+        "email-required": "The e-mail is required",
+        "email-invalid": "Enter a valid e-mail",
+        "already-registered": "The username or the e-mail is already registered."
+      },
+      "email": "E-mail",
+      "email-placeholder": "name@laboratory.com",
+      "email-hint": "We send the verification code to this address if you forget your password."
     },
     "change-password": {
       "title": "Change your password",
@@ -195,6 +203,25 @@
         "mismatch": "The passwords do not match",
         "current-password": "The current password is not correct.",
         "unavailable": "The password could not be changed. Please try again."
+      }
+    },
+    "password-recovery": {
+      "title": "Recover your password",
+      "subtitle": "Enter the username or e-mail of your account. We will send a 6-digit code to the e-mail of the account.",
+      "code-sent": "If the account exists and has an e-mail, we sent it a 6-digit code. It expires in {{minutes}} minutes.",
+      "account": "Username or e-mail",
+      "account-placeholder": "Enter your username or e-mail",
+      "send-code": "Send code",
+      "code": "Verification code",
+      "resend": "Send a new code",
+      "change-account": "Use another account",
+      "code-resent": "If the account can receive codes, a new code was sent. A new code is sent at most once a minute.",
+      "back": "Back to sign in",
+      "errors": {
+        "request": "The request could not be sent. Please try again.",
+        "invalid-code": "The code is not valid or has expired. Request a new code.",
+        "reset": "The password could not be changed. Please try again.",
+        "code-format": "The code has 6 digits"
       }
     }
   },
@@ -464,7 +491,6 @@
       "title": "Billing Summary",
       "subtitle": "Review your active subscription and payment history.",
       "current-subscription": "Current Subscription",
-      "cancel-subscription": "Cancel Subscription",
       "no-active-subscription": "No active subscription",
       "no-active-subscription-desc": "Choose a plan to activate billing for your laboratory.",
       "choose-plan": "Choose Plan",
@@ -475,7 +501,6 @@
       "start-date": "Start Date",
       "started-at": "Started At",
       "end-date": "End Date",
-      "period-ends": "Period Ends",
       "payments-title": "Payment History",
       "payment-history": "Payment History",
       "empty-payments": "No payments have been registered yet.",
@@ -487,6 +512,15 @@
         "status": "Status",
         "provider": "Provider",
         "reference": "Reference"
+      },
+      "cancel-renewal": "Cancel renewal",
+      "cancel-renewal-confirm": "The subscription will not renew: it stays active until {{end}} and no new charges are made. Cancel the renewal?",
+      "renewal-cancelled": "The renewal is cancelled. The subscription stays active until {{date}} and will not be charged again.",
+      "renewal-cancelled-notice": "The renewal was cancelled.",
+      "renews-on": "Renews On",
+      "access-until": "Active Until",
+      "errors": {
+        "cancel-renewal": "The renewal could not be cancelled. Please try again."
       }
     },
     "status": {
