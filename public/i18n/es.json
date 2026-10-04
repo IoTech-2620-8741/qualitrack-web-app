@@ -266,9 +266,9 @@
     "inventory": "Inventario",
     "raw-material-catalog": "Catálogo de materias primas",
     "tracking": "Monitoreo y telemetría",
-    "tracking-dashboard": "Panel de telemetría",
+    "tracking-monitoring": "Monitoreo ambiental",
     "tracking-history": "Historial de telemetría",
-    "tracking-analysis": "Análisis de telemetría",
+    "tracking-profiles": "Perfiles ambientales",
     "subscription": "Suscripción y facturación",
     "billing-summary": "Resumen de facturación",
     "subscription-plans": "Planes de suscripción"
