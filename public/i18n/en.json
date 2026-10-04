@@ -69,7 +69,8 @@
       "RECEIPT": "Receipt",
       "REVIEW": "Quality review",
       "CONSUMPTION": "Consumption",
-      "OPENING_BALANCE": "Opening balance"
+      "OPENING_BALANCE": "Opening balance",
+      "STORAGE": "Storage in container"
     },
     "noEnvironments": "No environments registered yet",
     "noEnvironmentsNotice": "Raw materials are kept in an environment of the laboratory or warehouse. Register an environment to start the inventory.",
@@ -77,7 +78,17 @@
     "nearExpiryNotice": "Lots with available stock that expire within the near expiry period of the platform (30 days unless configured otherwise).",
     "nearExpiryEmpty": "No lots expire soon in this environment.",
     "notFound": "The raw material is not registered in this environment.",
-    "noEnvironment": "Select an environment to continue."
+    "noEnvironment": "Select an environment to continue.",
+    "container": "Container",
+    "noContainer": "Not stored in a container",
+    "storeInContainer": "Store in container",
+    "changeContainer": "Change container",
+    "confirmStorage": "Store lot",
+    "viewConditions": "View conditions",
+    "containerNotice": "The lot is kept in the selected monitored container; the change is recorded as a storage movement.",
+    "noContainers": "There are no operational container monitors located in this environment. Register a container monitor and locate it here first.",
+    "manageContainers": "Go to equipment",
+    "containerUsageNotice": "Only raw material storage environments keep lots in monitored containers. Classify the environment as raw material storage to use containers."
   },
   "onboarding.no-plans": "No subscription plans are available yet. Please contact the service administrator.",
   "operational-metrics": {
@@ -651,7 +662,8 @@
       "general": "General Information",
       "materials": "Raw Materials Used",
       "participants": "Equipment and staff",
-      "traceability": "Traceability"
+      "traceability": "Traceability",
+      "storage": "Storage"
     },
     "notes": "BPM Notes",
     "no-notes": "No notes recorded for this batch.",
@@ -1327,7 +1339,8 @@
     "decision": "Quality decision",
     "released": "Released on {{date}} and signed by user #{{user}}.",
     "rejected": "Rejected on {{date}}:",
-    "pending": "The batch has not been released or rejected yet."
+    "pending": "The batch has not been released or rejected yet.",
+    "container": "Container"
   },
   "equipment": {
     "errors": {
@@ -1421,5 +1434,19 @@
         "generate": "Generated"
       }
     }
+  },
+  "batch-storage": {
+    "title": "Container where the batch is stored",
+    "container": "Container",
+    "environment": "Environment",
+    "assigned-at": "Stored on",
+    "assigned-by": "By user #{{user}}",
+    "view-conditions": "View container conditions",
+    "empty": "Not stored in a container yet",
+    "hint": "Operational container monitors of product storage environments",
+    "store": "Store batch",
+    "change": "Change container",
+    "saved": "The batch was stored in the container.",
+    "no-containers": "There are no operational container monitors in product storage environments. Classify an environment as product storage and locate a container monitor there."
   }
 }

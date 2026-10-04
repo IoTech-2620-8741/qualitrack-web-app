@@ -33,8 +33,20 @@ export interface RejectionEvidence {
   reason: string;
 }
 
+/** Monitored container of a product storage environment where the batch is stored (US79). */
+export interface BatchContainer {
+  batchId: number;
+  containerMonitorId: number;
+  /** Name of the container monitor; null when it is no longer registered. */
+  containerName: string | null;
+  environmentId: number;
+  assignedBy: number;
+  assignedAt: string;
+}
+
 /**
- * Everything that took part in a product batch (US80): consumed lots, equipment, staff and the final decision.
+ * Everything that took part in a product batch (US80): consumed lots, equipment, staff, the container where it is
+ * stored and the final decision.
  */
 export interface BatchTraceability {
   batch: Batch;
@@ -44,4 +56,5 @@ export interface BatchTraceability {
   staff: StaffParticipation[];
   release: ReleaseEvidence | null;
   rejection: RejectionEvidence | null;
+  container: BatchContainer | null;
 }

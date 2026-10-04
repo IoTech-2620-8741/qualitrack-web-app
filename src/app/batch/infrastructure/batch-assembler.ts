@@ -25,6 +25,7 @@ export class BatchAssembler implements BaseAssembler<Batch, BatchResource, Batch
       startDate: resource.startDate,
       endDate: resource.endDate ?? undefined,
       notes: resource.notes ?? undefined,
+      containerMonitorId: resource.containerMonitorId,
     });
   }
 
@@ -42,6 +43,7 @@ export class BatchAssembler implements BaseAssembler<Batch, BatchResource, Batch
       startDate: entity.startDate,
       endDate: entity.endDate,
       notes: entity.notes,
+      containerMonitorId: entity.containerMonitorId,
     };
   }
 
@@ -54,6 +56,7 @@ export class BatchAssembler implements BaseAssembler<Batch, BatchResource, Batch
       staff: resource.staff,
       release: resource.release,
       rejection: resource.rejection,
+      container: resource.container ?? null,
     };
   }
 }

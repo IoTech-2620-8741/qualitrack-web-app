@@ -17,6 +17,17 @@ export interface RawMaterialBatchResource extends BaseResource {
   usable?: boolean;
   availability?: string;
   expirationStatus?: ExpirationStatus;
+  containerMonitorId?: number | null;
+}
+
+/** Container where a raw material lot is stored (PUT .../batches/{id}/container-assignment). */
+export interface RawMaterialBatchContainerResource {
+  rawMaterialBatchId: number;
+  containerMonitorId: number;
+  containerName: string | null;
+  environmentId: number;
+  assignedBy: number;
+  assignedAt: string;
 }
 
 /** Review registered for a raw material lot (POST .../batches/{id}/reviews). */

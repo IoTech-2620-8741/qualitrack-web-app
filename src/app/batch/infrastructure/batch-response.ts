@@ -14,6 +14,7 @@ export interface BatchResource extends BaseResource {
   startDate: string;
   endDate?: string | null;
   notes?: string | null;
+  containerMonitorId?: number | null;
 }
 
 /** Envelope variant of a batch collection. */
@@ -42,6 +43,16 @@ export interface StaffParticipationResource {
   registeredAt: string;
 }
 
+/** Container where a batch is stored (PUT .../batches/{batchId}/container-assignment). */
+export interface BatchContainerResource {
+  batchId: number;
+  containerMonitorId: number;
+  containerName: string | null;
+  environmentId: number;
+  assignedBy: number;
+  assignedAt: string;
+}
+
 /** Traceability of a batch. */
 export interface BatchTraceabilityResource {
   batch: BatchResource;
@@ -62,4 +73,5 @@ export interface BatchTraceabilityResource {
   staff: StaffParticipationResource[];
   release: { signedByUserId: number; signatureHash: string; signedAt: string } | null;
   rejection: { rejectionDate: string; reason: string } | null;
+  container?: BatchContainerResource | null;
 }

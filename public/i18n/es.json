@@ -69,7 +69,8 @@
       "RECEIPT": "Recepción",
       "REVIEW": "Revisión de calidad",
       "CONSUMPTION": "Consumo",
-      "OPENING_BALANCE": "Saldo inicial"
+      "OPENING_BALANCE": "Saldo inicial",
+      "STORAGE": "Almacenamiento en contenedor"
     },
     "noEnvironments": "Aún no hay ambientes registrados",
     "noEnvironmentsNotice": "Las materias primas se guardan en un ambiente del laboratorio o almacén. Registra un ambiente para empezar el inventario.",
@@ -77,7 +78,17 @@
     "nearExpiryNotice": "Lotes con stock disponible que vencen dentro del periodo de próximo vencimiento de la plataforma (30 días salvo otra configuración).",
     "nearExpiryEmpty": "No hay lotes próximos a vencer en este ambiente.",
     "notFound": "La materia prima no está registrada en este ambiente.",
-    "noEnvironment": "Selecciona un ambiente para continuar."
+    "noEnvironment": "Selecciona un ambiente para continuar.",
+    "container": "Contenedor",
+    "noContainer": "Sin contenedor asignado",
+    "storeInContainer": "Guardar en contenedor",
+    "changeContainer": "Cambiar contenedor",
+    "confirmStorage": "Guardar lote",
+    "viewConditions": "Ver condiciones",
+    "containerNotice": "El lote queda guardado en el contenedor monitoreado seleccionado; el cambio se registra como un movimiento de almacenamiento.",
+    "noContainers": "No hay monitores de contenedor operativos ubicados en este ambiente. Registra un monitor de contenedor y ubícalo aquí primero.",
+    "manageContainers": "Ir a equipos",
+    "containerUsageNotice": "Solo los ambientes de almacenamiento de materia prima guardan lotes en contenedores monitoreados. Clasifica el ambiente como almacenamiento de materia prima para usar contenedores."
   },
   "onboarding.no-plans": "Todavía no hay planes de suscripción disponibles. Contacta al administrador del servicio.",
   "operational-metrics": {
@@ -651,7 +662,8 @@
       "general": "Información General",
       "materials": "Materias Primas Usadas",
       "participants": "Equipos y personal",
-      "traceability": "Trazabilidad"
+      "traceability": "Trazabilidad",
+      "storage": "Almacenamiento"
     },
     "notes": "Notas BPM",
     "no-notes": "No hay notas registradas para este lote.",
@@ -1327,7 +1339,8 @@
     "decision": "Decisión de calidad",
     "released": "Liberado el {{date}} y firmado por el usuario #{{user}}.",
     "rejected": "Rechazado el {{date}}:",
-    "pending": "El lote aún no ha sido liberado ni rechazado."
+    "pending": "El lote aún no ha sido liberado ni rechazado.",
+    "container": "Contenedor"
   },
   "equipment": {
     "errors": {
@@ -1421,5 +1434,19 @@
         "generate": "Generó"
       }
     }
+  },
+  "batch-storage": {
+    "title": "Contenedor donde se guarda el lote",
+    "container": "Contenedor",
+    "environment": "Ambiente",
+    "assigned-at": "Guardado el",
+    "assigned-by": "Por el usuario #{{user}}",
+    "view-conditions": "Ver condiciones del contenedor",
+    "empty": "Aún no se guarda en un contenedor",
+    "hint": "Monitores de contenedor operativos de ambientes de almacenamiento de productos",
+    "store": "Guardar lote",
+    "change": "Cambiar contenedor",
+    "saved": "El lote se guardó en el contenedor.",
+    "no-containers": "No hay monitores de contenedor operativos en ambientes de almacenamiento de productos. Clasifica un ambiente como almacenamiento de productos y ubica allí un monitor de contenedor."
   }
 }

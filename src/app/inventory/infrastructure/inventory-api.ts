@@ -49,6 +49,10 @@ export class InventoryApi extends BaseApi {
   review(lab: number, environmentId: number, material: number, receipt: number, status: RawMaterialBatchStatus, reason: string) {
     return this.receiptEndpoint.review(lab, environmentId, material, receipt, { status, reason });
   }
+  /** Stores a lot in a container monitor located in the environment (TS29). */
+  assignContainer(lab: number, environmentId: number, material: number, receipt: number, containerMonitorId: number) {
+    return this.receiptEndpoint.assignContainer(lab, environmentId, material, receipt, { containerMonitorId });
+  }
   movements(lab: number, environmentId: number, material: number) {
     return this.movementEndpoint.getByMaterial(lab, environmentId, material);
   }

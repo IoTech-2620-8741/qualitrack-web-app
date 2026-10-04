@@ -6,7 +6,7 @@ import { BatchStore } from '../../../application/batch.store';
 
 /**
  * Consolidated traceability of the selected batch (US80): what it consumed, which equipment and staff
- * took part and how it was closed.
+ * took part, where it is stored and how it was closed.
  */
 @Component({
   selector: 'app-batch-traceability',

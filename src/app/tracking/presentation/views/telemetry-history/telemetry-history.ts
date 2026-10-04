@@ -3,6 +3,7 @@ import { DatePipe, DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { ActivatedRoute } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -35,6 +36,7 @@ export class TelemetryHistory implements OnInit {
   protected readonly store = inject(TrackingStore);
   protected readonly environments = inject(EnvironmentStore);
   private readonly translate = inject(TranslateService);
+  private readonly route = inject(ActivatedRoute);
   private readonly language = toSignal(this.translate.onLangChange, { initialValue: null });
 
   protected deviceId: number | null = null;
@@ -113,18 +115,24 @@ export class TelemetryHistory implements OnInit {
     };
   });
 
+  /** Opens the history of a device given by environmentId and deviceId, used by the container of lots and batches. */
   async ngOnInit(): Promise<void> {
     if (!this.environments.loaded()) await this.environments.loadEnvironments();
-    const current = this.store.environmentId() ?? this.environments.preferredEnvironment(undefined, 'tracking')?.id ?? null;
-    if (current !== null) await this.changeEnvironment(current);
+    const query = this.route.snapshot.queryParamMap;
+    const requested = Number(query.get('environmentId'));
+    const requestedDevice = Number(query.get('deviceId'));
+    const linked = this.environments.environments().some((environment) => environment.id === requested) ? requested : null;
+    const current = linked ?? this.store.environmentId() ?? this.environments.preferredEnvironment(undefined, 'tracking')?.id ?? null;
+    if (current !== null) await this.changeEnvironment(current, linked !== null && requestedDevice > 0 ? requestedDevice : null);
   }
 
-  protected async changeEnvironment(environmentId: number): Promise<void> {
+  protected async changeEnvironment(environmentId: number, preferredDeviceId: number | null = null): Promise<void> {
     this.environments.rememberEnvironment(environmentId, 'tracking');
     if (this.store.environmentId() !== environmentId || !this.store.devices().length) {
       await this.store.selectEnvironment(environmentId);
     }
-    this.deviceId = this.store.environmentalDevice()?.id ?? this.store.containerMonitors()[0]?.id ?? null;
+    const preferred = this.store.devices().find((device) => device.id === preferredDeviceId);
+    this.deviceId = preferred?.id ?? this.store.environmentalDevice()?.id ?? this.store.containerMonitors()[0]?.id ?? null;
     this.metric = null;
     await this.search();
   }

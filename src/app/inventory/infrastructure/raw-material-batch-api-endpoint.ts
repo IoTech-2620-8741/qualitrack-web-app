@@ -7,9 +7,11 @@ import {
   RawMaterialBatchResource,
   RawMaterialBatchesResponse,
   RawMaterialBatchReviewResource,
+  RawMaterialBatchContainerResource,
 } from './raw-material-batch-response';
 import { RawMaterialBatchAssembler } from './raw-material-batch-assembler';
 import {
+  AssignRawMaterialBatchContainerRequest,
   ReceiveRawMaterialBatchRequest,
   ReviewRawMaterialBatchRequest,
 } from './raw-material-batch.request';
@@ -17,7 +19,7 @@ import {
 const laboratoriesEndpointUrl = `${environment.serverBasePath}${environment.laboratoryLabsEndpointPath}`;
 
 /**
- * HTTP client for raw material lots (TS23, TS24, TS25, TS28).
+ * HTTP client for raw material lots (TS23, TS24, TS25, TS28, TS29).
  * Maps to /laboratories/{laboratoryId}/environments/{environmentId}/raw-materials/{rawMaterialId}/batches
  * and /laboratories/{laboratoryId}/environments/{environmentId}/raw-material-batches.
  */
@@ -68,6 +70,17 @@ export class RawMaterialBatchApiEndpoint extends BaseApiEndpoint<
         request,
       )
       .pipe(catchError(this.handleError('Failed to review receipt')));
+  }
+
+  /** Stores the lot in a container monitor of its environment, replacing the previous one (TS29). */
+  assignContainer(lab: number, environmentId: number, material: number, batch: number,
+                  request: AssignRawMaterialBatchContainerRequest) {
+    return this.http
+      .put<RawMaterialBatchContainerResource>(
+        `${this.batches(lab, environmentId, material)}/${batch}${environment.inventoryRawMaterialBatchContainerAssignmentEndpointPath}`,
+        request,
+      )
+      .pipe(catchError(this.handleError('Failed to store the lot in the container')));
   }
 
   private environmentRoot(lab: number, environmentId: number) {

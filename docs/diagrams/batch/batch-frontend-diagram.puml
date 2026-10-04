@@ -70,6 +70,7 @@ package "batch.domain.model" {
     +startDate: string
     +endDate?: string
     +notes?: string
+    +containerMonitorId: number | null
     +isOpen: boolean
     +detailLink: route | null
   }
@@ -84,6 +85,15 @@ package "batch.domain.model" {
     +staff: StaffParticipation[]
     +release: ReleaseEvidence | null
     +rejection: RejectionEvidence | null
+    +container: BatchContainer | null
+  }
+  interface BatchContainer {
+    +batchId: number
+    +containerMonitorId: number
+    +containerName: string | null
+    +environmentId: number
+    +assignedBy: number
+    +assignedAt: string
   }
   interface CreateProductCommand
   interface CreateBatchCommand
@@ -97,6 +107,7 @@ Batch ..|> BaseEntity
 BatchTraceability --> Batch
 BatchTraceability --> EquipmentUsage
 BatchTraceability --> StaffParticipation
+BatchTraceability --> "0..1" BatchContainer
 
 package "batch.infrastructure" {
   class BatchApi {
@@ -113,6 +124,7 @@ package "batch.infrastructure" {
     +registerEquipmentUsage(path, batchId, equipmentId)
     +registerStaffParticipation(path, batchId, staffId)
     +getTraceability(path, batchId)
+    +assignContainer(path, batchId, containerMonitorId)
     +getRawMaterialUsages(lab, environmentId, rawMaterialId)
     +getMaterialHistory(laboratoryId, legacyRawMaterialId)
   }
@@ -146,7 +158,8 @@ BatchApiEndpoint ..> BatchPath
 note right of BatchApiEndpoint
   /laboratories/{laboratoryId}/environments/{environmentId}
   /products/{productId}/batches[/{batchId}[/releases|/rejections|
-  /equipment-usages|/staff-participations|/traceability]]
+  /equipment-usages|/staff-participations|/traceability|
+  /container-assignment (PUT)]]
 end note
 
 package "batch.application" {
@@ -164,6 +177,7 @@ package "batch.application" {
     +rejectBatch(path, batchId, command)
     +registerEquipment(path, batchId, equipmentId)
     +registerStaff(path, batchId, staffId)
+    +assignContainer(path, batchId, containerMonitorId)
   }
   class ProductStore <<component scoped>> {
     +products: Signal<PharmaceuticalProduct[]>
@@ -208,6 +222,11 @@ package "batch.presentation" {
   class RawMaterialUsageComponent
   class BatchParticipants
   class BatchTraceabilityView
+  class BatchStorage <<component>> {
+    #storageAreas: Signal<StorageArea[]>
+    #container: Signal<BatchContainer | null>
+    #storeBatch(): Promise<void>
+  }
   class BatchRedirect
   class BatchRoutes
 }
@@ -224,6 +243,7 @@ BatchDetail --> BatchStore
 BatchDetail *-- RawMaterialUsageComponent
 BatchDetail *-- BatchParticipants
 BatchDetail *-- BatchTraceabilityView
+BatchDetail *-- BatchStorage
 BatchReleaseForm --> BatchStore
 BatchRejectForm --> BatchStore
 RawMaterialUsageComponent --> RawMaterialConsumptionStore
@@ -237,6 +257,15 @@ note bottom of BatchParticipants
   Auditors only consult the batch (no usage or participation forms).
 end note
 BatchTraceabilityView --> BatchStore
+BatchStorage --> BatchStore
+BatchStorage --> EquipmentApi
+BatchStorage --> EnvironmentStore
+BatchStorage --> IamStore
+note bottom of BatchStorage
+  Storage tab (US78, US79): operational container monitors grouped by
+  PRODUCT_STORAGE environment; auditors only see the current container.
+  "View container conditions" -> /tracking/history?environmentId=&deviceId=.
+end note
 BatchRedirect --> BatchApi
 BatchForm ..> localIsoDate
 BatchReleaseForm ..> localIsoDate

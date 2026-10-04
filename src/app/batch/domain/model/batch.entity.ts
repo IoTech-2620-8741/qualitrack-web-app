@@ -23,6 +23,8 @@ export class Batch implements BaseEntity {
   startDate: string;
   endDate?: string;
   notes?: string;
+  /** Container monitor of the container where the batch is stored; null while it has none (US78). */
+  containerMonitorId: number | null;
 
   constructor(params: {
     id: number;
@@ -37,6 +39,7 @@ export class Batch implements BaseEntity {
     startDate: string;
     endDate?: string;
     notes?: string;
+    containerMonitorId?: number | null;
   }) {
     this.id = params.id;
     this.labId = params.labId;
@@ -50,6 +53,7 @@ export class Batch implements BaseEntity {
     this.startDate = params.startDate;
     this.endDate = params.endDate;
     this.notes = params.notes;
+    this.containerMonitorId = params.containerMonitorId ?? null;
   }
 
   /** Pending and in-progress batches still accept consumptions, equipment and staff. */

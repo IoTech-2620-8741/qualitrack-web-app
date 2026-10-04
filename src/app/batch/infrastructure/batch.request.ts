@@ -24,6 +24,11 @@ export interface RegisterEquipmentUsageRequest {
   equipmentId: number;
 }
 
+/** Body of PUT .../batches/{batchId}/container-assignment (TS68). */
+export interface AssignBatchContainerRequest {
+  containerMonitorId: number;
+}
+
 /** Body of POST .../batches/{batchId}/staff-participations (TS67). */
 export interface RegisterStaffParticipationRequest {
   staffId: number;

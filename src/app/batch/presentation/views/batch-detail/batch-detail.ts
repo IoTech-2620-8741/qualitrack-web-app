@@ -12,10 +12,12 @@ import { BatchPath } from '../../../infrastructure/batch-api-endpoint';
 import { RawMaterialUsageComponent } from '../raw-material-usage/raw-material-usage';
 import { BatchParticipants } from '../batch-participants/batch-participants';
 import { BatchTraceabilityView } from '../batch-traceability/batch-traceability';
+import { BatchStorage } from '../batch-storage/batch-storage';
 
 /**
  * Detail of a product batch (US74): its data, the raw materials it consumed (US75), the equipment and
- * staff that took part (US76, US77), its traceability (US80) and the release or rejection (US81, US82).
+ * staff that took part (US76, US77), the container where it is stored (US78, US79), its traceability (US80) and
+ * the release or rejection (US81, US82).
  */
 @Component({
   selector: 'app-batch-detail',
@@ -31,6 +33,7 @@ import { BatchTraceabilityView } from '../batch-traceability/batch-traceability'
     RawMaterialUsageComponent,
     BatchParticipants,
     BatchTraceabilityView,
+    BatchStorage,
   ],
   templateUrl: './batch-detail.html',
   styleUrl: '../../../../shared/presentation/styles/operations-page.css',
