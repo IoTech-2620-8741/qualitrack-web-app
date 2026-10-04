@@ -1035,7 +1035,7 @@
     "equipment": {
       "title": "Bitácora de Equipo",
       "select-label": "Equipo",
-      "empty": "No hay equipos disponibles",
+      "empty": "No hay equipos ubicados en un ambiente",
       "load-error": "No se pudo cargar la lista de equipos.",
       "desc": "Exportar historial técnico y de mantenimiento.",
       "id-label": "ID de Equipo"

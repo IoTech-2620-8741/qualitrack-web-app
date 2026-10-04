@@ -115,9 +115,10 @@ export class DashboardStore {
   loadPlans(): void { this.load(this.plans, this.subscriptionApi.getPlans()); }
   loadAlerts(): void {
     if (this.equipment().status !== 'ready') return;
+    const laboratoryId = this.iam.requireLaboratoryId();
     // An incomplete equipment load must not be presented as zero laboratory alerts.
     this.load(this.alerts, from(this.equipment().data ?? []).pipe(
-      mergeMap(item => this.caApi.getAlerts({ equipmentId: item.id }).pipe(
+      mergeMap(item => this.caApi.getAlerts(laboratoryId, { equipmentId: item.id }).pipe(
         map(alerts => alerts.filter(alert => alert.equipmentId === item.id))), 4),
       toArray(), map(groups => [...new Map(groups.flat().map(alert => [alert.id, alert])).values()])));
   }

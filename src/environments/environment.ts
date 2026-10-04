@@ -7,7 +7,7 @@ export const environment = {
   // IAM
   iamSignInEndpointPath: '/authentication/sign-in',
   iamSignUpEndpointPath: '/authentication/sign-up',
-  iamRecoverPasswordEndpointPath: '/authentication/recover-password',
+  iamRecoverPasswordEndpointPath: '/authentication/password-recovery-requests',
 
   // Users / Roles
   usersEndpointPath: '/users',
@@ -42,8 +42,14 @@ export const environment = {
   devicesEndpointPath: '/devices',
   environmentalDevicesEndpointPath: '/environmental-devices',
   containerMonitorsEndpointPath: '/container-monitors',
-  // Flat routes under /equipments/{equipmentId} kept until the Compliance and Reporting phases
+  // Records of an equipment, under /laboratories/{laboratoryId}/equipments/{equipmentId}
   equipmentBpmConfigEndpointPath: '/bpm-configs',
+  equipmentDeviationTrendsEndpointPath: '/deviation-trends',
+  equipmentDeviationAlertsEndpointPath: '/deviation-alerts',
+  equipmentComplianceEventsEndpointPath: '/compliance-events',
+  equipmentAuditLogsEndpointPath: '/audit-logs',
+  // Under /laboratories/{laboratoryId}/environments/{environmentId}/equipments/{equipmentId} (TS86)
+  equipmentLogReportsEndpointPath: '/log-reports',
 
   // Tracking, under .../environments/{environmentId}[/container-monitors/{deviceId} | /devices/{deviceId}]
   trackingTelemetryStatusEndpointPath: '/telemetry-status',
@@ -52,12 +58,6 @@ export const environment = {
   trackingEnvironmentalProfileEndpointPath: '/environmental-profile',
   trackingThresholdsEndpointPath: '/thresholds',
   trackingActuationRulesEndpointPath: '/actuation-rules',
-  equipmentDeviationTrendsEndpointPath: '/deviation-trends',
-  equipmentDeviationAlertsEndpointPath: '/deviation-alerts',
-  equipmentComplianceEventsEndpointPath: '/compliance-events',
-  equipmentAuditLogsEndpointPath: '/audit-logs',
-  equipmentReportsEndpointPath: '/reports',
-  equipmentLogReportsEndpointPath: '/log-reports',
 
   // Product Batch, under /laboratories/{laboratoryId}/environments/{environmentId}
   productsEndpointPath: '/products',
@@ -76,11 +76,14 @@ export const environment = {
   batchReportsEndpointPath: '/reports',
 
   // CA
-  rawMaterialComplianceEventsEndpointPath: '/compliance-events',
+  deviationAlertsEndpointPath: '/deviation-alerts',
+  deviationAlertAcknowledgementsEndpointPath: '/acknowledgements',
+  deviationAlertResolutionsEndpointPath: '/resolutions',
   caNotificationPrefsEndpointPath: '/notification-preferences',
 
   // RA
   raReportsEndpointPath: '/reports',
+  raReportContentEndpointPath: '/content',
   raAuditLogsEndpointPath: '/audit-logs',
   raKpiDashboardsEndpointPath: '/kpi-dashboards',
   raComplianceReportsEndpointPath: '/compliance-reports',
@@ -90,7 +93,7 @@ export const environment = {
   subscriptionCheckoutSessionsEndpointPath: '/subscription-checkout-sessions',
   subscriptionsEndpointPath: '/subscriptions',
   laboratorySubscriptionsEndpointPath: '/subscriptions',
-  laboratoryBillingSummaryEndpointPath: '/billing-summary',
+  subscriptionCancellationRequestsEndpointPath: '/cancellation-requests',
 
   // Stripe
   stripeWebhooksEndpointPath: '/stripe/webhooks',

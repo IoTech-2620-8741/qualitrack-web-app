@@ -15,7 +15,6 @@ import { MaintenanceApiEndpoint } from './maintenance-api-endpoint';
 import { ChangeEquipmentStatusRequest, RegisterEquipmentRequest, RegisterIotDeviceRequest } from './equipment.request';
 import { ConfigureBpmRequest } from './bpm-config.request';
 import { RegisterMaintenanceRequest } from './maintenance.request';
-import { MessageResource } from '../../shared/infrastructure/message-response';
 
 /**
  * Infrastructure facade of the Equipment bounded context.
@@ -73,12 +72,13 @@ export class EquipmentApi extends BaseApi {
     return this._equipmentEndpoint.changeStatus(laboratoryId, environmentId, equipmentId, request);
   }
 
-  getBpmConfig(equipmentId: number): Observable<BpmParameterConfig[]> {
-    return this._bpmEndpoint.getConfigByEquipment(equipmentId);
+  getBpmConfig(laboratoryId: number, equipmentId: number): Observable<BpmParameterConfig[]> {
+    return this._bpmEndpoint.getConfigByEquipment(laboratoryId, equipmentId);
   }
 
-  configureBpm(request: ConfigureBpmRequest): Observable<MessageResource> {
-    return this._bpmEndpoint.configureBpm(request);
+  /** Creates or replaces the range of a BPM parameter of an equipment. */
+  configureBpm(laboratoryId: number, request: ConfigureBpmRequest): Observable<BpmParameterConfig> {
+    return this._bpmEndpoint.configureBpm(laboratoryId, request);
   }
 
   /** Maintenance history of an equipment located in the environment (TS36). */

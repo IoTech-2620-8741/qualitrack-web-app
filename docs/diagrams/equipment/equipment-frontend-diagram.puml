@@ -11,7 +11,6 @@ package "shared" {
   class BaseApi
   class BaseApiEndpoint
   interface BaseAssembler
-  interface MessageResource
   class ApiError
 }
 
@@ -92,8 +91,8 @@ package "equipment.infrastructure" {
     +changeStatus(lab, environmentId, equipmentId, request)
     +getMaintenanceHistory(lab, environmentId, equipmentId)
     +registerMaintenance(lab, environmentId, equipmentId, request)
-    +getBpmConfig(equipmentId)
-    +configureBpm(request)
+    +getBpmConfig(lab, equipmentId)
+    +configureBpm(lab, request)
   }
   class EquipmentApiEndpoint
   class MaintenanceApiEndpoint
@@ -116,7 +115,6 @@ BpmConfigApiEndpoint --> BpmConfigAssembler
 EquipmentAssembler ..|> BaseAssembler
 MaintenanceAssembler ..|> BaseAssembler
 BpmConfigAssembler ..|> BaseAssembler
-BpmConfigApiEndpoint ..> MessageResource
 note right of EquipmentApiEndpoint
   /laboratories/{laboratoryId}/equipments[/{equipmentId}]
   /laboratories/{laboratoryId}/devices/{environmental-devices|container-monitors}
@@ -128,8 +126,9 @@ note right of MaintenanceApiEndpoint
   .../environments/{environmentId}/equipments/{equipmentId}/maintenance-records
 end note
 note bottom of BpmConfigApiEndpoint
-  /equipments/{equipmentId}/bpm-configs: process parameters of the
-  equipment (Report); environmental thresholds live in Tracking.
+  /laboratories/{laboratoryId}/equipments/{equipmentId}/bpm-configs
+  PUT .../bpm-configs/{parameterName} creates or replaces the range: process
+  parameters of the equipment (Report); environmental thresholds live in Tracking.
 end note
 
 package "equipment.application" {

@@ -6,10 +6,13 @@ import { BpmParameterConfig } from '../domain/model/bpm-parameter-config.entity'
 import { BpmConfigResource, BpmConfigsResponse } from './bpm-config-response';
 import { BpmConfigAssembler } from './bpm-config-assembler';
 import { ConfigureBpmRequest } from './bpm-config.request';
-import { MessageResource } from '../../shared/infrastructure/message-response';
 
-const equipmentEndpointUrl = `${environment.serverBasePath}${environment.equipmentEndpointPath}`;
+const laboratoriesEndpointUrl = `${environment.serverBasePath}${environment.laboratoryLabsEndpointPath}`;
 
+/**
+ * BPM parameter ranges of an equipment: /laboratories/{laboratoryId}/equipments/{equipmentId}/bpm-configs. Each
+ * parameter is identified by its name, so configuring it again replaces its range.
+ */
 export class BpmConfigApiEndpoint extends BaseApiEndpoint<
   BpmParameterConfig,
   BpmConfigResource,
@@ -17,14 +20,12 @@ export class BpmConfigApiEndpoint extends BaseApiEndpoint<
   BpmConfigAssembler
 > {
   constructor(http: HttpClient) {
-    super(http, equipmentEndpointUrl, new BpmConfigAssembler());
+    super(http, laboratoriesEndpointUrl, new BpmConfigAssembler());
   }
 
-  getConfigByEquipment(equipmentId: number): Observable<BpmParameterConfig[]> {
+  getConfigByEquipment(laboratoryId: number, equipmentId: number): Observable<BpmParameterConfig[]> {
     return this.http
-      .get<
-        BpmConfigResource[]
-      >(`${this.endpointUrl}/${equipmentId}${environment.equipmentBpmConfigEndpointPath}`)
+      .get<BpmConfigResource[]>(this.configsUrl(laboratoryId, equipmentId))
       .pipe(
         map((resources) =>
           resources.map((resource) => this.assembler.toEntityFromResource(resource)),
@@ -33,14 +34,18 @@ export class BpmConfigApiEndpoint extends BaseApiEndpoint<
       );
   }
 
-  configureBpm(request: ConfigureBpmRequest): Observable<MessageResource> {
-    const { equipmentId, ...body } = request;
-
+  configureBpm(laboratoryId: number, request: ConfigureBpmRequest): Observable<BpmParameterConfig> {
+    const { equipmentId, parameterName, ...range } = request;
     return this.http
-      .post<MessageResource>(
-        `${this.endpointUrl}/${equipmentId}${environment.equipmentBpmConfigEndpointPath}`,
-        body,
-      )
-      .pipe(catchError(this.handleError('Failed to configure BPM parameters')));
+      .put<BpmConfigResource>(`${this.configsUrl(laboratoryId, equipmentId)}/${encodeURIComponent(parameterName)}`, range)
+      .pipe(
+        map((resource) => this.assembler.toEntityFromResource(resource)),
+        catchError(this.handleError('Failed to configure BPM parameters')),
+      );
+  }
+
+  private configsUrl(laboratoryId: number, equipmentId: number): string {
+    return `${this.endpointUrl}/${laboratoryId}${environment.equipmentEndpointPath}/${equipmentId}`
+      + environment.equipmentBpmConfigEndpointPath;
   }
 }

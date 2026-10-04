@@ -200,7 +200,7 @@ export class EquipmentStore {
 
   /** Loads the BPM parameter limits of an equipment. */
   loadBpmConfig(equipmentId: number): void {
-    this.api.getBpmConfig(equipmentId).subscribe({
+    this.api.getBpmConfig(this.iam.requireLaboratoryId(), equipmentId).subscribe({
       next: (configs) => this._bpmConfigs.set(configs),
       error: (error: unknown) => this._error.set(equipmentError(error)),
     });
@@ -210,7 +210,7 @@ export class EquipmentStore {
   configureBpm(command: ConfigureBpmCommand): void {
     this._saving.set(true);
     this._error.set(null);
-    this.api.configureBpm(command).subscribe({
+    this.api.configureBpm(this.iam.requireLaboratoryId(), command).subscribe({
       next: () => {
         this.loadBpmConfig(command.equipmentId);
         this._successMsg.set('bpm-config.saved');

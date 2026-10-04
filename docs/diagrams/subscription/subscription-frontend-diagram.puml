@@ -245,6 +245,7 @@ package "subscription" {
       +getCurrentSubscription(laboratoryId: number): Observable<Subscription>
       +getPaymentsBySubscription(subscriptionId: number): Observable<Payment[]>
       +createCheckoutSession(request: CreateCheckoutSessionRequest): Observable<CheckoutSessionResource>
+      +cancelSubscription(subscriptionId: number): Observable<Subscription>
     }
 
     class SubscriptionApi {
@@ -253,6 +254,7 @@ package "subscription" {
       +getCurrentSubscription(laboratoryId: number): Observable<Subscription>
       +getPaymentsBySubscription(subscriptionId: number): Observable<Payment[]>
       +createCheckoutSession(request: CreateCheckoutSessionRequest): Observable<CheckoutSessionResource>
+      +cancelSubscription(subscriptionId: number): Observable<Subscription>
     }
   }
 
@@ -353,5 +355,10 @@ SubscriptionRoutes ..> Checkout
 SubscriptionRoutes ..> BillingSummary
 SubscriptionRoutes ..> PaymentSuccess
 SubscriptionRoutes ..> PaymentCancel
+
+note bottom of SubscriptionApiEndpoint
+  GET  /laboratories/{laboratoryId}/subscriptions?status=ACTIVE (list, TS10)
+  POST /subscriptions/{subscriptionId}/cancellation-requests (TS11)
+end note
 
 @enduml
