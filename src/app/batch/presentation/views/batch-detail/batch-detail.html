@@ -53,6 +53,11 @@
           <app-batch-participants [path]="path!" [batchId]="batch.id" [open]="batch.isOpen && store.canOperate()" />
         </div>
       </mat-tab>
+      <mat-tab [label]="'batch-detail.tabs.storage' | translate">
+        <div class="tab-content">
+          <app-batch-storage [path]="path!" [batchId]="batch.id" />
+        </div>
+      </mat-tab>
       <mat-tab [label]="'batch-detail.tabs.traceability' | translate">
         <div class="tab-content">
           <app-batch-traceability />

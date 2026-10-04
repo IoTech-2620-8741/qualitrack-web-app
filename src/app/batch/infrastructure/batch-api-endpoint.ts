@@ -3,9 +3,10 @@ import { Observable, catchError, map } from 'rxjs';
 import { BaseApiEndpoint } from '../../shared/infrastructure/base-api-endpoint';
 import { environment } from '../../../environments/environment';
 import { Batch } from '../domain/model/batch.entity';
-import { BatchTraceability } from '../domain/model/batch-traceability.entity';
+import { BatchContainer, BatchTraceability } from '../domain/model/batch-traceability.entity';
 import { EquipmentUsage, StaffParticipation } from '../domain/model/batch-participation.entity';
 import {
+  BatchContainerResource,
   BatchesResponse,
   BatchResource,
   BatchTraceabilityResource,
@@ -14,6 +15,7 @@ import {
 } from './batch-response';
 import { BatchAssembler } from './batch-assembler';
 import {
+  AssignBatchContainerRequest,
   CreateBatchRequest,
   RegisterEquipmentUsageRequest,
   RegisterStaffParticipationRequest,
@@ -103,6 +105,13 @@ export class BatchApiEndpoint extends BaseApiEndpoint<Batch, BatchResource, Batc
         map((resource) => this.assembler.toTraceabilityFromResource(resource)),
         catchError(this.handleError(`Failed to fetch traceability of batch ${batchId}`)),
       );
+  }
+
+  /** Stores the batch in a container monitor of a product storage environment (TS68). */
+  assignContainer(path: BatchPath, batchId: number, request: AssignBatchContainerRequest): Observable<BatchContainer> {
+    return this.http
+      .put<BatchContainerResource>(`${this.collection(path)}/${batchId}${environment.batchContainerAssignmentEndpointPath}`, request)
+      .pipe(catchError(this.handleError(`Failed to store batch ${batchId} in the container`)));
   }
 
   private collection(path: BatchPath): string {

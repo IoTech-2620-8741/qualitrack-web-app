@@ -10,6 +10,10 @@ import { RawMaterialBatch } from '../domain/model/raw-material-batch.entity';
 import { BatchApi } from '../../batch/infrastructure/batch-api';
 import { RawMaterialUsage } from '../../batch/domain/model/raw-material-usage.entity';
 import { IamStore } from '../../iam/application/iam.store';
+import { EquipmentApi } from '../../equipment/infrastructure/equipment-api';
+import { Equipment } from '../../equipment/domain/model/equipment.entity';
+import { LaboratoryApi } from '../../laboratory/infrastructure/laboratory-api';
+import { EnvironmentUsage } from '../../laboratory/domain/model/environment-usage';
 import { SaveRawMaterialCommand } from '../domain/model/save-raw-material.command';
 import { ReceiveRawMaterialBatchCommand } from '../domain/model/receive-raw-material-batch.command';
 import { ReviewRawMaterialBatchCommand } from '../domain/model/review-raw-material-batch.command';
@@ -39,6 +43,8 @@ export class InventoryStore {
   private readonly api = inject(InventoryApi);
   private readonly iam = inject(IamStore);
   private readonly batchApi = inject(BatchApi);
+  private readonly equipmentApi = inject(EquipmentApi);
+  private readonly laboratoryApi = inject(LaboratoryApi);
   readonly environmentId = signal<number | null>(null);
   readonly materials = signal<RawMaterial[]>([]);
   readonly lowStockMaterials = signal<RawMaterial[]>([]);
@@ -49,6 +55,11 @@ export class InventoryStore {
   readonly legacy = signal<LegacyMaterial[]>([]);
   readonly legacyHistory = signal<RawMaterialUsage[]>([]);
   readonly legacyError = signal('');
+  /** Container monitors located in the environment; each one represents a monitored container (US43). */
+  readonly containers = signal<Equipment[]>([]);
+  /** Usage of the environment; only raw material storage areas keep lots in containers. */
+  readonly environmentUsage = signal<EnvironmentUsage | null>(null);
+  readonly storageError = signal('');
   readonly loading = signal(false);
   readonly saving = signal(false);
   readonly error = signal('');
@@ -73,6 +84,9 @@ export class InventoryStore {
       ),
     ];
   });
+  /** Containers that can receive lots: the backend rejects monitors in maintenance or out of service. */
+  readonly availableContainers = computed(() => this.containers().filter((container) => container.status === 'OPERATIONAL'));
+  readonly storesInContainers = computed(() => this.environmentUsage() === 'RAW_MATERIAL_STORAGE');
   readonly canReview = this.iam.canManageQuality;
   /** Receipts are registered by operators and quality managers, not auditors. */
   readonly canOperate = this.iam.canOperate;
@@ -96,6 +110,16 @@ export class InventoryStore {
       this.api.review(this.lab, this.environment, receipt.rawMaterialId, receipt.id, command.status, command.reason),
     );
   }
+  /** Stores the lot in a container monitor of the environment (US43). */
+  assignContainer(receipt: RawMaterialBatch, containerMonitorId: number) {
+    return this.write(
+      this.api.assignContainer(this.lab, this.environment, receipt.rawMaterialId, receipt.id, containerMonitorId),
+    );
+  }
+  /** Name of a container monitor of the environment, or null when it is no longer located there. */
+  containerName(containerMonitorId: number | null): string | null {
+    return this.containers().find((container) => container.id === containerMonitorId)?.name ?? null;
+  }
   importMaterial(legacyId: number) {
     return this.write(this.api.import(this.lab, this.environment, legacyId));
   }
@@ -115,6 +139,7 @@ export class InventoryStore {
     this.usages.set([]);
     this.legacyHistory.set([]);
     this.legacyError.set('');
+    this.storageError.set('');
     let materialsLoaded = false;
     try {
       const materials = await firstValueFrom(this.api.materials(this.lab, environmentId));
@@ -134,6 +159,7 @@ export class InventoryStore {
         this.receipts.set(detail.receipts);
         this.movements.set(detail.movements);
         this.usages.set(detail.usages);
+        await this.loadStorage(environmentId, generation);
         const legacyId = this.selected()?.legacyId;
         if (legacyId) {
           try {
@@ -153,6 +179,29 @@ export class InventoryStore {
       if (generation === this.generation) this.loading.set(false);
     }
     return materialsLoaded && generation === this.generation;
+  }
+  /** Loads the container monitors and the usage of the environment where the lots are stored (US43, US44). */
+  private async loadStorage(environmentId: number, generation: number): Promise<void> {
+    try {
+      const storage = await firstValueFrom(
+        forkJoin({
+          equipment: this.equipmentApi.getEquipment(this.lab),
+          environment: this.laboratoryApi.getEnvironment(this.lab, environmentId),
+        }),
+      );
+      if (generation !== this.generation) return;
+      this.containers.set(
+        storage.equipment.filter(
+          (item) => item.deviceType === 'CONTAINER_MONITOR' && item.environmentId === environmentId,
+        ),
+      );
+      this.environmentUsage.set(storage.environment.usage);
+    } catch (error) {
+      if (generation !== this.generation) return;
+      this.containers.set([]);
+      this.environmentUsage.set(null);
+      this.storageError.set(inventoryError(error));
+    }
   }
   /** Loads the materials below their minimum stock using the server classification (TS27). */
   async loadLowStock(): Promise<void> {

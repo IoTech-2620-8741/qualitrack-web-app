@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { BaseApi } from '../../shared/infrastructure/base-api';
 import { Batch } from '../domain/model/batch.entity';
-import { BatchTraceability } from '../domain/model/batch-traceability.entity';
+import { BatchContainer, BatchTraceability } from '../domain/model/batch-traceability.entity';
 import { EquipmentUsage, StaffParticipation } from '../domain/model/batch-participation.entity';
 import { PharmaceuticalProduct } from '../domain/model/pharmaceutical-product.entity';
 import { RawMaterialUsage } from '../domain/model/raw-material-usage.entity';
@@ -81,6 +81,11 @@ export class BatchApi extends BaseApi {
 
   getTraceability(path: BatchPath, batchId: number): Observable<BatchTraceability> {
     return this.batchEndpoint.getTraceability(path, batchId);
+  }
+
+  /** Stores the batch in a container monitor of a product storage environment (TS68). */
+  assignContainer(path: BatchPath, batchId: number, containerMonitorId: number): Observable<BatchContainer> {
+    return this.batchEndpoint.assignContainer(path, batchId, { containerMonitorId });
   }
 
   /** Batches that used a raw material registered before Inventory Management existed. */

@@ -27,6 +27,8 @@ export const environment = {
   inventoryRawMaterialsEndpointPath: '/raw-materials',
   inventoryRawMaterialBatchesEndpointPath: '/batches',
   inventoryRawMaterialBatchReviewsEndpointPath: '/reviews',
+  // Container where a lot is stored, under .../raw-materials/{rawMaterialId}/batches/{rawMaterialBatchId}
+  inventoryRawMaterialBatchContainerAssignmentEndpointPath: '/container-assignment',
   inventoryRawMaterialMovementsEndpointPath: '/movements',
   inventoryRawMaterialUsagesEndpointPath: '/usages',
   inventoryEnvironmentRawMaterialBatchesEndpointPath: '/raw-material-batches',
@@ -68,6 +70,8 @@ export const environment = {
   batchEquipmentUsagesEndpointPath: '/equipment-usages',
   batchStaffParticipationsEndpointPath: '/staff-participations',
   batchTraceabilityEndpointPath: '/traceability',
+  // Container where a batch is stored, under .../products/{productId}/batches/{batchId}
+  batchContainerAssignmentEndpointPath: '/container-assignment',
   // Batch records of other bounded contexts, under /batches/{batchId}
   batchEndpointPath: '/batches',
   batchAuditLogsEndpointPath: '/audit-logs',

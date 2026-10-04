@@ -1,6 +1,6 @@
 import { BaseEntity } from '../../../shared/domain/model/base-entity';
 import { InventoryUnit } from './raw-material.entity';
-export type InventoryMovementType = 'RECEIPT' | 'REVIEW' | 'CONSUMPTION' | 'OPENING_BALANCE';
+export type InventoryMovementType = 'RECEIPT' | 'REVIEW' | 'CONSUMPTION' | 'OPENING_BALANCE' | 'STORAGE';
 
 /** Domain state, independent from HTTP resources. Stock values are supplied by the server. */
 export class InventoryMovement implements BaseEntity {
