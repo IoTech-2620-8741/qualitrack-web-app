@@ -59,7 +59,7 @@ export class Dashboard {
   protected readonly reloadAll = () => this.store.reload();
   protected readonly retryTelemetry = () => this.store.selectEquipment(this.store.selectedEquipmentId());
   protected readonly retrySubscription = () => this.store.loadSubscription();
-  protected readonly retryAlerts = () => this.store.equipment().status === 'ready' ? this.store.loadAlerts() : this.store.reload();
+  protected readonly retryAlerts = () => this.store.loadAlerts();
   constructor() { this.store.reload(); }
   protected formatDate(value: string | number, short = false): string {
     this.language();

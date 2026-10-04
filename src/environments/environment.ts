@@ -47,7 +47,6 @@ export const environment = {
   // Records of an equipment, under /laboratories/{laboratoryId}/equipments/{equipmentId}
   equipmentBpmConfigEndpointPath: '/bpm-configs',
   equipmentDeviationTrendsEndpointPath: '/deviation-trends',
-  equipmentDeviationAlertsEndpointPath: '/deviation-alerts',
   equipmentComplianceEventsEndpointPath: '/compliance-events',
   equipmentAuditLogsEndpointPath: '/audit-logs',
   // Under /laboratories/{laboratoryId}/environments/{environmentId}/equipments/{equipmentId} (TS86)
@@ -75,11 +74,11 @@ export const environment = {
   // Batch records of other bounded contexts, under /batches/{batchId}
   batchEndpointPath: '/batches',
   batchAuditLogsEndpointPath: '/audit-logs',
-  batchDeviationAlertsEndpointPath: '/deviation-alerts',
   batchComplianceEventsEndpointPath: '/compliance-events',
   batchReportsEndpointPath: '/reports',
 
   // CA
+  // Under /laboratories/{laboratoryId}/environments/{environmentId} (list, TS73/TS74) and at the root (/{alertId})
   deviationAlertsEndpointPath: '/deviation-alerts',
   deviationAlertAcknowledgementsEndpointPath: '/acknowledgements',
   deviationAlertResolutionsEndpointPath: '/resolutions',

@@ -13,21 +13,43 @@ package "shared" {
   interface BaseAssembler
   interface BaseResource
   interface BaseResponse
+  class ApiError
+  class "operations-page.css" as OperationsPage <<stylesheet>>
 }
 
 package "iam.application" {
   class IamStore {
+    +requireLaboratoryId(): number
     +currentUserId()
-    +currentLaboratoryId()
-    +isSignedIn()
+    +canOperate: Signal<boolean>
+  }
+}
+
+package "laboratory" {
+  class EnvironmentStore {
+    +environments: Signal<Environment[]>
+    +preferredEnvironment(usage?, scope?): Environment
+    +rememberEnvironment(id, scope?): void
+  }
+  class EnvironmentSelector <<component>>
+}
+
+package "equipment.infrastructure" {
+  class EquipmentApi {
+    +getEquipment(labId)
   }
 }
 
 package "ca.domain.model" {
   class DeviationAlert {
     +id: number
+    +laboratoryId: number | null
+    +environmentId: number | null
+    +origin: "ENVIRONMENT | CONTAINER" | null
     +equipmentId: number
-    +batchId?: number
+    +batchId: number | null
+    +measurementId: number | null
+    +lastMeasurementId: number | null
     +parameterName: string
     +recordedValue: number
     +thresholdValue: number
@@ -35,7 +57,22 @@ package "ca.domain.model" {
     +timestamp: string
     +severity: "LOW | WARNING | CRITICAL"
     +status: "UNRESOLVED | ACKNOWLEDGED | RESOLVED"
-    +createdAt?: string
+    +deviationCount: number
+    +lastDetectedAt: string | null
+    +normalizedAt: string | null
+    +acknowledgedBy / acknowledgedAt
+    +resolvedBy / resolvedAt / resolutionNotes
+    +relatedActuations: RelatedActuation[]
+    +isOpen: boolean
+    +isNormalized: boolean
+  }
+
+  interface RelatedActuation {
+    +id: number
+    +action: string
+    +triggerState: string | null
+    +result: string
+    +occurredAt: string
   }
 
   class ComplianceEvent {
@@ -66,36 +103,37 @@ package "ca.domain.model" {
   }
 }
 
+DeviationAlert --> "0..*" RelatedActuation
+
 package "ca.application" {
   class CaStore {
-    -_alertsSignal
-    -_selectedAlertSignal
-    -_eventsSignal
-    -_preferenceSignal
-    -_loadingSignal
-    -_errorSignal
-    -destroyRef
-    -caApi: CaApi
-
     +alerts
     +selectedAlert
     +complianceEvents
     +preference
+    +devices
     +loading
+    +saving
     +error
-    +alertsCount
-    +unresolvedAlertsCount
+    +notice
+    +openAlertsCount
     +criticalAlertsCount
+    +acknowledgedAlertsCount
+    +canAttend
 
     +getAlertById(id: number)
-    +loadAlerts(filters?): void
+    +deviceName(equipmentId: number): string | null
+    +loadDevices(): void
+    +loadEnvironmentAlerts(environmentId: number, filters?: AlertFilters): void
     +loadAlertById(alertId: number): void
     +acknowledgeAlert(alertId: number): void
     +resolveAlert(alertId: number, request: ResolveAlertRequest): void
-    +loadComplianceEvents(entityId: number): void
+    +loadEquipmentComplianceEvents(equipmentId: number): void
+    +loadBatchComplianceEvents(batchId: number): void
     +loadNotificationPreferences(userId: number): void
     +updateNotificationPreferences(userId: number, request: UpdateNotificationPreferenceRequest): void
   }
+  class alertError <<function>>
 }
 
 package "ca.infrastructure" {
@@ -104,20 +142,28 @@ package "ca.infrastructure" {
     -_complianceEventEndpoint: ComplianceEventApiEndpoint
     -_preferenceEndpoint: NotificationPreferenceApiEndpoint
 
-    +getAlerts(laboratoryId: number, filters?)
+    +getEnvironmentAlerts(laboratoryId: number, environmentId: number, filters?: AlertFilters)
     +getAlertById(alertId: number)
     +acknowledgeAlert(alertId: number)
     +resolveAlert(alertId: number, request: ResolveAlertRequest)
-    +getEventsByEntity(entityId: number)
+    +getEquipmentComplianceEvents(laboratoryId: number, equipmentId: number)
+    +getBatchComplianceEvents(batchId: number)
     +getPreferences(userId: number)
     +updatePreferences(userId: number, request: UpdateNotificationPreferenceRequest)
   }
 
   class AlertApiEndpoint {
-    +getAlerts(laboratoryId: number, filters?)
+    +getEnvironmentAlerts(laboratoryId: number, environmentId: number, filters?: AlertFilters)
     +getAlertById(alertId: number)
     +acknowledgeAlert(alertId: number)
     +resolveAlert(alertId: number, request: ResolveAlertRequest)
+  }
+
+  interface AlertFilters {
+    +status?: AlertStatus
+    +severity?: AlertSeverity
+    +deviceId?: number
+    +active?: boolean
   }
 
   class ComplianceEventApiEndpoint {
@@ -135,18 +181,18 @@ package "ca.infrastructure" {
   class NotificationPreferenceAssembler
 
   interface AlertResource {
-    +id: number
-    +equipmentId: number
-    +batchId?: number
-    +parameterName: string
-    +recordedValue: number
-    +thresholdValue: number
-    +unit: string
-    +timestamp: string
-    +severity: "LOW | WARNING | CRITICAL"
-    +status: "UNRESOLVED | ACKNOWLEDGED | RESOLVED"
-    +createdAt?: string
+    +id, laboratoryId, environmentId, origin
+    +equipmentId, batchId, measurementId, lastMeasurementId
+    +parameterName, recordedValue, thresholdValue, unit, timestamp
+    +severity, status, deviationCount, lastDetectedAt, normalizedAt
+    +acknowledgedBy, acknowledgedAt, resolvedBy, resolvedAt, resolutionNotes
   }
+
+  interface AlertDetailResource {
+    +relatedActuations: RelatedActuationResource[]
+  }
+
+  interface RelatedActuationResource
 
   interface AlertsResponse {
     +alerts: AlertResource[]
@@ -195,24 +241,33 @@ package "ca.infrastructure" {
 package "ca.presentation" {
   class CaRoutes
 
+  class AlertTable <<component>> {
+    +alerts: input<DeviationAlert[]>
+    +emptyKey: input<string>
+    #variable(parameterName): string
+  }
+
   class AlertDashboard {
-    +displayedColumns: string[]
-    +ngOnInit(): void
-    +onRefresh(): void
+    #environmentId: Signal<number | null>
+    #changeEnvironment(environmentId): void
+    #refresh(): void
   }
 
   class AlertHistory {
-    +displayedColumns: string[]
-    +ngOnInit(): void
-    +applyFilters(): void
-    +clearFilters(): void
+    #environmentId: Signal<number | null>
+    #status
+    #severity
+    #changeEnvironment(environmentId): void
+    #search(): void
+    #clearFilters(): void
   }
 
   class DeviationDetail {
-    +alert
-    +resolutionForm
-    +ngOnInit(): void
-    +resolveAlert(): void
+    #alert
+    #resolutionForm
+    #environmentName
+    #acknowledge(): void
+    #resolve(): void
   }
 
   class NotificationSettings {
@@ -236,6 +291,8 @@ ComplianceEventAssembler ..|> BaseAssembler
 NotificationPreferenceAssembler ..|> BaseAssembler
 
 AlertResource ..|> BaseResource
+AlertDetailResource --|> AlertResource
+AlertDetailResource --> "0..*" RelatedActuationResource
 AlertsResponse ..|> BaseResponse
 ComplianceEventResource ..|> BaseResource
 ComplianceEventsResponse ..|> BaseResponse
@@ -243,6 +300,10 @@ NotificationPreferenceResource ..|> BaseResource
 NotificationPreferencesResponse ..|> BaseResponse
 
 CaStore --> CaApi
+CaStore --> EquipmentApi : device names
+CaStore --> IamStore
+CaStore ..> alertError
+alertError ..> ApiError
 
 CaStore ..> DeviationAlert
 CaStore ..> ComplianceEvent
@@ -255,15 +316,18 @@ CaApi --> ComplianceEventApiEndpoint
 CaApi --> NotificationPreferenceApiEndpoint
 
 AlertApiEndpoint --> AlertAssembler
+AlertApiEndpoint ..> AlertFilters
 ComplianceEventApiEndpoint --> ComplianceEventAssembler
 NotificationPreferenceApiEndpoint --> NotificationPreferenceAssembler
 
 AlertApiEndpoint ..> AlertResource
+AlertApiEndpoint ..> AlertDetailResource
 AlertApiEndpoint ..> ResolveAlertRequest
 note bottom of AlertApiEndpoint
-  GET  /laboratories/{laboratoryId}/equipments/{equipmentId}/deviation-alerts
-  GET  /batches/{batchId}/deviation-alerts, GET /deviation-alerts/{alertId}
-  POST /deviation-alerts/{alertId}/acknowledgements and /resolutions (TS75, TS76)
+  GET  /laboratories/{laboratoryId}/environments/{environmentId}/deviation-alerts
+       ?status&severity&deviceId&active (US85, TS74)
+  GET  /deviation-alerts/{alertId} (US86, with related actions)
+  POST /deviation-alerts/{alertId}/acknowledgements and /resolutions (US87, US88)
   The platform takes the actor from the session; requests carry no user id.
 end note
 
@@ -279,10 +343,31 @@ NotificationPreferenceAssembler ..> NotificationPreference
 NotificationPreferenceAssembler ..> NotificationPreferenceResource
 
 AlertDashboard --> CaStore
+AlertDashboard --> EnvironmentStore
+AlertDashboard ..> EnvironmentSelector
+AlertDashboard *-- AlertTable
 AlertHistory --> CaStore
+AlertHistory --> EnvironmentStore
+AlertHistory ..> EnvironmentSelector
+AlertHistory *-- AlertTable
+AlertTable --> CaStore
 
 DeviationDetail --> CaStore
-DeviationDetail --> IamStore
+DeviationDetail --> EnvironmentStore
+note bottom of DeviationDetail
+  Origin, variable, value and limit, follow-up (detected, last deviation,
+  normalized, attended, resolved) and related actions; operators and
+  quality managers register the attention and the resolution, auditors
+  only read. "View conditions" -> /tracking/history?environmentId=&deviceId=.
+end note
+note bottom of AlertDashboard
+  Open alerts (active=true) of the environment, remembered with the
+  tracking environment; the history lists every alert with filters.
+end note
+
+AlertDashboard ..> OperationsPage
+AlertHistory ..> OperationsPage
+DeviationDetail ..> OperationsPage
 
 NotificationSettings --> CaStore
 NotificationSettings --> IamStore

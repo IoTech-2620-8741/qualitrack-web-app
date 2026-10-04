@@ -98,8 +98,8 @@ export class DashboardStore {
     this.load(this.equipment, this.equipmentApi.getEquipment(id).pipe(map(items => items.filter(item => item.labId === id))), items => {
       const devices = items.filter(item => item.isIotDevice);
       this.selectEquipment(devices.find(item => item.id === preferredEquipment)?.id ?? devices[0]?.id ?? null);
-      this.loadAlerts();
-    }, () => this.alerts.set({ status: 'error', data: null }));
+    });
+    this.loadAlerts();
     if (this.managesSubscription()) {
       this.loadSubscription();
       this.loadPlans();
@@ -114,13 +114,12 @@ export class DashboardStore {
   }
   loadPlans(): void { this.load(this.plans, this.subscriptionApi.getPlans()); }
   loadAlerts(): void {
-    if (this.equipment().status !== 'ready') return;
     const laboratoryId = this.iam.requireLaboratoryId();
-    // An incomplete equipment load must not be presented as zero laboratory alerts.
-    this.load(this.alerts, from(this.equipment().data ?? []).pipe(
-      mergeMap(item => this.caApi.getAlerts(laboratoryId, { equipmentId: item.id }).pipe(
-        map(alerts => alerts.filter(alert => alert.equipmentId === item.id))), 4),
-      toArray(), map(groups => [...new Map(groups.flat().map(alert => [alert.id, alert])).values()])));
+    // Open alerts of every environment (US85); an incomplete load must not be presented as zero laboratory alerts.
+    this.load(this.alerts, this.labApi.getEnvironments(laboratoryId).pipe(
+      mergeMap(environments => from(environments).pipe(
+        mergeMap(environment => this.caApi.getEnvironmentAlerts(laboratoryId, environment.id, { active: true }), 4),
+        toArray(), map(groups => groups.flat())))));
   }
   selectEquipment(id: number | null): void {
     if (id !== null && !this.devices().some(item => item.id === id)) return;
