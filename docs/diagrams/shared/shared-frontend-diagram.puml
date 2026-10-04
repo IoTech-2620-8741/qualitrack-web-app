@@ -85,6 +85,9 @@ package "shared" {
     }
 
     class Toolbar {
+      -iam: IamStore
+      #brandLink: Signal<string>
+      #brandLabel: Signal<string>
     }
 
     class Layout {
@@ -161,6 +164,15 @@ BaseAssembler ..> BaseResponse
 Toolbar --> LanguageSwitcher
 Layout --> LanguageSwitcher
 Layout *-- NavigationOption
+Toolbar --> IamStore
+note bottom of Toolbar
+  Pages before signing in (home, about, sign-in, sign-up) and onboarding pages.
+  The logo and the name lead to /home without a session and to /dashboard with one.
+end note
+note bottom of Layout
+  The logo and the name lead to /dashboard. Menu labels only use nav.* keys:
+  English Title Case, Spanish sentence case, "Catalog" spelling.
+end note
 NavigationOption *-- NavigationChild
 
 Home --> Toolbar
