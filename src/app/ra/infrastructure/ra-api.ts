@@ -11,11 +11,13 @@ import { KpiApiEndpoint } from './kpi-api-endpoint';
 import { DeviationTrendApiEndpoint } from './deviation-trend-api-endpoint';
 import { AuditLogApiEndpoint } from './audit-log-api-endpoint';
 import { ReportApiEndpoint } from './report-api-endpoint';
+import { IndicatorPeriod } from '../domain/model/indicator-period';
 
 import {
   GenerateBatchReportRequest,
   GenerateComplianceReportRequest,
   ExportEquipmentLogRequest,
+  GenerateInventoryReportRequest,
 } from './report.request';
 
 /**
@@ -72,31 +74,34 @@ export class RaApi extends BaseApi {
   }
 
   /**
-   * Retrieves the current KPI dashboard snapshot for a specific laboratory.
+   * Retrieves the indicators of a laboratory for a period (US93).
    *
    * @param laboratoryId - The unique numeric identifier of the laboratory
+   * @param period - Period of the measurement summaries; the platform uses the last 7 days when omitted
+   * @param environmentId - Optional environment; null covers every environment
    * @returns Observable stream emitting the {@link KpiDashboard} domain entity
    *
    * @remarks
    * Delegates the request to {@link KpiApiEndpoint}, which calls:
-   * `GET /kpis?laboratoryId={laboratoryId}`.
+   * `GET /laboratories/{laboratoryId}/kpi-dashboards?from&to&environmentId`.
    */
-  getDashboardByLaboratory(laboratoryId: number): Observable<KpiDashboard> {
-    return this._kpiEndpoint.getDashboardByLaboratory(laboratoryId);
+  getDashboardByLaboratory(laboratoryId: number, period?: IndicatorPeriod, environmentId?: number | null): Observable<KpiDashboard> {
+    return this._kpiEndpoint.getDashboardByLaboratory(laboratoryId, period, environmentId);
   }
 
   /**
-   * Retrieves historical deviation trends for a specific equipment.
+   * Retrieves the deviation indicators of the variables of an environment in a period (US94).
    *
-   * @param equipmentId - The unique numeric identifier of the equipment
+   * @param environmentId - The environment whose readings are evaluated
+   * @param period - Period of at most 31 days
    * @returns Observable stream emitting an array of {@link DeviationTrend} domain entities
    *
    * @remarks
    * Delegates the request to {@link DeviationTrendApiEndpoint}, which calls:
-   * `GET /laboratories/{laboratoryId}/equipments/{equipmentId}/deviation-trends`.
+   * `GET /laboratories/{laboratoryId}/environments/{environmentId}/deviation-trends?from&to`.
    */
-  getTrendsByEquipment(laboratoryId: number, equipmentId: number): Observable<DeviationTrend[]> {
-    return this._deviationTrendEndpoint.getTrendsByEquipment(laboratoryId, equipmentId);
+  getTrendsByEnvironment(laboratoryId: number, environmentId: number, period: IndicatorPeriod): Observable<DeviationTrend[]> {
+    return this._deviationTrendEndpoint.getTrendsByEnvironment(laboratoryId, environmentId, period);
   }
 
   /**
@@ -171,6 +176,10 @@ export class RaApi extends BaseApi {
    * Delegates the request to {@link ReportApiEndpoint}, which calls:
    * `POST /reports/equipment-logs`.
    */
+  generateInventoryReport(request: GenerateInventoryReportRequest): Observable<Blob> {
+    return this._reportEndpoint.generateInventoryReport(request);
+  }
+
   exportEquipmentLog(request: ExportEquipmentLogRequest): Observable<Blob> {
     return this._reportEndpoint.exportEquipmentLog(request);
   }
