@@ -15,8 +15,8 @@
         <mat-form-field appearance="outline" subscriptSizing="dynamic" class="scope-select">
           <mat-label>{{ 'environments.selector' | translate }}</mat-label>
           <mat-icon matPrefix aria-hidden="true">meeting_room</mat-icon>
-          <mat-select [value]="environmentId()" (selectionChange)="changeEnvironment($event.value)">
-            <mat-option [value]="null">{{ 'reporting.all-environments' | translate }}</mat-option>
+          <mat-select [value]="environmentId() ?? ALL_ENVIRONMENTS" (selectionChange)="changeEnvironment($event.value)">
+            <mat-option [value]="ALL_ENVIRONMENTS">{{ 'reporting.all-environments' | translate }}</mat-option>
             @for (environment of environments.environments(); track environment.id) {
               <mat-option [value]="environment.id">{{ environment.code }} · {{ environment.name }}</mat-option>
             }
@@ -73,7 +73,9 @@
     } @empty {
       <p class="notice">{{ 'reporting.summary.no-readings' | translate }}</p>
     }
-    <p class="muted formula">{{ 'reporting.summary.formula' | translate }}</p>
+    @if (groups().length) {
+      <p class="muted formula">{{ 'reporting.summary.formula' | translate }}</p>
+    }
 
     <h2>{{ 'reporting.summary.records-title' | translate }}</h2>
     @if (dashboard.metrics.length) {

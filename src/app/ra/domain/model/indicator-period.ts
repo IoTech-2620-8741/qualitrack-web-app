@@ -1,3 +1,8 @@
+/**
+ * Value of the "All environments" option of the indicators and reports; mat-select shows no option for null.
+ */
+export const ALL_ENVIRONMENTS = 0;
+
 /** Period of the indicators, in ISO-8601 instants (at most 31 days). */
 export interface IndicatorPeriod {
   from: string;

@@ -20,6 +20,7 @@ import { BatchStore } from '../../../../batch/application/batch.store';
 import { EquipmentStore } from '../../../../equipment/application/equipment.store';
 import { EnvironmentStore } from '../../../../laboratory/application/environment.store';
 import { localIsoDate } from '../../../../shared/presentation/utils/local-date';
+import { ALL_ENVIRONMENTS } from '../../../domain/model/indicator-period';
 
 /**
  * Component responsible for providing a user interface to request operational reports.
@@ -62,6 +63,7 @@ export class ReportGeneratorComponent implements OnInit {
   protected readonly batchStore = inject(BatchStore);
   protected readonly equipmentStore = inject(EquipmentStore);
   protected readonly environments = inject(EnvironmentStore);
+  protected readonly ALL_ENVIRONMENTS = ALL_ENVIRONMENTS;
 
   /** Equipment located in an environment: its log report belongs to that environment (TS86). */
   protected readonly locatedEquipment = computed(() =>
@@ -120,24 +122,24 @@ export class ReportGeneratorComponent implements OnInit {
   };
 
   /**
-   * Form state for the environmental report: every environment (null) or one, and whole calendar days.
+   * Form state for the environmental report: every environment ({@link ALL_ENVIRONMENTS}) or one, and whole calendar days.
    */
   protected complianceForm: {
-    environmentId: number | null;
+    environmentId: number;
     startDate: Date | null;
     endDate: Date | null;
     format: 'PDF' | 'CSV';
   } = {
-    environmentId: null,
+    environmentId: ALL_ENVIRONMENTS,
     startDate: null,
     endDate: null,
     format: 'PDF',
   };
 
   /**
-   * Form state for the inventory report: every environment (null) or one.
+   * Form state for the inventory report: every environment ({@link ALL_ENVIRONMENTS}) or one.
    */
-  protected inventoryForm: { environmentId: number | null; format: 'PDF' | 'CSV' } = { environmentId: null, format: 'PDF' };
+  protected inventoryForm: { environmentId: number; format: 'PDF' | 'CSV' } = { environmentId: ALL_ENVIRONMENTS, format: 'PDF' };
 
   /**
    * Form state for exporting equipment maintenance and operational logs.
@@ -197,7 +199,7 @@ export class ReportGeneratorComponent implements OnInit {
 
     this.store.generateComplianceReport({
       laboratoryId: this.currentLaboratoryId,
-      environmentId: this.complianceForm.environmentId,
+      environmentId: this.complianceForm.environmentId || null,
       startDate: localIsoDate(this.complianceForm.startDate),
       endDate: localIsoDate(this.complianceForm.endDate),
       format: this.complianceForm.format,
@@ -211,7 +213,7 @@ export class ReportGeneratorComponent implements OnInit {
     if (this.store.isLoading()) return;
     this.store.generateInventoryReport({
       laboratoryId: this.currentLaboratoryId,
-      environmentId: this.inventoryForm.environmentId,
+      environmentId: this.inventoryForm.environmentId || null,
       format: this.inventoryForm.format,
     });
   }

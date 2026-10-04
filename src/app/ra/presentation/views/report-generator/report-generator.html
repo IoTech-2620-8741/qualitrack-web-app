@@ -113,7 +113,7 @@
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>{{ 'environments.selector' | translate }}</mat-label>
           <mat-select [(ngModel)]="complianceForm.environmentId" (selectionChange)="store.clearMessages()">
-            <mat-option [value]="null">{{ 'reporting.all-environments' | translate }}</mat-option>
+            <mat-option [value]="ALL_ENVIRONMENTS">{{ 'reporting.all-environments' | translate }}</mat-option>
             @for (environment of environments.environments(); track environment.id) {
               <mat-option [value]="environment.id">{{ environment.code }} · {{ environment.name }}</mat-option>
             }
@@ -166,7 +166,7 @@
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>{{ 'environments.selector' | translate }}</mat-label>
           <mat-select [(ngModel)]="inventoryForm.environmentId" (selectionChange)="store.clearMessages()">
-            <mat-option [value]="null">{{ 'reporting.all-environments' | translate }}</mat-option>
+            <mat-option [value]="ALL_ENVIRONMENTS">{{ 'reporting.all-environments' | translate }}</mat-option>
             @for (environment of environments.environments(); track environment.id) {
               <mat-option [value]="environment.id">{{ environment.code }} · {{ environment.name }}</mat-option>
             }

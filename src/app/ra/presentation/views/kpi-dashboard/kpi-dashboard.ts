@@ -9,7 +9,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { RaStore } from '../../../application/ra.store';
-import { lastDays } from '../../../domain/model/indicator-period';
+import { ALL_ENVIRONMENTS, lastDays } from '../../../domain/model/indicator-period';
 import { EnvironmentStore } from '../../../../laboratory/application/environment.store';
 
 /** Lengths of the period offered, in days; the platform accepts up to 31. */
@@ -32,6 +32,7 @@ export class KpiDashboardComponent implements OnInit {
   protected readonly store = inject(RaStore);
   protected readonly environments = inject(EnvironmentStore);
   protected readonly periods = PERIOD_DAYS;
+  protected readonly ALL_ENVIRONMENTS = ALL_ENVIRONMENTS;
   protected readonly days = signal<number>(7);
   protected readonly environmentId = signal<number | null>(null);
 
@@ -54,8 +55,8 @@ export class KpiDashboardComponent implements OnInit {
     this.reload();
   }
 
-  protected changeEnvironment(environmentId: number | null): void {
-    this.environmentId.set(environmentId);
+  protected changeEnvironment(environmentId: number): void {
+    this.environmentId.set(environmentId === ALL_ENVIRONMENTS ? null : environmentId);
     this.reload();
   }
 
