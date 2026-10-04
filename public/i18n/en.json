@@ -261,7 +261,7 @@
     "register-equipment": "Register Equipment",
     "register-device": "Register IoT Device",
     "alerts": "Compliance Alerts",
-    "alert-dashboard": "Alert Dashboard",
+    "alert-dashboard": "Active Alerts",
     "alert-history": "Alert History",
     "notification-preferences": "Notification Preferences",
     "reports": "Reports & KPIs",
@@ -541,24 +541,30 @@
     }
   },
   "ca-alerts": {
-    "subtitle": "Real-time monitoring of BPM deviations",
     "empty": "No compliance alerts found. Everything is within BPM parameters.",
     "not-found": "Alert not found.",
     "kpi": {
-      "unresolved": "Active Alerts (Unresolved)",
-      "critical": "Critical Deviations"
+      "critical": "Critical",
+      "open": "Open alerts",
+      "attending": "Being attended"
     },
     "fields": {
-      "timestamp": "Timestamp",
-      "parameter": "Parameter",
+      "parameter": "Variable",
       "severity": "Severity",
       "minimum-severity": "Minimum Severity",
       "recorded": "Recorded Value",
-      "threshold": "Threshold Value",
-      "equipment": "Equipment",
-      "batch": "Batch",
+      "threshold": "Limit",
       "resolution-notes": "Resolution Notes",
-      "description": "Description"
+      "description": "Description",
+      "detected": "Detected",
+      "origin": "Origin",
+      "last-deviation": "Last deviation",
+      "deviations": "{{count}} deviations",
+      "deviations-label": "Deviations",
+      "action": "Action",
+      "trigger": "Condition",
+      "result": "Result",
+      "occurred-at": "Executed on"
     },
     "severity": {
       "low": "Low",
@@ -567,23 +573,36 @@
       "critical": "Critical"
     },
     "status": {
-      "unresolved": "Unresolved",
-      "acknowledged": "Acknowledged",
+      "unresolved": "Open",
+      "acknowledged": "Being attended",
       "resolved": "Resolved",
       "ignored": "Ignored"
     },
     "actions": {
-      "settings": "Alert Settings",
-      "view-details": "View Details & Resolve",
-      "resolve": "Mark as Resolved"
+      "view-details": "View detail",
+      "resolve": "Resolve alert",
+      "acknowledge": "Register attention",
+      "view-conditions": "View conditions"
     },
     "history": {
       "title": "Alert History",
-      "subtitle": "Complete audit log of all quality deviations"
+      "subtitle": "Every alert of the environment, including resolved ones.",
+      "empty": "There are no alerts with these filters."
     },
     "detail": {
-      "title": "Deviation Details",
-      "subtitle": "Technical inspection of alert"
+      "alert": "Alert",
+      "no-environment": "No environment",
+      "normalized": "The condition returned to normal on {{date}}; the alert stays open until someone resolves it.",
+      "timeline": "Follow-up",
+      "detected": "Detected on {{date}}.",
+      "last-deviation": "Last deviation on {{date}} ({{count}} deviations in the incident).",
+      "acknowledged": "Attended by user #{{user}} on {{date}}.",
+      "resolved": "Resolved by user #{{user}} on {{date}}:",
+      "actions-title": "Related actions",
+      "no-actions": "The container monitor registered no actions for this variable during the incident.",
+      "no-actions-environment": "Actions are reported by container monitors; the environmental device does not execute any.",
+      "resolution-hint": "Describe the corrective action (at least 10 characters).",
+      "resolution-required": "Write between 10 and 500 characters."
     },
     "settings": {
       "title": "Notification Preferences",
@@ -596,6 +615,25 @@
       "threshold-title": "Alert Threshold",
       "threshold-subtitle": "Minimum severity level required to trigger a notification",
       "severity-hint": "Only alerts with this severity or higher will be sent"
+    },
+    "no-environments": "Alerts are listed per environment. Register an environment and its IoT devices first.",
+    "normalized": "Condition back to normal",
+    "acknowledged": "The attention of the alert was registered.",
+    "resolved": "The alert was resolved.",
+    "errors": {
+      "connection": "The alerts could not be loaded. Check your connection and try again.",
+      "forbidden": "This alert does not belong to your laboratory or your access does not allow this action.",
+      "failed": "The request could not be completed. Try again."
+    },
+    "active": {
+      "title": "Active Alerts",
+      "subtitle": "Open alerts of the environment and its monitored containers, with their origin and severity.",
+      "empty": "There are no active alerts in this environment."
+    },
+    "origin": {
+      "ENVIRONMENT": "Environment",
+      "CONTAINER": "Container",
+      "EQUIPMENT": "Equipment"
     }
   },
   "batches": {

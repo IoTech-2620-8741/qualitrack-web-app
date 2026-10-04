@@ -4,115 +4,64 @@ export type AlertSeverity = 'LOW' | 'WARNING' | 'CRITICAL';
 
 export type AlertStatus = 'UNRESOLVED' | 'ACKNOWLEDGED' | 'RESOLVED';
 
+/** Whether the alert originated in the environment (environmental device) or in a monitored container (US86). */
+export type AlertOrigin = 'ENVIRONMENT' | 'CONTAINER';
+
+/** Action executed by the container monitor for the variable of an alert while the incident was open (US86). */
+export interface RelatedActuation {
+  id: number;
+  action: string;
+  triggerState: string | null;
+  result: string;
+  occurredAt: string;
+}
+
 /**
- * Represents a deviation alert within the Manufacturing or Quality domain.
+ * Deviation alert of an environment or of one of its monitored containers (US85-US88).
  *
  * @remarks
- * In Domain-Driven Design, a DeviationAlert is an entity that captures an anomaly
- * detected during a process. It records when a specific parameter exceeds its
- * defined threshold, allowing for traceability and corrective actions.
- *
- * This entity is crucial for maintaining quality standards and operational
- * integrity within the bounded context of process monitoring.
- *
- * @example
- * ```typescript
- * const temperatureAlert = new DeviationAlert({
- * id: 1,
- * equipmentId: 202,
- * parameterName: 'Temperature',
- * recordedValue: 85.5,
- * thresholdValue: 80.0,
- * unit: '°C',
- * timestamp: '2026-05-12T11:00:00Z',
- * severity: 'CRITICAL',
- * status: 'UNRESOLVED',
- * createdAt: '2026-05-12T11:05:00Z'
- * });
- *
- * console.log(temperatureAlert.severity); // 'CRITICAL'
- * ```
+ * An alert is one incident: while it is open, new deviations of the same device and variable are counted in it, its
+ * severity only rises and a return to normal is noted, but only a person closes it with a resolution.
  */
 export class DeviationAlert implements BaseEntity {
-  /**
-   * The unique numeric identifier for this deviation alert.
-   */
   id: number;
-
-  /**
-   * The numeric identifier of the equipment where the deviation was detected.
-   */
+  laboratoryId: number | null;
+  environmentId: number | null;
+  origin: AlertOrigin | null;
+  /** Environmental device, container monitor or equipment that detected the deviation. */
   equipmentId: number;
-
-  /**
-   * The numeric identifier of the production batch associated with the alert, if applicable.
-   */
-  batchId?: number;
-
-  /**
-   * The name of the process parameter that deviated (e.g., Pressure, Temperature).
-   */
+  batchId: number | null;
+  measurementId: number | null;
+  lastMeasurementId: number | null;
   parameterName: string;
-
-  /**
-   * The actual value measured at the time of the deviation.
-   */
+  /** Value and limit of the deviation that set the current severity. */
   recordedValue: number;
-
-  /**
-   * The maximum or minimum allowed limit for the parameter.
-   */
   thresholdValue: number;
-
-  /**
-   * The unit of measurement for the recorded and threshold values.
-   */
   unit: string;
-
-  /**
-   * The exact moment when the deviation was detected by the sensors or system.
-   */
+  /** When the incident started. */
   timestamp: string;
-
-  /**
-   * The level of impact or urgency.
-   */
   severity: AlertSeverity;
-
-  /**
-   * The current lifecycle state of the alert.
-   */
   status: AlertStatus;
+  deviationCount: number;
+  lastDetectedAt: string | null;
+  normalizedAt: string | null;
+  acknowledgedBy: number | null;
+  acknowledgedAt: string | null;
+  resolvedBy: number | null;
+  resolvedAt: string | null;
+  resolutionNotes: string | null;
+  /** Only filled by the alert detail. */
+  relatedActuations: RelatedActuation[];
 
-  /**
-   * The timestamp indicating when the alert record was created in the system.
-   */
-  createdAt?: string;
-
-  /**
-   * Creates a new DeviationAlert entity.
-   *
-   * @param params - Initialization properties
-   * @param params.id - The unique numeric identifier for the alert
-   * @param params.equipmentId - Numeric ID of the source equipment
-   * @param params.batchId - (Optional) Numeric ID of the production batch
-   * @param params.parameterName - Name of the monitored variable
-   * @param params.recordedValue - The out-of-range value measured
-   * @param params.thresholdValue - The limit that was exceeded
-   * @param params.unit - Unit of measurement
-   * @param params.timestamp - Date and time of the occurrence
-   * @param params.severity - Urgency level of the alert
-   * @param params.status - Current state of the alert
-   * @param params.createdAt - Record creation timestamp
-   *
-   * @remarks
-   * The constructor initializes the entity with all necessary telemetry and
-   * contextual data required to analyze a process deviation.
-   */
   constructor(params: {
     id: number;
+    laboratoryId?: number | null;
+    environmentId?: number | null;
+    origin?: AlertOrigin | null;
     equipmentId: number;
-    batchId?: number;
+    batchId?: number | null;
+    measurementId?: number | null;
+    lastMeasurementId?: number | null;
     parameterName: string;
     recordedValue: number;
     thresholdValue: number;
@@ -120,11 +69,24 @@ export class DeviationAlert implements BaseEntity {
     timestamp: string;
     severity: AlertSeverity;
     status: AlertStatus;
-    createdAt?: string;
+    deviationCount?: number | null;
+    lastDetectedAt?: string | null;
+    normalizedAt?: string | null;
+    acknowledgedBy?: number | null;
+    acknowledgedAt?: string | null;
+    resolvedBy?: number | null;
+    resolvedAt?: string | null;
+    resolutionNotes?: string | null;
+    relatedActuations?: RelatedActuation[];
   }) {
     this.id = params.id;
+    this.laboratoryId = params.laboratoryId ?? null;
+    this.environmentId = params.environmentId ?? null;
+    this.origin = params.origin ?? null;
     this.equipmentId = params.equipmentId;
-    this.batchId = params.batchId;
+    this.batchId = params.batchId ?? null;
+    this.measurementId = params.measurementId ?? null;
+    this.lastMeasurementId = params.lastMeasurementId ?? null;
     this.parameterName = params.parameterName;
     this.recordedValue = params.recordedValue;
     this.thresholdValue = params.thresholdValue;
@@ -132,6 +94,24 @@ export class DeviationAlert implements BaseEntity {
     this.timestamp = params.timestamp;
     this.severity = params.severity;
     this.status = params.status;
-    this.createdAt = params.createdAt;
+    this.deviationCount = params.deviationCount ?? 1;
+    this.lastDetectedAt = params.lastDetectedAt ?? null;
+    this.normalizedAt = params.normalizedAt ?? null;
+    this.acknowledgedBy = params.acknowledgedBy ?? null;
+    this.acknowledgedAt = params.acknowledgedAt ?? null;
+    this.resolvedBy = params.resolvedBy ?? null;
+    this.resolvedAt = params.resolvedAt ?? null;
+    this.resolutionNotes = params.resolutionNotes ?? null;
+    this.relatedActuations = params.relatedActuations ?? [];
+  }
+
+  /** Unresolved or being attended. */
+  get isOpen(): boolean {
+    return this.status !== 'RESOLVED';
+  }
+
+  /** The condition returned to normal after the latest deviation, although the alert is still open. */
+  get isNormalized(): boolean {
+    return this.isOpen && this.normalizedAt !== null;
   }
 }

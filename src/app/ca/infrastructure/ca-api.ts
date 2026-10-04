@@ -3,11 +3,11 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { BaseApi } from '../../shared/infrastructure/base-api';
 
-import { AlertApiEndpoint } from './alert-api-endpoint';
+import { AlertApiEndpoint, AlertFilters } from './alert-api-endpoint';
 import { ComplianceEventApiEndpoint } from './compliance-event-api-endpoint';
 import { NotificationPreferenceApiEndpoint } from './notification-preference-api-endpoint';
 
-import { AlertSeverity, AlertStatus, DeviationAlert } from '../domain/model/deviation-alert.entity';
+import { DeviationAlert } from '../domain/model/deviation-alert.entity';
 import { ComplianceEvent } from '../domain/model/compliance-event.entity';
 import { NotificationPreference } from '../domain/model/notification-preference.entity';
 import { UpdateNotificationPreferenceRequest } from './notification-preference.request';
@@ -31,7 +31,7 @@ import { ResolveAlertRequest } from './resolve-alert.request';
  * constructor(private caApi: CaApi) {}
  *
  * loadAlerts() {
- *   this.caApi.getAlerts({ severity: 'CRITICAL' }).subscribe(alerts => {
+ *   this.caApi.getEnvironmentAlerts(laboratoryId, environmentId, { active: true }).subscribe(alerts => {
  *     // Handle critical alerts
  *   });
  * }
@@ -75,25 +75,19 @@ export class CaApi extends BaseApi {
   }
 
   /**
-   * Retrieves deviation alerts based on optional filtering criteria.
+   * Retrieves the alerts of an environment and its monitored containers (US85, TS74).
    *
-   * @param filters - Search criteria such as equipment, batch, status, or severity
-   * @returns Observable stream emitting an array of DeviationAlert domain entities
-   *
-   * @remarks
-   * Fetches alerts from the remote manufacturing/quality monitoring system.
+   * @param laboratoryId - The laboratory of the environment
+   * @param environmentId - The environment
+   * @param filters - Optional status, severity, device and active filters
+   * @returns Observable stream emitting the alerts, newest first
    */
-  getAlerts(laboratoryId: number, filters?: {
-    equipmentId?: number;
-    batchId?: number;
-    status?: AlertStatus;
-    severity?: AlertSeverity;
-  }): Observable<DeviationAlert[]> {
-    return this._alertEndpoint.getAlerts(laboratoryId, filters);
+  getEnvironmentAlerts(laboratoryId: number, environmentId: number, filters?: AlertFilters): Observable<DeviationAlert[]> {
+    return this._alertEndpoint.getEnvironmentAlerts(laboratoryId, environmentId, filters);
   }
 
   /**
-   * Retrieves a specific deviation alert by its unique numeric identifier.
+   * Retrieves a deviation alert with the actions related to its incident (US86).
    *
    * @param alertId - The unique numeric identifier of the deviation alert
    * @returns Observable stream emitting the DeviationAlert domain entity

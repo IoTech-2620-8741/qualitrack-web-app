@@ -261,7 +261,7 @@
     "register-equipment": "Registrar equipo",
     "register-device": "Registrar dispositivo IoT",
     "alerts": "Alertas de cumplimiento",
-    "alert-dashboard": "Panel de alertas",
+    "alert-dashboard": "Alertas activas",
     "alert-history": "Historial de alertas",
     "notification-preferences": "Preferencias de notificación",
     "reports": "Reportes y KPIs",
@@ -541,24 +541,30 @@
     }
   },
   "ca-alerts": {
-    "subtitle": "Monitoreo en tiempo real de desviaciones BPM",
     "empty": "No se encontraron alertas de cumplimiento. Todo está dentro de los parámetros BPM.",
     "not-found": "Alerta no encontrada.",
     "kpi": {
-      "unresolved": "Alertas Activas (No Resueltas)",
-      "critical": "Desviaciones Críticas"
+      "critical": "Críticas",
+      "open": "Alertas abiertas",
+      "attending": "En atención"
     },
     "fields": {
-      "timestamp": "Fecha y Hora",
-      "parameter": "Parámetro",
+      "parameter": "Variable",
       "severity": "Severidad",
       "minimum-severity": "Severidad Mínima",
       "recorded": "Valor Registrado",
-      "threshold": "Valor Límite",
-      "equipment": "Equipo",
-      "batch": "Lote",
+      "threshold": "Límite",
       "resolution-notes": "Notas de Resolución",
-      "description": "Descripción"
+      "description": "Descripción",
+      "detected": "Detectada",
+      "origin": "Origen",
+      "last-deviation": "Última desviación",
+      "deviations": "{{count}} desviaciones",
+      "deviations-label": "Desviaciones",
+      "action": "Acción",
+      "trigger": "Condición",
+      "result": "Resultado",
+      "occurred-at": "Ejecutada el"
     },
     "severity": {
       "low": "Baja",
@@ -567,23 +573,36 @@
       "critical": "Crítico"
     },
     "status": {
-      "unresolved": "No Resuelto",
-      "acknowledged": "Reconocida",
-      "resolved": "Resuelto",
+      "unresolved": "Abierta",
+      "acknowledged": "En atención",
+      "resolved": "Resuelta",
       "ignored": "Ignorado"
     },
     "actions": {
-      "settings": "Configurar Alertas",
-      "view-details": "Ver Detalles y Resolver",
-      "resolve": "Marcar como Resuelto"
+      "view-details": "Ver detalle",
+      "resolve": "Resolver alerta",
+      "acknowledge": "Registrar atención",
+      "view-conditions": "Ver condiciones"
     },
     "history": {
-      "title": "Historial de Alertas",
-      "subtitle": "Registro de auditoría completo de todas las desviaciones de calidad"
+      "title": "Historial de alertas",
+      "subtitle": "Todas las alertas del ambiente, incluidas las resueltas.",
+      "empty": "No hay alertas con estos filtros."
     },
     "detail": {
-      "title": "Detalles de la Desviación",
-      "subtitle": "Inspección técnica de la alerta"
+      "alert": "Alerta",
+      "no-environment": "Sin ambiente",
+      "normalized": "La condición volvió a la normalidad el {{date}}; la alerta sigue abierta hasta que alguien la resuelva.",
+      "timeline": "Seguimiento",
+      "detected": "Detectada el {{date}}.",
+      "last-deviation": "Última desviación el {{date}} ({{count}} desviaciones en el incidente).",
+      "acknowledged": "Atendida por el usuario #{{user}} el {{date}}.",
+      "resolved": "Resuelta por el usuario #{{user}} el {{date}}:",
+      "actions-title": "Actuaciones relacionadas",
+      "no-actions": "El monitor del contenedor no registró actuaciones para esta variable durante el incidente.",
+      "no-actions-environment": "Las actuaciones las informan los monitores de contenedor; el dispositivo ambiental no ejecuta acciones.",
+      "resolution-hint": "Describe la acción correctiva (mínimo 10 caracteres).",
+      "resolution-required": "Escribe entre 10 y 500 caracteres."
     },
     "settings": {
       "title": "Preferencias de Notificación",
@@ -596,6 +615,25 @@
       "threshold-title": "Umbral de Alerta",
       "threshold-subtitle": "Nivel de severidad mínimo requerido para enviar una notificación",
       "severity-hint": "Solo se enviarán alertas con esta severidad o superior"
+    },
+    "no-environments": "Las alertas se consultan por ambiente. Registra primero un ambiente y sus dispositivos IoT.",
+    "normalized": "Condición normalizada",
+    "acknowledged": "Se registró la atención de la alerta.",
+    "resolved": "La alerta quedó resuelta.",
+    "errors": {
+      "connection": "No se pudieron cargar las alertas. Revisa tu conexión e inténtalo de nuevo.",
+      "forbidden": "Esta alerta no pertenece a tu laboratorio o tu acceso no permite esta acción.",
+      "failed": "No se pudo completar la solicitud. Inténtalo de nuevo."
+    },
+    "active": {
+      "title": "Alertas activas",
+      "subtitle": "Alertas abiertas del ambiente y de sus contenedores monitoreados, con su origen y severidad.",
+      "empty": "No hay alertas activas en este ambiente."
+    },
+    "origin": {
+      "ENVIRONMENT": "Ambiente",
+      "CONTAINER": "Contenedor",
+      "EQUIPMENT": "Equipo"
     }
   },
   "batches": {
