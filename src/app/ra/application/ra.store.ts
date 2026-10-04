@@ -2,6 +2,7 @@ import { DestroyRef, Injectable, signal, computed, inject } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Subject, takeUntil } from 'rxjs';
 import { RaApi } from '../infrastructure/ra-api';
+import { IamStore } from '../../iam/application/iam.store';
 
 import { KpiDashboard } from '../domain/model/kpi-dashboard.entity';
 import { DeviationTrend } from '../domain/model/deviation-trend.entity';
@@ -31,6 +32,7 @@ export class RaStore {
    * Infrastructure API facade for Reporting and Analysis operations.
    */
   private readonly api = inject(RaApi);
+  private readonly iam = inject(IamStore);
   private readonly destroyRef = inject(DestroyRef);
   private readonly reloadDashboard = new Subject<void>();
   private readonly reloadTrends = new Subject<void>();
@@ -167,7 +169,7 @@ export class RaStore {
     this._error.set(null);
 
     this.api
-      .getTrendsByEquipment(equipmentId)
+      .getTrendsByEquipment(this.iam.requireLaboratoryId(), equipmentId)
       .pipe(takeUntil(this.reloadTrends), takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (trends: DeviationTrend[]) => {
@@ -206,7 +208,7 @@ export class RaStore {
     this._error.set(null);
 
     this.api
-      .getAuditLog(filters)
+      .getAuditLog(this.iam.requireLaboratoryId(), filters)
       .pipe(takeUntil(this.reloadAudit), takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (logs: AuditLogEntry[]) => {

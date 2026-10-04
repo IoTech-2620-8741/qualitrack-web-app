@@ -1038,7 +1038,7 @@
     "equipment": {
       "title": "Equipment Log Export",
       "select-label": "Equipment",
-      "empty": "No equipment available",
+      "empty": "No equipment located in an environment",
       "load-error": "The equipment list could not be loaded.",
       "desc": "Export technical and maintenance history.",
       "id-label": "Target Equipment ID"
@@ -1118,58 +1118,131 @@
     }
   },
   "tracking": {
-    "status": {
-      "OPERATIONAL": "Operational",
+    "refresh": "Refresh",
+    "no-environments": "Register an environment of the laboratory to monitor it.",
+    "no-devices": "This environment has no IoT devices. Associate an environmental device or a container monitor with it to see its readings.",
+    "errors": {
+      "load": "The monitoring data could not be loaded. Please try again.",
+      "device": "The readings of this device could not be loaded.",
+      "period": "Choose a valid period of up to 31 days.",
+      "save": "The configuration could not be saved. Review the values and try again."
+    },
+    "metrics": {
+      "AIR_QUALITY": "Air quality",
+      "MOTION": "Motion",
+      "TEMPERATURE": "Temperature",
+      "HUMIDITY": "Humidity",
+      "LUMINOSITY": "Luminosity",
+      "RFID_TAG": "RFID identification"
+    },
+    "states": {
+      "NORMAL": "Normal",
       "WARNING": "Warning",
-      "CRITICAL": "Critical",
-      "OFFLINE": "Offline",
-      "operational": "Operational",
-      "warning": "Warning",
-      "critical": "Critical",
-      "offline": "Offline",
-      "unknown-equipment": "Unknown Equipment",
-      "waiting-telemetry": "Waiting for telemetry..."
+      "CRITICAL": "Critical"
     },
-    "dashboard": {
-      "title": "Telemetry Dashboard",
-      "select-equipment": "Select IoT device",
-      "connection-status": "Connection Status",
-      "anomalies": "Detected Anomalies",
-      "events": "Events",
-      "live-stream": "Recorded Telemetry",
-      "stream-desc": "Measurement history for equipment",
-      "empty-chart": "No telemetry data available for this equipment.",
-      "current-readings": "Current Sensor Readings",
-      "updated": "Updated",
-      "empty-sensors": "Awaiting sensor data...",
-      "chart-label": "Live Parameter Tracking"
+    "actions": {
+      "VENTILATION_ON": "Ventilation on",
+      "VENTILATION_OFF": "Ventilation off",
+      "COOLING_ON": "Refrigeration on",
+      "COOLING_OFF": "Refrigeration off",
+      "SERVO_OPEN": "Servo opened",
+      "SERVO_CLOSE": "Servo closed"
     },
-    "analysis": {
-      "title": "Historical Telemetry Analysis",
-      "analyze-btn": "Analyze Data",
-      "chart-title": "Telemetry Analysis Chart",
-      "displaying": "Displaying",
-      "points-for": "data points for",
-      "value": "Value"
+    "results": {
+      "EXECUTED": "Executed",
+      "FAILED": "Failed"
     },
-    "history": {
-      "title": "Raw Telemetry Data Log",
-      "timestamp": "Timestamp",
-      "parameter": "Parameter",
-      "value": "Recorded Value",
-      "empty": "No telemetry records found for the selected criteria.",
-      "status": {
-        "deviated": "BPM Deviation",
-        "normal": "Normal"
-      }
-    },
-    "no-devices": "Only IoT devices send telemetry and there are none registered in this laboratory.",
     "connection": {
       "CONNECTED": "Connected",
       "REQUIRES_REVIEW": "Requires review",
       "last": "Last communication:",
       "never": "No communication received yet",
       "not-located": "Associate the device with an environment to know its connection status."
+    },
+    "monitoring": {
+      "title": "Environmental monitoring",
+      "subtitle": "Latest readings of the last 24 hours of the IoT devices of the environment and their condition.",
+      "environment": "Environment",
+      "containers": "Monitored containers",
+      "no-recent-reading": "No recent reading",
+      "motion-detected": "Motion detected",
+      "no-motion": "No recent detections",
+      "see-history": "See history",
+      "no-rfid": "Identification not available",
+      "last-action": "Latest automatic action",
+      "no-action": "No action recorded"
+    },
+    "history": {
+      "title": "Telemetry history",
+      "subtitle": "Readings and actions of a device in a period, in time order.",
+      "device": "Device",
+      "metric": "Metric",
+      "all-metrics": "All metrics",
+      "from": "From",
+      "to": "To",
+      "search": "Search",
+      "empty": "There are no records for the period.",
+      "chart": "Readings chart",
+      "normal-max": "Normal maximum",
+      "normal-min": "Normal minimum",
+      "critical-max": "Critical maximum",
+      "critical-min": "Critical minimum",
+      "no-thresholds": "This metric has no thresholds configured, so its readings are not classified.",
+      "readings": "Readings",
+      "moment": "Date and time",
+      "value": "Value",
+      "state": "Condition",
+      "motion-detected": "Detected",
+      "motion-clear": "No motion",
+      "limit": "limit {{value}} {{unit}}",
+      "no-readings": "There are no readings for the period.",
+      "actions": "Automatic actions",
+      "action": "Action",
+      "cause": "Cause",
+      "result": "Result",
+      "no-actions": "The container monitor executed no actions in the period."
+    },
+    "profiles": {
+      "title": "Environmental profiles",
+      "subtitle": "Limits that classify each reading as normal, warning or critical, and the automatic actions of the containers. Every change creates a new version that the devices apply.",
+      "read-only": "Only quality managers change the profiles; you can consult them.",
+      "environment": "Environment air quality",
+      "version": "Version {{version}}",
+      "not-configured": "Not configured",
+      "no-environmental-device": "The environment needs an environmental device to configure its air quality.",
+      "register-device": "Register a device",
+      "containers": "Containers",
+      "thresholds": "Thresholds",
+      "rules": "Automatic actions",
+      "rules-hint": "When the metric reaches the condition, the container monitor executes the action locally.",
+      "no-containers": "This environment has no container monitors.",
+      "metric": "Metric",
+      "critical-min": "Critical minimum",
+      "normal-min": "Normal minimum",
+      "normal-max": "Normal maximum",
+      "critical-max": "Critical maximum",
+      "thresholds-hint": "Inside the normal range the condition is normal; between the normal and critical limits it is a warning; beyond the critical limits it is critical. Leave both minimums empty to limit only from above.",
+      "save-thresholds": "Save thresholds",
+      "thresholds-saved": "Thresholds saved. The devices will apply the new version.",
+      "rules-saved": "Automatic actions saved. The container monitor will apply the new version.",
+      "condition": "Condition",
+      "action": "Action",
+      "choose-action": "Choose an action",
+      "remove-rule": "Remove action",
+      "no-rules": "No automatic actions configured.",
+      "add-rule": "Add action",
+      "save-rules": "Save actions",
+      "rules-need-thresholds": "Save the thresholds of the container first; an action reacts to the condition of a metric with thresholds.",
+      "errors": {
+        "incomplete": "Each limit needs both its normal and its critical value.",
+        "no-limits": "Enter at least the maximums or the minimums of the metric.",
+        "critical-min": "The critical minimum must be lower than the normal minimum.",
+        "critical-max": "The critical maximum must be higher than the normal maximum.",
+        "normal-range": "The normal minimum must be lower than the normal maximum.",
+        "incomplete-rule": "Each action needs a metric, a condition and an action.",
+        "rule-without-threshold": "An action can only use a metric whose thresholds are saved.",
+        "repeated-rule": "The same action is repeated."
+      }
     }
   },
   "material-history": {
@@ -1332,7 +1405,8 @@
         "staff_member": "Staff member",
         "telemetry_anomaly": "Telemetry anomaly",
         "telemetry_history_point": "Telemetry history",
-        "telemetry_measurement": "Telemetry measurement"
+        "telemetry_measurement": "Telemetry measurement",
+        "environmental_profile": "Environmental profile"
       },
       "actions": {
         "create": "Created",

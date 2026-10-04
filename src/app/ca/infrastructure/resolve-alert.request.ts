@@ -19,8 +19,6 @@ export interface ResolveAlertRequest {
   /**
    * The unique numeric identifier of the user resolving the alert.
    */
-  resolvedBy: number;
-
   /**
    * Corrective action or resolution notes.
    */

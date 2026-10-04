@@ -5,7 +5,6 @@ import { environment } from '../../../environments/environment';
 import { AlertSeverity, AlertStatus, DeviationAlert } from '../domain/model/deviation-alert.entity';
 import { AlertResource, AlertsResponse } from './alert-response';
 import { AlertAssembler } from './alert-assembler';
-import { AcknowledgeAlertRequest } from './acknowledge-alert.request';
 import { ResolveAlertRequest } from './resolve-alert.request';
 
 const apiBaseUrl = environment.serverBasePath;
@@ -17,10 +16,10 @@ export class AlertApiEndpoint extends BaseApiEndpoint<
   AlertAssembler
 > {
   constructor(http: HttpClient) {
-    super(http, `${apiBaseUrl}/deviation-alerts`, new AlertAssembler());
+    super(http, `${apiBaseUrl}${environment.deviationAlertsEndpointPath}`, new AlertAssembler());
   }
 
-  getAlerts(filters?: {
+  getAlerts(laboratoryId: number, filters?: {
     equipmentId?: number;
     batchId?: number;
     status?: AlertStatus;
@@ -36,7 +35,7 @@ export class AlertApiEndpoint extends BaseApiEndpoint<
     if (filters.severity) params = params.set('severity', filters.severity);
 
     const url = filters.equipmentId
-      ? `${apiBaseUrl}${environment.equipmentEndpointPath}/${filters.equipmentId}${environment.equipmentDeviationAlertsEndpointPath}`
+      ? `${apiBaseUrl}${environment.laboratoryLabsEndpointPath}/${laboratoryId}${environment.equipmentEndpointPath}/${filters.equipmentId}${environment.equipmentDeviationAlertsEndpointPath}`
       : `${apiBaseUrl}${environment.batchEndpointPath}/${filters.batchId}${environment.batchDeviationAlertsEndpointPath}`;
 
     return this.http.get<AlertResource[]>(url, { params }).pipe(
@@ -52,26 +51,20 @@ export class AlertApiEndpoint extends BaseApiEndpoint<
     );
   }
 
-  acknowledgeAlert(alertId: number, request: AcknowledgeAlertRequest): Observable<DeviationAlert> {
+  /** Registers that the authenticated user attends the alert (TS75). */
+  acknowledgeAlert(alertId: number): Observable<DeviationAlert> {
     return this.http
-      .patch<AlertResource>(`${this.endpointUrl}/${alertId}`, {
-        status: 'ACKNOWLEDGED',
-        performedBy: request.acknowledgedBy,
-        resolutionNotes: null,
-      })
+      .post<AlertResource>(`${this.endpointUrl}/${alertId}${environment.deviationAlertAcknowledgementsEndpointPath}`, null)
       .pipe(
         map((resource) => this.assembler.toEntityFromResource(resource)),
         catchError(this.handleError(`Failed to acknowledge deviation alert ${alertId}`)),
       );
   }
 
+  /** Registers the resolution of the alert by the authenticated user (TS76). */
   resolveAlert(alertId: number, request: ResolveAlertRequest): Observable<DeviationAlert> {
     return this.http
-      .patch<AlertResource>(`${this.endpointUrl}/${alertId}`, {
-        status: 'RESOLVED',
-        performedBy: request.resolvedBy,
-        resolutionNotes: request.resolutionNotes,
-      })
+      .post<AlertResource>(`${this.endpointUrl}/${alertId}${environment.deviationAlertResolutionsEndpointPath}`, request)
       .pipe(
         map((resource) => this.assembler.toEntityFromResource(resource)),
         catchError(this.handleError(`Failed to resolve deviation alert ${alertId}`)),

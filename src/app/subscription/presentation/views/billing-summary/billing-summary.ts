@@ -81,10 +81,9 @@ export class BillingSummary implements OnInit {
 
   protected onCancelSubscription(): void {
     const subscription = this.store.currentSubscription();
-    const userId = this.iamStore.currentUserId();
 
-    if (!subscription || !userId) return;
+    if (!subscription) return;
 
-    this.store.cancelSubscription(subscription.id, userId);
+    this.store.cancelSubscription(subscription.id);
   }
 }

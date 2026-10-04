@@ -93,10 +93,10 @@ export class RaApi extends BaseApi {
    *
    * @remarks
    * Delegates the request to {@link DeviationTrendApiEndpoint}, which calls:
-   * `GET /deviation-trends?equipmentId={equipmentId}`.
+   * `GET /laboratories/{laboratoryId}/equipments/{equipmentId}/deviation-trends`.
    */
-  getTrendsByEquipment(equipmentId: number): Observable<DeviationTrend[]> {
-    return this._deviationTrendEndpoint.getTrendsByEquipment(equipmentId);
+  getTrendsByEquipment(laboratoryId: number, equipmentId: number): Observable<DeviationTrend[]> {
+    return this._deviationTrendEndpoint.getTrendsByEquipment(laboratoryId, equipmentId);
   }
 
   /**
@@ -111,15 +111,15 @@ export class RaApi extends BaseApi {
    *
    * @remarks
    * Delegates the request to {@link AuditLogApiEndpoint}, which calls:
-   * `GET /audit-logs?equipmentId=&batchId=&dateFrom=&dateTo=`.
+   * `GET /laboratories/{laboratoryId}/equipments/{equipmentId}/audit-logs` or `GET /batches/{batchId}/audit-logs`.
    */
-  getAuditLog(filters?: {
+  getAuditLog(laboratoryId: number, filters?: {
     equipmentId?: number;
     batchId?: number;
     dateFrom?: string;
     dateTo?: string;
   }): Observable<AuditLogEntry[]> {
-    return this._auditLogEndpoint.getAuditLog(filters);
+    return this._auditLogEndpoint.getAuditLog(laboratoryId, filters);
   }
 
   /**

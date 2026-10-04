@@ -79,7 +79,6 @@ package "ra.domain.model" {
     +includeTelemetry: boolean
     +includeDeviations: boolean
     +format: "PDF | CSV"
-    +requestedBy: number
   }
 
   interface GenerateComplianceReportCommand {
@@ -87,15 +86,15 @@ package "ra.domain.model" {
     +startDate: string
     +endDate: string
     +format: "PDF | CSV"
-    +requestedBy: number
   }
 
   interface ExportEquipmentLogCommand {
+    +laboratoryId: number
+    +environmentId: number
     +equipmentId: number
     +startDate: string
     +endDate: string
     +format: "PDF | CSV"
-    +requestedBy: number
   }
 }
 
@@ -137,8 +136,8 @@ package "ra.infrastructure" {
     -_reportEndpoint: ReportApiEndpoint
 
     +getDashboardByLaboratory(laboratoryId: number)
-    +getTrendsByEquipment(equipmentId: number)
-    +getAuditLog(filters?)
+    +getTrendsByEquipment(laboratoryId: number, equipmentId: number)
+    +getAuditLog(laboratoryId: number, filters?)
     +getStaffActivity(laboratoryId: number, staffId: number)
     +generateBatchReport(request: GenerateBatchReportRequest)
     +generateComplianceReport(request: GenerateComplianceReportRequest)
@@ -150,11 +149,11 @@ package "ra.infrastructure" {
   }
 
   class DeviationTrendApiEndpoint {
-    +getTrendsByEquipment(equipmentId: number)
+    +getTrendsByEquipment(laboratoryId: number, equipmentId: number)
   }
 
   class AuditLogApiEndpoint {
-    +getAuditLog(filters?)
+    +getAuditLog(laboratoryId: number, filters?)
     +getStaffActivity(laboratoryId: number, staffId: number)
   }
 
@@ -162,7 +161,14 @@ package "ra.infrastructure" {
     +generateBatchReport(request: GenerateBatchReportRequest)
     +generateComplianceReport(request: GenerateComplianceReportRequest)
     +exportEquipmentLog(request: ExportEquipmentLogRequest)
+    -createAndDownload(url, body, fallback): Observable<Blob>
   }
+
+  note bottom of ReportApiEndpoint
+    POST creates the report (201 + Location /reports/{reportId}), then
+    GET /reports/{reportId}/content downloads its PDF or CSV (TS83, TS84, TS86, TS87).
+    Equipment logs: /laboratories/{lab}/environments/{env}/equipments/{id}/log-reports.
+  end note
 
   class KpiAssembler
   class DeviationTrendAssembler
@@ -228,7 +234,6 @@ package "ra.infrastructure" {
     +includeTelemetry: boolean
     +includeDeviations: boolean
     +format: "PDF | CSV"
-    +requestedBy: number
   }
 
   interface GenerateComplianceReportRequest {
@@ -236,15 +241,15 @@ package "ra.infrastructure" {
     +startDate: string
     +endDate: string
     +format: "PDF | CSV"
-    +requestedBy: number
   }
 
   interface ExportEquipmentLogRequest {
+    +laboratoryId: number
+    +environmentId: number
     +equipmentId: number
     +startDate: string
     +endDate: string
     +format: "PDF | CSV"
-    +requestedBy: number
   }
 }
 

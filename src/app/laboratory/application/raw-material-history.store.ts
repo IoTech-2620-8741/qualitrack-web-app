@@ -34,7 +34,7 @@ export class RawMaterialHistoryStore {
     this.loading.set(true);
     this.request = forkJoin({
       materials: this.labApi.getRawMaterials(laboratoryId),
-      usages: this.batchApi.getMaterialHistory(materialId),
+      usages: this.batchApi.getMaterialHistory(laboratoryId, materialId),
       batches: this.batchApi.getBatches(laboratoryId),
     }).subscribe({
       next: ({ materials, usages, batches }) => {

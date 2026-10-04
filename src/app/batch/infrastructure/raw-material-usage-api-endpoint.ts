@@ -69,11 +69,13 @@ export class RawMaterialUsageApiEndpoint extends BaseApiEndpoint<
   /**
    * Retrieves the batches that used a raw material registered before Inventory Management existed.
    *
+   * @param laboratoryId - The laboratory of the material.
    * @param rawMaterialId - The legacy raw material identifier.
    * @returns An Observable emitting the usages of the material.
    */
-  getUsageByMaterial(rawMaterialId: number): Observable<RawMaterialUsage[]> {
-    return this.http.get<RawMaterialUsageResource[]>(`${environment.serverBasePath}/raw-materials/${rawMaterialId}/usages`)
+  getUsageByMaterial(laboratoryId: number, rawMaterialId: number): Observable<RawMaterialUsage[]> {
+    return this.http.get<RawMaterialUsageResource[]>(`${environment.serverBasePath}${environment.laboratoryLabsEndpointPath}/${laboratoryId}`
+      + `${environment.laboratoryRawMaterialsEndpointPath}/${rawMaterialId}${environment.inventoryRawMaterialUsagesEndpointPath}`)
       .pipe(map(resources => resources.map(resource => this.assembler.toEntityFromResource(resource))));
   }
 

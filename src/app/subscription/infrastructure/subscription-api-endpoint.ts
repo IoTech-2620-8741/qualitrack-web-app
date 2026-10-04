@@ -17,7 +17,6 @@ import { SubscriptionPlanAssembler } from './subscription-plan-assembler';
 import { SubscriptionAssembler } from './subscription-assembler';
 import { PaymentAssembler } from './payment-assembler';
 import { CheckoutSessionAssembler } from './checkout-session-assembler';
-import { UpdateSubscriptionStatusRequest } from './update-subscription-status.request';
 
 const plansEndpointUrl = `${environment.serverBasePath}${environment.subscriptionPlansEndpointPath}`;
 const subscriptionsEndpointUrl = `${environment.serverBasePath}${environment.subscriptionsEndpointPath}`;
@@ -48,15 +47,13 @@ export class SubscriptionApiEndpoint extends ErrorHandlingEnabledBaseType {
     const params = new HttpParams().set('status', 'ACTIVE');
 
     return this.http
-      .get<SubscriptionResource | SubscriptionResource[]>(
+      .get<SubscriptionResource[]>(
         `${laboratoriesEndpointUrl}/${laboratoryId}${environment.laboratorySubscriptionsEndpointPath}`,
         { params }
       )
       .pipe(
         map((response) => {
-          const resource = Array.isArray(response)
-            ? response.find((subscription) => subscription.status === 'ACTIVE')
-            : response;
+          const resource = response.find((subscription) => subscription.status === 'ACTIVE');
 
           if (!resource) {
             throw new HttpErrorResponse({ status: 404, statusText: 'No active subscription' });
@@ -86,12 +83,14 @@ export class SubscriptionApiEndpoint extends ErrorHandlingEnabledBaseType {
     );
   }
 
-  cancelSubscription(
-    subscriptionId: number,
-    request: UpdateSubscriptionStatusRequest,
-  ): Observable<number> {
+  /** Requests the cancellation of the subscription by the authenticated quality manager (TS11). */
+  cancelSubscription(subscriptionId: number): Observable<Subscription> {
     return this.http
-      .patch<number>(`${subscriptionsEndpointUrl}/${subscriptionId}`, request)
-      .pipe(catchError(this.handleError(`Failed to cancel subscription ${subscriptionId}`)));
+      .post<SubscriptionResource>(
+        `${subscriptionsEndpointUrl}/${subscriptionId}${environment.subscriptionCancellationRequestsEndpointPath}`, null)
+      .pipe(
+        map((resource) => this.subscriptionAssembler.toEntityFromResource(resource)),
+        catchError(this.handleError(`Failed to cancel subscription ${subscriptionId}`)),
+      );
   }
 }

@@ -26,9 +26,4 @@ export interface GenerateBatchReportCommand {
    * The requested output format for the generated document.
    */
   format: 'PDF' | 'CSV';
-
-  /**
-   * The numeric identifier of the user requesting the report.
-   */
-  requestedBy: number;
 }

@@ -6,13 +6,14 @@ skinparam classAttributeIconSize 0
 
 package "external bounded contexts" <<External>> {
   class IamStore
-  class LaboratoryStore
-  class EquipmentStore
-  class BatchStore
-  class CaStore
-  class RaStore
-  class TrackingStore
-  class SubscriptionStore
+  class LaboratoryApi
+  class InventoryApi
+  class EquipmentApi
+  class BatchApi
+  class CaApi
+  class TrackingApi
+  class SubscriptionApi
+  class recentPeriod <<function>>
   class AuthenticationSection
 }
 
@@ -31,9 +32,6 @@ package "shared" {
 
     interface BaseResponse
 
-    interface MessageResource {
-      +message: string
-    }
 
     interface BaseAssembler<TEntity, TResource, TResponse> {
       +toEntityFromResource(resource: TResource): TEntity
@@ -57,6 +55,24 @@ package "shared" {
       +create(entity: TEntity): Observable<TEntity>
       +update(entity: TEntity, id: number): Observable<TEntity>
       +delete(id: number): Observable<void>
+    }
+  }
+
+  package "application" {
+    class DashboardStore <<view-scoped>> {
+      -iam: IamStore
+      -trackingApi: TrackingApi
+      +laboratory / equipment / batches / materials: Signal<LoadState>
+      +alerts / measurements / subscription / plans: Signal<LoadState>
+      +devices: Signal<Equipment[]>
+      +selectedEquipmentId: Signal<number | null>
+      +series / readings / latestReading / readingRange: Signal
+      +reload(): void
+      +loadSubscription(): void
+      +loadPlans(): void
+      +loadAlerts(): void
+      +selectEquipment(id: number | null): void
+      +equipmentName(id: number): string
     }
   }
 
@@ -119,54 +135,17 @@ package "shared" {
     }
 
     class Dashboard {
-      #iamStore: IamStore
-      #laboratoryStore: LaboratoryStore
-      #equipmentStore: EquipmentStore
-      #batchStore: BatchStore
-      #caStore: CaStore
-      #raStore: RaStore
-      #trackingStore: TrackingStore
-      #subscriptionStore: SubscriptionStore
-      -router: Router
+      #store: DashboardStore
       -translate: TranslateService
-      -equipmentPollId?: interval
-      -telemetryInitialized: boolean
-      -langSubscription?: Subscription
-      -languageVersion: Signal<number>
-      #overviewChartType: ChartType
-      #riskChartType: ChartType
-      #chartOptions: ChartOptions
-      #riskChartOptions: ChartOptions
-      #isLoading: Signal<boolean>
-      #healthScore: Signal<number>
-      #healthLabelKey: Signal<string>
-      #healthClass: Signal<string>
-      #summaryCards: Signal<DashboardCard[]>
-      #overviewChartData: Signal<ChartData>
-      #riskChartData: Signal<ChartData>
-      #attentionItems: Signal<AttentionItem[]>
-      +ngOnInit(): void
-      +ngOnDestroy(): void
-      #navigateTo(route: string): void
-      -initializeTelemetryFromFirstEquipment(): void
-      -t(key: string, params?: Record<string, unknown>): string
-    }
-
-    class DashboardCard <<type>> {
-      +labelKey: string
-      +value: number
-      +detailKey: string
-      +detailParams: object
-      +icon: string
-      +className: string
-      +route: string
-    }
-
-    class AttentionItem <<type>> {
-      +labelKey: string
-      +value: number
-      +icon: string
-      +route: string
+      #summaryCards: Signal<object[]>
+      #batchDistribution: Signal<object[]>
+      #recentBatches: Signal<Batch[]>
+      #chartData: Signal<ChartData>
+      #chartOptions: Signal<ChartOptions>
+      #reloadAll(): void
+      #retryTelemetry(): void
+      #retrySubscription(): void
+      #retryAlerts(): void
     }
   }
 }
@@ -201,17 +180,20 @@ Home --> AuthenticationSection
 PageNotFound --> Router
 PageNotFound --> ActivatedRoute
 
-Dashboard --> IamStore
-Dashboard --> LaboratoryStore
-Dashboard --> EquipmentStore
-Dashboard --> BatchStore
-Dashboard --> CaStore
-Dashboard --> RaStore
-Dashboard --> TrackingStore
-Dashboard --> SubscriptionStore
-Dashboard --> Router
+Dashboard *-- DashboardStore
+DashboardStore --> IamStore
+DashboardStore --> LaboratoryApi
+DashboardStore --> InventoryApi
+DashboardStore --> EquipmentApi
+DashboardStore --> BatchApi
+DashboardStore --> CaApi
+DashboardStore --> TrackingApi
+DashboardStore --> SubscriptionApi
+DashboardStore ..> recentPeriod
+note bottom of DashboardStore
+  Telemetry widget: readings of the last 24 hours of the selected IoT device,
+  from its environment (environmental device) or container monitor route.
+end note
 Dashboard --> TranslateService
-Dashboard *-- DashboardCard
-Dashboard *-- AttentionItem
 
 @enduml

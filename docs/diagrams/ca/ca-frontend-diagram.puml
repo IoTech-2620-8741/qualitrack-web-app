@@ -90,7 +90,7 @@ package "ca.application" {
     +getAlertById(id: number)
     +loadAlerts(filters?): void
     +loadAlertById(alertId: number): void
-    +acknowledgeAlert(alertId: number, request: AcknowledgeAlertRequest): void
+    +acknowledgeAlert(alertId: number): void
     +resolveAlert(alertId: number, request: ResolveAlertRequest): void
     +loadComplianceEvents(entityId: number): void
     +loadNotificationPreferences(userId: number): void
@@ -104,9 +104,9 @@ package "ca.infrastructure" {
     -_complianceEventEndpoint: ComplianceEventApiEndpoint
     -_preferenceEndpoint: NotificationPreferenceApiEndpoint
 
-    +getAlerts(filters?)
+    +getAlerts(laboratoryId: number, filters?)
     +getAlertById(alertId: number)
-    +acknowledgeAlert(alertId: number, request: AcknowledgeAlertRequest)
+    +acknowledgeAlert(alertId: number)
     +resolveAlert(alertId: number, request: ResolveAlertRequest)
     +getEventsByEntity(entityId: number)
     +getPreferences(userId: number)
@@ -114,14 +114,15 @@ package "ca.infrastructure" {
   }
 
   class AlertApiEndpoint {
-    +getAlerts(filters?)
+    +getAlerts(laboratoryId: number, filters?)
     +getAlertById(alertId: number)
-    +acknowledgeAlert(alertId: number, request: AcknowledgeAlertRequest)
+    +acknowledgeAlert(alertId: number)
     +resolveAlert(alertId: number, request: ResolveAlertRequest)
   }
 
   class ComplianceEventApiEndpoint {
-    +getEventsByEntity(entityId: number)
+    +getEquipmentEvents(laboratoryId: number, equipmentId: number)
+    +getBatchEvents(batchId: number)
   }
 
   class NotificationPreferenceApiEndpoint {
@@ -179,12 +180,7 @@ package "ca.infrastructure" {
     +preferences: NotificationPreferenceResource[]
   }
 
-  interface AcknowledgeAlertRequest {
-    +acknowledgedBy: number
-  }
-
   interface ResolveAlertRequest {
-    +resolvedBy: number
     +resolutionNotes: string
   }
 
@@ -251,7 +247,6 @@ CaStore --> CaApi
 CaStore ..> DeviationAlert
 CaStore ..> ComplianceEvent
 CaStore ..> NotificationPreference
-CaStore ..> AcknowledgeAlertRequest
 CaStore ..> ResolveAlertRequest
 CaStore ..> UpdateNotificationPreferenceRequest
 
@@ -264,8 +259,13 @@ ComplianceEventApiEndpoint --> ComplianceEventAssembler
 NotificationPreferenceApiEndpoint --> NotificationPreferenceAssembler
 
 AlertApiEndpoint ..> AlertResource
-AlertApiEndpoint ..> AcknowledgeAlertRequest
 AlertApiEndpoint ..> ResolveAlertRequest
+note bottom of AlertApiEndpoint
+  GET  /laboratories/{laboratoryId}/equipments/{equipmentId}/deviation-alerts
+  GET  /batches/{batchId}/deviation-alerts, GET /deviation-alerts/{alertId}
+  POST /deviation-alerts/{alertId}/acknowledgements and /resolutions (TS75, TS76)
+  The platform takes the actor from the session; requests carry no user id.
+end note
 
 ComplianceEventApiEndpoint ..> ComplianceEventResource
 NotificationPreferenceApiEndpoint ..> NotificationPreferenceResource
