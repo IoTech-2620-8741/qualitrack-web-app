@@ -114,7 +114,6 @@
     "loading-data": "Cargando datos…",
     "load-error": "No se pudieron cargar los datos.",
     "system": "Sistema",
-    "batch-telemetry-unavailable": "La telemetría del lote requiere una asociación con equipos que aún no está disponible.",
     "no-status": "Todavía no se ha registrado el estado del equipo.",
     "no-plans": "Todavía no hay planes de suscripción disponibles.",
     "subscription-paused-title": "Acceso al laboratorio en pausa",
@@ -265,8 +264,8 @@
     "alert-history": "Historial de alertas",
     "notification-preferences": "Preferencias de notificación",
     "reports": "Reportes y KPIs",
-    "kpi-dashboard": "Panel de KPIs",
-    "deviation-trends": "Tendencias de desviación",
+    "kpi-dashboard": "Resumen ambiental",
+    "deviation-trends": "Indicadores de desviación",
     "report-generator": "Generador de reportes",
     "audit-log": "Registro de auditoría",
     "laboratory": "Laboratorio",
@@ -1021,40 +1020,51 @@
       "details": "Detalles"
     }
   },
-  "deviation-trend": {
-    "title": "Análisis de Tendencias",
-    "select-equipment": "Seleccionar Equipo",
-    "parameter": "Parámetro",
-    "equipment": "Equipo",
-    "direction": "Dirección de Tendencia",
-    "empty": "No hay tendencias de desviación disponibles para este equipo.",
-    "table": {
-      "timestamp": "Fecha y Hora",
-      "value": "Valor Registrado",
-      "min": "Límite Inferior",
-      "max": "Límite Superior"
+  "reporting": {
+    "all-environments": "Todos los ambientes",
+    "no-environments": "Registra un ambiente del laboratorio para calcular sus indicadores.",
+    "errors": {
+      "load": "No se pudieron cargar los indicadores. Vuelve a intentarlo."
     },
-    "status": {
-      "deviated": "Desviado",
-      "normal": "Normal"
-    }
-  },
-  "kpi-dashboard": {
-    "title": "Panel de Rendimiento y KPIs",
-    "chart-title": "Tendencia de Rendimiento KPI",
-    "overall-health": "Puntuación de Salud",
-    "last-updated": "Última actualización",
-    "at-risk-params": "Parámetros en Riesgo",
-    "requires-attention": "Requiere atención pronto",
-    "critical-deviations": "Desviaciones Críticas",
-    "immediate-action": "Acción inmediata requerida",
-    "detailed-parameters": "Parámetros Detallados",
-    "empty": "No hay métricas KPI registradas para este laboratorio.",
-    "table": {
-      "metric": "Métrica de Calidad",
-      "current": "Valor Actual",
-      "target": "Objetivo",
-      "recorded": "Registrado En"
+    "period": {
+      "label": "Periodo",
+      "days-1": "Últimas 24 horas",
+      "days-7": "Últimos 7 días",
+      "days-31": "Últimos 31 días",
+      "range": "Periodo: {{from}} – {{to}}"
+    },
+    "fields": {
+      "device": "Dispositivo",
+      "variable": "Variable",
+      "readings": "Lecturas",
+      "average": "Promedio",
+      "minimum": "Mínimo",
+      "maximum": "Máximo",
+      "last-reading": "Última lectura",
+      "evaluated": "Lecturas evaluadas",
+      "time-in-range": "Tiempo en rango",
+      "deviations": "Desviaciones",
+      "critical": "Críticas",
+      "trend": "Tendencia"
+    },
+    "summary": {
+      "title": "Resumen ambiental",
+      "subtitle": "Promedio, mínimo y máximo de las lecturas de cada dispositivo en el periodo, calculados a partir de las lecturas registradas.",
+      "readings-title": "Lecturas del periodo",
+      "no-readings": "No hay lecturas en el periodo, por lo que no se calcula ningún valor.",
+      "formula": "Solo se resumen las lecturas numéricas; el promedio se redondea a dos decimales.",
+      "records-title": "Registros del laboratorio",
+      "records-note": "Conteos actuales de los registros del laboratorio; no dependen del periodo ni del ambiente.",
+      "no-records": "El laboratorio aún no tiene equipos ni lotes registrados."
+    },
+    "deviations": {
+      "title": "Indicadores de desviación",
+      "subtitle": "Tiempo en rango y desviaciones de cada variable del ambiente en el periodo, calculados a partir de la condición de las lecturas.",
+      "not-enough": "Lecturas insuficientes",
+      "formula": "Cada lectura evaluada mantiene su condición hasta la siguiente; el tiempo en rango es el tiempo en condición normal sobre el tiempo entre la primera y la última lectura evaluada. Una desviación es una lectura cuya condición es peor que la anterior; es crítica cuando entra en condición crítica. Las lecturas de variables sin umbrales no se evalúan.",
+      "chart": "Lecturas del periodo",
+      "unevaluated": "Sin evaluar",
+      "empty": "No hay lecturas numéricas de este ambiente en el periodo, por lo que no se calcula ningún indicador."
     }
   },
   "report-generator": {
@@ -1069,29 +1079,44 @@
       "invalid-request": "Los parámetros del reporte no son válidos. Revisa el registro seleccionado y las fechas.",
       "batch": "No se pudo generar el reporte de lote. Vuelve a intentarlo.",
       "compliance": "No se pudo generar el reporte de cumplimiento. Vuelve a intentarlo.",
-      "equipment": "No se pudo exportar la bitácora del equipo. Vuelve a intentarlo."
+      "equipment": "No se pudo exportar la bitácora del equipo. Vuelve a intentarlo.",
+      "inventory": "No se pudo generar el reporte de inventario. Vuelve a intentarlo."
     },
     "batch": {
       "select-label": "Lote",
       "empty": "No hay lotes disponibles",
       "load-error": "No se pudo cargar la lista de lotes.",
       "title": "Reporte de Lote",
-      "desc": "Documento completo de calidad y trazabilidad.",
-      "id-label": "ID de Lote",
-      "include-telemetry": "Incluir registros de telemetría",
-      "include-deviations": "Incluir alertas de desviación"
+      "desc": "Materiales y lotes, equipos, personal, contenedor y decisión de calidad del lote.",
+      "include-deviations": "Incluir alertas de desviación",
+      "scope": "Las condiciones ambientales forman parte del reporte ambiental del periodo."
     },
     "compliance": {
-      "title": "Reporte de Cumplimiento",
-      "desc": "Resumen periódico del rendimiento del laboratorio."
+      "title": "Reporte ambiental",
+      "desc": "Lecturas, desviaciones, alertas y acciones automáticas de cada ambiente en los días seleccionados."
     },
     "equipment": {
       "title": "Bitácora de Equipo",
       "select-label": "Equipo",
       "empty": "No hay equipos ubicados en un ambiente",
       "load-error": "No se pudo cargar la lista de equipos.",
-      "desc": "Exportar historial técnico y de mantenimiento.",
-      "id-label": "ID de Equipo"
+      "desc": "Exportar historial técnico y de mantenimiento."
+    },
+    "start-date": "Fecha de inicio",
+    "end-date": "Fecha de fin",
+    "formats": {
+      "pdf": "Documento PDF (.pdf)",
+      "csv": "Exportación de datos (.csv)"
+    },
+    "success": {
+      "batch": "Se descargó el reporte del lote.",
+      "compliance": "Se descargó el reporte ambiental.",
+      "inventory": "Se descargó el reporte de inventario.",
+      "equipment": "Se descargó la bitácora del equipo."
+    },
+    "inventory": {
+      "title": "Reporte de inventario",
+      "desc": "Materias primas, lotes, cantidades y vencimientos del laboratorio o de un ambiente."
     }
   },
   "page-not-found": {

@@ -13,11 +13,6 @@ export interface GenerateBatchReportCommand {
   batchId: number;
 
   /**
-   * Indicates whether sensor and process telemetry should be included.
-   */
-  includeTelemetry: boolean;
-
-  /**
    * Indicates whether deviation alerts should be included.
    */
   includeDeviations: boolean;

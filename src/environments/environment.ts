@@ -46,7 +46,6 @@ export const environment = {
   containerMonitorsEndpointPath: '/container-monitors',
   // Records of an equipment, under /laboratories/{laboratoryId}/equipments/{equipmentId}
   equipmentBpmConfigEndpointPath: '/bpm-configs',
-  equipmentDeviationTrendsEndpointPath: '/deviation-trends',
   equipmentComplianceEventsEndpointPath: '/compliance-events',
   equipmentAuditLogsEndpointPath: '/audit-logs',
   // Under /laboratories/{laboratoryId}/environments/{environmentId}/equipments/{equipmentId} (TS86)
@@ -90,6 +89,10 @@ export const environment = {
   raAuditLogsEndpointPath: '/audit-logs',
   raKpiDashboardsEndpointPath: '/kpi-dashboards',
   raComplianceReportsEndpointPath: '/compliance-reports',
+  // Under /laboratories/{laboratoryId}/environments/{environmentId} (TS82)
+  raDeviationTrendsEndpointPath: '/deviation-trends',
+  // Under /laboratories/{laboratoryId} (TS85)
+  raInventoryReportsEndpointPath: '/inventory/reports',
 
   // Subscriptions & Payments
   subscriptionPlansEndpointPath: '/subscription-plans',
