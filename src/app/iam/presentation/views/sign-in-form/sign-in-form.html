@@ -8,6 +8,9 @@
     </div>
 
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      @if (passwordReset) {
+        <div class="alert alert-success" role="status">{{ 'iam.sign-in.password-reset' | translate }}</div>
+      }
       @if (store.error()) {
         <div class="alert alert-error">
           <span role="alert">{{ store.error()! | translate }}</span>
@@ -52,6 +55,7 @@
         @if (form.controls.password.invalid && form.controls.password.touched) {
           <span class="error-message">{{ getPasswordErrorKey() | translate }}</span>
         }
+        <a class="forgot-password" routerLink="/iam/password-recovery">{{ 'iam.sign-in.forgot-password' | translate }}</a>
       </div>
 
       <button type="submit" class="btn-primary" [disabled]="store.loading()">

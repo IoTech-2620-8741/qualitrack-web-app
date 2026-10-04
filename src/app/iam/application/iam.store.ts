@@ -1,18 +1,17 @@
 import { computed, Injectable, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Observable, catchError, finalize, of, shareReplay, tap, throwError } from 'rxjs';
+import { Observable, catchError, finalize, map, of, shareReplay, tap, throwError } from 'rxjs';
 import { OnboardingState } from '../domain/model/onboarding-state';
 
 import { User } from '../domain/model/user.entity';
 import { SignInCommand } from '../domain/model/sign-in.command';
 import { SignUpCommand } from '../domain/model/sign-up.command';
-import { RecoverPasswordCommand } from '../domain/model/recover-password.command';
+import { ResetPasswordCommand } from '../domain/model/reset-password.command';
 
 import { IamApi } from '../infrastructure/iam-api';
 import { SignInRequest } from '../infrastructure/sign-in.request';
 import { SignUpRequest } from '../infrastructure/sign-up.request';
-import { RecoverPasswordRequest } from '../infrastructure/recover-password.request';
 
 /**
  * Signal-based application store for Identity and Access Management.
@@ -95,20 +94,30 @@ export class IamStore {
     this.restoreSession();
   }
 
-  recoverPassword(command: RecoverPasswordCommand, router: Router): void {
-    this.startRequest();
+  /**
+   * Asks the platform to e-mail a verification code to the account (US16). The answer is the same whether or not the
+   * account exists.
+   *
+   * @param account - Username or e-mail of the account
+   * @returns Minutes during which the code can be used
+   */
+  requestPasswordRecovery(account: string): Observable<number> {
+    return this.iamApi.requestPasswordRecovery({ account: account.trim() }).pipe(
+      map((accepted) => accepted.codeValidityMinutes),
+    );
+  }
 
-    const request = this.toRecoverPasswordRequest(command);
-
-    this.iamApi.recoverPassword(request).subscribe({
-      next: () => {
-        this.finishRequest();
-        router.navigate(['/iam/sign-in']).then();
-      },
-      error: () => {
-        this.failRequest('Failed to request password recovery.');
-      },
-    });
+  /**
+   * Sets a new password with the verification code received by e-mail (US17).
+   *
+   * @returns The username to sign in with
+   */
+  resetPassword(command: ResetPasswordCommand): Observable<string> {
+    return this.iamApi.resetPassword({
+      account: command.account.trim(),
+      code: command.code.trim(),
+      newPassword: command.newPassword,
+    }).pipe(map((completed) => completed.username));
   }
 
   signIn(command: SignInCommand, router: Router): void {
@@ -164,9 +173,10 @@ export class IamStore {
         this.finishRequest();
         router.navigate(['/iam/sign-in']).then();
       },
-      error: () => {
+      error: (error) => {
         this.clearSession();
-        this.failRequest('onboarding.sign-up-error');
+        this.failRequest(error instanceof HttpErrorResponse && error.status === 409
+          ? 'iam.sign-up.errors.already-registered' : 'onboarding.sign-up-error');
       },
     });
   }
@@ -254,15 +264,10 @@ export class IamStore {
   private toSignUpRequest(command: SignUpCommand): SignUpRequest {
     return {
       username: command.username,
+      email: command.email.trim(),
       password: command.password,
       roles: command.roles,
       laboratoryId: command.laboratoryId,
-    };
-  }
-
-  private toRecoverPasswordRequest(command: RecoverPasswordCommand): RecoverPasswordRequest {
-    return {
-      username: command.username,
     };
   }
 

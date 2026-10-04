@@ -250,18 +250,24 @@ export class SubscriptionStore {
     });
   }
 
-  /** Cancels the subscription; the platform records the authenticated user as the one who cancelled it. */
-  cancelSubscription(subscriptionId: number): void {
+  /**
+   * Cancels the renewal of the subscription (US23): it keeps its access until the end of the paid period and is not
+   * charged again. The platform records the authenticated user as the one who cancelled it.
+   */
+  cancelRenewal(subscriptionId: number): void {
     this.startRequest();
 
-    this.api.cancelSubscription(subscriptionId).subscribe({
-      next: () => {
-        this._currentSubscription.set(null);
+    this.api.cancelRenewal(subscriptionId).subscribe({
+      next: (subscription) => {
+        this._currentSubscription.set(subscription);
         this.iam.invalidateOnboarding();
         this.finishRequest();
-        void this.router.navigate(['/iam/onboarding']);
+        this._successMsg.set('subscription.billing.renewal-cancelled-notice');
       },
-      error: (error) => this.failRequest(error, 'Failed to cancel subscription'),
+      error: () => {
+        this._error.set('subscription.billing.errors.cancel-renewal');
+        this._isLoading.set(false);
+      },
     });
   }
 

@@ -7,7 +7,9 @@ export const environment = {
   // IAM
   iamSignInEndpointPath: '/authentication/sign-in',
   iamSignUpEndpointPath: '/authentication/sign-up',
-  iamRecoverPasswordEndpointPath: '/authentication/password-recovery-requests',
+  // Password recovery with a verification code sent by e-mail (TS05, TS06)
+  iamPasswordRecoveryRequestsEndpointPath: '/authentication/password-recovery-requests',
+  iamPasswordResetsEndpointPath: '/authentication/password-resets',
 
   // Users / Roles
   usersEndpointPath: '/users',
