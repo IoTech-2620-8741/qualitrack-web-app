@@ -128,8 +128,8 @@ note right of MaintenanceApiEndpoint
   .../environments/{environmentId}/equipments/{equipmentId}/maintenance-records
 end note
 note bottom of BpmConfigApiEndpoint
-  /equipments/{equipmentId}/bpm-configs, pending the Tracking
-  environmental profiles (phase 5).
+  /equipments/{equipmentId}/bpm-configs: process parameters of the
+  equipment (Report); environmental thresholds live in Tracking.
 end note
 
 package "equipment.application" {

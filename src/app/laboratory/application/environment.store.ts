@@ -10,7 +10,7 @@ import { RegisterEnvironmentCommand } from '../domain/model/register-environment
 import { UpdateEnvironmentCommand } from '../domain/model/update-environment.command';
 
 /** Features that remember the environment the user works with. */
-export type EnvironmentScope = 'inventory' | 'production';
+export type EnvironmentScope = 'inventory' | 'production' | 'tracking';
 
 /**
  * Application store for the environments of the current laboratory.

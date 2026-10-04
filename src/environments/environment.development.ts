@@ -42,11 +42,16 @@ export const environment = {
   devicesEndpointPath: '/devices',
   environmentalDevicesEndpointPath: '/environmental-devices',
   containerMonitorsEndpointPath: '/container-monitors',
-  // Flat routes under /equipments/{equipmentId} kept until the Tracking, Compliance and Reporting phases
+  // Flat routes under /equipments/{equipmentId} kept until the Compliance and Reporting phases
   equipmentBpmConfigEndpointPath: '/bpm-configs',
-  equipmentTelemetryStatusEndpointPath: '/telemetry-status',
-  equipmentTelemetryMeasurementsEndpointPath: '/telemetry-measurements',
-  equipmentTelemetryHistoryEndpointPath: '/telemetry-history',
+
+  // Tracking, under .../environments/{environmentId}[/container-monitors/{deviceId} | /devices/{deviceId}]
+  trackingTelemetryStatusEndpointPath: '/telemetry-status',
+  trackingTelemetryMeasurementsEndpointPath: '/telemetry-measurements',
+  trackingActuationEventsEndpointPath: '/actuation-events',
+  trackingEnvironmentalProfileEndpointPath: '/environmental-profile',
+  trackingThresholdsEndpointPath: '/thresholds',
+  trackingActuationRulesEndpointPath: '/actuation-rules',
   equipmentDeviationTrendsEndpointPath: '/deviation-trends',
   equipmentDeviationAlertsEndpointPath: '/deviation-alerts',
   equipmentComplianceEventsEndpointPath: '/compliance-events',

@@ -39,7 +39,7 @@
             <mat-label>{{ 'dashboard.overview.parameter' | translate }}</mat-label>
             <mat-select [value]="store.activeSeries()?.key" [disabled]="!store.series().length"
               (selectionChange)="store.selectedSeriesKey.set($event.value)">
-              @for (series of store.series(); track series.key) { <mat-option [value]="series.key">{{ series.parameter }} ({{ series.unit }})</mat-option> }
+              @for (series of store.series(); track series.key) { <mat-option [value]="series.key">{{ 'tracking.metrics.' + series.parameter | translate }} ({{ series.unit }})</mat-option> }
             </mat-select>
           </mat-form-field>
         </div>
@@ -48,9 +48,9 @@
         @else if (store.latestReading(); as latest) {
           <div class="latest-reading"><div><span>{{ 'dashboard.overview.latest' | translate }}</span>
             <strong>{{ latest.value | number:'1.0-2' }} <small>{{ latest.unit }}</small></strong></div>
-            <time [attr.datetime]="latest.timestamp">{{ formatDate(latest.timestamp) }}</time></div>
+            <time [attr.datetime]="latest.measuredAt">{{ formatDate(latest.measuredAt) }}</time></div>
           <div class="chart-wrapper"><canvas baseChart type="line" [data]="chartData()" [options]="chartOptions()"
-            role="img" [attr.aria-label]="('dashboard.overview.telemetry' | translate) + ': ' + store.activeSeries()?.parameter"
+            role="img" [attr.aria-label]="('dashboard.overview.telemetry' | translate) + ': ' + ('tracking.metrics.' + store.activeSeries()?.parameter | translate)"
             aria-describedby="telemetry-summary"></canvas></div>
           <p id="telemetry-summary" class="chart-summary">
             {{ 'dashboard.overview.reading-summary' | translate:{ count: store.readings().length, min: (store.readingRange()?.min | number:'1.0-2'), max: (store.readingRange()?.max | number:'1.0-2'), unit: latest.unit } }}
