@@ -1,5 +1,5 @@
 import { Component, DestroyRef, computed, effect, inject, signal, viewChild } from '@angular/core';
-import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
+import { NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { filter, map } from 'rxjs';
@@ -47,6 +47,7 @@ interface NavigationOption {
   providers: [LaboratoryStore, EquipmentStore, BatchStore, CaStore, RaStore, TrackingStore, SubscriptionStore],
   imports: [
     RouterOutlet,
+    RouterLink,
     TranslateModule,
     MatToolbarModule,
     MatSidenavModule,

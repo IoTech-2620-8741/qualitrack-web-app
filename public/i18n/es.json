@@ -236,6 +236,10 @@
     "DECREASING": "En Disminución",
     "STABLE": "Estable"
   },
+  "brand": {
+    "go-home": "Ir al inicio",
+    "go-dashboard": "Ir al panel de control"
+  },
   "nav": {
     "dashboard": "Panel de control",
     "batches": "Productos y lotes",

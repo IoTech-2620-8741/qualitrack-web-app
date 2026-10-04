@@ -236,6 +236,10 @@
     "DECREASING": "Decreasing",
     "STABLE": "Stable"
   },
+  "brand": {
+    "go-home": "Go to the home page",
+    "go-dashboard": "Go to the dashboard"
+  },
   "nav": {
     "dashboard": "Dashboard",
     "batches": "Products & Batches",
