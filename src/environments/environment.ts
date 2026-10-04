@@ -44,6 +44,12 @@ export const environment = {
   containerMonitorsEndpointPath: '/container-monitors',
   // Records of an equipment, under /laboratories/{laboratoryId}/equipments/{equipmentId}
   equipmentBpmConfigEndpointPath: '/bpm-configs',
+  equipmentDeviationTrendsEndpointPath: '/deviation-trends',
+  equipmentDeviationAlertsEndpointPath: '/deviation-alerts',
+  equipmentComplianceEventsEndpointPath: '/compliance-events',
+  equipmentAuditLogsEndpointPath: '/audit-logs',
+  // Under /laboratories/{laboratoryId}/environments/{environmentId}/equipments/{equipmentId} (TS86)
+  equipmentLogReportsEndpointPath: '/log-reports',
 
   // Tracking, under .../environments/{environmentId}[/container-monitors/{deviceId} | /devices/{deviceId}]
   trackingTelemetryStatusEndpointPath: '/telemetry-status',
@@ -52,12 +58,6 @@ export const environment = {
   trackingEnvironmentalProfileEndpointPath: '/environmental-profile',
   trackingThresholdsEndpointPath: '/thresholds',
   trackingActuationRulesEndpointPath: '/actuation-rules',
-  equipmentDeviationTrendsEndpointPath: '/deviation-trends',
-  equipmentDeviationAlertsEndpointPath: '/deviation-alerts',
-  equipmentComplianceEventsEndpointPath: '/compliance-events',
-  equipmentAuditLogsEndpointPath: '/audit-logs',
-  // Under /laboratories/{laboratoryId}/environments/{environmentId}/equipments/{equipmentId} (TS86)
-  equipmentLogReportsEndpointPath: '/log-reports',
 
   // Product Batch, under /laboratories/{laboratoryId}/environments/{environmentId}
   productsEndpointPath: '/products',
