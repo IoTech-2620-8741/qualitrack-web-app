@@ -18,6 +18,9 @@ import { RaStore } from '../../../application/ra.store';
 import { IamStore } from '../../../../iam/application/iam.store';
 import { BatchStore } from '../../../../batch/application/batch.store';
 import { EquipmentStore } from '../../../../equipment/application/equipment.store';
+import { EnvironmentStore } from '../../../../laboratory/application/environment.store';
+import { localIsoDate } from '../../../../shared/presentation/utils/local-date';
+import { ALL_ENVIRONMENTS } from '../../../domain/model/indicator-period';
 
 /**
  * Component responsible for providing a user interface to request operational reports.
@@ -29,9 +32,10 @@ import { EquipmentStore } from '../../../../equipment/application/equipment.stor
  * request and file download.
  *
  * Supported report operations:
- * - Production batch report generation
- * - Regulatory compliance report generation
- * - Equipment log export
+ * - Traceability report of a batch (US96)
+ * - Environmental report of a period, of the laboratory or of one environment (US95)
+ * - Inventory report of the laboratory or of one environment (US97)
+ * - Maintenance and operation log of an equipment (US98)
  */
 @Component({
   selector: 'app-report-generator',
@@ -58,6 +62,8 @@ import { EquipmentStore } from '../../../../equipment/application/equipment.stor
 export class ReportGeneratorComponent implements OnInit {
   protected readonly batchStore = inject(BatchStore);
   protected readonly equipmentStore = inject(EquipmentStore);
+  protected readonly environments = inject(EnvironmentStore);
+  protected readonly ALL_ENVIRONMENTS = ALL_ENVIRONMENTS;
 
   /** Equipment located in an environment: its log report belongs to that environment (TS86). */
   protected readonly locatedEquipment = computed(() =>
@@ -67,6 +73,7 @@ export class ReportGeneratorComponent implements OnInit {
     this.store.clearMessages();
     this.reloadBatches();
     this.reloadEquipment();
+    if (!this.environments.loaded()) void this.environments.loadEnvironments();
   }
 
   protected reloadBatches(): void {
@@ -106,28 +113,33 @@ export class ReportGeneratorComponent implements OnInit {
    */
   protected batchForm: {
     batchId: number | null;
-    includeTelemetry: boolean;
     includeDeviations: boolean;
     format: 'PDF' | 'CSV';
   } = {
     batchId: null,
-    includeTelemetry: false,
     includeDeviations: true,
     format: 'PDF',
   };
 
   /**
-   * Form state for generating regulatory compliance reports.
+   * Form state for the environmental report: every environment ({@link ALL_ENVIRONMENTS}) or one, and whole calendar days.
    */
   protected complianceForm: {
+    environmentId: number;
     startDate: Date | null;
     endDate: Date | null;
     format: 'PDF' | 'CSV';
   } = {
+    environmentId: ALL_ENVIRONMENTS,
     startDate: null,
     endDate: null,
     format: 'PDF',
   };
+
+  /**
+   * Form state for the inventory report: every environment ({@link ALL_ENVIRONMENTS}) or one.
+   */
+  protected inventoryForm: { environmentId: number; format: 'PDF' | 'CSV' } = { environmentId: ALL_ENVIRONMENTS, format: 'PDF' };
 
   /**
    * Form state for exporting equipment maintenance and operational logs.
@@ -171,26 +183,38 @@ export class ReportGeneratorComponent implements OnInit {
 
     this.store.generateBatchReport({
       batchId: this.batchForm.batchId,
-      includeTelemetry: this.batchForm.includeTelemetry,
       includeDeviations: this.batchForm.includeDeviations,
       format: this.batchForm.format,
     });
   }
 
   /**
-   * Dispatches the command to generate a regulatory compliance report.
+   * Dispatches the command to generate the environmental report of the selected calendar days (US95).
    *
    * @remarks
-   * The command uses `laboratoryId`, matching the domain model and backend API contract.
+   * The days are sent in the browser time zone; {@link Date.toISOString} would move evening dates to the next day.
    */
   protected onGenerateComplianceReport(): void {
-    if (!this.complianceForm.startDate || !this.complianceForm.endDate) return;
+    if (!this.complianceForm.startDate || !this.complianceForm.endDate || this.store.isLoading()) return;
 
     this.store.generateComplianceReport({
       laboratoryId: this.currentLaboratoryId,
-      startDate: this.complianceForm.startDate.toISOString(),
-      endDate: this.complianceForm.endDate.toISOString(),
+      environmentId: this.complianceForm.environmentId || null,
+      startDate: localIsoDate(this.complianceForm.startDate),
+      endDate: localIsoDate(this.complianceForm.endDate),
       format: this.complianceForm.format,
+    });
+  }
+
+  /**
+   * Dispatches the command to generate the inventory report (US97).
+   */
+  protected onGenerateInventoryReport(): void {
+    if (this.store.isLoading()) return;
+    this.store.generateInventoryReport({
+      laboratoryId: this.currentLaboratoryId,
+      environmentId: this.inventoryForm.environmentId || null,
+      format: this.inventoryForm.format,
     });
   }
 
@@ -217,8 +241,8 @@ export class ReportGeneratorComponent implements OnInit {
       laboratoryId: this.currentLaboratoryId,
       environmentId: equipment.environmentId,
       equipmentId: this.equipmentForm.equipmentId,
-      startDate: this.equipmentForm.startDate.toISOString(),
-      endDate: this.equipmentForm.endDate.toISOString(),
+      startDate: localIsoDate(this.equipmentForm.startDate),
+      endDate: localIsoDate(this.equipmentForm.endDate),
       format: this.equipmentForm.format,
     });
   }

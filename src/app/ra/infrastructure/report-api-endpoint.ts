@@ -8,6 +8,8 @@ import {
   GenerateComplianceReportBody,
   ExportEquipmentLogRequest,
   ExportEquipmentLogBody,
+  GenerateInventoryReportRequest,
+  GenerateInventoryReportBody,
 } from './report.request';
 
 const batchesEndpointUrl = `${environment.serverBasePath}${environment.batchEndpointPath}`;
@@ -28,7 +30,6 @@ export class ReportApiEndpoint {
 
   generateBatchReport(request: GenerateBatchReportRequest): Observable<Blob> {
     const body: GenerateBatchReportBody = {
-      includeTelemetry: request.includeTelemetry,
       includeDeviations: request.includeDeviations,
       format: request.format,
     };
@@ -39,6 +40,7 @@ export class ReportApiEndpoint {
 
   generateComplianceReport(request: GenerateComplianceReportRequest): Observable<Blob> {
     const body: GenerateComplianceReportBody = {
+      environmentId: request.environmentId,
       startDate: request.startDate,
       endDate: request.endDate,
       format: request.format,
@@ -46,6 +48,14 @@ export class ReportApiEndpoint {
     return this.createAndDownload(
       `${laboratoriesEndpointUrl}/${request.laboratoryId}${environment.raComplianceReportsEndpointPath}`, body,
       'report-generator.errors.compliance');
+  }
+
+  /** Generates the inventory report and downloads it (US97, TS85). */
+  generateInventoryReport(request: GenerateInventoryReportRequest): Observable<Blob> {
+    const body: GenerateInventoryReportBody = { environmentId: request.environmentId, format: request.format };
+    return this.createAndDownload(
+      `${laboratoriesEndpointUrl}/${request.laboratoryId}${environment.raInventoryReportsEndpointPath}`, body,
+      'report-generator.errors.inventory');
   }
 
   exportEquipmentLog(request: ExportEquipmentLogRequest): Observable<Blob> {

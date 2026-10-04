@@ -114,7 +114,6 @@
     "loading-data": "Loading data…",
     "load-error": "The data could not be loaded.",
     "system": "System",
-    "batch-telemetry-unavailable": "Batch telemetry requires an equipment association that is not available yet.",
     "no-status": "No equipment status has been recorded.",
     "no-plans": "No subscription plans are available yet.",
     "subscription-paused-title": "Laboratory access paused",
@@ -265,8 +264,8 @@
     "alert-history": "Alert History",
     "notification-preferences": "Notification Preferences",
     "reports": "Reports & KPIs",
-    "kpi-dashboard": "KPI Dashboard",
-    "deviation-trends": "Deviation Trends",
+    "kpi-dashboard": "Environmental Summary",
+    "deviation-trends": "Deviation Indicators",
     "report-generator": "Report Generator",
     "audit-log": "Audit Log",
     "laboratory": "Laboratory",
@@ -1021,40 +1020,51 @@
       "details": "Details"
     }
   },
-  "deviation-trend": {
-    "title": "Deviation Trends Analysis",
-    "select-equipment": "Select Equipment",
-    "parameter": "Parameter",
-    "equipment": "Equipment",
-    "direction": "Trend Direction",
-    "empty": "No deviation trends available for this equipment.",
-    "table": {
-      "timestamp": "Timestamp",
-      "value": "Recorded Value",
-      "min": "Lower Limit",
-      "max": "Upper Limit"
+  "reporting": {
+    "all-environments": "All environments",
+    "no-environments": "Register an environment of the laboratory to calculate its indicators.",
+    "errors": {
+      "load": "The indicators could not be loaded. Please try again."
     },
-    "status": {
-      "deviated": "Deviated",
-      "normal": "Normal"
-    }
-  },
-  "kpi-dashboard": {
-    "title": "Performance & KPI Dashboard",
-    "chart-title": "KPI Performance Trend",
-    "overall-health": "Overall Health Score",
-    "last-updated": "Last updated",
-    "at-risk-params": "At Risk Parameters",
-    "requires-attention": "Requires attention soon",
-    "critical-deviations": "Critical Deviations",
-    "immediate-action": "Immediate action required",
-    "detailed-parameters": "Detailed Parameters",
-    "empty": "No KPI metrics recorded for this laboratory.",
-    "table": {
-      "metric": "Quality Metric",
-      "current": "Current Value",
-      "target": "Target",
-      "recorded": "Recorded At"
+    "period": {
+      "label": "Period",
+      "days-1": "Last 24 hours",
+      "days-7": "Last 7 days",
+      "days-31": "Last 31 days",
+      "range": "Period: {{from}} – {{to}}"
+    },
+    "fields": {
+      "device": "Device",
+      "variable": "Variable",
+      "readings": "Readings",
+      "average": "Average",
+      "minimum": "Minimum",
+      "maximum": "Maximum",
+      "last-reading": "Last reading",
+      "evaluated": "Evaluated readings",
+      "time-in-range": "Time in range",
+      "deviations": "Deviations",
+      "critical": "Critical",
+      "trend": "Trend"
+    },
+    "summary": {
+      "title": "Environmental summary",
+      "subtitle": "Average, minimum and maximum of the readings of each device in the period, calculated from the recorded readings.",
+      "readings-title": "Readings of the period",
+      "no-readings": "There are no readings in the period, so no values are calculated.",
+      "formula": "Only numeric readings are summarized; the average is rounded to two decimals.",
+      "records-title": "Laboratory records",
+      "records-note": "Current counts of the records of the laboratory; they do not depend on the period or the environment.",
+      "no-records": "The laboratory has no equipment or batches recorded yet."
+    },
+    "deviations": {
+      "title": "Deviation indicators",
+      "subtitle": "Time in range and deviations of each variable of the environment in the period, calculated from the condition of the readings.",
+      "not-enough": "Not enough readings",
+      "formula": "Each evaluated reading keeps its condition until the next one; the time in range is the time in normal condition over the time between the first and the last evaluated reading. A deviation is a reading whose condition is worse than the previous one; it is critical when it enters the critical condition. Readings of variables without thresholds are not evaluated.",
+      "chart": "Readings of the period",
+      "unevaluated": "Not evaluated",
+      "empty": "There are no numeric readings of this environment in the period, so no indicators are calculated."
     }
   },
   "report-generator": {
@@ -1069,29 +1079,44 @@
       "invalid-request": "The report parameters are invalid. Check the selected record and dates.",
       "batch": "The batch report could not be generated. Try again.",
       "compliance": "The compliance report could not be generated. Try again.",
-      "equipment": "The equipment log could not be exported. Try again."
+      "equipment": "The equipment log could not be exported. Try again.",
+      "inventory": "The inventory report could not be generated. Try again."
     },
     "batch": {
       "select-label": "Batch",
       "empty": "No batches available",
       "load-error": "The batch list could not be loaded.",
       "title": "Batch Report",
-      "desc": "Complete quality and traceability document.",
-      "id-label": "Target Batch ID",
-      "include-telemetry": "Include telemetry logs",
-      "include-deviations": "Include deviation alerts"
+      "desc": "Materials and lots, equipment, staff, container and quality decision of the batch.",
+      "include-deviations": "Include deviation alerts",
+      "scope": "Environmental conditions are part of the environmental report of the period."
     },
     "compliance": {
-      "title": "Compliance Report",
-      "desc": "Periodic laboratory performance summary."
+      "title": "Environmental report",
+      "desc": "Readings, deviations, alerts and automatic actions of each environment in the selected days."
     },
     "equipment": {
       "title": "Equipment Log Export",
       "select-label": "Equipment",
       "empty": "No equipment located in an environment",
       "load-error": "The equipment list could not be loaded.",
-      "desc": "Export technical and maintenance history.",
-      "id-label": "Target Equipment ID"
+      "desc": "Export technical and maintenance history."
+    },
+    "start-date": "Start date",
+    "end-date": "End date",
+    "formats": {
+      "pdf": "PDF document (.pdf)",
+      "csv": "Data export (.csv)"
+    },
+    "success": {
+      "batch": "The batch report was downloaded.",
+      "compliance": "The environmental report was downloaded.",
+      "inventory": "The inventory report was downloaded.",
+      "equipment": "The equipment log was downloaded."
+    },
+    "inventory": {
+      "title": "Inventory report",
+      "desc": "Raw materials, lots, quantities and expiration dates of the laboratory or of one environment."
     }
   },
   "page-not-found": {
