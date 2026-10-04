@@ -6,7 +6,7 @@ import { DeviationTrend } from '../domain/model/deviation-trend.entity';
 import { DeviationTrendResource, DeviationTrendsResponse } from './deviation-trend-response';
 import { DeviationTrendAssembler } from './deviation-trend-assembler';
 
-const equipmentsEndpointUrl = `${environment.serverBasePath}${environment.equipmentEndpointPath}`;
+const laboratoriesEndpointUrl = `${environment.serverBasePath}${environment.laboratoryLabsEndpointPath}`;
 
 export class DeviationTrendApiEndpoint extends BaseApiEndpoint<
   DeviationTrend,
@@ -15,14 +15,14 @@ export class DeviationTrendApiEndpoint extends BaseApiEndpoint<
   DeviationTrendAssembler
 > {
   constructor(http: HttpClient) {
-    super(http, equipmentsEndpointUrl, new DeviationTrendAssembler());
+    super(http, laboratoriesEndpointUrl, new DeviationTrendAssembler());
   }
 
-  getTrendsByEquipment(equipmentId: number): Observable<DeviationTrend[]> {
+  getTrendsByEquipment(laboratoryId: number, equipmentId: number): Observable<DeviationTrend[]> {
     return this.http
       .get<
         DeviationTrendResource[]
-      >(`${this.endpointUrl}/${equipmentId}${environment.equipmentDeviationTrendsEndpointPath}`)
+      >(`${this.endpointUrl}/${laboratoryId}${environment.equipmentEndpointPath}/${equipmentId}${environment.equipmentDeviationTrendsEndpointPath}`)
       .pipe(
         map((resources) => this.assembler.toEntitiesFromResources(resources)),
         catchError(

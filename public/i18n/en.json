@@ -1035,7 +1035,7 @@
     "equipment": {
       "title": "Equipment Log Export",
       "select-label": "Equipment",
-      "empty": "No equipment available",
+      "empty": "No equipment located in an environment",
       "load-error": "The equipment list could not be loaded.",
       "desc": "Export technical and maintenance history.",
       "id-label": "Target Equipment ID"

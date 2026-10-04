@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
@@ -59,6 +59,10 @@ export class ReportGeneratorComponent implements OnInit {
   protected readonly batchStore = inject(BatchStore);
   protected readonly equipmentStore = inject(EquipmentStore);
 
+  /** Equipment located in an environment: its log report belongs to that environment (TS86). */
+  protected readonly locatedEquipment = computed(() =>
+    this.equipmentStore.equipmentList().filter(equipment => equipment.environmentId !== null));
+
   ngOnInit(): void {
     this.store.clearMessages();
     this.reloadBatches();
@@ -82,7 +86,7 @@ export class ReportGeneratorComponent implements OnInit {
 
   protected get hasSelectedEquipment(): boolean {
     return !this.equipmentStore.isLoading() && !this.equipmentStore.error() &&
-      this.equipmentStore.equipmentList().some(equipment => equipment.id === this.equipmentForm.equipmentId && equipment.labId === this.currentLaboratoryId);
+      this.locatedEquipment().some(equipment => equipment.id === this.equipmentForm.equipmentId && equipment.labId === this.currentLaboratoryId);
   }
   /**
    * The application store managing the state for the Reporting and Analysis bounded context.
@@ -144,18 +148,6 @@ export class ReportGeneratorComponent implements OnInit {
   };
 
   /**
-   * Retrieves the current user ID from the active session context.
-   *
-   * @returns The numeric user identifier used as the report requester.
-   *
-   * @remarks
-   * This value identifies the authenticated user who requests the report.
-   */
-  private get currentUserId(): number {
-    return this.iamStore.requireUserId();
-  }
-
-  /**
    * Retrieves the current laboratory ID from the active application context.
    *
    * @returns The numeric laboratory identifier used for compliance reports.
@@ -182,7 +174,6 @@ export class ReportGeneratorComponent implements OnInit {
       includeTelemetry: this.batchForm.includeTelemetry,
       includeDeviations: this.batchForm.includeDeviations,
       format: this.batchForm.format,
-      requestedBy: this.currentUserId,
     });
   }
 
@@ -200,7 +191,6 @@ export class ReportGeneratorComponent implements OnInit {
       startDate: this.complianceForm.startDate.toISOString(),
       endDate: this.complianceForm.endDate.toISOString(),
       format: this.complianceForm.format,
-      requestedBy: this.currentUserId,
     });
   }
 
@@ -220,12 +210,16 @@ export class ReportGeneratorComponent implements OnInit {
       return;
     }
 
+    const equipment = this.locatedEquipment().find(item => item.id === this.equipmentForm.equipmentId);
+    if (!equipment?.environmentId) return;
+
     this.store.exportEquipmentLog({
+      laboratoryId: this.currentLaboratoryId,
+      environmentId: equipment.environmentId,
       equipmentId: this.equipmentForm.equipmentId,
       startDate: this.equipmentForm.startDate.toISOString(),
       endDate: this.equipmentForm.endDate.toISOString(),
       format: this.equipmentForm.format,
-      requestedBy: this.currentUserId,
     });
   }
 }
