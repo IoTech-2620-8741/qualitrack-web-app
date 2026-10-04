@@ -27,6 +27,8 @@ export const environment = {
   inventoryRawMaterialsEndpointPath: '/raw-materials',
   inventoryRawMaterialBatchesEndpointPath: '/batches',
   inventoryRawMaterialBatchReviewsEndpointPath: '/reviews',
+  // Container where a lot is stored, under .../raw-materials/{rawMaterialId}/batches/{rawMaterialBatchId}
+  inventoryRawMaterialBatchContainerAssignmentEndpointPath: '/container-assignment',
   inventoryRawMaterialMovementsEndpointPath: '/movements',
   inventoryRawMaterialUsagesEndpointPath: '/usages',
   inventoryEnvironmentRawMaterialBatchesEndpointPath: '/raw-material-batches',

@@ -21,6 +21,8 @@ export class RawMaterialBatch implements BaseEntity {
   readonly usable?: boolean;
   readonly availability?: string;
   readonly expirationStatus?: ExpirationStatus;
+  /** Container monitor of the container where the lot is stored; null while it has none (US43). */
+  readonly containerMonitorId: number | null;
   constructor(params: {
     id: number;
     laboratoryId: number;
@@ -36,6 +38,7 @@ export class RawMaterialBatch implements BaseEntity {
     usable?: boolean;
     availability?: string;
     expirationStatus?: ExpirationStatus;
+    containerMonitorId?: number | null;
   }) {
     this.id = params.id;
     this.laboratoryId = params.laboratoryId;
@@ -51,5 +54,6 @@ export class RawMaterialBatch implements BaseEntity {
     this.usable = params.usable;
     this.availability = params.availability;
     this.expirationStatus = params.expirationStatus;
+    this.containerMonitorId = params.containerMonitorId ?? null;
   }
 }
