@@ -1,93 +1,87 @@
-import { Component, OnInit, Signal, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, DestroyRef, OnInit, Signal, computed, inject } from '@angular/core';
+import { DatePipe, DecimalPipe } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatCardModule } from '@angular/material/card';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatChipsModule } from '@angular/material/chips';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 import { CaStore } from '../../../application/ca.store';
 import { DeviationAlert } from '../../../domain/model/deviation-alert.entity';
-import { IamStore } from '../../../../iam/application/iam.store';
+import { EnvironmentStore } from '../../../../laboratory/application/environment.store';
 
+/**
+ * Detail of a deviation alert (US86): where it originated, which condition produced it, how the incident evolved and
+ * the actions of its container monitor; operators and quality managers attend (US87) and resolve it (US88).
+ */
 @Component({
   selector: 'app-deviation-detail',
   standalone: true,
   imports: [
-    CommonModule,
+    DatePipe,
+    DecimalPipe,
     RouterLink,
     ReactiveFormsModule,
-    MatCardModule,
     MatButtonModule,
-    MatIconModule,
-    MatChipsModule,
-    MatProgressSpinnerModule,
-    MatDividerModule,
     MatFormFieldModule,
+    MatIconModule,
     MatInputModule,
     TranslateModule,
   ],
   templateUrl: './deviation-detail.html',
-  styleUrl: './deviation-detail.css',
+  styleUrl: '../../../../shared/presentation/styles/operations-page.css',
 })
 export class DeviationDetail implements OnInit {
   private readonly route = inject(ActivatedRoute);
+  private readonly destroy = inject(DestroyRef);
   private readonly fb = inject(FormBuilder);
+  private readonly translate = inject(TranslateService);
   protected readonly store = inject(CaStore);
-  protected readonly iamStore = inject(IamStore);
+  protected readonly environments = inject(EnvironmentStore);
 
-  /**
-   * The unique numeric identifier of the alert being viewed, retrieved from the URL.
-   */
-  alertId: number = 0;
+  protected alertId = 0;
+  protected alert!: Signal<DeviationAlert | undefined>;
 
-  /**
-   * Reactive Signal containing the details of the specific deviation alert.
-   */
-  alert!: Signal<DeviationAlert | undefined>;
+  protected readonly resolutionForm = this.fb.nonNullable.group({
+    resolutionNotes: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(500)]],
+  });
 
-  /**
-   * Reactive form group used to capture alert resolution notes.
-   */
-  resolutionForm!: FormGroup;
+  /** Environment of the alert, shown with its code and name. */
+  protected readonly environmentName = computed(() => {
+    const environmentId = this.alert?.()?.environmentId;
+    const environment = this.environments.environments().find((item) => item.id === environmentId);
+    return environment ? `${environment.code} · ${environment.name}` : null;
+  });
 
-  /**
-   * Initializes the component by extracting the alert ID from the route,
-   * binding the alert signal, loading the alert details, and creating the resolution form.
-   */
   ngOnInit(): void {
-    const idParam = this.route.snapshot.paramMap.get('id');
-    this.alertId = idParam ? Number(idParam) : 0;
-
-    this.alert = this.store.getAlertById(this.alertId);
-
-    this.resolutionForm = this.fb.group({
-      resolutionNotes: ['', [Validators.required, Validators.minLength(10)]],
-    });
-
-    if (this.alertId) {
+    if (!this.environments.loaded()) void this.environments.loadEnvironments();
+    this.store.loadDevices();
+    this.route.paramMap.pipe(takeUntilDestroyed(this.destroy)).subscribe((params) => {
+      this.alertId = Number(params.get('id')) || 0;
+      this.alert = this.store.getAlertById(this.alertId);
+      this.resolutionForm.reset();
+      this.store.clearError();
       this.store.loadAlertById(this.alertId);
-    }
+    });
   }
 
-  /**
-   * Resolves the current deviation alert.
-   *
-   * @remarks
-   * Sends the resolution notes to the CA store; the platform records the authenticated user as the one who
-   * resolved the alert.
-   */
-  resolveAlert(): void {
-    if (!this.alertId || this.resolutionForm.invalid) return;
+  /** Translated name of a monitored variable, or the stored name when it is not a known metric. */
+  protected variable(parameterName: string): string {
+    const key = 'tracking.metrics.' + parameterName;
+    const label = this.translate.instant(key);
+    return label === key ? parameterName : label;
+  }
 
-    this.store.resolveAlert(this.alertId, {
-      resolutionNotes: this.resolutionForm.value.resolutionNotes,
-    });
+  protected acknowledge(): void {
+    this.store.acknowledgeAlert(this.alertId);
+  }
+
+  protected resolve(): void {
+    this.resolutionForm.markAllAsTouched();
+    if (this.resolutionForm.invalid) return;
+    this.store.resolveAlert(this.alertId, { resolutionNotes: this.resolutionForm.getRawValue().resolutionNotes.trim() });
   }
 }

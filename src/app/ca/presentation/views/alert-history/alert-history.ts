@@ -1,125 +1,65 @@
-import { Component, OnInit, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { Router, RouterLink } from '@angular/router';
-import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { Component, OnInit, inject, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
-
-import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatChipsModule } from '@angular/material/chips';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
-import { MatInputModule } from '@angular/material/input';
 
 import { CaStore } from '../../../application/ca.store';
 import { AlertSeverity, AlertStatus } from '../../../domain/model/deviation-alert.entity';
+import { EnvironmentStore } from '../../../../laboratory/application/environment.store';
+import { EnvironmentSelector } from '../../../../laboratory/presentation/components/environment-selector/environment-selector';
+import { AlertTable } from '../../components/alert-table/alert-table';
 
+/**
+ * Every alert of an environment, including resolved ones, filtered by status and severity on the server (TS74).
+ */
 @Component({
   selector: 'app-alert-history',
   standalone: true,
-  imports: [
-    CommonModule,
-    RouterLink,
-    ReactiveFormsModule,
-    TranslateModule,
-    MatTableModule,
-    MatButtonModule,
-    MatIconModule,
-    MatChipsModule,
-    MatProgressSpinnerModule,
-    MatTooltipModule,
-    MatFormFieldModule,
-    MatSelectModule,
-    MatInputModule,
-  ],
+  imports: [FormsModule, RouterLink, TranslateModule, MatButtonModule, MatFormFieldModule, MatIconModule,
+    MatSelectModule, EnvironmentSelector, AlertTable],
   templateUrl: './alert-history.html',
-  styleUrl: './alert-history.css',
+  styleUrl: '../../../../shared/presentation/styles/operations-page.css',
 })
 export class AlertHistory implements OnInit {
   protected readonly store = inject(CaStore);
+  protected readonly environments = inject(EnvironmentStore);
+  protected readonly environmentId = signal<number | null>(null);
+  protected readonly statuses: AlertStatus[] = ['UNRESOLVED', 'ACKNOWLEDGED', 'RESOLVED'];
+  protected readonly severities: AlertSeverity[] = ['LOW', 'WARNING', 'CRITICAL'];
+  protected status: AlertStatus | '' = '';
+  protected severity: AlertSeverity | '' = '';
 
-  private readonly router = inject(Router);
-  private readonly fb = inject(FormBuilder);
-
-  protected filterForm!: FormGroup;
-
-  protected readonly displayedColumns: string[] = [
-    'timestamp',
-    'equipmentId',
-    'parameter',
-    'severity',
-    'status',
-    'actions',
-  ];
-
-  constructor() {
-    this.initFilterForm();
-  }
-
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     this.store.clearError();
+    this.store.clearAlerts();
+    this.store.loadDevices();
+    if (!this.environments.loaded()) await this.environments.loadEnvironments();
+    const preferred = this.environments.preferredEnvironment(undefined, 'tracking');
+    if (preferred) this.changeEnvironment(preferred.id);
   }
 
-  protected applyFilters(): void {
-    const rawFilters = this.filterForm.value;
+  protected changeEnvironment(environmentId: number): void {
+    this.environments.rememberEnvironment(environmentId, 'tracking');
+    this.environmentId.set(environmentId);
+    this.search();
+  }
 
-    const cleanFilters: {
-      equipmentId?: number;
-      batchId?: number;
-      status?: AlertStatus;
-      severity?: AlertSeverity;
-    } = {};
-
-    if (rawFilters.equipmentId) {
-      cleanFilters.equipmentId = Number(rawFilters.equipmentId);
-    }
-
-    if (rawFilters.batchId) {
-      cleanFilters.batchId = Number(rawFilters.batchId);
-    }
-
-    if (!cleanFilters.equipmentId && !cleanFilters.batchId) {
-      this.store.clearAlerts();
-      this.store.setError('Enter an equipment ID or batch ID to search alerts.');
-      return;
-    }
-
-    if (rawFilters.status) {
-      cleanFilters.status = rawFilters.status as AlertStatus;
-    }
-
-    if (rawFilters.severity) {
-      cleanFilters.severity = rawFilters.severity as AlertSeverity;
-    }
-
-    this.store.loadAlerts(cleanFilters);
+  protected search(): void {
+    const environmentId = this.environmentId();
+    if (environmentId === null) return;
+    this.store.loadEnvironmentAlerts(environmentId, {
+      status: this.status || undefined,
+      severity: this.severity || undefined,
+    });
   }
 
   protected clearFilters(): void {
-    this.filterForm.reset({
-      status: '',
-      severity: '',
-      equipmentId: '',
-      batchId: '',
-    });
-
-    this.store.clearError();
-    this.store.clearAlerts();
-  }
-
-  protected viewDetails(alertId: number): void {
-    this.router.navigate(['/alerts/deviation-detail', alertId]).then();
-  }
-
-  private initFilterForm(): void {
-    this.filterForm = this.fb.group({
-      status: [''],
-      severity: [''],
-      equipmentId: [''],
-      batchId: [''],
-    });
+    this.status = '';
+    this.severity = '';
+    this.search();
   }
 }
