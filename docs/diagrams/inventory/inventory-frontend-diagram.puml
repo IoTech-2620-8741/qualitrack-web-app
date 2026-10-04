@@ -17,15 +17,30 @@ package "iam.application" {
   class IamStore {
     +requireLaboratoryId(): number
     +canManageQuality: Signal<boolean>
+    +canOperate: Signal<boolean>
   }
 }
 
 package "laboratory" {
+  class LaboratoryApi {
+    +getEnvironment(laboratoryId, environmentId)
+  }
   class EnvironmentStore {
     +preferredEnvironment(usage?, scope?): Environment
     +rememberEnvironment(id, scope?): void
   }
   class EnvironmentSelector <<component>>
+}
+
+package "equipment" {
+  class EquipmentApi {
+    +getEquipment(labId)
+  }
+  class Equipment {
+    +deviceType: IotDeviceType | null
+    +environmentId: number | null
+    +status: EquipmentStatus
+  }
 }
 
 package "batch.infrastructure" {
@@ -62,6 +77,7 @@ package "inventory.domain.model" {
     +expiresOn: string
     +status: RawMaterialBatchStatus
     +expirationStatus?: ExpirationStatus
+    +containerMonitorId: number | null
   }
   class InventoryMovement
   class LegacyMaterial
@@ -83,6 +99,7 @@ package "inventory.infrastructure" {
     +environmentReceipts(lab, environmentId, expirationStatus?, withinDays?)
     +receive(lab, environmentId, material, request)
     +review(lab, environmentId, material, receipt, status, reason)
+    +assignContainer(lab, environmentId, material, receipt, containerMonitorId)
     +movements(lab, environmentId, material)
     +legacy(lab)
     +import(lab, environmentId, legacyId)
@@ -113,6 +130,7 @@ InventoryMovementAssembler ..|> BaseAssembler
 note right of RawMaterialBatchApiEndpoint
   /laboratories/{laboratoryId}/environments/{environmentId}
   /raw-materials/{rawMaterialId}/batches[?usable=true]
+  PUT .../batches/{rawMaterialBatchId}/container-assignment
   /raw-material-batches?expirationStatus=NEAR_EXPIRY
 end note
 
@@ -127,12 +145,19 @@ package "inventory.application" {
     +usages: Signal<RawMaterialUsage[]>
     +affectedBatches: Signal<number[]>
     +canReview: Signal<boolean>
+    +canOperate: Signal<boolean>
+    +containers: Signal<Equipment[]>
+    +environmentUsage: Signal<EnvironmentUsage | null>
+    +availableContainers: Signal<Equipment[]>
+    +storesInContainers: Signal<boolean>
     +load(environmentId, id?): Promise<boolean>
     +loadLowStock()
     +loadNearExpiry(withinDays?)
     +saveMaterial(command, id?)
     +receive(material, command)
     +review(receipt, command)
+    +assignContainer(receipt, containerMonitorId)
+    +containerName(containerMonitorId): string | null
     +loadLegacy()
     +importMaterial(legacyId)
   }
@@ -142,6 +167,9 @@ package "inventory.application" {
 InventoryStore --> InventoryApi
 InventoryStore --> BatchApi
 InventoryStore --> IamStore
+InventoryStore --> EquipmentApi : container monitors
+InventoryStore --> LaboratoryApi : environment usage
+InventoryStore ..> Equipment
 
 package "inventory.presentation" {
   class InventoryHome
@@ -159,6 +187,11 @@ InventoryDetail --> InventoryStore
 RegisterMaterial --> InventoryStore
 InventoryCatalogue ..> OperationsPage
 InventoryDetail ..> OperationsPage
+note right of InventoryDetail
+  Lots tab: container of each lot, "Store in container" for operators
+  when the environment is RAW_MATERIAL_STORAGE (US43, US44) and
+  "View conditions" -> /tracking/history?environmentId=&deviceId=.
+end note
 
 note bottom of InventoryRoutes
   /inventory -> preferred raw material storage environment

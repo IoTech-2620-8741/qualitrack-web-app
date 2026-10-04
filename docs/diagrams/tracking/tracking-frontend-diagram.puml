@@ -265,6 +265,7 @@ package "tracking" {
       #chartMetric: Signal<MonitoredMetric | null>
       #chartData: Signal<ChartData>
       #chartOptions: Signal<ChartOptions>
+      #changeEnvironment(environmentId, preferredDeviceId?): Promise<void>
       #changeDevice(): void
     }
 
@@ -378,6 +379,10 @@ end note
 note bottom of EnvironmentalProfiles
   Quality managers and administrators edit thresholds and rules
   (US56-US59); the other roles see them read-only.
+end note
+note bottom of TelemetryHistory
+  /tracking/history?environmentId=&deviceId= opens the history of the
+  container where a raw material lot or product batch is stored.
 end note
 note bottom of EnvironmentalMonitoring
   Current conditions of the last 24 hours per device: latest reading per
