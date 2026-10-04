@@ -92,8 +92,8 @@ export class Layout {
       icon: 'inventory',
       link: '/batches',
       children: [
-        { label: 'product-catalog.title', link: '/batches' },
-        { label: 'batches.title', link: '/batches/batch-list' },
+        { label: 'nav.products', link: '/batches' },
+        { label: 'nav.batch-list', link: '/batches/batch-list' },
       ],
     },
     {
@@ -102,8 +102,8 @@ export class Layout {
       link: '/equipments',
       children: [
         { label: 'nav.equipment-list', link: '/equipments/equipment-list' },
-        { label: 'equipment-list.add-button', link: '/equipments/register-equipment', qualityOnly: true },
-        { label: 'device-form.add-button', link: '/equipments/register-device', qualityOnly: true },
+        { label: 'nav.register-equipment', link: '/equipments/register-equipment', qualityOnly: true },
+        { label: 'nav.register-device', link: '/equipments/register-device', qualityOnly: true },
       ],
     },
     {
@@ -111,9 +111,9 @@ export class Layout {
       icon: 'warning',
       link: '/alerts',
       children: [
-        { label: 'ca-alerts.subtitle', link: '/alerts/alert-dashboard' },
-        { label: 'ca-alerts.history.title', link: '/alerts/alert-history' },
-        { label: 'ca-alerts.settings.title', link: '/alerts/notification-settings' },
+        { label: 'nav.alert-dashboard', link: '/alerts/alert-dashboard' },
+        { label: 'nav.alert-history', link: '/alerts/alert-history' },
+        { label: 'nav.notification-preferences', link: '/alerts/notification-settings' },
       ],
     },
     {
@@ -121,10 +121,10 @@ export class Layout {
       icon: 'description',
       link: '/reports',
       children: [
-        { label: 'kpi-dashboard.title', link: '/reports/kpi-dashboard' },
-        { label: 'deviation-trend.title', link: '/reports/deviation-trends' },
-        { label: 'report-generator.title', link: '/reports/report-generator' },
-        { label: 'audit-log.title', link: '/reports/audit-log' },
+        { label: 'nav.kpi-dashboard', link: '/reports/kpi-dashboard' },
+        { label: 'nav.deviation-trends', link: '/reports/deviation-trends' },
+        { label: 'nav.report-generator', link: '/reports/report-generator' },
+        { label: 'nav.audit-log', link: '/reports/audit-log' },
       ],
     },
     {
@@ -132,18 +132,18 @@ export class Layout {
       icon: 'science',
       link: '/laboratories',
       children: [
-        { label: 'lab-profile.title', link: '/laboratories/lab-profile' },
-        { label: 'environments.title', link: '/laboratories/environments' },
-        { label: 'staff-list.title', link: '/laboratories/staff-list' },
-        { label: 'staff-form.title', link: '/laboratories/staff-form', qualityOnly: true },
+        { label: 'nav.lab-profile', link: '/laboratories/lab-profile' },
+        { label: 'nav.environments', link: '/laboratories/environments' },
+        { label: 'nav.staff-list', link: '/laboratories/staff-list' },
+        { label: 'nav.register-staff', link: '/laboratories/staff-form', qualityOnly: true },
       ],
     },
     {
-      label: 'inventory.title',
+      label: 'nav.inventory',
       icon: 'inventory_2',
       link: '/inventory',
       children: [
-        { label: 'inventory.catalogue', link: '/inventory' },
+        { label: 'nav.raw-material-catalog', link: '/inventory' },
       ],
     },
     {
@@ -151,9 +151,9 @@ export class Layout {
       icon: 'sensors',
       link: '/tracking',
       children: [
-        { label: 'tracking.dashboard.title', link: '/tracking/dashboard' },
-        { label: 'tracking.history.title', link: '/tracking/history' },
-        { label: 'tracking.analysis.title', link: '/tracking/analysis' },
+        { label: 'nav.tracking-dashboard', link: '/tracking/dashboard' },
+        { label: 'nav.tracking-history', link: '/tracking/history' },
+        { label: 'nav.tracking-analysis', link: '/tracking/analysis' },
       ],
     },
     {
@@ -162,8 +162,8 @@ export class Layout {
       link: '/subscriptions',
       qualityOnly: true,
       children: [
-        { label: 'subscription.billing.title', link: '/subscriptions/billing-summary' },
-        { label: 'subscription.plans.title', link: '/subscriptions/plans' },
+        { label: 'nav.billing-summary', link: '/subscriptions/billing-summary' },
+        { label: 'nav.subscription-plans', link: '/subscriptions/plans' },
       ],
     },
   ];
