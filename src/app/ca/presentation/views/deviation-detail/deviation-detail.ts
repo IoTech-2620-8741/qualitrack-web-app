@@ -58,16 +58,6 @@ export class DeviationDetail implements OnInit {
   resolutionForm!: FormGroup;
 
   /**
-   * Gets the currently authenticated user numeric identifier.
-   *
-   * @remarks
-   * Requires the authenticated identity; no testing identifier is used at runtime.
-   */
-  private get currentUserId(): number {
-    return this.iamStore.requireUserId();
-  }
-
-  /**
    * Initializes the component by extracting the alert ID from the route,
    * binding the alert signal, loading the alert details, and creating the resolution form.
    */
@@ -90,14 +80,13 @@ export class DeviationDetail implements OnInit {
    * Resolves the current deviation alert.
    *
    * @remarks
-   * Sends the current user ID and the resolution notes to the CA store,
-   * which delegates the operation to the backend lifecycle endpoint.
+   * Sends the resolution notes to the CA store; the platform records the authenticated user as the one who
+   * resolved the alert.
    */
   resolveAlert(): void {
     if (!this.alertId || this.resolutionForm.invalid) return;
 
     this.store.resolveAlert(this.alertId, {
-      resolvedBy: this.currentUserId,
       resolutionNotes: this.resolutionForm.value.resolutionNotes,
     });
   }

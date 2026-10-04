@@ -114,7 +114,7 @@ package "batch.infrastructure" {
     +registerStaffParticipation(path, batchId, staffId)
     +getTraceability(path, batchId)
     +getRawMaterialUsages(lab, environmentId, rawMaterialId)
-    +getMaterialHistory(legacyRawMaterialId)
+    +getMaterialHistory(laboratoryId, legacyRawMaterialId)
   }
   interface BatchPath {
     +laboratoryId: number

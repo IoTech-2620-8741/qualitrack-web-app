@@ -26,7 +26,7 @@ export class AuditLogApiEndpoint extends BaseApiEndpoint<
     super(http, apiBaseUrl, new AuditLogAssembler());
   }
 
-  getAuditLog(filters?: {
+  getAuditLog(laboratoryId: number, filters?: {
     equipmentId?: number;
     batchId?: number;
     dateFrom?: string;
@@ -47,7 +47,7 @@ export class AuditLogApiEndpoint extends BaseApiEndpoint<
     }
 
     const endpointUrl = filters.equipmentId
-      ? `${this.endpointUrl}${environment.equipmentEndpointPath}/${filters.equipmentId}${environment.equipmentAuditLogsEndpointPath}`
+      ? `${this.endpointUrl}${environment.laboratoryLabsEndpointPath}/${laboratoryId}${environment.equipmentEndpointPath}/${filters.equipmentId}${environment.equipmentAuditLogsEndpointPath}`
       : `${this.endpointUrl}${environment.batchEndpointPath}/${filters.batchId}${environment.batchAuditLogsEndpointPath}`;
 
     return this.http.get<AuditLogEntryResource[]>(endpointUrl, { params }).pipe(

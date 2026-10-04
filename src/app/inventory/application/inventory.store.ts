@@ -137,7 +137,7 @@ export class InventoryStore {
         const legacyId = this.selected()?.legacyId;
         if (legacyId) {
           try {
-            const history = await firstValueFrom(this.batchApi.getMaterialHistory(legacyId));
+            const history = await firstValueFrom(this.batchApi.getMaterialHistory(this.lab, legacyId));
             if (generation === this.generation) this.legacyHistory.set(history);
           } catch (error) {
             if (generation === this.generation) this.legacyError.set(inventoryError(error));

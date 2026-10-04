@@ -12,8 +12,10 @@
   </button>
   }
 
-  <img src="/qualitrack-logo.png" alt="QualiTrack logo">
-  <span class="toolbar-title">QualiTrack</span>
+  <a class="brand" routerLink="/dashboard" [attr.aria-label]="'brand.go-dashboard' | translate">
+    <img src="/qualitrack-logo.png" alt="">
+    <span class="toolbar-title">QualiTrack</span>
+  </a>
   <span class="spacer"></span>
 
   <div class="toolbar-actions">

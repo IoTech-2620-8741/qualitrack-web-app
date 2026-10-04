@@ -18,11 +18,11 @@ export class ComplianceEventApiEndpoint extends BaseApiEndpoint<
     super(http, apiBaseUrl, new ComplianceEventAssembler());
   }
 
-  getEquipmentEvents(equipmentId: number): Observable<ComplianceEvent[]> {
+  getEquipmentEvents(laboratoryId: number, equipmentId: number): Observable<ComplianceEvent[]> {
     return this.http
       .get<
         ComplianceEventResource[]
-      >(`${this.endpointUrl}${environment.equipmentEndpointPath}/${equipmentId}${environment.equipmentComplianceEventsEndpointPath}`)
+      >(`${this.endpointUrl}${environment.laboratoryLabsEndpointPath}/${laboratoryId}${environment.equipmentEndpointPath}/${equipmentId}${environment.equipmentComplianceEventsEndpointPath}`)
       .pipe(
         map((resources) => this.assembler.toEntitiesFromResources(resources)),
         catchError(

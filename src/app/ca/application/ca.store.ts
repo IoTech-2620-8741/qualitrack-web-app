@@ -7,8 +7,8 @@ import { ComplianceEvent } from '../domain/model/compliance-event.entity';
 import { NotificationPreference } from '../domain/model/notification-preference.entity';
 import { CaApi } from '../infrastructure/ca-api';
 import { UpdateNotificationPreferenceRequest } from '../infrastructure/notification-preference.request';
-import { AcknowledgeAlertRequest } from '../infrastructure/acknowledge-alert.request';
 import { ResolveAlertRequest } from '../infrastructure/resolve-alert.request';
+import { IamStore } from '../../iam/application/iam.store';
 
 /**
  * Application store for managing Compliance and Alerts (CA) state.
@@ -83,6 +83,7 @@ export class CaStore {
   );
 
   private readonly destroyRef = inject(DestroyRef);
+  private readonly iam = inject(IamStore);
   private readonly reloadAlerts = new Subject<void>();
   private readonly reloadAlert = new Subject<void>();
 
@@ -126,7 +127,7 @@ export class CaStore {
     this._errorSignal.set(null);
 
     this.caApi
-      .getAlerts(filters)
+      .getAlerts(this.iam.requireLaboratoryId(), filters)
       .pipe(takeUntil(this.reloadAlerts), takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (alerts) => {
@@ -171,16 +172,15 @@ export class CaStore {
    * Acknowledges a deviation alert and updates local state.
    *
    * @param alertId - The unique numeric identifier of the deviation alert.
-   * @param request - DTO containing the user acknowledging the alert.
    */
-  acknowledgeAlert(alertId: number, request: AcknowledgeAlertRequest): void {
+  acknowledgeAlert(alertId: number): void {
     if (!alertId) return;
 
     this._loadingSignal.set(true);
     this._errorSignal.set(null);
 
     this.caApi
-      .acknowledgeAlert(alertId, request)
+      .acknowledgeAlert(alertId)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (updatedAlert) => {
@@ -198,7 +198,7 @@ export class CaStore {
    * Resolves a deviation alert and updates local state.
    *
    * @param alertId - The unique numeric identifier of the deviation alert.
-   * @param request - DTO containing the user and resolution notes.
+   * @param request - DTO containing the resolution notes.
    */
   resolveAlert(alertId: number, request: ResolveAlertRequest): void {
     if (!alertId) return;
@@ -231,7 +231,7 @@ export class CaStore {
     this._errorSignal.set(null);
 
     this.caApi
-      .getEquipmentComplianceEvents(equipmentId)
+      .getEquipmentComplianceEvents(this.iam.requireLaboratoryId(), equipmentId)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (events) => {

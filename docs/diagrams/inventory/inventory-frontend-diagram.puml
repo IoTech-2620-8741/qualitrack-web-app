@@ -31,7 +31,7 @@ package "laboratory" {
 package "batch.infrastructure" {
   class BatchApi {
     +getRawMaterialUsages(lab, environmentId, rawMaterialId)
-    +getMaterialHistory(legacyRawMaterialId)
+    +getMaterialHistory(laboratoryId, legacyRawMaterialId)
   }
 }
 
