@@ -186,7 +186,7 @@ DashboardStore --> LaboratoryApi
 DashboardStore --> InventoryApi
 DashboardStore --> EquipmentApi
 DashboardStore --> BatchApi
-DashboardStore --> CaApi
+DashboardStore --> CaApi : open alerts of every environment
 DashboardStore --> TrackingApi
 DashboardStore --> SubscriptionApi
 DashboardStore ..> recentPeriod
