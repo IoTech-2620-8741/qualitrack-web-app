@@ -84,8 +84,8 @@ export class BatchApi extends BaseApi {
   }
 
   /** Batches that used a raw material registered before Inventory Management existed. */
-  getMaterialHistory(rawMaterialId: number): Observable<RawMaterialUsage[]> {
-    return this.usageEndpoint.getUsageByMaterial(rawMaterialId);
+  getMaterialHistory(laboratoryId: number, rawMaterialId: number): Observable<RawMaterialUsage[]> {
+    return this.usageEndpoint.getUsageByMaterial(laboratoryId, rawMaterialId);
   }
 
   /** Product batches that consumed lots of an Inventory raw material kept in an environment (TS79). */
