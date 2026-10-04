@@ -31,9 +31,6 @@ package "shared" {
 
     interface BaseResponse
 
-    interface MessageResource {
-      +message: string
-    }
 
     interface BaseAssembler<TEntity, TResource, TResponse> {
       +toEntityFromResource(resource: TResource): TEntity

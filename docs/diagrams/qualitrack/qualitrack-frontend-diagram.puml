@@ -38,7 +38,6 @@ package "qualitrack-frontend" {
       interface BaseResource
       interface BaseResponse
       interface BaseAssembler
-      interface MessageResource
       abstract class BaseApi
       abstract class BaseApiEndpoint
       abstract class ErrorHandlingEnabledBaseType
