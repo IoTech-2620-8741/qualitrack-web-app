@@ -23,6 +23,8 @@ export interface SignUpRequest {
    */
   username: string;
 
+  email: string;
+
   /**
    * The password assigned to the new account.
    */

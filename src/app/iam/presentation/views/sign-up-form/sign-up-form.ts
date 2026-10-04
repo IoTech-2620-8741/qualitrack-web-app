@@ -72,9 +72,13 @@ export class SignUpForm {
         nonNullable: true,
         validators: [Validators.required, Validators.minLength(3)],
       }),
+      email: new FormControl<string>('', {
+        nonNullable: true,
+        validators: [Validators.required, Validators.email, Validators.maxLength(120)],
+      }),
       password: new FormControl<string>('', {
         nonNullable: true,
-        validators: [Validators.required, Validators.minLength(6), this.passwordStrengthValidator],
+        validators: [Validators.required, Validators.minLength(8), Validators.maxLength(72), this.passwordStrengthValidator],
       }),
       confirmPassword: new FormControl<string>('', {
         nonNullable: true,
@@ -107,6 +111,7 @@ export class SignUpForm {
 
     const command: SignUpCommand = {
       username: this.form.controls.username.value,
+      email: this.form.controls.email.value,
       password: this.form.controls.password.value,
       roles: [this.selectedRole],
       laboratoryId: null,
@@ -144,6 +149,20 @@ export class SignUpForm {
   }
 
   /**
+   * Resolves the translation key for e-mail validation errors.
+   *
+   * @returns Translation key for the current e-mail validation error
+   */
+  protected getEmailErrorKey(): string {
+    const control = this.form.controls.email;
+
+    if (control.hasError('required')) return 'iam.sign-up.errors.email-required';
+    if (control.hasError('email') || control.hasError('maxlength')) return 'iam.sign-up.errors.email-invalid';
+
+    return '';
+  }
+
+  /**
    * Resolves the translation key for password validation errors.
    *
    * @returns Translation key for the current password validation error
@@ -152,7 +171,7 @@ export class SignUpForm {
     const control = this.form.controls.password;
 
     if (control.hasError('required')) return 'iam.sign-up.errors.password-required';
-    if (control.hasError('minlength')) return 'iam.sign-up.errors.password-minlength';
+    if (control.hasError('minlength') || control.hasError('maxlength')) return 'iam.sign-up.errors.password-minlength';
     if (control.hasError('passwordStrength')) return 'iam.sign-up.errors.password-strength';
 
     return '';
