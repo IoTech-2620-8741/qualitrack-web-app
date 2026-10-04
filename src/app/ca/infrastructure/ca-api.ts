@@ -11,7 +11,6 @@ import { AlertSeverity, AlertStatus, DeviationAlert } from '../domain/model/devi
 import { ComplianceEvent } from '../domain/model/compliance-event.entity';
 import { NotificationPreference } from '../domain/model/notification-preference.entity';
 import { UpdateNotificationPreferenceRequest } from './notification-preference.request';
-import { AcknowledgeAlertRequest } from './acknowledge-alert.request';
 import { ResolveAlertRequest } from './resolve-alert.request';
 
 /**
@@ -84,13 +83,13 @@ export class CaApi extends BaseApi {
    * @remarks
    * Fetches alerts from the remote manufacturing/quality monitoring system.
    */
-  getAlerts(filters?: {
+  getAlerts(laboratoryId: number, filters?: {
     equipmentId?: number;
     batchId?: number;
     status?: AlertStatus;
     severity?: AlertSeverity;
   }): Observable<DeviationAlert[]> {
-    return this._alertEndpoint.getAlerts(filters);
+    return this._alertEndpoint.getAlerts(laboratoryId, filters);
   }
 
   /**
@@ -107,21 +106,20 @@ export class CaApi extends BaseApi {
    * Acknowledges a deviation alert.
    *
    * @param alertId - The unique numeric identifier of the deviation alert
-   * @param request - DTO containing the user acknowledging the alert
    * @returns Observable stream emitting the updated DeviationAlert domain entity
    *
    * @remarks
    * Delegates the acknowledgement operation to the alert endpoint client.
    */
-  acknowledgeAlert(alertId: number, request: AcknowledgeAlertRequest): Observable<DeviationAlert> {
-    return this._alertEndpoint.acknowledgeAlert(alertId, request);
+  acknowledgeAlert(alertId: number): Observable<DeviationAlert> {
+    return this._alertEndpoint.acknowledgeAlert(alertId);
   }
 
   /**
    * Resolves a deviation alert.
    *
    * @param alertId - The unique numeric identifier of the deviation alert
-   * @param request - DTO containing the user and resolution notes
+   * @param request - DTO containing the resolution notes
    * @returns Observable stream emitting the updated DeviationAlert domain entity
    *
    * @remarks
@@ -140,8 +138,8 @@ export class CaApi extends BaseApi {
    * @remarks
    * Accesses the audit trail to retrieve events linked to the provided entity identity.
    */
-  getEquipmentComplianceEvents(equipmentId: number): Observable<ComplianceEvent[]> {
-    return this._complianceEventEndpoint.getEquipmentEvents(equipmentId);
+  getEquipmentComplianceEvents(laboratoryId: number, equipmentId: number): Observable<ComplianceEvent[]> {
+    return this._complianceEventEndpoint.getEquipmentEvents(laboratoryId, equipmentId);
   }
 
   getBatchComplianceEvents(batchId: number): Observable<ComplianceEvent[]> {
