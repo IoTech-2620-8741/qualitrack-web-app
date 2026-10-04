@@ -10,7 +10,6 @@ import { SelectPlanCommand } from '../domain/model/select-plan.command';
 import { CreateCheckoutSessionCommand } from '../domain/model/create-checkout-session.command';
 import { CreateCheckoutSessionRequest } from '../infrastructure/checkout.request';
 import { CheckoutSessionResource } from '../infrastructure/checkout-response';
-import { UpdateSubscriptionStatusRequest } from '../infrastructure/update-subscription-status.request';
 
 /**
  * Signal-based application store for the Subscription bounded context.
@@ -251,15 +250,11 @@ export class SubscriptionStore {
     });
   }
 
-  cancelSubscription(subscriptionId: number, cancelledBy: number): void {
+  /** Cancels the subscription; the platform records the authenticated user as the one who cancelled it. */
+  cancelSubscription(subscriptionId: number): void {
     this.startRequest();
 
-    const request: UpdateSubscriptionStatusRequest = {
-      status: 'CANCELLED',
-      cancelledBy,
-    };
-
-    this.api.cancelSubscription(subscriptionId, request).subscribe({
+    this.api.cancelSubscription(subscriptionId).subscribe({
       next: () => {
         this._currentSubscription.set(null);
         this.iam.invalidateOnboarding();
