@@ -662,7 +662,8 @@
       "general": "General Information",
       "materials": "Raw Materials Used",
       "participants": "Equipment and staff",
-      "traceability": "Traceability"
+      "traceability": "Traceability",
+      "storage": "Storage"
     },
     "notes": "BPM Notes",
     "no-notes": "No notes recorded for this batch.",
@@ -1338,7 +1339,8 @@
     "decision": "Quality decision",
     "released": "Released on {{date}} and signed by user #{{user}}.",
     "rejected": "Rejected on {{date}}:",
-    "pending": "The batch has not been released or rejected yet."
+    "pending": "The batch has not been released or rejected yet.",
+    "container": "Container"
   },
   "equipment": {
     "errors": {
@@ -1432,5 +1434,19 @@
         "generate": "Generated"
       }
     }
+  },
+  "batch-storage": {
+    "title": "Container where the batch is stored",
+    "container": "Container",
+    "environment": "Environment",
+    "assigned-at": "Stored on",
+    "assigned-by": "By user #{{user}}",
+    "view-conditions": "View container conditions",
+    "empty": "Not stored in a container yet",
+    "hint": "Operational container monitors of product storage environments",
+    "store": "Store batch",
+    "change": "Change container",
+    "saved": "The batch was stored in the container.",
+    "no-containers": "There are no operational container monitors in product storage environments. Classify an environment as product storage and locate a container monitor there."
   }
 }

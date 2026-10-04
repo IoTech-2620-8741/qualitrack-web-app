@@ -4,6 +4,13 @@
     <div><span>{{ 'batch-traceability.raw-materials' | translate }}</span><strong>{{ trace.rawMaterials.length }}</strong></div>
     <div><span>{{ 'batch-traceability.equipment' | translate }}</span><strong>{{ trace.equipment.length }}</strong></div>
     <div><span>{{ 'batch-traceability.staff' | translate }}</span><strong>{{ trace.staff.length }}</strong></div>
+    <div>
+      <span>{{ 'batch-traceability.container' | translate }}</span>
+      <strong>{{ trace.container ? (trace.container.containerName ?? '#' + trace.container.containerMonitorId) : ('batch-storage.empty' | translate) }}</strong>
+      @if (trace.container) {
+        <small class="muted">{{ 'batch-storage.assigned-at' | translate }}: {{ trace.container.assignedAt | date: 'short' }}</small>
+      }
+    </div>
   </section>
 
   <h2>{{ 'batch-traceability.raw-materials' | translate }}</h2>

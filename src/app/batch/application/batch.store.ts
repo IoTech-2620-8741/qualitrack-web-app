@@ -138,6 +138,14 @@ export class BatchStore {
     return saved !== null;
   }
 
+  /** Stores the batch in a monitored container of a product storage environment (TS68). */
+  async assignContainer(path: BatchPath, batchId: number, containerMonitorId: number): Promise<boolean> {
+    const saved = await this.write(() => firstValueFrom(this.api.assignContainer(path, batchId, containerMonitorId)),
+      'batch-storage.saved');
+    if (saved) await this.refreshTraceability(path, batchId);
+    return saved !== null;
+  }
+
   /** Associates a staff member with the batch (TS67). */
   async registerStaff(path: BatchPath, batchId: number, staffId: number): Promise<boolean> {
     const saved = await this.write(() => firstValueFrom(this.api.registerStaffParticipation(path, batchId, staffId)),

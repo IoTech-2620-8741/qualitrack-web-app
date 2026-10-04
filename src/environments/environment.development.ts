@@ -70,6 +70,8 @@ export const environment = {
   batchEquipmentUsagesEndpointPath: '/equipment-usages',
   batchStaffParticipationsEndpointPath: '/staff-participations',
   batchTraceabilityEndpointPath: '/traceability',
+  // Container where a batch is stored, under .../products/{productId}/batches/{batchId}
+  batchContainerAssignmentEndpointPath: '/container-assignment',
   // Batch records of other bounded contexts, under /batches/{batchId}
   batchEndpointPath: '/batches',
   batchAuditLogsEndpointPath: '/audit-logs',

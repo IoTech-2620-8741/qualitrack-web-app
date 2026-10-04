@@ -662,7 +662,8 @@
       "general": "Información General",
       "materials": "Materias Primas Usadas",
       "participants": "Equipos y personal",
-      "traceability": "Trazabilidad"
+      "traceability": "Trazabilidad",
+      "storage": "Almacenamiento"
     },
     "notes": "Notas BPM",
     "no-notes": "No hay notas registradas para este lote.",
@@ -1338,7 +1339,8 @@
     "decision": "Decisión de calidad",
     "released": "Liberado el {{date}} y firmado por el usuario #{{user}}.",
     "rejected": "Rechazado el {{date}}:",
-    "pending": "El lote aún no ha sido liberado ni rechazado."
+    "pending": "El lote aún no ha sido liberado ni rechazado.",
+    "container": "Contenedor"
   },
   "equipment": {
     "errors": {
@@ -1432,5 +1434,19 @@
         "generate": "Generó"
       }
     }
+  },
+  "batch-storage": {
+    "title": "Contenedor donde se guarda el lote",
+    "container": "Contenedor",
+    "environment": "Ambiente",
+    "assigned-at": "Guardado el",
+    "assigned-by": "Por el usuario #{{user}}",
+    "view-conditions": "Ver condiciones del contenedor",
+    "empty": "Aún no se guarda en un contenedor",
+    "hint": "Monitores de contenedor operativos de ambientes de almacenamiento de productos",
+    "store": "Guardar lote",
+    "change": "Cambiar contenedor",
+    "saved": "El lote se guardó en el contenedor.",
+    "no-containers": "No hay monitores de contenedor operativos en ambientes de almacenamiento de productos. Clasifica un ambiente como almacenamiento de productos y ubica allí un monitor de contenedor."
   }
 }
