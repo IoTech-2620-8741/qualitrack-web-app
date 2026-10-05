@@ -25,6 +25,10 @@ package "iam.application" {
   }
 }
 
+package "@angular/cdk" {
+  class CdkConnectedOverlay
+}
+
 package "laboratory" {
   class EnvironmentStore {
     +environments: Signal<Environment[]>
@@ -89,7 +93,6 @@ package "ca.domain.model" {
     +id: number
     +userId: number
     +emailEnabled: boolean
-    +smsEnabled: boolean
     +inAppEnabled: boolean
     +minimumSeverity: "LOW | WARNING | CRITICAL"
     +createdAt?: string
@@ -97,11 +100,37 @@ package "ca.domain.model" {
 
   interface UpdateNotificationPreferenceCommand {
     +emailEnabled: boolean
-    +smsEnabled: boolean
     +inAppEnabled: boolean
     +minimumSeverity: "LOW | WARNING | CRITICAL"
   }
+
+  class Notification {
+    +id: number
+    +type: NotificationType
+    +severity: AlertSeverity | null
+    +subjectType: "ALERT | BATCH"
+    +subjectId: number
+    +environmentName / subjectName / parameterName
+    +recordedValue / unit
+    +actorName / note
+    +occurredAt: string
+    +readAt: string | null
+    +isRead: boolean
+    +link: string[]
+    +icon: string
+  }
+
+  enum NotificationType {
+    ALERT_OPENED
+    ALERT_ESCALATED
+    ALERT_ACKNOWLEDGED
+    ALERT_RESOLVED
+    BATCH_RELEASED
+    BATCH_REJECTED
+  }
 }
+
+Notification --> NotificationType
 
 DeviationAlert --> "0..*" RelatedActuation
 
@@ -116,6 +145,7 @@ package "ca.application" {
     +saving
     +error
     +notice
+    +noticeParams
     +openAlertsCount
     +criticalAlertsCount
     +acknowledgedAlertsCount
@@ -128,12 +158,23 @@ package "ca.application" {
     +loadAlertById(alertId: number): void
     +acknowledgeAlert(alertId: number): void
     +resolveAlert(alertId: number, request: ResolveAlertRequest): void
+    +sendAlertEmailNotification(alertId: number): void
     +loadEquipmentComplianceEvents(equipmentId: number): void
     +loadBatchComplianceEvents(batchId: number): void
-    +loadNotificationPreferences(userId: number): void
-    +updateNotificationPreferences(userId: number, request: UpdateNotificationPreferenceRequest): void
+    +loadNotificationPreferences(): void
+    +updateNotificationPreferences(request: UpdateNotificationPreferenceRequest): Observable<NotificationPreference>
   }
   class alertError <<function>>
+
+  class NotificationStore <<root>> {
+    +unreadCount: Signal<number>
+    +notifications: Signal<Notification[]>
+    +loading / failed / hasUnread
+    +refreshUnreadCount(): Observable<number>
+    +loadLatest(): void
+    +markAsRead(notification: Notification): void
+    +markAllAsRead(): void
+  }
 }
 
 package "ca.infrastructure" {
@@ -141,6 +182,7 @@ package "ca.infrastructure" {
     -_alertEndpoint: AlertApiEndpoint
     -_complianceEventEndpoint: ComplianceEventApiEndpoint
     -_preferenceEndpoint: NotificationPreferenceApiEndpoint
+    -_notificationEndpoint: NotificationApiEndpoint
 
     +getEnvironmentAlerts(laboratoryId: number, environmentId: number, filters?: AlertFilters)
     +getAlertById(alertId: number)
@@ -148,8 +190,13 @@ package "ca.infrastructure" {
     +resolveAlert(alertId: number, request: ResolveAlertRequest)
     +getEquipmentComplianceEvents(laboratoryId: number, equipmentId: number)
     +getBatchComplianceEvents(batchId: number)
-    +getPreferences(userId: number)
-    +updatePreferences(userId: number, request: UpdateNotificationPreferenceRequest)
+    +sendAlertEmailNotification(alertId: number)
+    +getPreferences()
+    +updatePreferences(request: UpdateNotificationPreferenceRequest)
+    +getNotifications(unreadOnly: boolean, limit: number)
+    +getUnreadNotificationCount()
+    +markNotificationAsRead(notificationId: number)
+    +markAllNotificationsAsRead()
   }
 
   class AlertApiEndpoint {
@@ -157,6 +204,7 @@ package "ca.infrastructure" {
     +getAlertById(alertId: number)
     +acknowledgeAlert(alertId: number)
     +resolveAlert(alertId: number, request: ResolveAlertRequest)
+    +sendEmailNotification(alertId: number)
   }
 
   interface AlertFilters {
@@ -172,13 +220,21 @@ package "ca.infrastructure" {
   }
 
   class NotificationPreferenceApiEndpoint {
-    +getPreferences(userId: number)
-    +updatePreferences(userId: number, request: UpdateNotificationPreferenceRequest)
+    +getPreferences()
+    +updatePreferences(request: UpdateNotificationPreferenceRequest)
+  }
+
+  class NotificationApiEndpoint {
+    +getNotifications(unreadOnly: boolean, limit: number)
+    +getUnreadCount()
+    +markAsRead(notificationId: number)
+    +markAllAsRead()
   }
 
   class AlertAssembler
   class ComplianceEventAssembler
   class NotificationPreferenceAssembler
+  class NotificationAssembler
 
   interface AlertResource {
     +id, laboratoryId, environmentId, origin
@@ -216,7 +272,6 @@ package "ca.infrastructure" {
     +id: number
     +userId: number
     +emailEnabled: boolean
-    +smsEnabled: boolean
     +inAppEnabled: boolean
     +minimumSeverity: "LOW | WARNING | CRITICAL"
     +createdAt?: string
@@ -232,9 +287,23 @@ package "ca.infrastructure" {
 
   interface UpdateNotificationPreferenceRequest {
     +emailEnabled: boolean
-    +smsEnabled: boolean
     +inAppEnabled: boolean
     +minimumSeverity: "LOW | WARNING | CRITICAL"
+  }
+
+  interface NotificationResource
+  interface NotificationsResponse
+  interface UnreadNotificationsResource {
+    +unreadCount: number
+  }
+  interface NotificationsReadResource {
+    +markedAsRead: number
+  }
+  interface AlertEmailNotificationResource {
+    +alertId: number
+    +recipients: number
+    +delivered: number
+    +sentAt: string
   }
 }
 
@@ -267,19 +336,34 @@ package "ca.presentation" {
     #resolutionForm
     #environmentName
     #acknowledge(): void
+    #sendEmail(): void
     #resolve(): void
   }
 
-  class NotificationSettings {
-    +settingsForm
-    +ngOnInit(): void
-    +onSubmit(): void
+  class NotificationBell <<component>> {
+    #open: Signal<boolean>
+    #positions: ConnectedPosition[]
+    #toggle(): void
+    #openNotification(notification): void
+    #params(notification): Record<string, unknown>
+    #timeAgo(isoDate): string
+  }
+
+  class NotificationPreferencesForm <<component>> {
+    #form
+    #saved / saving / error
+    #save(): void
   }
 }
 
 DeviationAlert ..|> BaseEntity
 ComplianceEvent ..|> BaseEntity
 NotificationPreference ..|> BaseEntity
+Notification ..|> BaseEntity
+NotificationApiEndpoint --|> BaseApiEndpoint
+NotificationAssembler ..|> BaseAssembler
+NotificationResource ..|> BaseResource
+NotificationsResponse ..|> BaseResponse
 
 CaApi --|> BaseApi
 AlertApiEndpoint --|> BaseApiEndpoint
@@ -314,6 +398,22 @@ CaStore ..> UpdateNotificationPreferenceRequest
 CaApi --> AlertApiEndpoint
 CaApi --> ComplianceEventApiEndpoint
 CaApi --> NotificationPreferenceApiEndpoint
+CaApi --> NotificationApiEndpoint
+NotificationApiEndpoint --> NotificationAssembler
+NotificationApiEndpoint ..> NotificationResource
+NotificationApiEndpoint ..> UnreadNotificationsResource
+NotificationApiEndpoint ..> NotificationsReadResource
+NotificationAssembler ..> Notification
+AlertApiEndpoint ..> AlertEmailNotificationResource
+NotificationStore --> CaApi
+NotificationStore --> IamStore : clears on another sign-in
+NotificationStore ..> Notification
+note bottom of NotificationApiEndpoint
+  GET  /users/me/notifications?unread&limit (US83)
+  GET  /users/me/notifications/unread-count
+  POST /users/me/notifications/{notificationId}/read-receipts
+  POST /users/me/notifications/read-receipts
+end note
 
 AlertApiEndpoint --> AlertAssembler
 AlertApiEndpoint ..> AlertFilters
@@ -328,6 +428,7 @@ note bottom of AlertApiEndpoint
        ?status&severity&deviceId&active (US85, TS74)
   GET  /deviation-alerts/{alertId} (US86, with related actions)
   POST /deviation-alerts/{alertId}/acknowledgements and /resolutions (US87, US88)
+  POST /deviation-alerts/{alertId}/email-notifications (US84, TS78)
   The platform takes the actor from the session; requests carry no user id.
 end note
 
@@ -369,12 +470,23 @@ AlertDashboard ..> OperationsPage
 AlertHistory ..> OperationsPage
 DeviationDetail ..> OperationsPage
 
-NotificationSettings --> CaStore
-NotificationSettings --> IamStore
+NotificationBell --> NotificationStore
+NotificationBell ..> CdkConnectedOverlay : panel over the current view
+note bottom of NotificationBell
+  In the toolbar: counts the unread notifications every 30 s and opens
+  the latest ones; opening one marks it as read and shows the alert or batch.
+end note
+NotificationPreferencesForm --> CaStore
+note bottom of NotificationPreferencesForm
+  Shown in the profile: bell, e-mail of critical alerts and the
+  lowest alert severity notified (/users/me/notification-preferences).
+end note
 
 CaRoutes ..> AlertDashboard
 CaRoutes ..> AlertHistory
 CaRoutes ..> DeviationDetail
-CaRoutes ..> NotificationSettings
+note bottom of CaRoutes
+  /alerts/notification-settings redirects to /profile.
+end note
 
 @enduml

@@ -161,8 +161,18 @@ BaseAssembler ..> BaseEntity
 BaseAssembler ..> BaseResource
 BaseAssembler ..> BaseResponse
 
+package "iam.presentation.components" <<External>> {
+  class UserSessionSection
+}
+
+package "ca.presentation.components" <<External>> {
+  class NotificationBell
+}
+
 Toolbar --> LanguageSwitcher
 Layout --> LanguageSwitcher
+Layout --> UserSessionSection
+Layout --> NotificationBell : with operational access
 Layout *-- NavigationOption
 Toolbar --> IamStore
 note bottom of Toolbar
@@ -172,6 +182,8 @@ end note
 note bottom of Layout
   The logo and the name lead to /dashboard. Menu labels only use nav.* keys:
   English Title Case, Spanish sentence case, "Catalog" spelling.
+  The toolbar shows the notification bell (ca) and the user section (iam),
+  whose photo and name open the profile.
 end note
 NavigationOption *-- NavigationChild
 
