@@ -22,6 +22,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { LanguageSwitcher } from '../language-switcher/language-switcher';
 import { UserSessionSection } from '../../../../iam/presentation/components/user-session-section/user-session-section';
+import { NotificationBell } from '../../../../ca/presentation/components/notification-bell/notification-bell';
 
 /** Entry of the side navigation menu. */
 interface NavigationOption {
@@ -57,6 +58,7 @@ interface NavigationOption {
     MatTooltipModule,
     LanguageSwitcher,
     UserSessionSection,
+    NotificationBell,
   ],
   templateUrl: './layout.html',
   styleUrl: './layout.css',
@@ -114,7 +116,6 @@ export class Layout {
       children: [
         { label: 'nav.alert-dashboard', link: '/alerts/alert-dashboard' },
         { label: 'nav.alert-history', link: '/alerts/alert-history' },
-        { label: 'nav.notification-preferences', link: '/alerts/notification-settings' },
       ],
     },
     {

@@ -10,9 +10,6 @@ const alertHistory = () =>
 const deviationDetail = () =>
   import('./views/deviation-detail/deviation-detail').then((m) => m.DeviationDetail);
 
-const notificationSettings = () =>
-  import('./views/notification-settings/notification-settings').then((m) => m.NotificationSettings);
-
 /**
  * Route tree for learning presentation views.
  */
@@ -24,7 +21,8 @@ const caRoutes: Routes = [
       { path: 'alert-dashboard', loadComponent: alertDashboard },
       { path: 'alert-history', loadComponent: alertHistory },
       { path: 'deviation-detail/:id', loadComponent: deviationDetail },
-      { path: 'notification-settings', loadComponent: notificationSettings },
+      // Notification preferences are edited in the profile.
+      { path: 'notification-settings', redirectTo: '/profile', pathMatch: 'full' },
       { path: '', redirectTo: 'alert-dashboard', pathMatch: 'full' },
     ],
   },

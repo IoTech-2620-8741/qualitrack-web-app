@@ -15,6 +15,7 @@ import { SignUpAssembler } from './sign-up-assembler';
 import { SignUpRequest } from './sign-up.request';
 import { SignUpResource } from './sign-up-response';
 import { ChangePasswordRequest } from './change-password.request';
+import { UpdateAccountRequest } from './update-account.request';
 
 import { PasswordRecoveryApiEndpoint } from './password-recovery-api-endpoint';
 import { PasswordRecoveryRequest, PasswordResetRequest } from './password-recovery.request';
@@ -88,6 +89,19 @@ export class IamApi extends BaseApi {
   changePassword(request: ChangePasswordRequest): Observable<void> {
     return this.http.post<void>(
       `${environment.serverBasePath}${environment.usersEndpointPath}${environment.currentUserPasswordChangesEndpointPath}`,
+      request,
+    );
+  }
+
+  /**
+   * Replaces the username and the e-mail of the authenticated user.
+   *
+   * @param request - New username and e-mail with the current password
+   * @returns The session with a new token: the previous one stops working
+   */
+  updateAccount(request: UpdateAccountRequest): Observable<SignInResource> {
+    return this.http.put<SignInResource>(
+      `${environment.serverBasePath}${environment.usersEndpointPath}${environment.currentUserAccountEndpointPath}`,
       request,
     );
   }

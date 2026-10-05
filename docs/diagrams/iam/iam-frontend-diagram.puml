@@ -58,6 +58,12 @@ package "iam.domain.model" {
     + userId: number
     + role: string
   }
+
+  interface UpdateAccountCommand {
+    + username: string
+    + email: string
+    + currentPassword: string
+  }
 }
 
 User ..|> BaseEntity
@@ -88,12 +94,14 @@ package "iam.application" {
     + loadOnboarding(force?: boolean): Observable<OnboardingState>
     + invalidateOnboarding(): void
     + changePassword(currentPassword: string, newPassword: string): Observable<void>
+    + updateAccount(command: UpdateAccountCommand): Observable<void>
     + requestPasswordRecovery(account: string): Observable<number>
     + resetPassword(command: ResetPasswordCommand): Observable<string>
     + signIn(command: SignInCommand, router: Router): void
     + signUp(command: SignUpCommand, router: Router): void
     + signOut(router: Router): void
     + clearError(): void
+    - storeSession(resource: SignInResource): void
     - restoreSession(): void
     - clearSession(): void
     - startRequest(): void
@@ -105,6 +113,11 @@ package "iam.application" {
 IamStore ..> SignInCommand
 IamStore ..> SignUpCommand
 IamStore ..> ResetPasswordCommand
+IamStore ..> UpdateAccountCommand
+note left of UpdateAccountCommand
+  PUT /users/me answers with a new token (the token names
+  the user); the store keeps the session with it.
+end note
 IamStore --> Router
 IamStore o-- User
 note right of IamStore
@@ -140,10 +153,16 @@ package "iam.infrastructure" {
     + resetPassword(request: PasswordResetRequest): Observable<PasswordResetCompletedResource>
     + getOnboarding(): Observable<OnboardingState>
     + changePassword(request: ChangePasswordRequest): Observable<void>
+    + updateAccount(request: UpdateAccountRequest): Observable<SignInResource>
   }
   interface ChangePasswordRequest {
     + currentPassword: string
     + newPassword: string
+  }
+  interface UpdateAccountRequest {
+    + username: string
+    + email: string
+    + currentPassword: string
   }
   class onboardingGuard <<CanActivateFn>>
   class laboratorySetupGuard <<CanActivateFn>>
@@ -369,6 +388,30 @@ package "iam.presentation.components.authentication-section" {
   class AuthenticationSection {
   }
 }
+
+package "profile.application" <<External>> {
+  class ProfileStore {
+    + photoUrl: Signal<string | null>
+    + displayName: Signal<string>
+    + initials: Signal<string>
+    + ensureLoaded(): void
+  }
+}
+
+package "iam.presentation.components.user-session-section" {
+  class UserSessionSection {
+    # canOpenProfile: Signal<boolean>
+    # roleKey: Signal<string | null>
+    # signOut(): void
+  }
+}
+
+UserSessionSection --> IamStore
+UserSessionSection --> ProfileStore : photo and full name
+note bottom of UserSessionSection
+  In the toolbar: the photo and name open /profile once the
+  account finished its setup; the sign-out button stays beside.
+end note
 
 AuthenticationSection ..> Router
 
