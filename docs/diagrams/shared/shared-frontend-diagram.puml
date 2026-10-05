@@ -81,6 +81,7 @@ package "shared" {
       #currentLang: string
       #languages: string[]
       #translate: TranslateService
+      #compact: Signal<boolean>
       +useLanguage(language: string): void
     }
 
@@ -183,7 +184,9 @@ note bottom of Layout
   The logo and the name lead to /dashboard. Menu labels only use nav.* keys:
   English Title Case, Spanish sentence case, "Catalog" spelling.
   The toolbar shows the notification bell (ca) and the user section (iam),
-  whose photo and name open the profile.
+  whose photo and name open the profile. Up to 720px wide the brand is hidden
+  so the user section stays complete; up to 480px the language switcher is
+  compact (no check mark).
 end note
 NavigationOption *-- NavigationChild
 
