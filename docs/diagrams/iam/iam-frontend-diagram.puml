@@ -411,6 +411,8 @@ UserSessionSection --> ProfileStore : photo and full name
 note bottom of UserSessionSection
   In the toolbar: the photo and name open /profile once the
   account finished its setup; the sign-out button stays beside.
+  On phones the toolbar hides the brand and keeps the photo,
+  name and role in a smaller size.
 end note
 
 AuthenticationSection ..> Router
