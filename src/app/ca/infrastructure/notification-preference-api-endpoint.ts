@@ -10,10 +10,11 @@ import {
 import { NotificationPreferenceAssembler } from './notification-preference-assembler';
 import { UpdateNotificationPreferenceRequest } from './notification-preference.request';
 
-const usersEndpointUrl = `${environment.serverBasePath}${environment.usersEndpointPath}`;
+const preferencesEndpointUrl =
+  `${environment.serverBasePath}${environment.usersEndpointPath}${environment.caNotificationPrefsEndpointPath}`;
 
 /**
- * HTTP endpoint client for notification preference operations.
+ * HTTP endpoint client for the notification preferences of the signed-in user (/users/me/notification-preferences).
  */
 export class NotificationPreferenceApiEndpoint extends BaseApiEndpoint<
   NotificationPreference,
@@ -22,34 +23,20 @@ export class NotificationPreferenceApiEndpoint extends BaseApiEndpoint<
   NotificationPreferenceAssembler
 > {
   constructor(http: HttpClient) {
-    super(http, usersEndpointUrl, new NotificationPreferenceAssembler());
+    super(http, preferencesEndpointUrl, new NotificationPreferenceAssembler());
   }
 
-  getPreferences(userId: number): Observable<NotificationPreference> {
-    return this.http
-      .get<NotificationPreferenceResource>(
-        `${this.endpointUrl}/${userId}${environment.caNotificationPrefsEndpointPath}`,
-      )
-      .pipe(
-        map((resource) => this.assembler.toEntityFromResource(resource)),
-        catchError(this.handleError(`Failed to fetch notification preferences for user ${userId}`)),
-      );
+  getPreferences(): Observable<NotificationPreference> {
+    return this.http.get<NotificationPreferenceResource>(this.endpointUrl).pipe(
+      map((resource) => this.assembler.toEntityFromResource(resource)),
+      catchError(this.handleError('Failed to fetch the notification preferences')),
+    );
   }
 
-  updatePreferences(
-    userId: number,
-    request: UpdateNotificationPreferenceRequest,
-  ): Observable<NotificationPreference> {
-    return this.http
-      .put<NotificationPreferenceResource>(
-        `${this.endpointUrl}/${userId}${environment.caNotificationPrefsEndpointPath}`,
-        request,
-      )
-      .pipe(
-        map((resource) => this.assembler.toEntityFromResource(resource)),
-        catchError(
-          this.handleError(`Failed to update notification preferences for user ${userId}`),
-        ),
-      );
+  updatePreferences(request: UpdateNotificationPreferenceRequest): Observable<NotificationPreference> {
+    return this.http.put<NotificationPreferenceResource>(this.endpointUrl, request).pipe(
+      map((resource) => this.assembler.toEntityFromResource(resource)),
+      catchError(this.handleError('Failed to update the notification preferences')),
+    );
   }
 }

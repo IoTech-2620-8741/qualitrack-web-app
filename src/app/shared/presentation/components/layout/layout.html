@@ -19,6 +19,9 @@
   <span class="spacer"></span>
 
   <div class="toolbar-actions">
+    @if (hasOperationalAccess()) {
+      <app-notification-bell />
+    }
     <app-user-session-section />
     <app-language-switcher />
   </div>

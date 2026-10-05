@@ -225,6 +225,82 @@
       }
     }
   },
+  "profile": {
+    "open": "My profile",
+    "open-named": "Open the profile of {{name}}",
+    "sign-out": "Sign out",
+    "title": "My profile",
+    "subtitle": "Your personal data, your account and how you receive notices.",
+    "incomplete": "Add your full name so your team recognizes you in alerts and batches.",
+    "updated-at": "Updated on {{date}}",
+    "roles": {
+      "ROLE_QA_MANAGER": "Quality manager",
+      "ROLE_LAB_OPERATOR": "Operator",
+      "ROLE_AUDITOR": "Auditor",
+      "ROLE_ADMIN": "Administrator"
+    },
+    "photo": {
+      "alt": "Photo of {{name}}",
+      "add": "Add photo",
+      "change": "Change photo",
+      "remove": "Remove",
+      "remove-confirm": "Remove your profile photo?",
+      "hint": "JPG, PNG or WebP up to 2 MB.",
+      "errors": {
+        "type": "Choose a JPG, PNG or WebP image.",
+        "size": "The photo cannot exceed 2 MB.",
+        "failed": "The photo could not be saved. Please try again."
+      }
+    },
+    "personal": {
+      "title": "Personal data",
+      "full-name": "Full name",
+      "dni": "DNI",
+      "dni-hint": "8 digits",
+      "phone": "Phone",
+      "location": "Location",
+      "location-hint": "District and city, for example Miraflores, Lima",
+      "save": "Save data",
+      "saved": "Personal data saved.",
+      "errors": {
+        "full-name": "Enter your full name (2 to 120 characters).",
+        "dni": "The DNI has 8 digits.",
+        "phone": "Use 6 to 15 digits; it may start with +.",
+        "location": "Use 2 to 120 characters.",
+        "invalid": "Some value is not valid. Check the data."
+      }
+    },
+    "account": {
+      "title": "Account",
+      "subtitle": "The username you sign in with and the e-mail for password recovery and notices.",
+      "username": "Username",
+      "email": "E-mail",
+      "current-password": "Current password",
+      "current-password-hint": "Confirm the change with your password. If you change the username, sign in with it next time.",
+      "save": "Save account",
+      "saved": "Account updated. Use your new username next time you sign in.",
+      "errors": {
+        "username": "Use 3 to 80 characters.",
+        "email": "Enter a valid e-mail.",
+        "taken": "That username or e-mail is already used by another account.",
+        "invalid": "The current password is not correct or a value is not valid."
+      }
+    },
+    "password": {
+      "title": "Password",
+      "current": "Current password",
+      "hint": "8 to 72 characters with letters and numbers",
+      "saved": "Password changed."
+    },
+    "notifications": {
+      "title": "Notifications",
+      "subtitle": "Choose where you receive the notices of alerts and batches."
+    },
+    "errors": {
+      "load": "Your profile could not be loaded.",
+      "failed": "The change could not be saved. Please try again."
+    }
+  },
   "common": {
     "save": "Save Changes",
     "cancel": "Cancel",
@@ -289,7 +365,6 @@
     "alerts": "Compliance Alerts",
     "alert-dashboard": "Active Alerts",
     "alert-history": "Alert History",
-    "notification-preferences": "Notification Preferences",
     "reports": "Reports & KPIs",
     "kpi-dashboard": "Environmental Summary",
     "deviation-trends": "Deviation Indicators",
@@ -615,7 +690,8 @@
       "view-details": "View detail",
       "resolve": "Resolve alert",
       "acknowledge": "Register attention",
-      "view-conditions": "View conditions"
+      "view-conditions": "View conditions",
+      "email": "E-mail the alert"
     },
     "history": {
       "title": "Alert History",
@@ -638,16 +714,16 @@
       "resolution-required": "Write between 10 and 500 characters."
     },
     "settings": {
-      "title": "Notification Preferences",
-      "subtitle": "Configure how and when you receive system alerts",
-      "channels-title": "Communication Channels",
-      "channels-subtitle": "Select where you want to receive notifications",
-      "in-app": "In-App Notifications",
-      "email": "Email Notifications",
-      "sms": "SMS Alerts",
-      "threshold-title": "Alert Threshold",
-      "threshold-subtitle": "Minimum severity level required to trigger a notification",
-      "severity-hint": "Only alerts with this severity or higher will be sent"
+      "in-app": "Bell notices",
+      "email": "E-mail notices",
+      "threshold-title": "Alerts to notify",
+      "severity-hint": "Quality decisions on batches always reach the bell.",
+      "in-app-hint": "What happens to the alerts and batches of the laboratory reaches the bell of the toolbar.",
+      "email-hint": "An e-mail when an alert opens as critical or becomes critical.",
+      "from-warning": "Warnings and critical alerts",
+      "only-critical": "Critical alerts only",
+      "save": "Save preferences",
+      "saved": "Notification preferences saved."
     },
     "no-environments": "Alerts are listed per environment. Register an environment and its IoT devices first.",
     "normalized": "Condition back to normal",
@@ -667,6 +743,43 @@
       "ENVIRONMENT": "Environment",
       "CONTAINER": "Container",
       "EQUIPMENT": "Equipment"
+    },
+    "email": {
+      "sent": "The alert was e-mailed to {{count}} person(s).",
+      "no-recipients": "Nobody else in the laboratory has e-mail notices enabled.",
+      "failed": "The e-mail could not be sent. Check that e-mail is configured on the platform."
+    }
+  },
+  "notifications": {
+    "title": "Notifications",
+    "open": "Open notifications",
+    "open-unread": "Open notifications, {{count}} unread",
+    "mark-all": "Mark all as read",
+    "loading": "Loading notifications",
+    "load-error": "The notifications could not be loaded.",
+    "empty": "You have no notifications yet.",
+    "unread": "Unread",
+    "preferences": "Notification preferences",
+    "just-now": "Just now",
+    "someone": "Someone",
+    "unknown-environment": "an environment",
+    "severity": {
+      "LOW": "low",
+      "WARNING": "warning",
+      "CRITICAL": "critical"
+    },
+    "level": {
+      "LOW": "low",
+      "WARNING": "warning",
+      "CRITICAL": "critical"
+    },
+    "types": {
+      "ALERT_OPENED": "New {{severity}} alert in {{environment}}: {{variable}} at {{value}} {{unit}}.",
+      "ALERT_ESCALATED": "The alert of {{variable}} in {{environment}} rose to {{level}}: {{value}} {{unit}}.",
+      "ALERT_ACKNOWLEDGED": "{{actor}} is attending the alert of {{variable}} in {{environment}}.",
+      "ALERT_RESOLVED": "{{actor}} resolved the alert of {{variable}} in {{environment}}.",
+      "BATCH_RELEASED": "{{actor}} released batch {{batch}}.",
+      "BATCH_REJECTED": "{{actor}} rejected batch {{batch}}: {{note}}"
     }
   },
   "batches": {
@@ -1530,6 +1643,11 @@
         "export": "Exported",
         "generate": "Generated"
       }
+    },
+    "profile": {
+      "title": "Profile",
+      "not-completed": "This person has not completed the profile yet.",
+      "unavailable": "The profile of this person could not be loaded."
     }
   },
   "batch-storage": {

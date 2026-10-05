@@ -6,6 +6,7 @@ import { AlertSeverity, AlertStatus, DeviationAlert } from '../domain/model/devi
 import { AlertDetailResource, AlertResource, AlertsResponse } from './alert-response';
 import { AlertAssembler } from './alert-assembler';
 import { ResolveAlertRequest } from './resolve-alert.request';
+import { AlertEmailNotificationResource } from './notification-response';
 
 const apiBaseUrl = environment.serverBasePath;
 
@@ -63,6 +64,18 @@ export class AlertApiEndpoint extends BaseApiEndpoint<
         map((resource) => this.assembler.toEntityFromResource(resource)),
         catchError(this.handleError(`Failed to acknowledge deviation alert ${alertId}`)),
       );
+  }
+
+  /**
+   * E-mails an open critical alert again to the people of the laboratory who enabled e-mail notices (TS78).
+   *
+   * @returns How many people it was sent to and how many e-mails the provider accepted
+   */
+  sendEmailNotification(alertId: number): Observable<AlertEmailNotificationResource> {
+    return this.http
+      .post<AlertEmailNotificationResource>(
+        `${this.endpointUrl}/${alertId}${environment.deviationAlertEmailNotificationsEndpointPath}`, null)
+      .pipe(catchError(this.handleError(`Failed to e-mail deviation alert ${alertId}`)));
   }
 
   /** Registers the resolution of the alert by the authenticated user (TS76). */
