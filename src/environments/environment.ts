@@ -15,6 +15,8 @@ export const environment = {
   usersEndpointPath: '/users',
   // Password change of the signed-in user, under /users
   currentUserPasswordChangesEndpointPath: '/me/password-changes',
+  // Account of the signed-in user (username and e-mail), under /users
+  currentUserAccountEndpointPath: '/me',
   rolesEndpointPath: '/roles',
 
   // Laboratory
@@ -83,7 +85,18 @@ export const environment = {
   deviationAlertsEndpointPath: '/deviation-alerts',
   deviationAlertAcknowledgementsEndpointPath: '/acknowledgements',
   deviationAlertResolutionsEndpointPath: '/resolutions',
-  caNotificationPrefsEndpointPath: '/notification-preferences',
+  // E-mail notice of a critical alert, under /deviation-alerts/{alertId} (TS78)
+  deviationAlertEmailNotificationsEndpointPath: '/email-notifications',
+  // Notification preferences and notifications of the signed-in user, under /users
+  caNotificationPrefsEndpointPath: '/me/notification-preferences',
+  caNotificationsEndpointPath: '/me/notifications',
+  caNotificationUnreadCountEndpointPath: '/unread-count',
+  caNotificationReadReceiptsEndpointPath: '/read-receipts',
+
+  // Profile of the signed-in user under /users, and of a staff member under /laboratories/{laboratoryId}/staff/{staffId}
+  profileCurrentUserEndpointPath: '/me/profile',
+  profileEndpointPath: '/profile',
+  profilePhotoEndpointPath: '/photo',
 
   // RA
   raReportsEndpointPath: '/reports',

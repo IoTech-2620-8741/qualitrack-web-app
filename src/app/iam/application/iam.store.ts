@@ -8,10 +8,12 @@ import { User } from '../domain/model/user.entity';
 import { SignInCommand } from '../domain/model/sign-in.command';
 import { SignUpCommand } from '../domain/model/sign-up.command';
 import { ResetPasswordCommand } from '../domain/model/reset-password.command';
+import { UpdateAccountCommand } from '../domain/model/update-account.command';
 
 import { IamApi } from '../infrastructure/iam-api';
 import { SignInRequest } from '../infrastructure/sign-in.request';
 import { SignUpRequest } from '../infrastructure/sign-up.request';
+import { SignInResource } from '../infrastructure/sign-in-response';
 
 /**
  * Signal-based application store for Identity and Access Management.
@@ -129,25 +131,7 @@ export class IamStore {
     this.iamApi.signIn(request).subscribe({
       next: (resource) => {
         this._errorSignal.set(null);
-
-        localStorage.setItem('token', resource.token);
-        this.tokenSignal.set(resource.token);
-        localStorage.setItem('userId', resource.id.toString());
-        localStorage.setItem('username', resource.username);
-        localStorage.setItem('roles', JSON.stringify(resource.roles));
-
-        if (resource.laboratoryId !== null && resource.laboratoryId !== undefined) {
-          localStorage.setItem('laboratoryId', resource.laboratoryId.toString());
-          this.currentLaboratoryIdSignal.set(resource.laboratoryId);
-        } else {
-          localStorage.removeItem('laboratoryId');
-          this.currentLaboratoryIdSignal.set(null);
-        }
-
-        this.isSignedInSignal.set(true);
-        this.currentUsernameSignal.set(resource.username);
-        this.currentUserIdSignal.set(resource.id);
-        this.currentRolesSignal.set(resource.roles);
+        this.storeSession(resource);
         this.finishRequest();
 
         router.navigate(['/iam/onboarding']).then();
@@ -159,6 +143,21 @@ export class IamStore {
         router.navigate(['/iam/sign-in']).then();
       },
     });
+  }
+
+  /**
+   * Replaces the username and the e-mail of the signed-in account. The platform issues a new token because the token
+   * names the user, so the session keeps working with it.
+   */
+  updateAccount(command: UpdateAccountCommand): Observable<void> {
+    return this.iamApi.updateAccount({
+      username: command.username.trim(),
+      email: command.email.trim(),
+      currentPassword: command.currentPassword,
+    }).pipe(
+      tap((resource) => this.storeSession(resource)),
+      map(() => undefined),
+    );
   }
 
   signUp(command: SignUpCommand, router: Router): void {
@@ -269,6 +268,28 @@ export class IamStore {
       roles: command.roles,
       laboratoryId: command.laboratoryId,
     };
+  }
+
+  /** Keeps the session of an authenticated user in the store and in the browser. */
+  private storeSession(resource: SignInResource): void {
+    localStorage.setItem('token', resource.token);
+    this.tokenSignal.set(resource.token);
+    localStorage.setItem('userId', resource.id.toString());
+    localStorage.setItem('username', resource.username);
+    localStorage.setItem('roles', JSON.stringify(resource.roles));
+
+    if (resource.laboratoryId !== null && resource.laboratoryId !== undefined) {
+      localStorage.setItem('laboratoryId', resource.laboratoryId.toString());
+      this.currentLaboratoryIdSignal.set(resource.laboratoryId);
+    } else {
+      localStorage.removeItem('laboratoryId');
+      this.currentLaboratoryIdSignal.set(null);
+    }
+
+    this.isSignedInSignal.set(true);
+    this.currentUsernameSignal.set(resource.username);
+    this.currentUserIdSignal.set(resource.id);
+    this.currentRolesSignal.set(resource.roles);
   }
 
   private restoreSession(): void {

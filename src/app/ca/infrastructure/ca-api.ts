@@ -6,10 +6,13 @@ import { BaseApi } from '../../shared/infrastructure/base-api';
 import { AlertApiEndpoint, AlertFilters } from './alert-api-endpoint';
 import { ComplianceEventApiEndpoint } from './compliance-event-api-endpoint';
 import { NotificationPreferenceApiEndpoint } from './notification-preference-api-endpoint';
+import { NotificationApiEndpoint } from './notification-api-endpoint';
+import { AlertEmailNotificationResource } from './notification-response';
 
 import { DeviationAlert } from '../domain/model/deviation-alert.entity';
 import { ComplianceEvent } from '../domain/model/compliance-event.entity';
 import { NotificationPreference } from '../domain/model/notification-preference.entity';
+import { Notification } from '../domain/model/notification.entity';
 import { UpdateNotificationPreferenceRequest } from './notification-preference.request';
 import { ResolveAlertRequest } from './resolve-alert.request';
 
@@ -58,6 +61,12 @@ export class CaApi extends BaseApi {
   private readonly _preferenceEndpoint: NotificationPreferenceApiEndpoint;
 
   /**
+   * Endpoint client for the notifications of the signed-in user.
+   * @private
+   */
+  private readonly _notificationEndpoint: NotificationApiEndpoint;
+
+  /**
    * Creates an instance of CaApi.
    *
    * @param http - Angular HttpClient for making HTTP requests
@@ -72,6 +81,7 @@ export class CaApi extends BaseApi {
     this._alertEndpoint = new AlertApiEndpoint(http);
     this._complianceEventEndpoint = new ComplianceEventApiEndpoint(http);
     this._preferenceEndpoint = new NotificationPreferenceApiEndpoint(http);
+    this._notificationEndpoint = new NotificationApiEndpoint(http);
   }
 
   /**
@@ -123,6 +133,11 @@ export class CaApi extends BaseApi {
     return this._alertEndpoint.resolveAlert(alertId, request);
   }
 
+  /** E-mails an open critical alert again to the laboratory (US84, TS78). */
+  sendAlertEmailNotification(alertId: number): Observable<AlertEmailNotificationResource> {
+    return this._alertEndpoint.sendEmailNotification(alertId);
+  }
+
   /**
    * Retrieves all compliance events associated with a specific entity.
    *
@@ -141,32 +156,38 @@ export class CaApi extends BaseApi {
   }
 
   /**
-   * Retrieves the notification configuration for a specific user.
+   * Retrieves the notification preferences of the signed-in user.
    *
-   * @param userId - The unique numeric identifier of the user
    * @returns Observable stream emitting the user's NotificationPreference
-   *
-   * @remarks
-   * Fetches the delivery channel settings and severity thresholds for the user.
    */
-  getPreferences(userId: number): Observable<NotificationPreference> {
-    return this._preferenceEndpoint.getPreferences(userId);
+  getPreferences(): Observable<NotificationPreference> {
+    return this._preferenceEndpoint.getPreferences();
   }
 
   /**
-   * Updates a user's notification preferences.
+   * Updates the notification preferences of the signed-in user.
    *
-   * @param userId - The unique numeric identifier of the user to update
    * @param request - The update data transfer object containing new preference states
    * @returns Observable stream emitting the updated NotificationPreference entity
-   *
-   * @remarks
-   * Persists changes to notification channels and severity filters.
    */
-  updatePreferences(
-    userId: number,
-    request: UpdateNotificationPreferenceRequest,
-  ): Observable<NotificationPreference> {
-    return this._preferenceEndpoint.updatePreferences(userId, request);
+  updatePreferences(request: UpdateNotificationPreferenceRequest): Observable<NotificationPreference> {
+    return this._preferenceEndpoint.updatePreferences(request);
+  }
+
+  /** Notifications of the signed-in user, newest first (US83). */
+  getNotifications(unreadOnly: boolean, limit: number): Observable<Notification[]> {
+    return this._notificationEndpoint.getNotifications(unreadOnly, limit);
+  }
+
+  getUnreadNotificationCount(): Observable<number> {
+    return this._notificationEndpoint.getUnreadCount();
+  }
+
+  markNotificationAsRead(notificationId: number): Observable<Notification> {
+    return this._notificationEndpoint.markAsRead(notificationId);
+  }
+
+  markAllNotificationsAsRead(): Observable<number> {
+    return this._notificationEndpoint.markAllAsRead();
   }
 }

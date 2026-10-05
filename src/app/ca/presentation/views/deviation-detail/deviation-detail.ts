@@ -79,6 +79,11 @@ export class DeviationDetail implements OnInit {
     this.store.acknowledgeAlert(this.alertId);
   }
 
+  /** E-mails the open critical alert again to the people of the laboratory (TS78). */
+  protected sendEmail(): void {
+    this.store.sendAlertEmailNotification(this.alertId);
+  }
+
   protected resolve(): void {
     this.resolutionForm.markAllAsTouched();
     if (this.resolutionForm.invalid) return;

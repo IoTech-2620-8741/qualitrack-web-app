@@ -20,6 +20,12 @@ package "iam.application" {
   }
 }
 
+package "profile.application" {
+  class ProfileStore {
+    +staffProfile(laboratoryId, staffId): Observable<StaffProfile>
+  }
+}
+
 package "batch.infrastructure" {
   class BatchApi {
     +getBatches(lab)
@@ -199,6 +205,7 @@ StaffList --> IamStore
 StaffDetail --> LaboratoryApi
 StaffDetail --> LaboratoryStore
 StaffDetail --> RaApi
+StaffDetail --> ProfileStore : photo and personal data (quality managers)
 StaffDetail ..> OperationsPage
 note right of StaffForm
   Quality managers register operators and auditors; the credentials are e-mailed
@@ -206,7 +213,8 @@ note right of StaffForm
 end note
 note right of StaffDetail
   Profile and activity history of a staff member (audit log entries they performed),
-  for quality managers and auditors.
+  for quality managers and auditors. Only the quality manager sees the photo, DNI,
+  phone and location the staff member keeps in the profile.
 end note
 RawMaterialDetail --> RawMaterialHistoryStore
 

@@ -4,7 +4,7 @@
     <p class="error" role="alert">{{ store.error()! | translate }}</p>
   }
   @if (store.notice()) {
-    <p class="success" role="status">{{ store.notice()! | translate }}</p>
+    <p class="success" role="status">{{ store.notice()! | translate: store.noticeParams() }}</p>
   }
 
   @if (alert(); as alert) {
@@ -23,6 +23,11 @@
             [queryParams]="{ environmentId: alert.environmentId, deviceId: alert.equipmentId }">
             <mat-icon>monitoring</mat-icon>{{ 'ca-alerts.actions.view-conditions' | translate }}
           </a>
+        }
+        @if (alert.isOpen && alert.severity === 'CRITICAL' && store.canAttend()) {
+          <button mat-stroked-button type="button" (click)="sendEmail()" [disabled]="store.saving()">
+            <mat-icon>forward_to_inbox</mat-icon>{{ 'ca-alerts.actions.email' | translate }}
+          </button>
         }
         @if (alert.status === 'UNRESOLVED' && store.canAttend()) {
           <button mat-flat-button type="button" (click)="acknowledge()" [disabled]="store.saving()">

@@ -225,6 +225,82 @@
       }
     }
   },
+  "profile": {
+    "open": "Mi perfil",
+    "open-named": "Abrir el perfil de {{name}}",
+    "sign-out": "Cerrar sesión",
+    "title": "Mi perfil",
+    "subtitle": "Tus datos personales, tu cuenta y cómo recibes los avisos.",
+    "incomplete": "Agrega tu nombre completo para que tu equipo te reconozca en alertas y lotes.",
+    "updated-at": "Actualizado el {{date}}",
+    "roles": {
+      "ROLE_QA_MANAGER": "Responsable de calidad",
+      "ROLE_LAB_OPERATOR": "Operario",
+      "ROLE_AUDITOR": "Auditor",
+      "ROLE_ADMIN": "Administrador"
+    },
+    "photo": {
+      "alt": "Foto de {{name}}",
+      "add": "Agregar foto",
+      "change": "Cambiar foto",
+      "remove": "Quitar",
+      "remove-confirm": "¿Quitar tu foto de perfil?",
+      "hint": "JPG, PNG o WebP de hasta 2 MB.",
+      "errors": {
+        "type": "Elige una imagen JPG, PNG o WebP.",
+        "size": "La foto no puede superar los 2 MB.",
+        "failed": "No se pudo guardar la foto. Inténtalo de nuevo."
+      }
+    },
+    "personal": {
+      "title": "Datos personales",
+      "full-name": "Nombre completo",
+      "dni": "DNI",
+      "dni-hint": "8 dígitos",
+      "phone": "Teléfono",
+      "location": "Ubicación",
+      "location-hint": "Distrito y ciudad, por ejemplo Miraflores, Lima",
+      "save": "Guardar datos",
+      "saved": "Datos personales guardados.",
+      "errors": {
+        "full-name": "Escribe tu nombre completo (de 2 a 120 caracteres).",
+        "dni": "El DNI tiene 8 dígitos.",
+        "phone": "Usa de 6 a 15 dígitos; puede empezar con +.",
+        "location": "Usa de 2 a 120 caracteres.",
+        "invalid": "Algún dato no es válido. Revísalo."
+      }
+    },
+    "account": {
+      "title": "Cuenta",
+      "subtitle": "El usuario con el que inicias sesión y el correo para recuperar tu contraseña y recibir avisos.",
+      "username": "Usuario",
+      "email": "Correo",
+      "current-password": "Contraseña actual",
+      "current-password-hint": "Confirma el cambio con tu contraseña. Si cambias el usuario, úsalo la próxima vez que inicies sesión.",
+      "save": "Guardar cuenta",
+      "saved": "Cuenta actualizada. Usa tu nuevo usuario la próxima vez que inicies sesión.",
+      "errors": {
+        "username": "Usa de 3 a 80 caracteres.",
+        "email": "Escribe un correo válido.",
+        "taken": "Ese usuario o correo ya lo usa otra cuenta.",
+        "invalid": "La contraseña actual no es correcta o algún dato no es válido."
+      }
+    },
+    "password": {
+      "title": "Contraseña",
+      "current": "Contraseña actual",
+      "hint": "De 8 a 72 caracteres con letras y números",
+      "saved": "Contraseña cambiada."
+    },
+    "notifications": {
+      "title": "Notificaciones",
+      "subtitle": "Elige dónde recibir los avisos de alertas y lotes."
+    },
+    "errors": {
+      "load": "No se pudo cargar tu perfil.",
+      "failed": "No se pudo guardar el cambio. Inténtalo de nuevo."
+    }
+  },
   "common": {
     "save": "Guardar Cambios",
     "cancel": "Cancelar",
@@ -289,7 +365,6 @@
     "alerts": "Alertas de cumplimiento",
     "alert-dashboard": "Alertas activas",
     "alert-history": "Historial de alertas",
-    "notification-preferences": "Preferencias de notificación",
     "reports": "Reportes y KPIs",
     "kpi-dashboard": "Resumen ambiental",
     "deviation-trends": "Indicadores de desviación",
@@ -615,7 +690,8 @@
       "view-details": "Ver detalle",
       "resolve": "Resolver alerta",
       "acknowledge": "Registrar atención",
-      "view-conditions": "Ver condiciones"
+      "view-conditions": "Ver condiciones",
+      "email": "Avisar por correo"
     },
     "history": {
       "title": "Historial de alertas",
@@ -638,16 +714,16 @@
       "resolution-required": "Escribe entre 10 y 500 caracteres."
     },
     "settings": {
-      "title": "Preferencias de Notificación",
-      "subtitle": "Configura cómo y cuándo recibir las alertas del sistema",
-      "channels-title": "Canales de Comunicación",
-      "channels-subtitle": "Selecciona dónde deseas recibir las notificaciones",
-      "in-app": "Notificaciones en la App",
-      "email": "Notificaciones por Correo",
-      "sms": "Alertas por SMS",
-      "threshold-title": "Umbral de Alerta",
-      "threshold-subtitle": "Nivel de severidad mínimo requerido para enviar una notificación",
-      "severity-hint": "Solo se enviarán alertas con esta severidad o superior"
+      "in-app": "Avisos en la campanita",
+      "email": "Avisos por correo",
+      "threshold-title": "Alertas que se avisan",
+      "severity-hint": "Las decisiones sobre los lotes siempre llegan a la campanita.",
+      "in-app-hint": "Lo que pasa con las alertas y los lotes del laboratorio llega a la campanita de la barra superior.",
+      "email-hint": "Un correo cuando una alerta se abre como crítica o pasa a crítica.",
+      "from-warning": "Advertencias y alertas críticas",
+      "only-critical": "Solo alertas críticas",
+      "save": "Guardar preferencias",
+      "saved": "Preferencias de notificación guardadas."
     },
     "no-environments": "Las alertas se consultan por ambiente. Registra primero un ambiente y sus dispositivos IoT.",
     "normalized": "Condición normalizada",
@@ -667,6 +743,43 @@
       "ENVIRONMENT": "Ambiente",
       "CONTAINER": "Contenedor",
       "EQUIPMENT": "Equipo"
+    },
+    "email": {
+      "sent": "Se avisó por correo a {{count}} persona(s).",
+      "no-recipients": "Nadie más del laboratorio tiene activados los avisos por correo.",
+      "failed": "No se pudo enviar el correo. Revisa que el envío de correos esté configurado en la plataforma."
+    }
+  },
+  "notifications": {
+    "title": "Notificaciones",
+    "open": "Abrir notificaciones",
+    "open-unread": "Abrir notificaciones, {{count}} sin leer",
+    "mark-all": "Marcar todas como leídas",
+    "loading": "Cargando notificaciones",
+    "load-error": "No se pudieron cargar las notificaciones.",
+    "empty": "Aún no tienes notificaciones.",
+    "unread": "Sin leer",
+    "preferences": "Preferencias de notificación",
+    "just-now": "Hace un momento",
+    "someone": "Alguien",
+    "unknown-environment": "un ambiente",
+    "severity": {
+      "LOW": "leve",
+      "WARNING": "de advertencia",
+      "CRITICAL": "crítica"
+    },
+    "level": {
+      "LOW": "leve",
+      "WARNING": "advertencia",
+      "CRITICAL": "crítica"
+    },
+    "types": {
+      "ALERT_OPENED": "Nueva alerta {{severity}} en {{environment}}: {{variable}} en {{value}} {{unit}}.",
+      "ALERT_ESCALATED": "La alerta de {{variable}} en {{environment}} pasó a {{level}}: {{value}} {{unit}}.",
+      "ALERT_ACKNOWLEDGED": "{{actor}} está atendiendo la alerta de {{variable}} en {{environment}}.",
+      "ALERT_RESOLVED": "{{actor}} resolvió la alerta de {{variable}} en {{environment}}.",
+      "BATCH_RELEASED": "{{actor}} liberó el lote {{batch}}.",
+      "BATCH_REJECTED": "{{actor}} rechazó el lote {{batch}}: {{note}}"
     }
   },
   "batches": {
@@ -1530,6 +1643,11 @@
         "export": "Exportó",
         "generate": "Generó"
       }
+    },
+    "profile": {
+      "title": "Perfil",
+      "not-completed": "Esta persona aún no completa su perfil.",
+      "unavailable": "No se pudo cargar el perfil de esta persona."
     }
   },
   "batch-storage": {

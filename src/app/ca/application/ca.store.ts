@@ -1,7 +1,7 @@
 import { computed, DestroyRef, inject, Injectable, Signal, signal } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { retry, Subject, takeUntil } from 'rxjs';
+import { Observable, Subject, takeUntil, tap } from 'rxjs';
 
 import { DeviationAlert } from '../domain/model/deviation-alert.entity';
 import { ComplianceEvent } from '../domain/model/compliance-event.entity';
@@ -52,6 +52,7 @@ export class CaStore {
   private readonly _savingSignal = signal<boolean>(false);
   private readonly _errorSignal = signal<string | null>(null);
   private readonly _noticeSignal = signal<string | null>(null);
+  private readonly _noticeParamsSignal = signal<Record<string, unknown>>({});
 
   /** Alerts of the environment currently shown, newest first. */
   readonly alerts = this._alertsSignal.asReadonly();
@@ -78,6 +79,9 @@ export class CaStore {
 
   /** Latest confirmation as a translation key. */
   readonly notice = this._noticeSignal.asReadonly();
+
+  /** Values of the latest confirmation, for example how many people an alert was e-mailed to. */
+  readonly noticeParams = this._noticeParamsSignal.asReadonly();
 
   /** Open alerts (unresolved or being attended) of the list. */
   readonly openAlertsCount = computed(() => this.alerts().filter((alert) => alert.isOpen).length);
@@ -209,6 +213,30 @@ export class CaStore {
   }
 
   /**
+   * E-mails an open critical alert again to the people of the laboratory who enabled e-mail notices (US84, TS78).
+   *
+   * @param alertId - The unique numeric identifier of the deviation alert.
+   */
+  sendAlertEmailNotification(alertId: number): void {
+    if (!alertId || this._savingSignal()) return;
+    this._savingSignal.set(true);
+    this._errorSignal.set(null);
+    this._noticeSignal.set(null);
+
+    this.caApi.sendAlertEmailNotification(alertId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: (delivery) => {
+        this._noticeParamsSignal.set({ count: delivery.recipients });
+        this._noticeSignal.set(delivery.recipients === 0 ? 'ca-alerts.email.no-recipients' : 'ca-alerts.email.sent');
+        this._savingSignal.set(false);
+      },
+      error: (err) => {
+        this._errorSignal.set(err instanceof ApiError && err.status === 502 ? 'ca-alerts.email.failed' : alertError(err));
+        this._savingSignal.set(false);
+      },
+    });
+  }
+
+  /**
    * Fetches compliance events related to an equipment.
    *
    * @param equipmentId - The unique numeric identifier of the equipment.
@@ -252,16 +280,14 @@ export class CaStore {
   }
 
   /**
-   * Fetches notification preferences for a specific user.
-   *
-   * @param userId - The unique numeric identifier of the user.
+   * Fetches the notification preferences of the signed-in user.
    */
-  loadNotificationPreferences(userId: number): void {
+  loadNotificationPreferences(): void {
     this._loadingSignal.set(true);
     this._errorSignal.set(null);
 
     this.caApi
-      .getPreferences(userId)
+      .getPreferences()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (preference) => {
@@ -276,31 +302,15 @@ export class CaStore {
   }
 
   /**
-   * Updates notification preferences and refreshes the local state.
+   * Updates the notification preferences of the signed-in user and keeps them as the local state.
    *
-   * @param userId - The unique numeric identifier of the user.
    * @param request - DTO containing the updated preference values.
+   * @returns The saved preferences; the caller shows the confirmation or the error.
    */
-  updateNotificationPreferences(
-    userId: number,
-    request: UpdateNotificationPreferenceRequest,
-  ): void {
-    this._loadingSignal.set(true);
-    this._errorSignal.set(null);
-
-    this.caApi
-      .updatePreferences(userId, request)
-      .pipe(retry(2), takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (updatedPreference) => {
-          this._preferenceSignal.set(updatedPreference);
-          this._loadingSignal.set(false);
-        },
-        error: (err) => {
-          this._errorSignal.set(alertError(err));
-          this._loadingSignal.set(false);
-        },
-      });
+  updateNotificationPreferences(request: UpdateNotificationPreferenceRequest): Observable<NotificationPreference> {
+    return this.caApi.updatePreferences(request).pipe(
+      tap((updatedPreference) => this._preferenceSignal.set(updatedPreference)),
+    );
   }
 
   clearAlerts(): void {
