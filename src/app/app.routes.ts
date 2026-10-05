@@ -30,6 +30,9 @@ const raRoutes = () => import('./ra/presentation/ra-routes').then((m) => m.raRou
 const trackingRoutes = () =>
   import('./tracking/presentation/tracking-routes').then((m) => m.trackingRoutes);
 
+const profileRoutes = () =>
+  import('./profile/presentation/profile-routes').then((m) => m.profileRoutes);
+
 const subscriptionRoutes = () =>
   import('./subscription/presentation/subscription-routes').then((m) => m.subscriptionRoutes);
 
@@ -53,6 +56,7 @@ export const routes: Routes = [
   { path: 'reports', loadChildren: raRoutes, canActivate: [onboardingGuard], canActivateChild: [onboardingGuard] },
   { path: 'tracking', loadChildren: trackingRoutes, canActivate: [onboardingGuard], canActivateChild: [onboardingGuard] },
   { path: 'subscriptions', loadChildren: subscriptionRoutes, canActivate: [iamGuard, qualityManagerGuard] },
+  { path: 'profile', loadChildren: profileRoutes, canActivate: [onboardingGuard], canActivateChild: [onboardingGuard] },
 
   { path: '', redirectTo: '/home', pathMatch: 'full' },
   { path: '**', loadComponent: pageNotFound, title: `Page Not Found - ${baseTitle}` },

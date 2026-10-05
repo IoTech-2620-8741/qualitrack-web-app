@@ -17,6 +17,7 @@ import { LaboratoryStore } from '../../../application/laboratory.store';
 import { StaffMember } from '../../../domain/model/staff-member.entity';
 import { RaApi } from '../../../../ra/infrastructure/ra-api';
 import { AuditLogEntry } from '../../../../ra/domain/model/audit-log-entry.entity';
+import { ProfileStore, StaffProfile } from '../../../../profile/application/profile.store';
 
 /** Records whose type has a translated name; any other type is shown as the platform sends it. */
 const KNOWN_ENTITIES = new Set([
@@ -33,7 +34,8 @@ const KNOWN_ACTIONS = new Set([
 
 /**
  * Profile of a staff member and what they did with their account (maintenance, receipts, batches…),
- * consulted by quality managers and auditors from the staff list.
+ * consulted by quality managers and auditors from the staff list. Only the quality manager sees the photo and the
+ * personal data the staff member keeps in the profile.
  */
 @Component({
   selector: 'app-staff-detail',
@@ -57,6 +59,7 @@ export class StaffDetail {
   private readonly laboratoryApi = inject(LaboratoryApi);
   private readonly laboratoryStore = inject(LaboratoryStore);
   private readonly raApi = inject(RaApi);
+  private readonly profiles = inject(ProfileStore);
   private readonly translate = inject(TranslateService);
   private readonly destroyRef = inject(DestroyRef);
 
@@ -66,6 +69,8 @@ export class StaffDetail {
   protected readonly activity = signal<AuditLogEntry[]>([]);
   protected readonly entityFilter = signal<string>('ALL');
   protected readonly deactivating = signal(false);
+  protected readonly profile = signal<StaffProfile | null>(null);
+  protected readonly profileUnavailable = signal(false);
 
   protected readonly entityTypes = computed(() =>
     [...new Set(this.activity().map((entry) => entry.entityType))].sort());
@@ -78,6 +83,7 @@ export class StaffDetail {
   protected readonly lastActivity = computed(() => this.activity()[0]?.timestamp ?? null);
 
   constructor() {
+    this.destroyRef.onDestroy(() => this.showProfile(null));
     this.route.paramMap.pipe(
       switchMap((params) => {
         this.loading.set(true);
@@ -102,7 +108,27 @@ export class StaffDetail {
       }
       this.member.set(result.member);
       this.activity.set([...result.activity].sort((a, b) => b.timestamp.localeCompare(a.timestamp)));
+      this.loadProfile(result.member);
     });
+  }
+
+  /** The quality manager sees the profile the staff member keeps: photo and personal data. */
+  private loadProfile(member: StaffMember): void {
+    this.showProfile(null);
+    this.profileUnavailable.set(false);
+    if (!this.iam.canManageQuality() || member.userId === null) return;
+    this.profiles.staffProfile(member.laboratoryId, member.id)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (profile) => this.showProfile(profile),
+        error: () => this.profileUnavailable.set(true),
+      });
+  }
+
+  private showProfile(profile: StaffProfile | null): void {
+    const previous = this.profile()?.photoUrl;
+    if (previous) URL.revokeObjectURL(previous);
+    this.profile.set(profile);
   }
 
   protected entityKey(entityType: string): string | null {

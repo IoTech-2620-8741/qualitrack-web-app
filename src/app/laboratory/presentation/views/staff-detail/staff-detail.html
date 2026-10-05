@@ -31,6 +31,36 @@
       <p class="error" role="alert">{{ message | translate }}</p>
     }
 
+    @if (profile(); as staffProfile) {
+      <section class="staff-profile" aria-labelledby="staff-profile-title">
+        <div class="staff-photo">
+          @if (staffProfile.photoUrl; as photo) {
+            <img [src]="photo" [alt]="'profile.photo.alt' | translate: { name: staffProfile.profile.displayName }">
+          } @else {
+            <span aria-hidden="true">{{ staffProfile.profile.initials }}</span>
+          }
+        </div>
+        <div class="staff-profile-data">
+          <h2 id="staff-profile-title">{{ 'staff.profile.title' | translate }}</h2>
+          @if (staffProfile.profile.updatedAt) {
+            <p class="muted">{{ 'profile.updated-at' | translate: { date: (staffProfile.profile.updatedAt | date: 'medium') } }}</p>
+          } @else {
+            <p class="muted">{{ 'staff.profile.not-completed' | translate }}</p>
+          }
+          <dl>
+            <div><dt>{{ 'profile.personal.full-name' | translate }}</dt><dd>{{ staffProfile.profile.fullName ?? '—' }}</dd></div>
+            <div><dt>{{ 'profile.personal.dni' | translate }}</dt><dd>{{ staffProfile.profile.dni ?? '—' }}</dd></div>
+            <div><dt>{{ 'profile.personal.phone' | translate }}</dt><dd>{{ staffProfile.profile.phoneNumber ?? '—' }}</dd></div>
+            <div><dt>{{ 'profile.personal.location' | translate }}</dt><dd>{{ staffProfile.profile.location ?? '—' }}</dd></div>
+            <div><dt>{{ 'profile.account.username' | translate }}</dt><dd>{{ staffProfile.profile.username }}</dd></div>
+            <div><dt>{{ 'profile.account.email' | translate }}</dt><dd>{{ staffProfile.profile.email ?? '—' }}</dd></div>
+          </dl>
+        </div>
+      </section>
+    } @else if (profileUnavailable()) {
+      <p class="notice" role="status">{{ 'staff.profile.unavailable' | translate }}</p>
+    }
+
     <div class="summary-strip">
       <div>
         <span>{{ 'staff-list.access-role' | translate }}</span>
