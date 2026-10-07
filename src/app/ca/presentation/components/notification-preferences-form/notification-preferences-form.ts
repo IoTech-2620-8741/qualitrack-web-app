@@ -32,14 +32,24 @@ import { AlertSeverity } from '../../../domain/model/deviation-alert.entity';
   styleUrl: './notification-preferences-form.css',
 })
 export class NotificationPreferencesForm implements OnInit {
+  /** Store that holds the preferences of the signed-in user. */
   protected readonly store = inject(CaStore);
   private readonly fb = inject(FormBuilder);
   private readonly destroyRef = inject(DestroyRef);
 
+  /** Whether the preferences are being saved. */
   protected readonly saving = signal(false);
+  /** Whether the latest save succeeded and the form was not edited since. */
   protected readonly saved = signal(false);
+  /** Translation key or server detail of the latest failed save. */
   protected readonly error = signal<string | null>(null);
 
+  /**
+   * Form of the preferences.
+   *
+   * @remarks
+   * The minimum severity is limited to `WARNING` or `CRITICAL`.
+   */
   protected readonly form = this.fb.nonNullable.group({
     inAppEnabled: [true],
     emailEnabled: [true],
@@ -47,6 +57,13 @@ export class NotificationPreferencesForm implements OnInit {
     minimumSeverity: ['WARNING' as AlertSeverity],
   });
 
+  /**
+   * Creates the form.
+   *
+   * @remarks
+   * Whenever the store has preferences, the form is filled with them; a stored `LOW` is shown as `WARNING`.
+   * Editing the form hides the confirmation of the latest save.
+   */
   constructor() {
     effect(() => {
       const preference = this.store.preference();
@@ -60,10 +77,18 @@ export class NotificationPreferencesForm implements OnInit {
     this.form.valueChanges.pipe(takeUntilDestroyed()).subscribe(() => this.saved.set(false));
   }
 
+  /** Loads the preferences of the signed-in user. */
   ngOnInit(): void {
     this.store.loadNotificationPreferences();
   }
 
+  /**
+   * Saves the values of the form as the preferences of the user.
+   *
+   * @remarks
+   * Does nothing while a save is in progress. On success the confirmation is shown and the form is marked as
+   * pristine; on failure the error is kept in {@link NotificationPreferencesForm.error}.
+   */
   protected save(): void {
     if (this.saving()) return;
     this.saving.set(true);
