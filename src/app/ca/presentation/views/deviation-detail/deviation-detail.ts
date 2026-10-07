@@ -42,9 +42,17 @@ export class DeviationDetail implements OnInit {
   protected readonly store = inject(CaStore);
   protected readonly environments = inject(EnvironmentStore);
 
+  /** Numeric id of the alert in the route; 0 when the route has none or it is not a number. */
   protected alertId = 0;
+  /** The alert shown; it is set when the route parameter is read. */
   protected alert!: Signal<DeviationAlert | undefined>;
 
+  /**
+   * Form to resolve the alert.
+   *
+   * @remarks
+   * The resolution notes are required and must have between 10 and 500 characters.
+   */
   protected readonly resolutionForm = this.fb.nonNullable.group({
     resolutionNotes: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(500)]],
   });
@@ -56,6 +64,13 @@ export class DeviationDetail implements OnInit {
     return environment ? `${environment.code} · ${environment.name}` : null;
   });
 
+  /**
+   * Loads the environments and devices when needed and the alert of the route.
+   *
+   * @remarks
+   * It follows the `id` parameter of the route: every time it changes, the resolution form and the error are
+   * cleared and the alert is loaded again.
+   */
   ngOnInit(): void {
     if (!this.environments.loaded()) void this.environments.loadEnvironments();
     this.store.loadDevices();
@@ -68,13 +83,19 @@ export class DeviationDetail implements OnInit {
     });
   }
 
-  /** Translated name of a monitored variable, or the stored name when it is not a known metric. */
+  /**
+   * Translated name of a monitored variable, or the stored name when it is not a known metric.
+   *
+   * @param parameterName - The variable of the alert, for example `TEMPERATURE`
+   * @returns The translation of `tracking.metrics.{parameterName}`, or `parameterName` when there is none
+   */
   protected variable(parameterName: string): string {
     const key = 'tracking.metrics.' + parameterName;
     const label = this.translate.instant(key);
     return label === key ? parameterName : label;
   }
 
+  /** Registers that the signed-in user attends the alert (US87). */
   protected acknowledge(): void {
     this.store.acknowledgeAlert(this.alertId);
   }
@@ -84,6 +105,12 @@ export class DeviationDetail implements OnInit {
     this.store.sendAlertEmailNotification(this.alertId);
   }
 
+  /**
+   * Resolves the alert with the notes of the form (US88).
+   *
+   * @remarks
+   * Marks the form as touched and does nothing if it is invalid. The notes are trimmed before they are sent.
+   */
   protected resolve(): void {
     this.resolutionForm.markAllAsTouched();
     if (this.resolutionForm.invalid) return;
