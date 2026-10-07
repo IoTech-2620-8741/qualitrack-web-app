@@ -3,14 +3,20 @@ import { AlertSeverity } from './deviation-alert.entity';
 
 /** What a notification tells: a step of an alert or a quality decision on a batch. */
 export type NotificationType =
+  /** An alert was opened. */
   | 'ALERT_OPENED'
+  /** The severity of an open alert rose. */
   | 'ALERT_ESCALATED'
+  /** Somebody started attending an alert. */
   | 'ALERT_ACKNOWLEDGED'
+  /** Somebody resolved an alert. */
   | 'ALERT_RESOLVED'
+  /** A batch was released by quality. */
   | 'BATCH_RELEASED'
+  /** A batch was rejected by quality. */
   | 'BATCH_REJECTED';
 
-/** Record a notification is about. */
+/** Record a notification is about; it decides where the notification links to. */
 export type NotificationSubject = 'ALERT' | 'BATCH';
 
 /**
@@ -18,23 +24,65 @@ export type NotificationSubject = 'ALERT' | 'BATCH';
  *
  * @remarks
  * The platform sends the values; the text is composed in the language of the person.
+ *
+ * @example
+ * ```typescript
+ * const notification = new Notification({
+ *   id: 3,
+ *   type: 'ALERT_OPENED',
+ *   severity: 'CRITICAL',
+ *   subjectType: 'ALERT',
+ *   subjectId: 7,
+ *   environmentName: 'Cold room',
+ *   subjectName: null,
+ *   parameterName: 'Temperature',
+ *   recordedValue: 9.4,
+ *   unit: '°C',
+ *   actorName: null,
+ *   note: null,
+ *   occurredAt: '2026-10-04T10:00:00Z',
+ *   readAt: null,
+ * });
+ *
+ * console.log(notification.isRead); // false
+ * console.log(notification.link); // ['/alerts/deviation-detail', '7']
+ * ```
  */
 export class Notification implements BaseEntity {
+  /** Unique identifier of the notification. */
   id: number;
+  /** What the notification tells. */
   type: NotificationType;
+  /** Severity of the alert; `null` for batch notifications. */
   severity: AlertSeverity | null;
+  /** Kind of record the notification is about. */
   subjectType: NotificationSubject;
+  /** Identifier of the alert or batch the notification is about. */
   subjectId: number;
+  /** Name of the environment of the alert. */
   environmentName: string | null;
+  /** Name of the alert or batch the notification is about. */
   subjectName: string | null;
+  /** Variable that deviated, for alert notifications. */
   parameterName: string | null;
+  /** Value that deviated, for alert notifications. */
   recordedValue: number | null;
+  /** Unit of {@link Notification.recordedValue}. */
   unit: string | null;
+  /** Name of the person who caused the event, when somebody did. */
   actorName: string | null;
+  /** Comment the actor left, for example the resolution notes. */
   note: string | null;
+  /** When the event happened, as an ISO 8601 date-time. */
   occurredAt: string;
+  /** When the person read the notification; `null` while it is unread. */
   readAt: string | null;
 
+  /**
+   * Creates a new Notification entity.
+   *
+   * @param params - Initialization properties; see the fields of the class for the meaning of each one
+   */
   constructor(params: {
     id: number;
     type: NotificationType;
@@ -67,6 +115,7 @@ export class Notification implements BaseEntity {
     this.readAt = params.readAt;
   }
 
+  /** `true` once the person has read the notification. */
   get isRead(): boolean {
     return this.readAt !== null;
   }
@@ -78,7 +127,12 @@ export class Notification implements BaseEntity {
       : ['/batches/batch-detail', String(this.subjectId)];
   }
 
-  /** Material icon of the notification. */
+  /**
+   * Material icon of the notification.
+   *
+   * @returns `error` for critical openings and escalations, `warning` for the others, and a fixed icon for each
+   * other type.
+   */
   get icon(): string {
     switch (this.type) {
       case 'ALERT_OPENED':
