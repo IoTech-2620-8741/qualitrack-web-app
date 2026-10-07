@@ -2,19 +2,50 @@ import { BaseAssembler } from '../../shared/infrastructure/base-assembler';
 import { DeviationAlert } from '../domain/model/deviation-alert.entity';
 import { AlertDetailResource, AlertResource, AlertsResponse } from './alert-response';
 
+/**
+ * Converts deviation alerts between the resources of the API and {@link DeviationAlert} entities.
+ *
+ * @remarks
+ * The list of alerts and the alert detail share most fields. Only the detail ({@link AlertDetailResource}) carries
+ * the actions related to the incident, so the entities built from a list have no related actuations.
+ *
+ * @example
+ * ```typescript
+ * const assembler = new AlertAssembler();
+ * const alerts = assembler.toEntitiesFromResources(resources);
+ * ```
+ */
 export class AlertAssembler implements BaseAssembler<
   DeviationAlert,
   AlertResource,
   AlertsResponse
 > {
+  /**
+   * Converts a response envelope into entities.
+   *
+   * @param response - The envelope with the alert resources
+   * @returns The deviation alerts, in the order they were received
+   */
   toEntitiesFromResponse(response: AlertsResponse): DeviationAlert[] {
     return response.alerts.map((alert) => this.toEntityFromResource(alert));
   }
 
+  /**
+   * Converts a list of alert resources into entities.
+   *
+   * @param resources - The alerts as the API sends them
+   * @returns The deviation alerts, in the order they were received
+   */
   toEntitiesFromResources(resources: AlertResource[]): DeviationAlert[] {
     return resources.map((alert) => this.toEntityFromResource(alert));
   }
 
+  /**
+   * Converts an alert resource, from the list or from the detail, into an entity.
+   *
+   * @param resource - The alert as the API sends it
+   * @returns The deviation alert; its related actuations are empty unless the resource is an alert detail
+   */
   toEntityFromResource(resource: AlertResource | AlertDetailResource): DeviationAlert {
     return new DeviationAlert({
       id: resource.id,
@@ -44,6 +75,12 @@ export class AlertAssembler implements BaseAssembler<
     });
   }
 
+  /**
+   * Converts an alert into the resource of the list.
+   *
+   * @param entity - The deviation alert
+   * @returns The alert resource, without the related actuations of the detail
+   */
   toResourceFromEntity(entity: DeviationAlert): AlertResource {
     return {
       id: entity.id,
