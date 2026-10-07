@@ -19,6 +19,11 @@ import { Equipment } from '../../equipment/domain/model/equipment.entity';
  * Translates failures of the alert views into translation keys, or the server details when they explain a rule.
  *
  * @param error - The failure raised by the API facade
+ * @returns A translation key, or the details sent by the server
+ *
+ * @remarks
+ * The first rule that matches wins: status 0 (no connection), 403 (forbidden), 404 (not found), the details of an
+ * `ApiError` or of an `HttpErrorResponse`, and finally the generic failure key.
  */
 export function alertError(error: unknown): string {
   const status = error instanceof ApiError ? error.status : error instanceof HttpErrorResponse ? error.status : null;
@@ -39,6 +44,19 @@ export function alertError(error: unknown): string {
  * Alerts are read per environment (US85, TS74); the selected alert keeps its detail with the related actions
  * (US86) and is acknowledged (US87) or resolved (US88) by the authenticated user. Operators and quality managers
  * attend alerts; auditors only consult them (decision of 2026-10-04).
+ *
+ * Every load replaces the previous state of what it loads, and a new request cancels the one in progress for the
+ * same data. Failures are kept in {@link CaStore.error} as a translation key or a server detail.
+ *
+ * @example
+ * ```typescript
+ * const store = inject(CaStore);
+ *
+ * store.loadEnvironmentAlerts(environmentId, { active: true });
+ * console.log(store.openAlertsCount());
+ *
+ * store.acknowledgeAlert(alertId);
+ * ```
  */
 @Injectable({ providedIn: 'root' })
 export class CaStore {
@@ -69,6 +87,7 @@ export class CaStore {
   /** Equipment and IoT devices of the laboratory, to name the device of each alert. */
   readonly devices = this._devicesSignal.asReadonly();
 
+  /** Indicates whether alerts, events, preferences or an alert detail are being loaded. */
   readonly loading = this._loadingSignal.asReadonly();
 
   /** Indicates whether an acknowledgement or resolution is being registered. */
@@ -96,7 +115,7 @@ export class CaStore {
     () => this.alerts().filter((alert) => alert.status === 'ACKNOWLEDGED').length,
   );
 
-  /** Users who register operations attend alerts; auditors only consult them. */
+  /** Whether the user can attend alerts: signed in and not only an auditor. */
   readonly canAttend: Signal<boolean>;
 
   private readonly destroyRef = inject(DestroyRef);
@@ -105,6 +124,11 @@ export class CaStore {
   private readonly reloadAlerts = new Subject<void>();
   private readonly reloadAlert = new Subject<void>();
 
+  /**
+   * Creates the store.
+   *
+   * @param caApi - The API facade of Compliance & Alerting
+   */
   constructor(private caApi: CaApi) {
     this.canAttend = this.iam.canOperate;
   }
@@ -113,6 +137,8 @@ export class CaStore {
    * The alert shown by the detail, or one of the listed alerts.
    *
    * @param id - The unique numeric identifier of the deviation alert.
+   * @returns A signal with the selected alert when it has that id, otherwise the listed alert with that id, or
+   * `undefined` when there is none
    */
   getAlertById(id: number): Signal<DeviationAlert | undefined> {
     return computed(() => {
@@ -124,12 +150,24 @@ export class CaStore {
     });
   }
 
-  /** Name of the device or equipment of an alert, or null while it is unknown. */
+  /**
+   * Name of the device or equipment of an alert, or null while it is unknown.
+   *
+   * @param equipmentId - The equipment or device that detected the deviation
+   * @returns The name, or `null` when the equipment is not among the loaded devices
+   */
   deviceName(equipmentId: number): string | null {
     return this.devices().find((device) => device.id === equipmentId)?.name ?? null;
   }
 
-  /** Loads the equipment of the laboratory once, to show the name of the device of each alert. */
+  /**
+   * Loads the equipment of the laboratory once, to show the name of the device of each alert.
+   *
+   * @throws {Error} When the user has no laboratory set up
+   *
+   * @remarks
+   * Does nothing when the equipment is already loaded. If the request fails, the list stays empty.
+   */
   loadDevices(): void {
     if (this._devicesSignal().length) return;
     this.equipmentApi
@@ -143,6 +181,10 @@ export class CaStore {
    *
    * @param environmentId - The environment
    * @param filters - Optional status, severity, device and active filters
+   * @throws {Error} When the user has no laboratory set up
+   *
+   * @remarks
+   * Cancels the request in progress and empties the list before loading.
    */
   loadEnvironmentAlerts(environmentId: number, filters: AlertFilters = {}): void {
     this.reloadAlerts.next();
@@ -169,6 +211,10 @@ export class CaStore {
    * Loads an alert with its origin and the actions related to the incident (US86).
    *
    * @param alertId - The unique numeric identifier of the deviation alert.
+   *
+   * @remarks
+   * Does nothing for an empty id. Cancels the request in progress, clears the selected alert and the latest
+   * confirmation, and when the alert arrives it also replaces the one of the list.
    */
   loadAlertById(alertId: number): void {
     if (!alertId) return;
@@ -197,6 +243,9 @@ export class CaStore {
    * Registers that the authenticated user attends the alert (US87).
    *
    * @param alertId - The unique numeric identifier of the deviation alert.
+   *
+   * @remarks
+   * Confirms with `ca-alerts.acknowledged`. Ignored while another acknowledgement or resolution is being saved.
    */
   acknowledgeAlert(alertId: number): void {
     this.attend(alertId, this.caApi.acknowledgeAlert(alertId), 'ca-alerts.acknowledged');
@@ -207,6 +256,9 @@ export class CaStore {
    *
    * @param alertId - The unique numeric identifier of the deviation alert.
    * @param request - DTO containing the resolution notes.
+   *
+   * @remarks
+   * Confirms with `ca-alerts.resolved`. Ignored while another acknowledgement or resolution is being saved.
    */
   resolveAlert(alertId: number, request: ResolveAlertRequest): void {
     this.attend(alertId, this.caApi.resolveAlert(alertId, request), 'ca-alerts.resolved');
@@ -216,6 +268,11 @@ export class CaStore {
    * E-mails an open critical alert again to the people of the laboratory who enabled e-mail notices (US84, TS78).
    *
    * @param alertId - The unique numeric identifier of the deviation alert.
+   *
+   * @remarks
+   * Confirms with `ca-alerts.email.sent`, or with `ca-alerts.email.no-recipients` when nobody enabled e-mail
+   * notices; the number of people is kept in {@link CaStore.noticeParams} as `count`. A 502 answer is reported as
+   * `ca-alerts.email.failed`. Ignored while something is being saved.
    */
   sendAlertEmailNotification(alertId: number): void {
     if (!alertId || this._savingSignal()) return;
@@ -240,6 +297,7 @@ export class CaStore {
    * Fetches compliance events related to an equipment.
    *
    * @param equipmentId - The unique numeric identifier of the equipment.
+   * @throws {Error} When the user has no laboratory set up
    */
   loadEquipmentComplianceEvents(equipmentId: number): void {
     this._loadingSignal.set(true);
@@ -260,6 +318,11 @@ export class CaStore {
       });
   }
 
+  /**
+   * Fetches compliance events related to a batch.
+   *
+   * @param batchId - The unique numeric identifier of the batch.
+   */
   loadBatchComplianceEvents(batchId: number): void {
     this._loadingSignal.set(true);
     this._errorSignal.set(null);
@@ -313,21 +376,39 @@ export class CaStore {
     );
   }
 
+  /** Cancels the alerts request in progress and empties the list. */
   clearAlerts(): void {
     this.reloadAlerts.next();
     this._alertsSignal.set([]);
     this._loadingSignal.set(false);
   }
 
+  /** Clears the latest error and the latest confirmation. */
   clearError(): void {
     this._errorSignal.set(null);
     this._noticeSignal.set(null);
   }
 
+  /**
+   * Shows an error raised outside the store.
+   *
+   * @param message - A translation key or a text to show
+   */
   setError(message: string): void {
     this._errorSignal.set(message);
   }
 
+  /**
+   * Runs an acknowledgement or a resolution and keeps its result as the selected alert.
+   *
+   * @param alertId - The unique numeric identifier of the deviation alert.
+   * @param request - The request that registers the operation
+   * @param notice - Translation key of the confirmation to show when it succeeds
+   *
+   * @remarks
+   * Ignored for an empty id or while another operation is being saved. The response does not repeat the actions
+   * related to the incident, so those of the selected alert are kept.
+   */
   private attend(alertId: number, request: ReturnType<CaApi['acknowledgeAlert']>, notice: string): void {
     if (!alertId || this._savingSignal()) return;
     this._savingSignal.set(true);
