@@ -16,6 +16,9 @@ const notificationsEndpointUrl =
 
 /**
  * HTTP endpoint client for the notifications of the signed-in user (/users/me/notifications).
+ *
+ * @remarks
+ * Every method fails with an `ApiError` that keeps the HTTP status and the details sent by the server.
  */
 export class NotificationApiEndpoint extends BaseApiEndpoint<
   Notification,
@@ -23,13 +26,21 @@ export class NotificationApiEndpoint extends BaseApiEndpoint<
   NotificationsResponse,
   NotificationAssembler
 > {
+  /**
+   * Creates the endpoint client.
+   *
+   * @param http - Angular HttpClient used for the requests
+   */
   constructor(http: HttpClient) {
     super(http, notificationsEndpointUrl, new NotificationAssembler());
   }
 
   /**
+   * Retrieves the notifications of the signed-in user, newest first.
+   *
    * @param unreadOnly - Leaves out the notifications already read
-   * @param limit - Maximum number of notifications, newest first (1 to 100)
+   * @param limit - Maximum number of notifications (1 to 100)
+   * @returns Observable emitting the notifications
    */
   getNotifications(unreadOnly: boolean, limit: number): Observable<Notification[]> {
     const params = new HttpParams().set('unread', unreadOnly).set('limit', limit);
@@ -39,6 +50,11 @@ export class NotificationApiEndpoint extends BaseApiEndpoint<
     );
   }
 
+  /**
+   * Retrieves how many notifications the signed-in user has not read.
+   *
+   * @returns Observable emitting the unread count
+   */
   getUnreadCount(): Observable<number> {
     return this.http
       .get<UnreadNotificationsResource>(`${this.endpointUrl}${environment.caNotificationUnreadCountEndpointPath}`)
@@ -48,6 +64,12 @@ export class NotificationApiEndpoint extends BaseApiEndpoint<
       );
   }
 
+  /**
+   * Marks a notification as read.
+   *
+   * @param notificationId - The unique numeric identifier of the notification
+   * @returns Observable emitting the notification, now read
+   */
   markAsRead(notificationId: number): Observable<Notification> {
     return this.http
       .post<NotificationResource>(
@@ -60,7 +82,11 @@ export class NotificationApiEndpoint extends BaseApiEndpoint<
       );
   }
 
-  /** @returns How many notifications were unread */
+  /**
+   * Marks every notification of the signed-in user as read.
+   *
+   * @returns Observable emitting how many notifications were unread
+   */
   markAllAsRead(): Observable<number> {
     return this.http
       .post<NotificationsReadResource>(`${this.endpointUrl}${environment.caNotificationReadReceiptsEndpointPath}`, null)
