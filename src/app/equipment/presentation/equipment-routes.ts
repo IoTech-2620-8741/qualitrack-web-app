@@ -5,11 +5,11 @@ import { operatorGuard } from '../../iam/infrastructure/role-guards';
 /**
  * Lazy loads the equipment list view component.
  *
- * @returns A Promise that resolves to the EquipmentList component.
- *
  * @remarks
  * This function enables route-level lazy loading, reducing the initial bundle
  * size by loading the equipment list view only when the route is accessed.
+ *
+ * @returns A Promise that resolves to the EquipmentList component.
  */
 const equipmentList = () =>
   import('./views/equipment-list/equipment-list').then((m) => m.EquipmentList);
@@ -17,11 +17,11 @@ const equipmentList = () =>
 /**
  * Lazy loads the equipment registration form view component.
  *
- * @returns A Promise that resolves to the EquipmentForm component.
- *
  * @remarks
  * This function loads the equipment form only when the user navigates to the
  * equipment registration route.
+ *
+ * @returns A Promise that resolves to the EquipmentForm component.
  */
 const equipmentForm = () =>
   import('./views/equipment-form/equipment-form').then((m) => m.EquipmentForm);
@@ -29,11 +29,11 @@ const equipmentForm = () =>
 /**
  * Lazy loads the equipment detail view component.
  *
- * @returns A Promise that resolves to the EquipmentDetail component.
- *
  * @remarks
  * This function loads the equipment detail view when the user accesses a route
  * containing a specific equipment identifier.
+ *
+ * @returns A Promise that resolves to the EquipmentDetail component.
  */
 const equipmentDetail = () =>
   import('./views/equipment-detail/equipment-detail').then((m) => m.EquipmentDetail);
@@ -41,17 +41,23 @@ const equipmentDetail = () =>
 /**
  * Lazy loads the BPM configuration form view component.
  *
- * @returns A Promise that resolves to the BpmConfigForm component.
- *
  * @remarks
  * This function loads the BPM configuration form when the user navigates to
  * the route used to configure parameters for a specific equipment.
+ *
+ * @returns A Promise that resolves to the BpmConfigForm component.
  */
 const bpmConfigForm = () =>
   import('./views/bpm-config-form/bpm-config-form').then((m) => m.BpmConfigForm);
 
 /**
- * Lazy loads the IoT device registration form (environmental devices and container monitors).
+ * Lazy loads the IoT device registration form view component.
+ *
+ * @remarks
+ * This function loads the form used to register IoT devices (environmental devices
+ * and container monitors) only when the user navigates to the device registration route.
+ *
+ * @returns A Promise that resolves to the DeviceForm component.
  */
 const deviceForm = () =>
   import('./views/device-form/device-form').then((m) => m.DeviceForm);
@@ -59,11 +65,11 @@ const deviceForm = () =>
 /**
  * Lazy loads the maintenance registration form view component.
  *
- * @returns A Promise that resolves to the MaintenanceForm component.
- *
  * @remarks
  * This function loads the maintenance form when the user navigates to the route
  * used to register a maintenance activity for a specific equipment.
+ *
+ * @returns A Promise that resolves to the MaintenanceForm component.
  */
 const maintenanceForm = () =>
   import('./views/maintenance-form/maintenance-form').then((m) => m.MaintenanceForm);
@@ -75,6 +81,16 @@ const maintenanceForm = () =>
  * This route configuration groups all equipment-related views under the shared
  * Layout component. Each child route uses Angular lazy loading through
  * loadComponent, allowing the application to load each view only when needed.
+ *
+ * Child routes:
+ * - `equipment-list`: list of the equipment and IoT devices.
+ * - `register-equipment`: equipment registration form.
+ * - `register-device`: IoT device registration form.
+ * - `equipment-detail/:id`: detail of an equipment; it also shows its maintenance history.
+ * - `bpm-config-form/:id`: BPM parameter configuration form; protected by `operatorGuard`.
+ * - `maintenance-history/:id`: redirects to `equipment-detail/:id`, where the history is shown.
+ * - `maintenance-form/:id`: maintenance registration form; protected by `operatorGuard`.
+ * - empty path: redirects to `equipment-list`.
  *
  * Routes with an `:id` parameter are not meant to be used directly from the
  * sidebar because they require a concrete equipment identifier selected from
