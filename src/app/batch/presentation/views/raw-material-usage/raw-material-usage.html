@@ -1,4 +1,5 @@
 <section aria-labelledby="usage-title">
+  <!-- Consumption form: only on open batches and for users who operate -->
   @if (open()) {
     <h2 id="usage-title">{{ 'batch-usage.title' | translate }}</h2>
     <p class="muted">{{ 'batch-usage.notice' | translate }}</p>
@@ -9,9 +10,11 @@
       <p class="success" role="status">{{ 'batch-usage.saved' | translate }}</p>
     }
     <form class="editor form-grid" [formGroup]="form">
+      <!-- Environment where the raw material is kept -->
       <div class="full-width">
         <app-environment-selector [selectedId]="consumption.environmentId()" (selectedChange)="changeEnvironment($event)" />
       </div>
+      <!-- Raw material, with its usable stock -->
       <mat-form-field appearance="outline">
         <mat-label>{{ 'batch-usage.fields.raw-material' | translate }}</mat-label>
         <mat-select formControlName="rawMaterialId">
@@ -23,6 +26,7 @@
         </mat-select>
         <mat-error>{{ 'common.required' | translate }}</mat-error>
       </mat-form-field>
+      <!-- Usable lot: released, not expired and with stock -->
       <mat-form-field appearance="outline">
         <mat-label>{{ 'batch-usage.fields.lot' | translate }}</mat-label>
         <mat-select formControlName="lotId">
@@ -34,6 +38,7 @@
         </mat-select>
         <mat-error>{{ 'common.required' | translate }}</mat-error>
       </mat-form-field>
+      <!-- Amount to consume, limited by the stock of the lot -->
       <mat-form-field appearance="outline">
         <mat-label>{{ 'batch-usage.fields.quantity-used' | translate }}</mat-label>
         <input matInput type="number" formControlName="amount" min="0.001" step="0.001"
@@ -53,6 +58,7 @@
           <mat-error>{{ 'batch-usage.errors.quantity-min' | translate }}</mat-error>
         }
       </mat-form-field>
+      <!-- Notice when the selected material has no usable lots -->
       @if (form.controls.rawMaterialId.value && !consumption.loading() && !consumption.lots().length) {
         <p class="notice full-width">
           {{ 'batch-usage.no-usable' | translate }}
@@ -68,25 +74,28 @@
     </form>
   }
 
+  <!-- Consumptions already recorded, taken from the traceability -->
   <h2>{{ 'batch-usage.history-title' | translate }}</h2>
   <table class="data-table">
     <thead>
-      <tr>
-        <th>{{ 'batch-usage.fields.raw-material' | translate }}</th>
-        <th>{{ 'batch-usage.fields.quantity-used' | translate }}</th>
-        <th>{{ 'batch-usage.fields.stock' | translate }}</th>
-        <th>{{ 'batch-usage.fields.usage-date' | translate }}</th>
-      </tr>
+    <tr>
+      <th>{{ 'batch-usage.fields.raw-material' | translate }}</th>
+      <th>{{ 'batch-usage.fields.quantity-used' | translate }}</th>
+      <th>{{ 'batch-usage.fields.stock' | translate }}</th>
+      <th>{{ 'batch-usage.fields.usage-date' | translate }}</th>
+    </tr>
     </thead>
     <tbody>
       @for (usage of store.traceability()?.rawMaterials ?? []; track usage.id) {
         <tr>
           <td>
+            <!-- Link to the raw material, when it can be opened -->
             @if (materialLink(usage); as link) {
               <a [routerLink]="link">{{ usage.rawMaterialName }}</a>
             } @else {
               {{ usage.rawMaterialName }}
             }
+            <!-- Lot consumed, or a legacy mark for usages recorded before Inventory Management -->
             <small>
               @if (usage.inventoryReceiptId !== null) {
                 {{ 'batch-usage.fields.lot' | translate }} #{{ usage.inventoryReceiptId }}
@@ -96,6 +105,7 @@
             </small>
           </td>
           <td [attr.data-label]="'batch-usage.fields.quantity-used' | translate">{{ usage.quantityUsed | number: '1.0-3' }} {{ usage.unit }}</td>
+          <!-- Stock before and after the consumption, when recorded -->
           <td [attr.data-label]="'batch-usage.fields.stock' | translate">
             @if (usage.stockBefore !== null && usage.stockAfter !== null) {
               {{ usage.stockBefore | number: '1.0-3' }} → {{ usage.stockAfter | number: '1.0-3' }} {{ usage.unit }}
