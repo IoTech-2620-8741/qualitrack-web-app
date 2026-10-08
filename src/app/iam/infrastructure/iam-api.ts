@@ -70,16 +70,15 @@ export class IamApi extends BaseApi {
     return this.signInEndpoint.signIn(request);
   }
 
+  /**
+   * Reads the onboarding state of the authenticated user (GET /users/me/onboarding).
+   *
+   * @returns Observable emitting the next step the user must complete
+   */
   getOnboarding(): Observable<OnboardingState> {
     return this.http.get<OnboardingState>(`${environment.serverBasePath}/users/me/onboarding`);
   }
 
-  /**
-   * Registers a new user account.
-   *
-   * @param request - Sign-up request payload
-   * @returns Observable stream emitting the registered user resource
-   */
   /**
    * Changes the password of the authenticated user.
    *
@@ -106,6 +105,12 @@ export class IamApi extends BaseApi {
     );
   }
 
+  /**
+   * Registers a new user account.
+   *
+   * @param request - Sign-up request payload
+   * @returns Observable stream emitting the registered user resource
+   */
   signUp(request: SignUpRequest): Observable<SignUpResource> {
     return this.signUpEndpoint.signUp(request);
   }
@@ -120,6 +125,12 @@ export class IamApi extends BaseApi {
     return this.passwordRecoveryEndpoint.requestRecovery(request);
   }
 
+  /**
+   * Sets a new password with the verification code received by e-mail.
+   *
+   * @param request - Account, verification code and new password
+   * @returns Observable stream emitting the username to sign in with
+   */
   resetPassword(request: PasswordResetRequest): Observable<PasswordResetCompletedResource> {
     return this.passwordRecoveryEndpoint.resetPassword(request);
   }
