@@ -164,6 +164,7 @@ package "iam.infrastructure" {
     + email: string
     + currentPassword: string
   }
+  class iamGuard <<CanActivateFn>>
   class onboardingGuard <<CanActivateFn>>
   class laboratorySetupGuard <<CanActivateFn>>
   class subscriptionGuard <<CanActivateFn>>
@@ -197,13 +198,6 @@ package "iam.infrastructure" {
     + currentPassword: string
     + newPassword: string
   }
-  class onboardingGuard <<CanActivateFn>>
-  class laboratorySetupGuard <<CanActivateFn>>
-  class subscriptionGuard <<CanActivateFn>>
-  class passwordChangeGuard <<CanActivateFn>>
-  class qualityManagerGuard <<CanActivateFn>>
-  class operatorGuard <<CanActivateFn>>
-  class staffActivityGuard <<CanActivateFn>>
 
   class SignInAssembler {
     + toResourceFromResponse(response: SignInResponse): SignInResource
@@ -310,7 +304,10 @@ SignUpResponse --|> SignUpResource
 authenticationInterceptor ..|> HttpInterceptorFn
 authenticationInterceptor --> IamStore
 IamApi ..> ChangePasswordRequest
+iamGuard --> IamStore
 onboardingGuard --> IamStore
+laboratorySetupGuard --> IamStore
+subscriptionGuard --> IamStore
 passwordChangeGuard --> IamStore
 qualityManagerGuard --> IamStore
 operatorGuard --> IamStore
