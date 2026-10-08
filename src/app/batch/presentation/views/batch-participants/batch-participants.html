@@ -1,8 +1,10 @@
+<!-- Equipment used in the batch -->
 <section aria-labelledby="equipment-title">
   <h2 id="equipment-title">{{ 'batch-participants.equipment-title' | translate }}</h2>
   @if (loadError()) {
     <p class="error" role="alert">{{ loadError()! | translate }}</p>
   }
+  <!-- Association form: only on open batches and for users who operate -->
   @if (editable()) {
     <div class="filters">
       <mat-form-field appearance="outline" subscriptSizing="dynamic">
@@ -19,12 +21,13 @@
       </button>
     </div>
   }
+  <!-- Equipment already associated, taken from the traceability -->
   <table class="data-table">
     <thead>
-      <tr>
-        <th>{{ 'batch-participants.equipment' | translate }}</th>
-        <th>{{ 'batch-participants.registered-at' | translate }}</th>
-      </tr>
+    <tr>
+      <th>{{ 'batch-participants.equipment' | translate }}</th>
+      <th>{{ 'batch-participants.registered-at' | translate }}</th>
+    </tr>
     </thead>
     <tbody>
       @for (usage of store.traceability()?.equipment ?? []; track usage.id) {
@@ -39,8 +42,10 @@
   </table>
 </section>
 
+<!-- Staff that took part in the batch -->
 <section aria-labelledby="staff-title">
   <h2 id="staff-title">{{ 'batch-participants.staff-title' | translate }}</h2>
+  <!-- Quality managers choose any staff member; operators can only assign themselves -->
   @if (editable() && iam.canManageQuality()) {
     <div class="filters">
       <mat-form-field appearance="outline" subscriptSizing="dynamic">
@@ -69,13 +74,14 @@
       }
     </div>
   }
+  <!-- Staff already associated, taken from the traceability -->
   <table class="data-table">
     <thead>
-      <tr>
-        <th>{{ 'batch-participants.staff' | translate }}</th>
-        <th>{{ 'batch-participants.role' | translate }}</th>
-        <th>{{ 'batch-participants.registered-at' | translate }}</th>
-      </tr>
+    <tr>
+      <th>{{ 'batch-participants.staff' | translate }}</th>
+      <th>{{ 'batch-participants.role' | translate }}</th>
+      <th>{{ 'batch-participants.registered-at' | translate }}</th>
+    </tr>
     </thead>
     <tbody>
       @for (participation of store.traceability()?.staff ?? []; track participation.id) {
