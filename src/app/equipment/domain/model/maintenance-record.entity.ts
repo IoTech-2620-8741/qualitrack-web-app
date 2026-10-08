@@ -15,13 +15,14 @@ import { BaseEntity } from '../../../shared/domain/model/base-entity';
  * @example
  * ```typescript
  * const record = new MaintenanceRecord({
- * id: 1,
- * equipmentId: 101,
- * maintenanceDate: '2026-05-12',
- * technicianName: 'John Doe',
- * description: 'Preventive maintenance and calibration performed.',
- * type: 'PREVENTIVE',
- * createdAt: '2026-05-12T10:00:00Z'
+ *   id: 1,
+ *   equipmentId: 101,
+ *   environmentId: 5,
+ *   maintenanceDate: '2026-05-12',
+ *   technicianName: 'John Doe',
+ *   description: 'Preventive maintenance and calibration performed.',
+ *   type: 'PREVENTIVE',
+ *   createdAt: '2026-05-12T10:00:00Z'
  * });
  *
  * console.log(record.technicianName); // 'John Doe'
@@ -42,7 +43,13 @@ export class MaintenanceRecord implements BaseEntity {
    */
   equipmentId: number;
 
-  /** Environment where the equipment was located when the maintenance was registered, if known. */
+  /**
+   * The numeric identifier of the environment where the equipment was located
+   * when the maintenance was registered.
+   *
+   * @remarks
+   * It is `null` when the location is unknown.
+   */
   environmentId: number | null;
 
   /**
@@ -91,19 +98,20 @@ export class MaintenanceRecord implements BaseEntity {
   /**
    * Creates a new MaintenanceRecord entity.
    *
+   * @remarks
+   * The constructor initializes the maintenance record with all required values.
+   * Each record represents a specific maintenance event associated with one
+   * equipment.
+   *
    * @param params - Initialization properties for the maintenance record.
    * @param params.id - The unique numeric identifier of the maintenance record.
    * @param params.equipmentId - The numeric identifier of the equipment associated with the record.
+   * @param params.environmentId - The identifier of the environment where the equipment was located, or `null` if unknown.
    * @param params.maintenanceDate - The date when the maintenance activity was performed.
    * @param params.technicianName - The name of the technician responsible for the maintenance.
    * @param params.description - The description of the maintenance activity.
    * @param params.type - The type of maintenance performed.
    * @param params.createdAt - The creation date of the maintenance record.
-   *
-   * @remarks
-   * The constructor initializes the maintenance record with all required values.
-   * Each record represents a specific maintenance event associated with one
-   * equipment.
    */
   constructor(params: {
     id: number;

@@ -22,13 +22,17 @@ import { EquipmentResource, EquipmentsResponse } from './equipment-response';
  * const assembler = new EquipmentAssembler();
  *
  * const equipment = assembler.toEntityFromResource({
- *   id: 'equipment-001',
- *   labId: 'lab-001',
+ *   id: 1,
+ *   laboratoryId: 10,
+ *   environmentId: null,
  *   name: 'Centrifuge',
  *   type: 'Laboratory Equipment',
  *   model: 'CF-3000',
  *   serialNumber: 'SN-2026-001',
  *   status: 'OPERATIONAL',
+ *   deviceType: null,
+ *   sensorExternalId: null,
+ *   firmwareVersion: null,
  *   createdAt: '2026-05-12T10:00:00Z'
  * });
  *
@@ -43,12 +47,12 @@ export class EquipmentAssembler implements BaseAssembler<
   /**
    * Converts an equipment API response into a list of domain entities.
    *
-   * @param response - The API response containing equipment resources.
-   * @returns An array of Equipment domain entities.
-   *
    * @remarks
    * This method maps each resource contained in the equipments collection
    * and converts it into an Equipment entity using toEntityFromResource.
+   *
+   * @param response - The API response containing equipment resources.
+   * @returns An array of Equipment domain entities.
    */
   toEntitiesFromResponse(response: EquipmentsResponse): Equipment[] {
     return response.equipments.map((resource) => this.toEntityFromResource(resource));
@@ -57,13 +61,18 @@ export class EquipmentAssembler implements BaseAssembler<
   /**
    * Converts an equipment resource into a domain entity.
    *
-   * @param resource - The equipment resource received from the API.
-   * @returns An Equipment domain entity.
-   *
    * @remarks
    * This method maps the raw API resource fields into the Equipment constructor,
    * preserving its laboratory reference, identification data, technical
    * information, operational status, and creation date.
+   *
+   * The resource `laboratoryId` is mapped to the entity `labId`. The status and
+   * device type are cast to `EquipmentStatus` and `IotDeviceType`. When the
+   * optional fields are missing, `environmentId`, `deviceType`, `sensorExternalId`
+   * and `firmwareVersion` default to `null`, and `createdAt` defaults to an empty string.
+   *
+   * @param resource - The equipment resource received from the API.
+   * @returns An Equipment domain entity.
    */
   toEntityFromResource(resource: EquipmentResource): Equipment {
     return new Equipment({
@@ -85,12 +94,13 @@ export class EquipmentAssembler implements BaseAssembler<
   /**
    * Converts an Equipment domain entity into an API resource.
    *
-   * @param entity - The Equipment domain entity to be converted.
-   * @returns An EquipmentResource compatible with the API structure.
-   *
    * @remarks
    * This method is useful when the application needs to serialize an equipment
    * entity using the structure expected by the infrastructure layer or backend API.
+   * The entity `labId` is mapped to the resource `laboratoryId`.
+   *
+   * @param entity - The Equipment domain entity to be converted.
+   * @returns An EquipmentResource compatible with the API structure.
    */
   toResourceFromEntity(entity: Equipment): EquipmentResource {
     return {
