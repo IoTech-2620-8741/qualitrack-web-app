@@ -3,8 +3,17 @@ import { ActuationAction } from './actuation-event.entity';
 import { EnvironmentalState, MonitoredMetric } from './monitored-metric';
 
 /**
- * WARNING/CRITICAL limits of a metric. A value inside [normalMin, normalMax] is NORMAL, up to the critical limits
- * WARNING and beyond them CRITICAL; each side is either complete or not configured.
+ * Represents the configured threshold limits for an environmental metric.
+ *
+ * Thresholds define the acceptable operating range of a metric and determine
+ * whether a measurement is classified as NORMAL, WARNING or CRITICAL.
+ *
+ * The configuration supports partial limits depending on the nature of each metric:
+ * - Lower limits.
+ * - Upper limits.
+ * - Critical boundary values.
+ *
+ * These rules are used by the platform to evaluate environmental conditions.
  */
 export interface EnvironmentalThreshold {
   metric: MonitoredMetric;
@@ -16,35 +25,97 @@ export interface EnvironmentalThreshold {
 }
 
 /**
- * Condition of the container and the action the container monitor executes.
+ * Represents an automated action rule associated with a container monitor.
+ *
+ * Defines the relationship between an environmental condition and the actuator
+ * operation that must be executed when that condition occurs.
+ *
+ * Rules are evaluated using the active environmental profile configuration.
  */
 export interface ActuationRule {
   metric: MonitoredMetric;
+
+  /**
+   * Environmental state that triggers the action.
+   *
+   * NORMAL state is excluded because automation rules are only executed
+   * for abnormal environmental conditions.
+   */
   state: Exclude<EnvironmentalState, 'NORMAL'>;
+
+  /**
+   * Actuation action executed when the rule condition is satisfied.
+   */
   action: ActuationAction;
 }
 
 /**
- * Configuration in force for an environment (through its environmental device) or a container monitor.
+ * Domain entity representing the active environmental configuration
+ * for an environment or container monitoring device.
+ *
+ * An environmental profile contains:
+ * - Metric threshold configurations.
+ * - Automated actuation rules.
+ * - Version information for configuration tracking.
+ *
+ * The profile represents the configuration currently applied by IoT devices
+ * to evaluate environmental conditions and execute automated responses.
+ *
+ * This entity provides traceability of configuration changes through
+ * version management.
  */
 export class EnvironmentalProfile implements BaseEntity {
+  /**
+   * Unique identifier of the environmental profile.
+   */
   id: number;
 
+  /**
+   * Scope where the configuration is applied.
+   *
+   * ENVIRONMENT applies configuration to the general environment,
+   * while CONTAINER_MONITOR applies configuration to a specific device.
+   */
   scope: 'ENVIRONMENT' | 'CONTAINER_MONITOR';
 
+  /**
+   * Identifier of the associated environment.
+   */
   environmentId: number | null;
 
+  /**
+   * Identifier of the associated monitoring device.
+   */
   deviceId: number | null;
 
-  /** Configuration version the devices apply; it increases with every change. */
+  /**
+   * Configuration version currently applied by devices.
+   *
+   * The version increases every time the profile configuration changes,
+   * allowing synchronization and traceability of applied settings.
+   */
   version: number;
 
+  /**
+   * Collection of environmental threshold configurations.
+   */
   thresholds: EnvironmentalThreshold[];
 
+  /**
+   * Collection of automatic actuation rules configured for the profile.
+   */
   actuationRules: ActuationRule[];
 
+  /**
+   * Timestamp of the latest profile update.
+   */
   updatedAt: string | null;
 
+  /**
+   * Creates a new environmental profile entity.
+   *
+   * @param params Properties required to initialize the environmental profile.
+   */
   constructor(params: {
     id: number;
     scope: 'ENVIRONMENT' | 'CONTAINER_MONITOR';
@@ -65,10 +136,24 @@ export class EnvironmentalProfile implements BaseEntity {
     this.updatedAt = params.updatedAt;
   }
 
+  /**
+   * Retrieves the threshold configuration associated with a metric.
+   *
+   * This method allows domain services to obtain the active evaluation
+   * criteria for a specific environmental measurement.
+   *
+   * @param metric Environmental metric to search.
+   * @returns The configured threshold or undefined when no configuration exists.
+   */
   threshold(metric: MonitoredMetric): EnvironmentalThreshold | undefined {
     return this.thresholds.find((threshold) => threshold.metric === metric);
   }
 }
 
-/** Thresholds and rules to save, without the values set by the platform. */
+/**
+ * Represents the input data required to create or update environmental thresholds.
+ *
+ * The unit field is excluded because it is managed by the platform
+ * according to the selected metric definition.
+ */
 export type ThresholdInput = Omit<EnvironmentalThreshold, 'unit'>;

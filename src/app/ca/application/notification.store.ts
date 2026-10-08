@@ -15,6 +15,15 @@ const PANEL_SIZE = 15;
  * @remarks
  * Provided in root so that the toolbar keeps the count while the person moves between views. Everything is cleared
  * when another person signs in.
+ *
+ * @example
+ * ```typescript
+ * const store = inject(NotificationStore);
+ *
+ * store.refreshUnreadCount().subscribe();
+ * store.loadLatest();
+ * console.log(store.hasUnread()); // true while the bell has something to show
+ * ```
  */
 @Injectable({ providedIn: 'root' })
 export class NotificationStore {
@@ -32,13 +41,22 @@ export class NotificationStore {
   /** Latest notifications, newest first. */
   readonly notifications = this.notificationsSignal.asReadonly();
 
+  /** Whether the latest notifications are being loaded. */
   readonly loading = this.loadingSignal.asReadonly();
 
   /** Whether the latest notifications could not be loaded. */
   readonly failed = this.errorSignal.asReadonly();
 
+  /** Whether the person has at least one unread notification. */
   readonly hasUnread = computed(() => this.unreadCount() > 0);
 
+  /**
+   * Creates the store.
+   *
+   * @remarks
+   * An effect watches the signed-in user and empties the count and the notifications whenever it changes, so that
+   * nothing of a previous person is shown to the next one.
+   */
   constructor() {
     effect(() => {
       this.iam.currentUserId();
@@ -47,7 +65,11 @@ export class NotificationStore {
     });
   }
 
-  /** Updates the count of the bell; a failure keeps the last count. */
+  /**
+   * Updates the count of the bell; a failure keeps the last count.
+   *
+   * @returns Observable emitting the new unread count, or the last known one if the request failed. It never errors.
+   */
   refreshUnreadCount(): Observable<number> {
     return this.caApi.getUnreadNotificationCount().pipe(
       tap((count) => this.unreadCountSignal.set(count)),
@@ -55,7 +77,13 @@ export class NotificationStore {
     );
   }
 
-  /** Loads the latest notifications for the panel of the bell. */
+  /**
+   * Loads the latest notifications for the panel of the bell.
+   *
+   * @remarks
+   * Fetches up to {@link PANEL_SIZE} notifications, read or not, and refreshes the unread count afterwards. If the
+   * request fails, {@link NotificationStore.failed} turns `true` and the previous notifications are kept.
+   */
   loadLatest(): void {
     this.loadingSignal.set(true);
     this.errorSignal.set(false);
@@ -70,7 +98,15 @@ export class NotificationStore {
     });
   }
 
-  /** Marks a notification as read when the person opens it. */
+  /**
+   * Marks a notification as read when the person opens it.
+   *
+   * @param notification - The notification the person opened; nothing happens if it is already read
+   *
+   * @remarks
+   * Once the platform confirms, the notification is replaced in the panel and the unread count goes down by one
+   * (never below zero). A failure changes nothing.
+   */
   markAsRead(notification: Notification): void {
     if (notification.isRead) return;
     this.caApi.markNotificationAsRead(notification.id).subscribe({
@@ -81,6 +117,13 @@ export class NotificationStore {
     });
   }
 
+  /**
+   * Marks every notification of the person as read.
+   *
+   * @remarks
+   * Once the platform confirms, the notifications of the panel are marked with the current time of the browser and
+   * the unread count goes to zero. A failure changes nothing.
+   */
   markAllAsRead(): void {
     this.caApi.markAllNotificationsAsRead().subscribe({
       next: () => {

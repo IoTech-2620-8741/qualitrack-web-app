@@ -133,24 +133,36 @@ export class CaApi extends BaseApi {
     return this._alertEndpoint.resolveAlert(alertId, request);
   }
 
-  /** E-mails an open critical alert again to the laboratory (US84, TS78). */
+  /**
+   * E-mails an open critical alert again to the people of the laboratory who enabled e-mail notices (US84, TS78).
+   *
+   * @param alertId - The unique numeric identifier of the deviation alert
+   * @returns Observable stream emitting how many people it was sent to and how many e-mails the provider accepted
+   */
   sendAlertEmailNotification(alertId: number): Observable<AlertEmailNotificationResource> {
     return this._alertEndpoint.sendEmailNotification(alertId);
   }
 
   /**
-   * Retrieves all compliance events associated with a specific entity.
+   * Retrieves the compliance events of an equipment.
    *
-   * @param entityId - The unique numeric identifier of the related entity
+   * @param laboratoryId - The laboratory of the equipment
+   * @param equipmentId - The unique numeric identifier of the equipment
    * @returns Observable stream emitting an array of ComplianceEvent entities
    *
    * @remarks
-   * Accesses the audit trail to retrieve events linked to the provided entity identity.
+   * Accesses the audit trail to retrieve the events linked to the equipment.
    */
   getEquipmentComplianceEvents(laboratoryId: number, equipmentId: number): Observable<ComplianceEvent[]> {
     return this._complianceEventEndpoint.getEquipmentEvents(laboratoryId, equipmentId);
   }
 
+  /**
+   * Retrieves the compliance events of a batch.
+   *
+   * @param batchId - The unique numeric identifier of the batch
+   * @returns Observable stream emitting an array of ComplianceEvent entities
+   */
   getBatchComplianceEvents(batchId: number): Observable<ComplianceEvent[]> {
     return this._complianceEventEndpoint.getBatchEvents(batchId);
   }
@@ -174,19 +186,41 @@ export class CaApi extends BaseApi {
     return this._preferenceEndpoint.updatePreferences(request);
   }
 
-  /** Notifications of the signed-in user, newest first (US83). */
+  /**
+   * Retrieves the notifications of the signed-in user, newest first (US83).
+   *
+   * @param unreadOnly - Leaves out the notifications already read
+   * @param limit - Maximum number of notifications (1 to 100)
+   * @returns Observable stream emitting the notifications
+   */
   getNotifications(unreadOnly: boolean, limit: number): Observable<Notification[]> {
     return this._notificationEndpoint.getNotifications(unreadOnly, limit);
   }
 
+  /**
+   * Retrieves how many notifications the signed-in user has not read.
+   *
+   * @returns Observable stream emitting the unread count
+   */
   getUnreadNotificationCount(): Observable<number> {
     return this._notificationEndpoint.getUnreadCount();
   }
 
+  /**
+   * Marks a notification as read.
+   *
+   * @param notificationId - The unique numeric identifier of the notification
+   * @returns Observable stream emitting the notification, now read
+   */
   markNotificationAsRead(notificationId: number): Observable<Notification> {
     return this._notificationEndpoint.markAsRead(notificationId);
   }
 
+  /**
+   * Marks every notification of the signed-in user as read.
+   *
+   * @returns Observable stream emitting how many notifications were unread
+   */
   markAllNotificationsAsRead(): Observable<number> {
     return this._notificationEndpoint.markAllAsRead();
   }

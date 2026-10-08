@@ -23,21 +23,67 @@ interface RuleRow {
   standalone: true,
   imports: [FormsModule, TranslateModule, MatButtonModule, MatIconModule],
   templateUrl: './actuation-rules-editor.html',
-  styleUrls: ['../../../../shared/presentation/styles/operations-page.css', '../../views/tracking-views.css'],
+  styleUrls: [
+    '../../../../shared/presentation/styles/operations-page.css',
+    '../../views/tracking-views.css',
+  ],
 })
 export class ActuationRulesEditor {
-  /** Metrics with a threshold in the saved profile. */
+  /**
+   * Available metrics that have threshold configuration enabled.
+   *
+   * Only these metrics can be associated with actuation rules.
+   */
   readonly metrics = input.required<MonitoredMetric[]>();
+
+  /**
+   * Existing actuation rules loaded from the environmental profile.
+   */
   readonly rules = input<ActuationRule[]>([]);
+
+  /**
+   * Determines whether the component is displayed in read-only mode.
+   */
   readonly readonly = input(false);
+
+  /**
+   * Indicates whether a save operation is currently running.
+   */
   readonly saving = input(false);
+
+  /**
+   * Emits validated actuation rules to the parent component.
+   */
   readonly save = output<ActuationRule[]>();
 
+  /**
+   * Available actuator operations that can be triggered automatically.
+   */
   protected readonly actions = ACTIVATIONS;
+
+  /**
+   * Supported environmental states that can trigger automation.
+   */
   protected readonly states: ('WARNING' | 'CRITICAL')[] = ['WARNING', 'CRITICAL'];
+
+  /**
+   * Reactive collection of editable rule rows.
+   *
+   * This state represents the current form values before persistence.
+   */
   protected readonly rows = signal<RuleRow[]>([]);
+
+  /**
+   * Validation error message displayed in the interface.
+   */
   protected readonly error = signal<string | null>(null);
 
+  /**
+   * Synchronizes local editable rows whenever input rules change.
+   *
+   * The effect ensures that the component reflects the latest
+   * environmental profile configuration provided by the parent.
+   */
   constructor() {
     effect(() => {
       this.rows.set(this.rules().map((rule) => ({ ...rule })));
@@ -45,14 +91,39 @@ export class ActuationRulesEditor {
     });
   }
 
+  /**
+   * Adds a new empty actuation rule row.
+   *
+   * The new rule starts with the first available metric,
+   * a WARNING condition and no selected action.
+   */
   protected add(): void {
-    this.rows.update((rows) => [...rows, { metric: this.metrics()[0] ?? '', state: 'WARNING', action: '' }]);
+    this.rows.update((rows) => [
+      ...rows,
+      { metric: this.metrics()[0] ?? '', state: 'WARNING', action: '' },
+    ]);
   }
 
+  /**
+   * Removes an actuation rule from the editable collection.
+   *
+   * @param index Position of the rule to remove.
+   */
   protected remove(index: number): void {
     this.rows.update((rows) => rows.filter((_, position) => position !== index));
   }
 
+  /**
+   * Validates and submits the configured actuation rules.
+   *
+   * Validation rules:
+   * - Every rule must have a metric and an action.
+   * - Only metrics with configured thresholds are allowed.
+   * - Duplicate rule combinations are not permitted.
+   *
+   * When validation succeeds, the component emits the final
+   * configuration to the parent component.
+   */
   protected submit(): void {
     const rows = this.rows();
     if (rows.some((row) => !row.metric || !row.action)) {
@@ -69,10 +140,12 @@ export class ActuationRulesEditor {
       return;
     }
     this.error.set(null);
-    this.save.emit(rows.map((row) => ({
-      metric: row.metric as MonitoredMetric,
-      state: row.state,
-      action: row.action as ActuationAction,
-    })));
+    this.save.emit(
+      rows.map((row) => ({
+        metric: row.metric as MonitoredMetric,
+        state: row.state,
+        action: row.action as ActuationAction,
+      })),
+    );
   }
 }

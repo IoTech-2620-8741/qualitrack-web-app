@@ -8,6 +8,15 @@ import { IamStore } from '../../../application/iam.store';
 import { onboardingDestination, SUBSCRIPTION_PAUSED } from '../../../domain/model/onboarding-state';
 import { Toolbar } from '../../../../shared/presentation/components/toolbar/toolbar';
 
+/**
+ * Entry view after signing in (`/iam/onboarding`): it reads the onboarding state and sends the user to the step they
+ * must complete, or to the dashboard.
+ *
+ * @remarks
+ * It stays on screen in two cases, both with "retry" and "sign out" buttons:
+ * - The user is a staff member and the subscription of the laboratory is not active ({@link SUBSCRIPTION_PAUSED}).
+ * - The onboarding state could not be read (e.g. no connection).
+ */
 @Component({
   selector: 'app-onboarding',
   standalone: true,
@@ -38,11 +47,18 @@ export class Onboarding {
   private readonly iam = inject(IamStore);
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
+  /** Whether the onboarding state is being read. */
   protected readonly loading = signal(true);
+  /** Whether the user must wait for the laboratory to subscribe. */
   protected readonly subscriptionPaused = signal(false);
 
+  /** Resolves the destination as soon as the view opens. */
   constructor() { this.resolve(); }
 
+  /**
+   * Reads the onboarding state (ignoring the cached one) and navigates to the view the user must see, replacing this
+   * one in the history.
+   */
   protected resolve(): void {
     this.loading.set(true);
     this.subscriptionPaused.set(false);
@@ -63,5 +79,6 @@ export class Onboarding {
     });
   }
 
+  /** Ends the session and goes to the home page. */
   protected signOut(): void { this.iam.signOut(this.router); }
 }

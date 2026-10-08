@@ -25,14 +25,28 @@ import { AlertTable } from '../../components/alert-table/alert-table';
   styleUrl: '../../../../shared/presentation/styles/operations-page.css',
 })
 export class AlertHistory implements OnInit {
+  /** Store that holds the alerts shown by the table. */
   protected readonly store = inject(CaStore);
+  /** Store of the environments the person can choose from. */
   protected readonly environments = inject(EnvironmentStore);
+  /** Environment whose alerts are shown; `null` until one is chosen. */
   protected readonly environmentId = signal<number | null>(null);
+  /** Statuses the person can filter by. */
   protected readonly statuses: AlertStatus[] = ['UNRESOLVED', 'ACKNOWLEDGED', 'RESOLVED'];
+  /** Severities the person can filter by. */
   protected readonly severities: AlertSeverity[] = ['LOW', 'WARNING', 'CRITICAL'];
+  /** Status chosen in the filter; an empty string means any status. */
   protected status: AlertStatus | '' = '';
+  /** Severity chosen in the filter; an empty string means any severity. */
   protected severity: AlertSeverity | '' = '';
 
+  /**
+   * Clears the previous alerts and errors, loads the devices, and shows the alerts of the preferred environment.
+   *
+   * @remarks
+   * Waits for the environments to load when they are not loaded yet. If there is no preferred environment,
+   * nothing is loaded.
+   */
   async ngOnInit(): Promise<void> {
     this.store.clearError();
     this.store.clearAlerts();
@@ -42,12 +56,23 @@ export class AlertHistory implements OnInit {
     if (preferred) this.changeEnvironment(preferred.id);
   }
 
+  /**
+   * Searches the alerts of another environment and remembers it as the one the person prefers.
+   *
+   * @param environmentId - The environment chosen
+   */
   protected changeEnvironment(environmentId: number): void {
     this.environments.rememberEnvironment(environmentId, 'tracking');
     this.environmentId.set(environmentId);
     this.search();
   }
 
+  /**
+   * Loads the alerts of the chosen environment with the status and severity of the filter.
+   *
+   * @remarks
+   * The filtering is done by the server. Does nothing if no environment is chosen.
+   */
   protected search(): void {
     const environmentId = this.environmentId();
     if (environmentId === null) return;
@@ -57,6 +82,7 @@ export class AlertHistory implements OnInit {
     });
   }
 
+  /** Removes the status and severity filters and searches again. */
   protected clearFilters(): void {
     this.status = '';
     this.severity = '';

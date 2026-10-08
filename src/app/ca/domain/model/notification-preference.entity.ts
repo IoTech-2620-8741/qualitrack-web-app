@@ -15,12 +15,12 @@ import { AlertSeverity } from './deviation-alert.entity';
  * @example
  * ```typescript
  * const userPrefs = new NotificationPreference({
- * id: 1,
- * userId: 101,
- * emailEnabled: true,
- * inAppEnabled: true,
- * minimumSeverity: 'WARNING',
- * createdAt: '2026-05-12T11:28:14Z'
+ *   id: 1,
+ *   userId: 101,
+ *   emailEnabled: true,
+ *   inAppEnabled: true,
+ *   minimumSeverity: 'WARNING',
+ *   createdAt: '2026-05-12T11:28:14Z'
  * });
  *
  * console.log(userPrefs.emailEnabled); // true
