@@ -1,9 +1,11 @@
 <main class="operations-page">
+  <!-- Back link to the products of the environment -->
   <a [routerLink]="['/batches/environments', environmentId, 'products']">{{ 'product-catalog.title' | translate }}</a>
   @if (products.error()) {
     <p class="error" role="alert">{{ products.error()! | translate }}</p>
   }
   @if (products.product(); as product) {
+    <!-- Heading with the new batch action, only for users who operate -->
     <header class="page-heading">
       <h1><mat-icon aria-hidden="true">medication</mat-icon>{{ product.name }}</h1>
       @if (batches.canOperate()) {
@@ -14,6 +16,7 @@
         </div>
       }
     </header>
+    <!-- Summary: code, status and number of batches -->
     <section class="summary-strip">
       <div><span>{{ 'product-form.code' | translate }}</span><strong>{{ product.code }}</strong></div>
       <div>
@@ -28,18 +31,19 @@
     <h2>{{ 'product-form.specifications' | translate }}</h2>
     <p class="muted">{{ product.specifications }}</p>
 
+    <!-- Batches of the product -->
     <h2>{{ 'batches.title' | translate }}</h2>
     @if (batches.error()) {
       <p class="error" role="alert">{{ batches.error()! | translate }}</p>
     }
     <table class="data-table">
       <thead>
-        <tr>
-          <th>{{ 'batches.fields.number' | translate }}</th>
-          <th>{{ 'batches.fields.quantity' | translate }}</th>
-          <th>{{ 'batches.fields.date' | translate }}</th>
-          <th>{{ 'batches.fields.status' | translate }}</th>
-        </tr>
+      <tr>
+        <th>{{ 'batches.fields.number' | translate }}</th>
+        <th>{{ 'batches.fields.quantity' | translate }}</th>
+        <th>{{ 'batches.fields.date' | translate }}</th>
+        <th>{{ 'batches.fields.status' | translate }}</th>
+      </tr>
       </thead>
       <tbody>
         @for (batch of batches.productBatches(); track batch.id) {
@@ -54,6 +58,7 @@
             </td>
           </tr>
         } @empty {
+          <!-- While loading, the empty row shows the loading message -->
           <tr>
             <td colspan="4">{{ (batches.isLoading() ? 'common.status-loading' : 'product-detail.no-batches') | translate }}</td>
           </tr>
