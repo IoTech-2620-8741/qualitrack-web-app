@@ -1,5 +1,7 @@
 <main class="operations-page">
+  <!-- Back link to the product of the batch -->
   <a [routerLink]="productLink">{{ store.traceability()?.product?.name || ('product-catalog.title' | translate) }}</a>
+  <!-- Error and success messages of the store -->
   @if (store.error()) {
     <p class="error" role="alert">{{ store.error()! | translate }}</p>
   }
@@ -7,6 +9,7 @@
     <p class="success" role="status">{{ store.successMsg()! | translate }}</p>
   }
   @if (store.selectedBatch(); as batch) {
+    <!-- Heading with the release and reject actions, only for quality managers on open batches -->
     <header class="page-heading">
       <h1><mat-icon aria-hidden="true">science</mat-icon>{{ 'batch-detail.title' | translate }}: {{ batch.batchNumber }}</h1>
       @if (batch.isOpen && store.canDecide()) {
@@ -20,6 +23,7 @@
         </div>
       }
     </header>
+    <!-- Summary: status, quantity and dates -->
     <section class="summary-strip">
       <div>
         <span>{{ 'batches.fields.status' | translate }}</span>
@@ -36,28 +40,34 @@
     @if (!batch.isOpen) {
       <p class="notice" role="status">{{ 'batch-detail.closed-notice' | translate }}</p>
     }
+    <!-- Tabs: general, raw materials, participants, storage and traceability -->
     <mat-tab-group dynamicHeight>
+      <!-- General: manufacturing notes -->
       <mat-tab [label]="'batch-detail.tabs.general' | translate">
         <div class="tab-content">
           <h2>{{ 'batch-detail.notes' | translate }}</h2>
           <p>{{ batch.notes || ('batch-detail.no-notes' | translate) }}</p>
         </div>
       </mat-tab>
+      <!-- Raw materials consumed; the form is only available on open batches to users who operate -->
       <mat-tab [label]="'batch-detail.tabs.materials' | translate">
         <div class="tab-content">
           <app-raw-material-usage [path]="path!" [batchId]="batch.id" [open]="batch.isOpen && store.canOperate()" />
         </div>
       </mat-tab>
+      <!-- Equipment and staff that took part -->
       <mat-tab [label]="'batch-detail.tabs.participants' | translate">
         <div class="tab-content">
           <app-batch-participants [path]="path!" [batchId]="batch.id" [open]="batch.isOpen && store.canOperate()" />
         </div>
       </mat-tab>
+      <!-- Container where the batch is stored -->
       <mat-tab [label]="'batch-detail.tabs.storage' | translate">
         <div class="tab-content">
           <app-batch-storage [path]="path!" [batchId]="batch.id" />
         </div>
       </mat-tab>
+      <!-- Full traceability of the batch -->
       <mat-tab [label]="'batch-detail.tabs.traceability' | translate">
         <div class="tab-content">
           <app-batch-traceability />

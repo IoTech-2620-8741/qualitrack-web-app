@@ -1,16 +1,20 @@
 <main class="operations-page">
+  <!-- Back link to the batch -->
   <a [routerLink]="batchLink">{{ 'batch-detail.title' | translate }}</a>
   <header class="page-heading">
     <h1><mat-icon aria-hidden="true">verified</mat-icon>{{ 'batch-release.title' | translate }}</h1>
   </header>
   <p class="muted">{{ 'batch-release.notice' | translate }}</p>
+  <!-- Notice for users who cannot release batches -->
   @if (!store.canDecide()) {
     <p class="notice" role="status">{{ 'batch-release.quality-only' | translate }}</p>
   }
   @if (store.error()) {
     <p class="error" role="alert">{{ store.error()! | translate }}</p>
   }
+  <!-- Release form -->
   <form class="editor form-grid" [formGroup]="form" (ngSubmit)="submit()">
+    <!-- Release date -->
     <mat-form-field appearance="outline">
       <mat-label>{{ 'batch-release.fields.release-date' | translate }}</mat-label>
       <input matInput type="date" formControlName="releaseDate" />
@@ -18,6 +22,7 @@
         <mat-error>{{ 'common.required' | translate }}</mat-error>
       }
     </mat-form-field>
+    <!-- Quality control notes that justify the release -->
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>{{ 'batch-release.fields.notes' | translate }}</mat-label>
       <textarea matInput formControlName="notes" rows="4" maxlength="500"
@@ -28,6 +33,7 @@
         <mat-error>{{ 'batch-release.errors.notes-minlength' | translate }}</mat-error>
       }
     </mat-form-field>
+    <!-- Actions: the submit button is disabled for users who cannot release -->
     <div class="actions full-width">
       <a mat-button [routerLink]="batchLink">{{ 'common.cancel' | translate }}</a>
       <button mat-flat-button type="submit" [disabled]="store.saving() || !store.canDecide()">

@@ -1,4 +1,5 @@
 <main class="operations-page">
+  <!-- Heading with the refresh button and the link to the products -->
   <header class="page-heading">
     <h1><mat-icon aria-hidden="true">list_alt</mat-icon>{{ 'batches.title' | translate }}</h1>
     <div class="actions">
@@ -14,6 +15,7 @@
   @if (store.error()) {
     <p class="error" role="alert">{{ store.error()! | translate }}</p>
   }
+  <!-- Filters: text search and status -->
   <div class="filters">
     <mat-form-field appearance="outline" subscriptSizing="dynamic">
       <mat-label>{{ 'common.search' | translate }}</mat-label>
@@ -33,19 +35,21 @@
   @if (store.isLoading()) {
     <p role="status">{{ 'common.status-loading' | translate }}</p>
   } @else {
+    <!-- Table of batches -->
     <table class="data-table">
       <thead>
-        <tr>
-          <th>{{ 'batches.fields.number' | translate }}</th>
-          <th>{{ 'batches.fields.product' | translate }}</th>
-          <th>{{ 'batches.fields.quantity' | translate }}</th>
-          <th>{{ 'batches.fields.date' | translate }}</th>
-          <th>{{ 'batches.fields.status' | translate }}</th>
-        </tr>
+      <tr>
+        <th>{{ 'batches.fields.number' | translate }}</th>
+        <th>{{ 'batches.fields.product' | translate }}</th>
+        <th>{{ 'batches.fields.quantity' | translate }}</th>
+        <th>{{ 'batches.fields.date' | translate }}</th>
+        <th>{{ 'batches.fields.status' | translate }}</th>
+      </tr>
       </thead>
       <tbody>
         @for (batch of filtered(); track batch.id) {
           <tr>
+            <!-- Batches without an environment cannot be opened -->
             <td>
               @if (batch.detailLink; as link) {
                 <a [routerLink]="link">{{ batch.batchNumber }}</a>

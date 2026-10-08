@@ -1,6 +1,18 @@
-import { Component, OnInit, inject } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import {
+  Component,
+  OnInit,
+  inject
+} from '@angular/core';
+import {
+  FormBuilder,
+  ReactiveFormsModule,
+  Validators
+} from '@angular/forms';
+import {
+  ActivatedRoute,
+  Router,
+  RouterLink
+} from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -13,13 +25,27 @@ import { IamStore } from '../../../../iam/application/iam.store';
 import { BatchPath } from '../../../infrastructure/batch-api-endpoint';
 
 /**
- * Registers a manufacturing batch of the product taken from the route (US73).
+ * Registers a manufacturing batch of the product taken from the route.
+ *
+ * @remarks
+ * The product is loaded to show its name in the back link. When the batch is registered, the view
+ * navigates to its detail.
+ *
+ * @author Qualitrack
  */
 @Component({
   selector: 'app-batch-form',
   standalone: true,
   providers: [ProductStore],
-  imports: [ReactiveFormsModule, RouterLink, MatButtonModule, MatIconModule, MatInputModule, MatSelectModule, TranslateModule],
+  imports: [
+    ReactiveFormsModule,
+    RouterLink,
+    MatButtonModule,
+    MatIconModule,
+    MatInputModule,
+    MatSelectModule,
+    TranslateModule,
+  ],
   templateUrl: './batch-form.html',
   styleUrl: '../../../../shared/presentation/styles/operations-page.css',
 })
@@ -30,8 +56,21 @@ export class BatchForm implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+
+  /**
+   * Production units offered by the form.
+   */
   protected readonly units = ['units', 'kg', 'g', 'L', 'mL'];
+
+  /**
+   * Laboratory, environment and product of the batch, taken from the route.
+   */
   protected path!: BatchPath;
+
+  /**
+   * Form of the batch: number (up to 50 characters), quantity (at least 0.001), unit, start date (today by
+   * default) and optional notes (up to 500 characters).
+   */
   protected readonly form = this.fb.nonNullable.group({
     batchNumber: ['', [Validators.required, Validators.maxLength(50)]],
     quantity: [1, [Validators.required, Validators.min(0.001)]],
@@ -40,6 +79,9 @@ export class BatchForm implements OnInit {
     notes: ['', Validators.maxLength(500)],
   });
 
+  /**
+   * Lifecycle hook that reads the route parameters and loads the product of the batch.
+   */
   ngOnInit(): void {
     const params = this.route.snapshot.paramMap;
     this.path = {
@@ -51,10 +93,18 @@ export class BatchForm implements OnInit {
     void this.products.loadProduct(this.path.environmentId, this.path.productId);
   }
 
+  /**
+   * Route of the product the batch will belong to.
+   *
+   * @returns The router link segments of the product.
+   */
   protected get productLink(): (string | number)[] {
     return ['/batches/environments', this.path.environmentId, 'products', this.path.productId];
   }
 
+  /**
+   * Validates the form, registers the batch and opens its detail.
+   */
   protected async save(): Promise<void> {
     this.form.markAllAsTouched();
     if (this.form.invalid) return;
