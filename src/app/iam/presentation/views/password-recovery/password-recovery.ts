@@ -17,11 +17,16 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { IamStore } from '../../../application/iam.store';
 import { Toolbar } from '../../../../shared/presentation/components/toolbar/toolbar';
 
+/** Password fields of the reset form whose visibility can be toggled. */
 type PasswordField = 'newPassword' | 'confirmPassword';
 
 /**
  * Password recovery (US16, US17): the person gives the username or e-mail of the account, receives a 6-digit code by
  * e-mail and sets a new password with it.
+ *
+ * @remarks
+ * Two steps in the same view: `request` (account form) and `reset` (code, new password and confirmation). After the
+ * reset the person goes to `/iam/sign-in` with the username filled in.
  */
 @Component({
   selector: 'app-password-recovery',
@@ -31,22 +36,30 @@ type PasswordField = 'newPassword' | 'confirmPassword';
   styleUrls: ['../sign-in-form/sign-in-form.css'],
 })
 export class PasswordRecovery {
+  /** Session store that sends the code and resets the password. */
   private readonly store = inject(IamStore);
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
 
   /** Step of the recovery: ask for the account, then enter the code and the new password. */
   protected readonly step = signal<'request' | 'reset'>('request');
+  /** Whether a request is running. */
   protected readonly sending = signal(false);
+  /** Translation key of the latest error, or null. */
   protected readonly error = signal<string | null>(null);
+  /** Translation key of an informative notice (e.g. the code was sent again), or null. */
   protected readonly notice = signal<string | null>(null);
+  /** Minutes during which the code can be used, as the platform answered. */
   protected readonly validityMinutes = signal(15);
+  /** Whether each password field hides its value. */
   protected readonly hidden = signal<Record<PasswordField, boolean>>({ newPassword: true, confirmPassword: true });
 
+  /** Form of the first step: username or e-mail of the account. */
   protected readonly accountForm = new FormGroup({
     account: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.minLength(3)] }),
   });
 
+  /** Form of the second step: 6-digit code, new password (8 to 72, letters and digits) and confirmation. */
   protected readonly resetForm = new FormGroup(
     {
       code: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.pattern(/^\d{6}$/)] }),
@@ -60,6 +73,11 @@ export class PasswordRecovery {
     { validators: PasswordRecovery.matches },
   );
 
+  /**
+   * Shows or hides the value of a password field.
+   *
+   * @param field - Field to toggle
+   */
   protected toggle(field: PasswordField): void {
     this.hidden.update((value) => ({ ...value, [field]: !value[field] }));
   }
@@ -89,6 +107,9 @@ export class PasswordRecovery {
       });
   }
 
+  /**
+   * Sets the new password with the code. A 400 answer means the code is wrong or expired.
+   */
   protected resetPassword(): void {
     this.error.set(null);
     this.notice.set(null);
@@ -120,11 +141,21 @@ export class PasswordRecovery {
     this.step.set('request');
   }
 
+  /**
+   * Resolves the error message of the code.
+   *
+   * @returns Translation key of the broken rule
+   */
   protected codeError(): string {
     const control = this.resetForm.controls.code;
     return control.hasError('required') ? 'iam.change-password.errors.required' : 'iam.password-recovery.errors.code-format';
   }
 
+  /**
+   * Resolves the error message of the new password.
+   *
+   * @returns Translation key of the first broken rule
+   */
   protected newPasswordError(): string {
     const control = this.resetForm.controls.newPassword;
     if (control.hasError('required')) return 'iam.change-password.errors.required';
@@ -132,6 +163,12 @@ export class PasswordRecovery {
     return 'iam.change-password.errors.strength';
   }
 
+  /**
+   * Group validator: the confirmation must match the new password.
+   *
+   * @param group - Form group of the reset step
+   * @returns `{ passwordMismatch: true }` if they differ, null otherwise
+   */
   private static matches(group: AbstractControl): ValidationErrors | null {
     return group.get('newPassword')?.value === group.get('confirmPassword')?.value ? null : { passwordMismatch: true };
   }

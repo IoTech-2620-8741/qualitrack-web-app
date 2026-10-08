@@ -58,6 +58,13 @@ export class SignInForm {
   /** Set when the person arrives after resetting the password with a recovery code. */
   protected readonly passwordReset: boolean;
 
+  /**
+   * Creates the form.
+   *
+   * @remarks
+   * If the person comes from the password recovery, the navigation state carries `passwordReset` (to show a notice)
+   * and the username, which is filled in.
+   */
   constructor() {
     const state = this.router.currentNavigation()?.extras.state as { passwordReset?: boolean; username?: string } | undefined;
     this.passwordReset = !!state?.passwordReset;
