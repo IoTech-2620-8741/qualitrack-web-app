@@ -13,9 +13,18 @@ import { IamStore } from '../../iam/application/iam.store';
 import { ApiError } from '../../shared/infrastructure/api-error';
 
 /**
- * Current condition of an IoT device: its latest reading per metric, latest motion detection, latest action and
- * connection.
+ * Represents the current state snapshot of an IoT device within an environment.
+ *
+ * This model aggregates the latest available information from the device:
+ * - Latest readings grouped by monitored metric.
+ * - Most recent motion detection event.
+ * - Latest actuation event executed.
+ * - Current device connection status.
+ *
+ * It provides a consolidated view of the device operational state
+ * without requiring multiple independent data requests from the UI layer.
  */
+
 export interface DeviceSnapshot {
   device: Equipment;
   readings: Map<MonitoredMetric, Measurement>;
@@ -26,7 +35,17 @@ export interface DeviceSnapshot {
   failed: boolean;
 }
 
-/** Readings and actions of a device in a period. */
+/**
+ * Represents the historical telemetry information of an IoT device
+ * during a specific time period.
+ *
+ * Contains:
+ * - Historical measurements collected from the device.
+ * - Actuation events triggered during the selected period.
+ * - Environmental configuration associated with the device.
+ *
+ * This structure is used to provide historical analysis and monitoring capabilities.
+ */
 export interface DeviceHistory {
   device: Equipment;
   period: TelemetryPeriod;
@@ -39,8 +58,19 @@ export interface DeviceHistory {
 const RECENT_PERIOD_HOURS = 24;
 
 /**
- * Signal-based store of Tracking & Telemetry: the IoT devices of the selected environment, their current
- * conditions, their history and the environmental profiles of the environment and its container monitors.
+ * Main state management store for the Tracking & Telemetry module.
+ *
+ * Responsible for managing the reactive state related to:
+ * - IoT devices registered within an environment.
+ * - Current device conditions and telemetry snapshots.
+ * - Historical measurements and actuation events.
+ * - Environmental profiles and automation rules.
+ *
+ * This store acts as an application layer coordinator between
+ * presentation components and infrastructure services.
+ *
+ * It uses Angular Signals to provide reactive state updates
+ * while keeping business-related state management centralized.
  */
 @Injectable({ providedIn: 'root' })
 export class TrackingStore {
@@ -71,17 +101,34 @@ export class TrackingStore {
   readonly error = this._error.asReadonly();
   readonly notice = this._notice.asReadonly();
 
-  /** Profiles are configured by quality managers (US56-US59); the other roles consult them. */
+  /**
+   * Determines whether the current user has permission to configure
+   * environmental profiles and device rules.
+   *
+   * Configuration capabilities are restricted to authorized quality
+   * management roles, while other users can only consult the information.
+   */
   readonly canConfigure = this.iam.canManageQuality;
 
-  readonly environmentalDevice = computed(() =>
-    this._devices().find((device) => device.deviceType === 'ENVIRONMENTAL_DEVICE') ?? null);
+  readonly environmentalDevice = computed(
+    () => this._devices().find((device) => device.deviceType === 'ENVIRONMENTAL_DEVICE') ?? null,
+  );
 
   readonly containerMonitors = computed(() =>
-    this._devices().filter((device) => device.deviceType === 'CONTAINER_MONITOR'));
+    this._devices().filter((device) => device.deviceType === 'CONTAINER_MONITOR'),
+  );
 
   /**
-   * Selects the environment and loads its IoT devices.
+   * Selects an environment and retrieves its associated IoT devices.
+   *
+   * Execution flow:
+   * 1. Updates the selected environment identifier.
+   * 2. Clears previous environment-related state.
+   * 3. Retrieves available equipment from the laboratory.
+   * 4. Filters only IoT-enabled devices belonging to the selected environment.
+   *
+   * The generation counter prevents outdated asynchronous responses
+   * from overwriting the latest application state.
    */
   async selectEnvironment(environmentId: number): Promise<void> {
     const generation = ++this.generation;
@@ -97,8 +144,12 @@ export class TrackingStore {
       const laboratoryId = this.iam.requireLaboratoryId();
       const equipment = await firstValueFrom(this.equipmentApi.getEquipment(laboratoryId));
       if (generation !== this.generation) return;
-      this._devices.set(equipment.filter((item) => item.isIotDevice && item.labId === laboratoryId
-        && item.environmentId === environmentId));
+      this._devices.set(
+        equipment.filter(
+          (item) =>
+            item.isIotDevice && item.labId === laboratoryId && item.environmentId === environmentId,
+        ),
+      );
     } catch {
       if (generation === this.generation) this._error.set('tracking.errors.load');
     } finally {
@@ -107,7 +158,16 @@ export class TrackingStore {
   }
 
   /**
-   * Loads the current condition of every device of the environment (US60, US61, US63-US66).
+   * Loads the current status snapshot of every IoT device
+   * registered in the selected environment.
+   *
+   * For each device, the operation retrieves:
+   * - Recent telemetry measurements.
+   * - Latest actuation events.
+   * - Device connectivity status.
+   *
+   * The collected information is transformed into DeviceSnapshot
+   * objects to provide a summarized monitoring view.
    */
   async loadSnapshots(): Promise<void> {
     const environmentId = this._environmentId();
@@ -115,16 +175,31 @@ export class TrackingStore {
     const generation = this.generation;
     this._loading.set(true);
     const period = recentPeriod();
-    const snapshots = await Promise.all(this._devices().map((device) => this.snapshot(device, environmentId, period)));
+    const snapshots = await Promise.all(
+      this._devices().map((device) => this.snapshot(device, environmentId, period)),
+    );
     if (generation !== this.generation) return;
     this._snapshots.set(snapshots);
     this._loading.set(false);
   }
 
   /**
-   * Loads the readings and actions of a device in a period (US68, US69).
+   * Retrieves historical telemetry information for a specific device.
+   *
+   * Allows filtering historical data by:
+   * - Selected time period.
+   * - Specific monitored metric.
+   *
+   * The operation loads measurements, actuation events,
+   * and the environmental profile associated with the device.
+   *
+   * This information supports historical analysis and device monitoring.
    */
-  async loadHistory(device: Equipment, period: TelemetryPeriod, metric: MonitoredMetric | null): Promise<void> {
+  async loadHistory(
+    device: Equipment,
+    period: TelemetryPeriod,
+    metric: MonitoredMetric | null,
+  ): Promise<void> {
     const environmentId = this._environmentId();
     if (environmentId === null) return;
     const generation = this.generation;
@@ -134,7 +209,9 @@ export class TrackingStore {
     try {
       const [measurements, actuationEvents, profile] = await Promise.all([
         firstValueFrom(this.api.getMeasurements(target, period, metric)),
-        device.deviceType === 'CONTAINER_MONITOR' ? firstValueFrom(this.api.getActuationEvents(target, period)) : [],
+        device.deviceType === 'CONTAINER_MONITOR'
+          ? firstValueFrom(this.api.getActuationEvents(target, period))
+          : [],
         this.optionalProfile(target),
       ]);
       if (generation !== this.generation) return;
@@ -142,7 +219,11 @@ export class TrackingStore {
     } catch (error) {
       if (generation === this.generation) {
         this._history.set(null);
-        this._error.set(error instanceof ApiError && error.status === 400 ? 'tracking.errors.period' : 'tracking.errors.load');
+        this._error.set(
+          error instanceof ApiError && error.status === 400
+            ? 'tracking.errors.period'
+            : 'tracking.errors.load',
+        );
       }
     } finally {
       if (generation === this.generation) this._loading.set(false);
@@ -150,7 +231,15 @@ export class TrackingStore {
   }
 
   /**
-   * Loads the profile of the environment and of each container monitor.
+   * Loads environmental profiles configured for the selected environment
+   * and its container monitoring devices.
+   *
+   * Retrieves:
+   * - General environmental thresholds.
+   * - Container-specific monitoring configurations.
+   *
+   * The information is used to display current configuration
+   * and support profile management operations.
    */
   async loadProfiles(): Promise<void> {
     const environmentId = this._environmentId();
@@ -160,10 +249,15 @@ export class TrackingStore {
     try {
       const laboratoryId = this.iam.requireLaboratoryId();
       const environmentProfile = this.environmentalDevice()
-        ? await this.optionalProfile({ laboratoryId, environmentId, deviceId: null }) : null;
+        ? await this.optionalProfile({ laboratoryId, environmentId, deviceId: null })
+        : null;
       const containerProfiles = new Map<number, EnvironmentalProfile>();
       for (const monitor of this.containerMonitors()) {
-        const profile = await this.optionalProfile({ laboratoryId, environmentId, deviceId: monitor.id });
+        const profile = await this.optionalProfile({
+          laboratoryId,
+          environmentId,
+          deviceId: monitor.id,
+        });
         if (profile) containerProfiles.set(monitor.id, profile);
       }
       if (generation !== this.generation) return;
@@ -177,19 +271,37 @@ export class TrackingStore {
   }
 
   /**
-   * Saves the thresholds of the environment (deviceId null) or of a container monitor (US56-US58).
+   * Updates environmental threshold configurations for a device.
    *
-   * @returns whether the platform accepted them
+   * Thresholds define acceptable environmental ranges used
+   * to evaluate monitoring conditions and detect abnormal values.
+   *
+   * @returns true when the platform successfully stores the configuration;
+   * false otherwise.
    */
   async saveThresholds(deviceId: number | null, thresholds: ThresholdInput[]): Promise<boolean> {
-    return this.saveProfile(deviceId, (target) => this.api.updateThresholds(target, thresholds), 'tracking.profiles.thresholds-saved');
+    return this.saveProfile(
+      deviceId,
+      (target) => this.api.updateThresholds(target, thresholds),
+      'tracking.profiles.thresholds-saved',
+    );
   }
 
   /**
-   * Saves the actuation rules of a container monitor (US59).
+   * Updates automatic actuation rules for a container monitoring device.
+   *
+   * Actuation rules define automated behaviors that are executed
+   * when specific environmental conditions are detected.
+   *
+   * These rules allow IoT devices to respond automatically
+   * according to configured business conditions.
    */
   async saveActuationRules(deviceId: number, rules: ActuationRule[]): Promise<boolean> {
-    return this.saveProfile(deviceId, (target) => this.api.updateActuationRules(target, rules), 'tracking.profiles.rules-saved');
+    return this.saveProfile(
+      deviceId,
+      (target) => this.api.updateActuationRules(target, rules),
+      'tracking.profiles.rules-saved',
+    );
   }
 
   clearMessages(): void {
@@ -197,38 +309,75 @@ export class TrackingStore {
     this._notice.set(null);
   }
 
-  private async saveProfile(deviceId: number | null,
-                            request: (target: DeviceTarget) => ReturnType<TrackingApi['updateThresholds']>,
-                            notice: string): Promise<boolean> {
+  /**
+   * Internal helper method responsible for persisting environmental profiles.
+   *
+   * Handles:
+   * - API communication.
+   * - Saving state updates.
+   * - Success notifications.
+   * - Error management.
+   *
+   * This method centralizes common persistence behavior
+   * shared by threshold and actuation rule operations.
+   */
+  private async saveProfile(
+    deviceId: number | null,
+    request: (target: DeviceTarget) => ReturnType<TrackingApi['updateThresholds']>,
+    notice: string,
+  ): Promise<boolean> {
     const environmentId = this._environmentId();
     if (environmentId === null || this._saving()) return false;
     this.clearMessages();
     this._saving.set(true);
     try {
-      const profile = await firstValueFrom(request({ laboratoryId: this.iam.requireLaboratoryId(), environmentId, deviceId }));
+      const profile = await firstValueFrom(
+        request({ laboratoryId: this.iam.requireLaboratoryId(), environmentId, deviceId }),
+      );
       if (deviceId === null) this._environmentProfile.set(profile);
       else this._containerProfiles.update((profiles) => new Map(profiles).set(deviceId, profile));
       this._notice.set(notice);
       return true;
     } catch (error) {
-      this._error.set(error instanceof ApiError && error.status === 400 && error.details
-        ? error.details : 'tracking.errors.save');
+      this._error.set(
+        error instanceof ApiError && error.status === 400 && error.details
+          ? error.details
+          : 'tracking.errors.save',
+      );
       return false;
     } finally {
       this._saving.set(false);
     }
   }
 
-  private async snapshot(device: Equipment, environmentId: number, period: TelemetryPeriod): Promise<DeviceSnapshot> {
+  /**
+   * Creates a consolidated snapshot of the current IoT device state.
+   *
+   * Executes independent data retrieval operations concurrently
+   * to improve response time.
+   *
+   * If any request fails, the method returns a failed snapshot
+   * allowing the presentation layer to handle unavailable devices
+   * without breaking the monitoring process.
+   */
+  private async snapshot(
+    device: Equipment,
+    environmentId: number,
+    period: TelemetryPeriod,
+  ): Promise<DeviceSnapshot> {
     const laboratoryId = this.iam.requireLaboratoryId();
     const target = this.target(device, environmentId);
     try {
       const [measurements, actuationEvents, connection] = await Promise.all([
         firstValueFrom(this.api.getMeasurements(target, period)),
-        device.deviceType === 'CONTAINER_MONITOR' ? firstValueFrom(this.api.getActuationEvents(target, period)) : [],
+        device.deviceType === 'CONTAINER_MONITOR'
+          ? firstValueFrom(this.api.getActuationEvents(target, period))
+          : [],
         firstValueFrom(this.api.getDeviceConnection(laboratoryId, environmentId, device.id)),
       ]);
-      const detections = measurements.filter((reading) => reading.metric === 'MOTION' && reading.value === 1);
+      const detections = measurements.filter(
+        (reading) => reading.metric === 'MOTION' && reading.value === 1,
+      );
       return {
         device,
         readings: latestByMetric(measurements),
@@ -238,15 +387,33 @@ export class TrackingStore {
         failed: false,
       };
     } catch {
-      return { device, readings: new Map(), lastMotion: null, lastAction: null, connection: null, failed: true };
+      return {
+        device,
+        readings: new Map(),
+        lastMotion: null,
+        lastAction: null,
+        connection: null,
+        failed: true,
+      };
     }
   }
 
-  /** Profile of a target, or null when it has not been configured yet. */
+  /**
+   * Retrieves the environmental profile associated with a target device.
+   *
+   * Returns null when the device does not have a configured profile.
+   */
   private optionalProfile(target: DeviceTarget): Promise<EnvironmentalProfile | null> {
     return firstValueFrom(this.api.getProfile(target));
   }
 
+  /**
+   * Creates the API target identifier required to communicate
+   * with the tracking infrastructure.
+   *
+   * The target contains the laboratory, environment,
+   * and optional device identifier depending on the device type.
+   */
   private target(device: Equipment, environmentId: number): DeviceTarget {
     return {
       laboratoryId: this.iam.requireLaboratoryId(),
@@ -256,7 +423,12 @@ export class TrackingStore {
   }
 }
 
-/** The last 24 hours. */
+/**
+ * Generates the default telemetry query period.
+ *
+ * The period represents the last 24 hours from the current time
+ * and is used to retrieve recent device measurements and events.
+ */
 export function recentPeriod(): TelemetryPeriod {
   const to = new Date();
   const from = new Date(to.getTime() - RECENT_PERIOD_HOURS * 3600_000);
