@@ -59,7 +59,7 @@
     "status": {
       "QUARANTINED": "En cuarentena",
       "RELEASED": "Liberado",
-      "OBSERVED": "Observado",
+      "OBSERVED": "Observado",awdawd
       "REJECTED": "Rechazado",
       "EXPIRED": "Vencido",
       "NOT_YET_RECEIVED": "Aún no recibido",
@@ -120,8 +120,11 @@
     "subscription-paused": "Tu laboratorio no tiene una suscripción activa. Pide a tu QA Manager que la renueve e inténtalo nuevamente."
   },
   "home": {
-    "title": "Nos preocupamos por la precisión, aseguramos la calidad.",
-    "content": "Gestión avanzada de datos para entornos operativos de alto riesgo. Asegure el cumplimiento normativo total y la precisión a nivel de laboratorio."
+  "title": "Nos preocupamos por la precisión, aseguramos la calidad.",
+  "content": "Gestión avanzada de datos para entornos operativos de alto riesgo. Asegure el cumplimiento normativo total y la precisión a nivel de laboratorio."
+  },
+  "language-switcher": {
+    "aria-label": "Idioma preferido"
   },
   "auth": {
     "already-have-account": "¿Ya tienes una cuenta?",
