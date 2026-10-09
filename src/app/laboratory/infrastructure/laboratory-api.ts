@@ -30,7 +30,8 @@ import { EnvironmentUsageAssignmentResource } from './environment-response';
  * @remarks
  * This service centralizes all HTTP access for the Laboratory bounded context.
  * It delegates concrete HTTP operations to specialized endpoint clients while
- * exposing a clean API to the application layer.
+ * exposing a clean API to the application layer. Other bounded contexts read
+ * environments and staff members through this facade.
  */
 @Injectable({ providedIn: 'root' })
 export class LaboratoryApi extends BaseApi {

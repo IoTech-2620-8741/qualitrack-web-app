@@ -6,14 +6,17 @@ import { RawMaterial } from '../domain/model/raw-material.entity';
 import { RawMaterialResource, RawMaterialsResponse } from './raw-material-response';
 import { RawMaterialAssembler } from './raw-material-assembler';
 
+/**
+ * Base URL of the laboratories resource, built from the environment configuration.
+ */
 const laboratoriesEndpointUrl = `${environment.serverBasePath}${environment.laboratoryLabsEndpointPath}`;
 
 /**
  * HTTP endpoint client for raw material inventory operations.
  *
  * @remarks
- * This endpoint handles raw material listing, low-stock filtering, and creation
- * under a laboratory.
+ * This endpoint only lists the raw materials registered under a laboratory before
+ * Inventory Management existed; registration now belongs to that bounded context.
  */
 export class RawMaterialApiEndpoint extends BaseApiEndpoint<
   RawMaterial,
@@ -32,6 +35,9 @@ export class RawMaterialApiEndpoint extends BaseApiEndpoint<
 
   /**
    * Retrieves all raw materials registered under a laboratory.
+   *
+   * @remarks
+   * Maps to `GET /laboratories/{laboratoryId}/raw-materials`.
    *
    * @param laboratoryId - Numeric identifier of the laboratory
    * @returns Observable stream emitting RawMaterial domain entities

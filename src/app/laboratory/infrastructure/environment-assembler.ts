@@ -4,6 +4,9 @@ import { EnvironmentResource, EnvironmentsResponse } from './environment-respons
 
 /**
  * Assembler for converting between Environment domain entities and API resources.
+ *
+ * @remarks
+ * Optional fields missing from the backend resource are normalized to `null`.
  */
 export class EnvironmentAssembler implements BaseAssembler<
   Environment,

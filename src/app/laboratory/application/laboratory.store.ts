@@ -86,7 +86,11 @@ export class LaboratoryStore {
   /**
    * Creates a new laboratory and stores the created profile.
    *
+   * @remarks
+   * The request is not retried, so the same laboratory is never registered twice.
+   *
    * @param command - Command containing laboratory registration data
+   * @param onCreated - Optional callback invoked with the created laboratory after it is stored
    */
   createLaboratory(command: CreateLaboratoryCommand, onCreated?: (laboratory: Laboratory) => void): void {
     this.startOperation();

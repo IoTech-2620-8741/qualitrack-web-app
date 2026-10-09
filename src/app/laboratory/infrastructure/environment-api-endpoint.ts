@@ -15,13 +15,17 @@ import {
   UpdateEnvironmentRequest,
 } from './environment.request';
 
+/**
+ * Base URL of the laboratories resource, built from the environment configuration.
+ */
 const laboratoriesEndpointUrl = `${environment.serverBasePath}${environment.laboratoryLabsEndpointPath}`;
 
 /**
  * HTTP endpoint client for laboratory environment operations.
  *
  * @remarks
- * Maps to `/api/v1/laboratories/{laboratoryId}/environments` (TS15-TS18).
+ * Maps to `/api/v1/laboratories/{laboratoryId}/environments` (TS15-TS18). Failed requests are
+ * converted into errors by {@link BaseApiEndpoint.handleError}.
  */
 export class EnvironmentApiEndpoint extends BaseApiEndpoint<
   Environment,
@@ -123,6 +127,12 @@ export class EnvironmentApiEndpoint extends BaseApiEndpoint<
       .pipe(catchError(this.handleError(`Failed to assign usage to environment ${environmentId}`)));
   }
 
+  /**
+   * Builds the URL of the environments collection of a laboratory.
+   *
+   * @param laboratoryId - Numeric identifier of the laboratory
+   * @returns URL of the environments collection
+   */
   private collectionUrl(laboratoryId: number): string {
     return `${this.endpointUrl}/${laboratoryId}${environment.laboratoryEnvironmentsEndpointPath}`;
   }
