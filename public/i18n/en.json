@@ -123,6 +123,9 @@
     "title": "We care about accuracy, we ensure quality.",
     "content": "Advanced data management for high-stakes operational environments. Ensure total compliance and laboratory-grade accuracy."
   },
+  "language-switcher": {
+  "aria-label": "Preferred language"
+  },
   "auth": {
     "already-have-account": "Already have an account?",
     "sign-in": "Sign In",
