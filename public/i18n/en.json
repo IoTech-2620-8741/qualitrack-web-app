@@ -124,6 +124,9 @@
     "content": "Advanced data management for high-stakes operational environments. Ensure total compliance and laboratory-grade accuracy."
     "heroImageAlt": "Two female pharmacy professionals reviewing inventory"
   },
+  "language-switcher": {
+  "aria-label": "Preferred language"
+  },
   "auth": {
     "already-have-account": "Already have an account?",
     "sign-in": "Sign In",
