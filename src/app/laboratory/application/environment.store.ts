@@ -9,7 +9,13 @@ import { EnvironmentUsage } from '../domain/model/environment-usage';
 import { RegisterEnvironmentCommand } from '../domain/model/register-environment.command';
 import { UpdateEnvironmentCommand } from '../domain/model/update-environment.command';
 
-/** Features that remember the environment the user works with. */
+/**
+ * Features that remember the environment the user works with.
+ *
+ * @remarks
+ * Each scope keeps its own remembered environment, so choosing an environment in
+ * inventory does not change the one opened by production or tracking.
+ */
 export type EnvironmentScope = 'inventory' | 'production' | 'tracking';
 
 /**
@@ -22,12 +28,34 @@ export type EnvironmentScope = 'inventory' | 'production' | 'tracking';
  */
 @Injectable({ providedIn: 'root' })
 export class EnvironmentStore {
+  /**
+   * Laboratory API facade used for HTTP operations.
+   */
   private readonly api = inject(LaboratoryApi);
+
+  /**
+   * Store that exposes the authenticated session and the current laboratory.
+   */
   private readonly iam = inject(IamStore);
 
+  /**
+   * Internal signal containing the environments of the current laboratory.
+   */
   private readonly _environments = signal<Environment[]>([]);
+
+  /**
+   * Internal signal indicating whether an API operation is running.
+   */
   private readonly _isLoading = signal<boolean>(false);
+
+  /**
+   * Internal signal containing the latest error message, if any.
+   */
   private readonly _error = signal<string | null>(null);
+
+  /**
+   * Internal signal indicating whether the environments have been loaded at least once.
+   */
   private readonly _loaded = signal<boolean>(false);
 
   /**
@@ -60,12 +88,23 @@ export class EnvironmentStore {
    */
   readonly isEmpty = computed(() => this._loaded() && this._environments().length === 0);
 
+  /**
+   * Identifier of the laboratory of the authenticated session.
+   *
+   * @throws Error when the user has not set up a laboratory yet
+   */
   private get laboratoryId(): number {
     return this.iam.requireLaboratoryId();
   }
 
   /**
    * Loads the environments of the current laboratory.
+   *
+   * @remarks
+   * On failure the error is exposed through {@link EnvironmentStore.error} and the
+   * previous list is kept.
+   *
+   * @returns A promise that resolves when the operation finishes
    */
   async loadEnvironments(): Promise<void> {
     this.start();
@@ -83,7 +122,7 @@ export class EnvironmentStore {
    * Loads one environment of the current laboratory.
    *
    * @param environmentId - Numeric identifier of the environment
-   * @returns The environment, or null when it cannot be loaded
+   * @returns The environment, or `null` when it cannot be loaded
    */
   async loadEnvironment(environmentId: number): Promise<Environment | null> {
     this.start();
@@ -100,8 +139,12 @@ export class EnvironmentStore {
   /**
    * Registers an environment and, when requested, assigns its usage.
    *
+   * @remarks
+   * The usage is assigned in a second request. The list is refreshed even when that
+   * request fails, so an environment created without its usage is still shown.
+   *
    * @param command - Command with the environment data and optional usage
-   * @returns True when the environment (and its usage) were saved
+   * @returns `true` when the environment (and its usage) were saved
    */
   async register(command: RegisterEnvironmentCommand): Promise<boolean> {
     this.start();
@@ -134,7 +177,7 @@ export class EnvironmentStore {
    *
    * @param environmentId - Numeric identifier of the environment
    * @param command - Command with the new data
-   * @returns True when the environment was updated
+   * @returns `true` when the environment was updated
    */
   async update(environmentId: number, command: UpdateEnvironmentCommand): Promise<boolean> {
     this.start();
@@ -155,7 +198,7 @@ export class EnvironmentStore {
    *
    * @param environmentId - Numeric identifier of the environment
    * @param usage - Usage to assign
-   * @returns True when the usage was assigned
+   * @returns `true` when the usage was assigned
    */
   async assignUsage(environmentId: number, usage: EnvironmentUsage): Promise<boolean> {
     this.start();
@@ -175,9 +218,10 @@ export class EnvironmentStore {
    * Picks the environment to open by default: the last one used in this browser, otherwise the first
    * environment with the preferred usage, otherwise the first environment.
    *
-   * @param preferredUsage - Usage that fits the calling feature, for example RAW_MATERIAL_STORAGE
-   * @param scope - Feature that remembers its own environment, so inventory and production do not overwrite each other
-   * @returns The environment to open, or null when the laboratory has no environments
+   * @param preferredUsage - Usage that fits the calling feature, for example `RAW_MATERIAL_STORAGE`
+   * @param scope - Feature that remembers its own environment, so inventory and production do not
+   *   overwrite each other; `'inventory'` when omitted
+   * @returns The environment to open, or `null` when the laboratory has no environments
    */
   preferredEnvironment(preferredUsage?: EnvironmentUsage, scope: EnvironmentScope = 'inventory'): Environment | null {
     const environments = this._environments();
@@ -191,8 +235,11 @@ export class EnvironmentStore {
   /**
    * Remembers the environment the user is working with, only as a per-browser convenience.
    *
+   * @remarks
+   * The preference is kept in `localStorage`; when storage is unavailable it is silently skipped.
+   *
    * @param environmentId - Numeric identifier of the environment
-   * @param scope - Feature that remembers the environment
+   * @param scope - Feature that remembers the environment; `'inventory'` when omitted
    */
   rememberEnvironment(environmentId: number, scope: EnvironmentScope = 'inventory'): void {
     try {
@@ -209,6 +256,12 @@ export class EnvironmentStore {
     this._error.set(null);
   }
 
+  /**
+   * Reads the environment remembered for a feature in this browser.
+   *
+   * @param scope - Feature that remembers the environment
+   * @returns The remembered environment identifier, or `null` when there is none or storage is unavailable
+   */
   private rememberedEnvironmentId(scope: EnvironmentScope): number | null {
     try {
       const value = Number(localStorage.getItem(this.preferenceKey(scope)));
@@ -218,10 +271,21 @@ export class EnvironmentStore {
     }
   }
 
+  /**
+   * Builds the storage key of the remembered environment of a feature.
+   *
+   * @param scope - Feature that remembers the environment
+   * @returns Storage key scoped by laboratory and feature
+   */
   private preferenceKey(scope: EnvironmentScope): string {
     return `qualitrack.environment.${this.laboratoryId}.${scope}`;
   }
 
+  /**
+   * Reloads the environments after a write operation without reporting errors.
+   *
+   * @returns A promise that resolves when the reload finishes
+   */
   private async refresh(): Promise<void> {
     try {
       this._environments.set(await firstValueFrom(this.api.getEnvironments(this.laboratoryId)));
@@ -231,11 +295,20 @@ export class EnvironmentStore {
     }
   }
 
+  /**
+   * Initializes operation state before an API call.
+   */
   private start(): void {
     this._isLoading.set(true);
     this._error.set(null);
   }
 
+  /**
+   * Stores a user-facing message for a failed operation.
+   *
+   * @param error - Error value thrown by the failed operation
+   * @param fallback - Message used when the error carries no message
+   */
   private fail(error: unknown, fallback: string): void {
     if (error instanceof ApiError) {
       this._error.set(error.details ?? error.message);

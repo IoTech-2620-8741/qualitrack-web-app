@@ -48,8 +48,19 @@ export class StaffList implements OnInit {
    */
   protected readonly iamStore = inject(IamStore);
 
+  /**
+   * Router used to navigate after user actions.
+   */
   private readonly router = inject(Router);
+
+  /**
+   * Translation service used for the deactivation confirmation.
+   */
   private readonly translate = inject(TranslateService);
+
+  /**
+   * Reference used to stop the deactivation requests when the view is destroyed.
+   */
   private readonly destroyRef = inject(DestroyRef);
 
   /**

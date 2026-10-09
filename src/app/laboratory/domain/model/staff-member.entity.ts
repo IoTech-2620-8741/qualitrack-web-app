@@ -59,7 +59,7 @@ export class StaffMember implements BaseEntity {
   /**
    * Creates a new StaffMember instance.
    *
-   * @param params - Object containing the staff member properties
+   * @param params - Object containing the staff member properties, one per field of the entity
    */
   constructor(params: {
     id: number;
@@ -84,6 +84,8 @@ export class StaffMember implements BaseEntity {
   /**
    * Indicates whether the staff member can be assigned to operations: active, with an account
    * and not an auditor.
+   *
+   * @returns `true` when the staff member is active, has a user account and is not an auditor
    */
   get assignable(): boolean {
     return this.active && this.userId !== null && this.accessRole !== 'AUDITOR';
