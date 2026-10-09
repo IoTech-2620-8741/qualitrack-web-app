@@ -39,11 +39,29 @@ import { ENVIRONMENT_USAGES, EnvironmentUsage } from '../../../domain/model/envi
   styleUrl: './environment-form.css',
 })
 export class EnvironmentForm implements OnInit {
+  /**
+   * Store that manages the environments of the current laboratory.
+   */
   protected readonly store = inject(EnvironmentStore);
+
+  /**
+   * Form builder used to create the environment form.
+   */
   private readonly fb = inject(FormBuilder);
+
+  /**
+   * Router used to navigate after user actions.
+   */
   private readonly router = inject(Router);
+
+  /**
+   * Current route, which carries the identifier of the environment being edited.
+   */
   private readonly route = inject(ActivatedRoute);
 
+  /**
+   * Usages offered when registering an environment.
+   */
   protected readonly usages = ENVIRONMENT_USAGES;
 
   /**
@@ -56,6 +74,9 @@ export class EnvironmentForm implements OnInit {
    */
   protected readonly currentUsage = signal<EnvironmentUsage | null>(null);
 
+  /**
+   * Reactive form used to capture the environment data.
+   */
   protected readonly form = this.fb.nonNullable.group({
     code: ['', [Validators.required, Validators.maxLength(30)]],
     name: ['', [Validators.required, Validators.maxLength(100)]],
@@ -63,6 +84,11 @@ export class EnvironmentForm implements OnInit {
     usage: this.fb.control<EnvironmentUsage | null>(null),
   });
 
+  /**
+   * Lifecycle hook that, when editing, loads the environment and hydrates the form.
+   *
+   * @returns A promise that resolves when the environment is loaded
+   */
   async ngOnInit(): Promise<void> {
     this.store.clearError();
     const id = Number(this.route.snapshot.paramMap.get('environmentId'));
@@ -79,10 +105,18 @@ export class EnvironmentForm implements OnInit {
     });
   }
 
+  /**
+   * Indicates whether the form edits an existing environment.
+   */
   protected get isEdit(): boolean {
     return this.environmentId() !== null;
   }
 
+  /**
+   * Registers or updates the environment and returns to the environment list when saved.
+   *
+   * @returns A promise that resolves when the operation finishes
+   */
   protected async onSubmit(): Promise<void> {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
@@ -101,6 +135,9 @@ export class EnvironmentForm implements OnInit {
     if (saved) await this.router.navigate(['/laboratories/environments']);
   }
 
+  /**
+   * Discards the changes and returns to the environment list.
+   */
   protected onCancel(): void {
     void this.router.navigate(['/laboratories/environments']);
   }

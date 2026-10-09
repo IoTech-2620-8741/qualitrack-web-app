@@ -41,6 +41,9 @@ import { EnvironmentStore } from '../../../application/environment.store';
   `,
 })
 export class EnvironmentSelector implements OnInit {
+  /**
+   * Store that provides the environments of the current laboratory.
+   */
   protected readonly store = inject(EnvironmentStore);
 
   /**
@@ -53,6 +56,9 @@ export class EnvironmentSelector implements OnInit {
    */
   readonly selectedChange = output<number>();
 
+  /**
+   * Lifecycle hook that loads the environments unless another view already loaded them.
+   */
   ngOnInit(): void {
     if (!this.store.loaded()) void this.store.loadEnvironments();
   }

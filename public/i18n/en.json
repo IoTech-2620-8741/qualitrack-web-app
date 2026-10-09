@@ -34,7 +34,7 @@
     "receiptNumber": "Supplier lot",
     "amount": "Received quantity",
     "receivedOn": "Received on",
-    "expiresOn": "Expires on",
+    "expiresOn": "Expires on", 
     "quarantineNotice": "This receipt will remain in quarantine until quality review.",
     "review": "Review",
     "decision": "Decision",
@@ -122,6 +122,7 @@
   "home": {
     "title": "We care about accuracy, we ensure quality.",
     "content": "Advanced data management for high-stakes operational environments. Ensure total compliance and laboratory-grade accuracy."
+    "heroImageAlt": "Two female pharmacy professionals reviewing inventory"
   },
   "language-switcher": {
   "aria-label": "Preferred language"

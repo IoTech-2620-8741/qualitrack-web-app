@@ -3,7 +3,7 @@
  *
  * @remarks
  * This interface belongs to the infrastructure layer and represents the HTTP
- * request body of POST /laboratories/{laboratoryId}/staff. The platform creates
+ * request body of `POST /laboratories/{laboratoryId}/staff`. The platform creates
  * the account of the staff member with the e-mail as username.
  */
 export interface RegisterStaffRequest {
@@ -23,7 +23,7 @@ export interface RegisterStaffRequest {
   email: string;
 
   /**
-   * OPERATOR or AUDITOR.
+   * What the staff member can do with their account: `OPERATOR` or `AUDITOR`.
    */
   accessRole: string;
 }
