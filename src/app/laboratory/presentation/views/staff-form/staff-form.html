@@ -74,6 +74,10 @@
             <mat-icon matPrefix>person</mat-icon>
             @if (form.controls.fullName.hasError('required')) {
               <mat-error>{{ 'common.required' | translate }}</mat-error>
+            } @else if (form.controls.fullName.hasError('notBlank')) {
+              <mat-error>{{ 'common.notBlank' | translate }}</mat-error>
+            } @else if (form.controls.fullName.hasError('personName') || form.controls.fullName.hasError('minlength')) {
+              <mat-error>{{ 'common.invalidPersonName' | translate }}</mat-error>
             }
           </mat-form-field>
 
@@ -84,6 +88,8 @@
             <mat-icon matPrefix>work_outline</mat-icon>
             @if (form.controls.role.hasError('required')) {
               <mat-error>{{ 'common.required' | translate }}</mat-error>
+            } @else if (form.controls.role.hasError('notBlank')) {
+              <mat-error>{{ 'common.notBlank' | translate }}</mat-error>
             }
           </mat-form-field>
 

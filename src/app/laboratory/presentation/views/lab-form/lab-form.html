@@ -18,11 +18,13 @@
       <form [formGroup]="form" (ngSubmit)="onSubmit()" class="lab-form">
         <mat-form-field appearance="outline" floatLabel="always" class="full-width">
           <mat-label>{{ 'lab-form.name' | translate }}</mat-label>
-          <input matInput formControlName="name" autocomplete="organization">
+          <input matInput formControlName="name" maxlength="100" autocomplete="organization">
           <mat-icon matPrefix>business</mat-icon>
 
           @if (form.get('name')?.hasError('required')) {
             <mat-error>{{ 'common.required' | translate }}</mat-error>
+          } @else if (form.get('name')?.hasError('notBlank')) {
+            <mat-error>{{ 'common.notBlank' | translate }}</mat-error>
           }
         </mat-form-field>
 
@@ -35,28 +37,36 @@
             <mat-error>{{ 'common.required' | translate }}</mat-error>
           }
 
-          @if (form.get('ruc')?.hasError('pattern')) {
+          @if (form.get('ruc')?.hasError('ruc')) {
             <mat-error>{{ 'lab-form.rucLength' | translate }}</mat-error>
           }
         </mat-form-field>
 
         <mat-form-field appearance="outline" floatLabel="always" class="full-width">
           <mat-label>{{ 'lab-form.address' | translate }}</mat-label>
-          <input matInput formControlName="address" autocomplete="street-address">
+          <input matInput formControlName="address" maxlength="250" autocomplete="street-address">
           <mat-icon matPrefix>location_on</mat-icon>
 
           @if (form.get('address')?.hasError('required')) {
             <mat-error>{{ 'common.required' | translate }}</mat-error>
+          } @else if (form.get('address')?.hasError('notBlank')) {
+            <mat-error>{{ 'common.notBlank' | translate }}</mat-error>
           }
         </mat-form-field>
 
         <mat-form-field appearance="outline" floatLabel="always" class="full-width">
           <mat-label>{{ 'lab-form.phone' | translate }}</mat-label>
-          <input matInput formControlName="phone" type="tel" autocomplete="tel">
+          <input matInput phoneInput formControlName="phone" type="tel" inputmode="tel" maxlength="20" autocomplete="tel">
           <mat-icon matPrefix>phone</mat-icon>
 
           @if (form.get('phone')?.hasError('required')) {
             <mat-error>{{ 'common.required' | translate }}</mat-error>
+          } @else if (form.get('phone')?.hasError('phoneChars')) {
+            <mat-error>{{ 'common.phoneChars' | translate }}</mat-error>
+          } @else if (form.get('phone')?.hasError('phoneFake')) {
+            <mat-error>{{ 'common.phoneFake' | translate }}</mat-error>
+          } @else if (form.get('phone')?.hasError('phone')) {
+            <mat-error>{{ 'common.invalidPhone' | translate }}</mat-error>
           }
         </mat-form-field>
 
