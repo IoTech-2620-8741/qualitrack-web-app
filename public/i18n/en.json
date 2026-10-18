@@ -318,6 +318,12 @@
     "required": "This field is required",
     "invalidEmail": "Please enter a valid email",
     "notBlank": "The field cannot contain only spaces",
+    "dateInvalid": "Enter a valid date",
+    "dateMin": "The date cannot be earlier than 01/01/2020",
+    "dateFuture": "The date cannot be in the future",
+    "dateTooFar": "The date cannot be more than a year from today",
+    "dateBeforeBatchStart": "The date cannot be earlier than the start of the batch",
+    "invalidCode": "Use only letters, numbers and the separators - _ . /",
     "invalidPhone": "Enter a 9-digit mobile number starting with 9, or an 8-digit landline with its area code",
     "phoneChars": "The phone can only have digits, spaces, hyphens, parentheses and a leading +",
     "phoneFake": "Enter a real phone number",
@@ -846,7 +852,10 @@
       "batch-number": "Unique in the laboratory, for example PB-2026-001."
     },
     "errors": {
-      "quantity-min": "The quantity must be greater than 0."
+      "quantity-min": "The quantity must be greater than 0.",
+      "quantity-max": "The quantity cannot exceed 999,999,999.",
+      "whole-units": "Enter a whole quantity when the unit is units.",
+      "precision": "Use no more than three decimal places."
     },
     "saved": "Batch registered."
   },

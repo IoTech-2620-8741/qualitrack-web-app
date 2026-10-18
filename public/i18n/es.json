@@ -318,6 +318,12 @@
     "required": "Este campo es obligatorio",
     "invalidEmail": "Ingrese un correo válido",
     "notBlank": "El campo no puede contener solo espacios",
+    "dateInvalid": "Ingrese una fecha válida",
+    "dateMin": "La fecha no puede ser anterior al 01/01/2020",
+    "dateFuture": "La fecha no puede ser futura",
+    "dateTooFar": "La fecha no puede superar un año desde hoy",
+    "dateBeforeBatchStart": "La fecha no puede ser anterior al inicio del lote",
+    "invalidCode": "Use solo letras, números y los separadores - _ . /",
     "invalidPhone": "Ingrese un celular de 9 dígitos que empiece con 9, o un fijo de 8 dígitos con código de área",
     "phoneChars": "El teléfono solo puede tener dígitos, espacios, guiones, paréntesis y un + al inicio",
     "phoneFake": "Ingrese un número de teléfono real",
@@ -846,7 +852,10 @@
       "batch-number": "Único en el laboratorio, por ejemplo PB-2026-001."
     },
     "errors": {
-      "quantity-min": "La cantidad debe ser mayor que 0."
+      "quantity-min": "La cantidad debe ser mayor que 0.",
+      "quantity-max": "La cantidad no puede superar 999.999.999.",
+      "whole-units": "La cantidad debe ser entera cuando la unidad es unidades.",
+      "precision": "Usa como máximo tres decimales."
     },
     "saved": "Lote registrado."
   },
