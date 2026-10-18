@@ -1375,7 +1375,7 @@
     "errors": {
       "load": "The monitoring data could not be loaded. Please try again.",
       "device": "The readings of this device could not be loaded.",
-      "period": "Choose a valid period of up to 31 days.",
+      "period": "Choose a valid period of up to 31 days, from 01/01/2020.",
       "save": "The configuration could not be saved. Review the values and try again."
     },
     "metrics": {
@@ -1487,6 +1487,7 @@
       "errors": {
         "incomplete": "Each limit needs both its normal and its critical value.",
         "no-limits": "Enter at least the maximums or the minimums of the metric.",
+        "out-of-range": "{{metric}}: values must be between {{min}} and {{max}} {{unit}}.",
         "critical-min": "The critical minimum must be lower than the normal minimum.",
         "critical-max": "The critical maximum must be higher than the normal maximum.",
         "normal-range": "The normal minimum must be lower than the normal maximum.",

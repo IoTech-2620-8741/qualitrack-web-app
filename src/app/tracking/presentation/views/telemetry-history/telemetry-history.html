@@ -32,11 +32,11 @@
       </mat-form-field>
       <mat-form-field appearance="outline" subscriptSizing="dynamic">
         <mat-label>{{ 'tracking.history.from' | translate }}</mat-label>
-        <input matInput type="datetime-local" [(ngModel)]="from" name="from" required>
+        <input matInput type="datetime-local" [(ngModel)]="from" name="from" [attr.min]="minDateTime" required>
       </mat-form-field>
       <mat-form-field appearance="outline" subscriptSizing="dynamic">
         <mat-label>{{ 'tracking.history.to' | translate }}</mat-label>
-        <input matInput type="datetime-local" [(ngModel)]="to" name="to" required>
+        <input matInput type="datetime-local" [(ngModel)]="to" name="to" [attr.min]="minDateTime" required>
       </mat-form-field>
       <button mat-flat-button type="submit" [disabled]="store.isLoading() || deviceId === null">
         <mat-icon>search</mat-icon>{{ 'tracking.history.search' | translate }}

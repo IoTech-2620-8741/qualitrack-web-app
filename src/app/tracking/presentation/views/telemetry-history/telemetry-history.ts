@@ -19,6 +19,9 @@ import { EnvironmentStore } from '../../../../laboratory/application/environment
 import { EnvironmentSelector } from '../../../../laboratory/presentation/components/environment-selector/environment-selector';
 import { MonitoredMetric, metricDefinition, metricsOf } from '../../../domain/model/monitored-metric';
 
+/** Earliest moment the history can be asked for, as a datetime-local value. */
+export const MIN_HISTORY_START = '2020-01-01T00:00';
+
 /**
  * Component responsible for displaying historical telemetry information
  * of IoT devices.
@@ -73,6 +76,7 @@ export class TelemetryHistory implements OnInit {
   protected to = toLocalInput(new Date(recentPeriod().to));
   protected readonly chartMetric = signal<MonitoredMetric | null>(null);
   protected readonly periodError = signal(false);
+  protected readonly minDateTime = MIN_HISTORY_START;
 
   protected readonly selectedDevice = computed(() => this.store.history()?.device ?? null);
 
@@ -286,6 +290,7 @@ export class TelemetryHistory implements OnInit {
     const valid =
       !Number.isNaN(from.getTime()) &&
       !Number.isNaN(to.getTime()) &&
+      from >= new Date(MIN_HISTORY_START) &&
       from <= to &&
       to.getTime() - from.getTime() <= 31 * 24 * 3600_000;
     this.periodError.set(!valid);
