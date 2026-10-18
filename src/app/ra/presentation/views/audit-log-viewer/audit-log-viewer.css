@@ -30,6 +30,12 @@
 }
 
 /* Loading and errors */
+.field-error {
+  margin: 0 0 16px;
+  font-size: 0.9rem;
+  color: #b91c1c;
+}
+
 .loading-shade {
   display: flex;
   justify-content: center;

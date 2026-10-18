@@ -122,13 +122,16 @@
 
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>{{ 'common.date-range' | translate }}</mat-label>
-          <mat-date-range-input [rangePicker]="compPicker">
+          <mat-date-range-input [rangePicker]="compPicker" [min]="minDate" [max]="maxDate">
             <input matStartDate [(ngModel)]="complianceForm.startDate" [placeholder]="'report-generator.start-date' | translate">
             <input matEndDate [(ngModel)]="complianceForm.endDate" [placeholder]="'report-generator.end-date' | translate">
           </mat-date-range-input>
           <mat-datepicker-toggle matIconSuffix [for]="compPicker"></mat-datepicker-toggle>
           <mat-date-range-picker #compPicker></mat-date-range-picker>
         </mat-form-field>
+        @if (complianceError; as error) {
+          <p class="field-error" role="alert">{{ periodMessage(error) | translate }}</p>
+        }
 
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>{{ 'common.format' | translate }}</mat-label>
@@ -144,7 +147,7 @@
           mat-flat-button
           color="primary"
           type="button"
-          [disabled]="!complianceForm.startDate || !complianceForm.endDate || store.isLoading()"
+          [disabled]="!complianceForm.startDate || !complianceForm.endDate || !!complianceError || store.isLoading()"
           (click)="onGenerateComplianceReport()">
           <mat-icon>download</mat-icon>
           {{ 'common.download' | translate }}
@@ -228,13 +231,16 @@
 
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>{{ 'common.date-range' | translate }}</mat-label>
-          <mat-date-range-input [rangePicker]="eqPicker">
+          <mat-date-range-input [rangePicker]="eqPicker" [min]="minDate" [max]="maxDate">
             <input matStartDate [(ngModel)]="equipmentForm.startDate" [placeholder]="'report-generator.start-date' | translate">
             <input matEndDate [(ngModel)]="equipmentForm.endDate" [placeholder]="'report-generator.end-date' | translate">
           </mat-date-range-input>
           <mat-datepicker-toggle matIconSuffix [for]="eqPicker"></mat-datepicker-toggle>
           <mat-date-range-picker #eqPicker></mat-date-range-picker>
         </mat-form-field>
+        @if (equipmentError; as error) {
+          <p class="field-error" role="alert">{{ periodMessage(error) | translate }}</p>
+        }
 
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>{{ 'common.format' | translate }}</mat-label>
@@ -250,7 +256,7 @@
           mat-flat-button
           color="primary"
           type="button"
-          [disabled]="!hasSelectedEquipment || !equipmentForm.startDate || !equipmentForm.endDate || store.isLoading()"
+          [disabled]="!hasSelectedEquipment || !equipmentForm.startDate || !equipmentForm.endDate || !!equipmentError || store.isLoading()"
           (click)="onExportEquipmentLog()">
           <mat-icon>download</mat-icon>
           {{ 'common.export' | translate }}
