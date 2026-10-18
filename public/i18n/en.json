@@ -267,9 +267,9 @@
       "save": "Save data",
       "saved": "Personal data saved.",
       "errors": {
-        "full-name": "Enter your full name (2 to 120 characters).",
-        "dni": "The DNI has 8 digits.",
-        "phone": "Use 6 to 15 digits; it may start with +.",
+        "full-name": "Enter your full name (2 to 120 characters, only letters, spaces, apostrophes, hyphens and dots).",
+        "dni": "The DNI must have 8 digits and cannot repeat the same number.",
+        "phone": "Enter a 9-digit mobile number starting with 9, or an 8-digit landline with its area code. It may start with +51.",
         "location": "Use 2 to 120 characters.",
         "invalid": "Some value is not valid. Check the data."
       }
