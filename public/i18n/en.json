@@ -179,6 +179,7 @@
       "errors": {
         "username-required": "Username is required",
         "username-minlength": "Username must be at least 3 characters",
+        "username-maxlength": "Username can have up to 80 characters",
         "password-required": "Password is required",
         "password-minlength": "Use between 8 and 72 characters",
         "password-strength": "Password must contain letters and numbers",

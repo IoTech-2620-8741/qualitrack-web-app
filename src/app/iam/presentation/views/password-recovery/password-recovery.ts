@@ -16,6 +16,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { IamStore } from '../../../application/iam.store';
 import { Toolbar } from '../../../../shared/presentation/components/toolbar/toolbar';
+import { notBlankValidator } from '../../../../shared/presentation/validators/not-blank.validator';
 
 /** Password fields of the reset form whose visibility can be toggled. */
 type PasswordField = 'newPassword' | 'confirmPassword';
@@ -56,7 +57,10 @@ export class PasswordRecovery {
 
   /** Form of the first step: username or e-mail of the account. */
   protected readonly accountForm = new FormGroup({
-    account: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.minLength(3)] }),
+    account: new FormControl('', {
+      nonNullable: true,
+      validators: [Validators.required, notBlankValidator, Validators.minLength(3), Validators.maxLength(120)],
+    }),
   });
 
   /** Form of the second step: 6-digit code, new password (8 to 72, letters and digits) and confirmation. */
@@ -91,7 +95,7 @@ export class PasswordRecovery {
       return;
     }
     this.sending.set(true);
-    this.store.requestPasswordRecovery(this.accountForm.controls.account.value)
+    this.store.requestPasswordRecovery(this.accountForm.controls.account.value.trim())
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (minutes) => {
@@ -119,7 +123,7 @@ export class PasswordRecovery {
     }
     const { code, newPassword } = this.resetForm.getRawValue();
     this.sending.set(true);
-    this.store.resetPassword({ account: this.accountForm.controls.account.value, code, newPassword })
+    this.store.resetPassword({ account: this.accountForm.controls.account.value.trim(), code, newPassword })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (username) => void this.router.navigate(['/iam/sign-in'], {

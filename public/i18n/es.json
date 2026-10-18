@@ -179,6 +179,7 @@
       "errors": {
         "username-required": "El usuario es obligatorio",
         "username-minlength": "El usuario debe tener al menos 3 caracteres",
+        "username-maxlength": "El usuario puede tener hasta 80 caracteres",
         "password-required": "La contraseña es obligatoria",
         "password-minlength": "Usa entre 8 y 72 caracteres",
         "password-strength": "La contraseña debe contener letras y números",

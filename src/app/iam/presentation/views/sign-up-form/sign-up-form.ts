@@ -16,6 +16,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { IamStore } from '../../../application/iam.store';
 import { SignUpCommand } from '../../../domain/model/sign-up.command';
 import { Toolbar } from '../../../../shared/presentation/components/toolbar/toolbar';
+import { emailValidator } from '../../../../shared/presentation/validators/email.validator';
+import { notBlankValidator } from '../../../../shared/presentation/validators/not-blank.validator';
 
 /**
  * Component responsible for rendering and processing the sign-up form.
@@ -70,11 +72,11 @@ export class SignUpForm {
     {
       username: new FormControl<string>('', {
         nonNullable: true,
-        validators: [Validators.required, Validators.minLength(3)],
+        validators: [Validators.required, notBlankValidator, Validators.minLength(3), Validators.maxLength(80)],
       }),
       email: new FormControl<string>('', {
         nonNullable: true,
-        validators: [Validators.required, Validators.email, Validators.maxLength(120)],
+        validators: [Validators.required, emailValidator, Validators.maxLength(120)],
       }),
       password: new FormControl<string>('', {
         nonNullable: true,
@@ -110,8 +112,8 @@ export class SignUpForm {
     }
 
     const command: SignUpCommand = {
-      username: this.form.controls.username.value,
-      email: this.form.controls.email.value,
+      username: this.form.controls.username.value.trim(),
+      email: this.form.controls.email.value.trim(),
       password: this.form.controls.password.value,
       roles: [this.selectedRole],
       laboratoryId: null,
@@ -142,8 +144,9 @@ export class SignUpForm {
   protected getUsernameErrorKey(): string {
     const control = this.form.controls.username;
 
-    if (control.hasError('required')) return 'iam.sign-up.errors.username-required';
+    if (control.hasError('required') || control.hasError('notBlank')) return 'iam.sign-up.errors.username-required';
     if (control.hasError('minlength')) return 'iam.sign-up.errors.username-minlength';
+    if (control.hasError('maxlength')) return 'iam.sign-up.errors.username-maxlength';
 
     return '';
   }
