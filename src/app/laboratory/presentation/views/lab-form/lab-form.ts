@@ -15,6 +15,7 @@ import { MatIconModule } from '@angular/material/icon';
 
 import { LaboratoryStore } from '../../../application/laboratory.store';
 import { CreateLaboratoryCommand } from '../../../domain/model/create-laboratory.command';
+import { DigitsOnly } from '../../../../shared/presentation/directives/digits-only.directive';
 import { PhoneInput } from '../../../../shared/presentation/directives/phone-input.directive';
 import { notBlankValidator } from '../../../../shared/presentation/validators/not-blank.validator';
 import { normalizePhone, phoneValidator } from '../../../../shared/presentation/validators/phone.validator';
@@ -42,6 +43,7 @@ import { rucValidator } from '../../../../shared/presentation/validators/ruc.val
     MatCardModule,
     MatIconModule,
     Toolbar,
+    DigitsOnly,
     PhoneInput,
   ],
   templateUrl: './lab-form.html',
