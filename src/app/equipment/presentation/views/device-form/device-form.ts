@@ -14,6 +14,11 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { EquipmentStore } from '../../../application/equipment.store';
 import { IOT_DEVICE_TYPES, IotDeviceType } from '../../../domain/model/iot-device-type';
 import { EnvironmentStore } from '../../../../laboratory/application/environment.store';
+import { codeValidator } from '../../../../shared/presentation/validators/code.validator';
+import { notBlankValidator } from '../../../../shared/presentation/validators/not-blank.validator';
+
+/** Firmware version such as 1.2, v1.2.3 or 2.0.1-beta.1. */
+export const FIRMWARE_VERSION = /^v?\d+(\.\d+){1,3}([-+][0-9A-Za-z.-]+)?$/;
 
 /**
  * Registers an ESP32 environmental device or container monitor and, optionally, the environment
@@ -51,11 +56,11 @@ export class DeviceForm implements OnInit {
 
   protected readonly form = this.fb.group({
     deviceType: this.fb.nonNullable.control<IotDeviceType>('ENVIRONMENTAL_DEVICE', Validators.required),
-    name: this.fb.nonNullable.control('', [Validators.required, Validators.minLength(3), Validators.maxLength(150)]),
-    sensorExternalId: this.fb.nonNullable.control('', [Validators.required, Validators.maxLength(50)]),
-    serialNumber: this.fb.nonNullable.control('', [Validators.required, Validators.maxLength(50)]),
-    model: this.fb.nonNullable.control('ESP32', [Validators.required, Validators.maxLength(100)]),
-    firmwareVersion: this.fb.control<string | null>(null, Validators.maxLength(50)),
+    name: this.fb.nonNullable.control('', [Validators.required, notBlankValidator, Validators.minLength(3), Validators.maxLength(150)]),
+    sensorExternalId: this.fb.nonNullable.control('', [Validators.required, notBlankValidator, codeValidator, Validators.maxLength(50)]),
+    serialNumber: this.fb.nonNullable.control('', [Validators.required, notBlankValidator, codeValidator, Validators.maxLength(50)]),
+    model: this.fb.nonNullable.control('ESP32', [Validators.required, notBlankValidator, Validators.maxLength(100)]),
+    firmwareVersion: this.fb.control<string | null>(null, [Validators.pattern(FIRMWARE_VERSION), Validators.maxLength(50)]),
     environmentId: this.fb.control<number | null>(null),
   });
 

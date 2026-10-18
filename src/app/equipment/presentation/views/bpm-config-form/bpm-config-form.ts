@@ -1,6 +1,6 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -11,6 +11,23 @@ import { TranslatePipe } from '@ngx-translate/core';
 
 import { EquipmentStore } from '../../../application/equipment.store';
 import { ConfigureBpmCommand } from '../../../domain/model/configure-bpm.command';
+import { notBlankValidator } from '../../../../shared/presentation/validators/not-blank.validator';
+
+/** Largest absolute value accepted for the limits of a parameter. */
+export const MAX_BPM_LIMIT = 1_000_000;
+
+/**
+ * The minimum of a parameter must be lower than its maximum, as the API requires.
+ *
+ * @param group - Group with the minValue and maxValue controls
+ * @returns `{ bpmRange: true }` if both are numbers and the minimum is not lower than the maximum
+ */
+export function bpmRangeValidator(group: AbstractControl): ValidationErrors | null {
+  const min = group.get('minValue')?.value;
+  const max = group.get('maxValue')?.value;
+  if (min === null || min === undefined || min === '' || max === null || max === undefined || max === '') return null;
+  return Number(min) < Number(max) ? null : { bpmRange: true };
+}
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 /**
@@ -87,12 +104,23 @@ export class BpmConfigForm implements OnInit {
    * and measurement unit. Numeric fields use a pattern validator to allow
    * integer or decimal values, including negative values when needed.
    */
-  protected form: FormGroup = this.fb.group({
-    parameterName: ['', [Validators.required]],
-    minValue: [null, [Validators.required, Validators.pattern(/^-?\d*\.?\d+$/)]],
-    maxValue: [null, [Validators.required, Validators.pattern(/^-?\d*\.?\d+$/)]],
-    unit: ['', [Validators.required]],
-  });
+  protected readonly maxLimit = MAX_BPM_LIMIT;
+
+  protected form: FormGroup = this.fb.group(
+    {
+      parameterName: ['', [Validators.required, notBlankValidator, Validators.maxLength(100)]],
+      minValue: [
+        null,
+        [Validators.required, Validators.pattern(/^-?\d*\.?\d+$/), Validators.min(-MAX_BPM_LIMIT), Validators.max(MAX_BPM_LIMIT)],
+      ],
+      maxValue: [
+        null,
+        [Validators.required, Validators.pattern(/^-?\d*\.?\d+$/), Validators.min(-MAX_BPM_LIMIT), Validators.max(MAX_BPM_LIMIT)],
+      ],
+      unit: ['', [Validators.required, notBlankValidator, Validators.maxLength(20)]],
+    },
+    { validators: bpmRangeValidator },
+  );
 
   /**
    * Initializes the component and retrieves the equipment identifier from the route.

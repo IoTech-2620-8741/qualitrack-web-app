@@ -17,6 +17,7 @@ import { EquipmentStore } from '../../../application/equipment.store';
 import { Equipment } from '../../../domain/model/equipment.entity';
 import { EQUIPMENT_STATUSES, EquipmentStatus } from '../../../domain/model/equipment-status';
 import { EnvironmentStore } from '../../../../laboratory/application/environment.store';
+import { notBlankValidator } from '../../../../shared/presentation/validators/not-blank.validator';
 
 /**
  * Technical file of an equipment or IoT device: identity, location, operational status,
@@ -68,7 +69,7 @@ export class EquipmentDetail implements OnInit {
 
   protected readonly statusForm = this.fb.group({
     status: this.fb.control<EquipmentStatus | null>(null, Validators.required),
-    reason: this.fb.control<string | null>(null, Validators.maxLength(500)),
+    reason: this.fb.control<string | null>(null, [notBlankValidator, Validators.maxLength(500)]),
   });
 
   ngOnInit(): void {

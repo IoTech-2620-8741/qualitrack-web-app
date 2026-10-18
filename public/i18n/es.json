@@ -1025,7 +1025,11 @@
       "parameter": "Ej. Temperatura Interna",
       "unit": "Ej. °C, %, bar, RPM"
     },
-    "saved": "Parámetro BPM guardado."
+    "saved": "Parámetro BPM guardado.",
+    "errors": {
+      "limit": "El valor debe estar entre -1.000.000 y 1.000.000",
+      "range": "El máximo debe ser mayor que el mínimo"
+    }
   },
   "maintenance-history": {
     "title": "Historial de Mantenimiento",
@@ -1605,7 +1609,10 @@
       "environment": "Opcional; también se puede asociar después desde el detalle del dispositivo."
     },
     "no-environment": "Asociar después",
-    "occupied": "ya tiene un dispositivo ambiental"
+    "occupied": "ya tiene un dispositivo ambiental",
+    "errors": {
+      "firmware": "Use un formato como 1.2.3, v1.2 o 2.0.1-beta.1"
+    }
   },
   "device-types": {
     "ENVIRONMENTAL_DEVICE": "Dispositivo ambiental",
