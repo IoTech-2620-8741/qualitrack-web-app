@@ -1375,7 +1375,7 @@
     "errors": {
       "load": "No se pudieron cargar los datos de monitoreo. Inténtalo nuevamente.",
       "device": "No se pudieron cargar las lecturas de este dispositivo.",
-      "period": "Elige un periodo válido de hasta 31 días.",
+      "period": "Elige un periodo válido de hasta 31 días, desde el 01/01/2020.",
       "save": "No se pudo guardar la configuración. Revisa los valores e inténtalo nuevamente."
     },
     "metrics": {
@@ -1487,6 +1487,7 @@
       "errors": {
         "incomplete": "Cada límite necesita su valor normal y su valor crítico.",
         "no-limits": "Ingresa al menos los máximos o los mínimos de la métrica.",
+        "out-of-range": "{{metric}}: los valores deben estar entre {{min}} y {{max}} {{unit}}.",
         "critical-min": "El mínimo crítico debe ser menor que el mínimo normal.",
         "critical-max": "El máximo crítico debe ser mayor que el máximo normal.",
         "normal-range": "El mínimo normal debe ser menor que el máximo normal.",

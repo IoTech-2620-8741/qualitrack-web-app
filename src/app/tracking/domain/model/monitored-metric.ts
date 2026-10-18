@@ -62,6 +62,13 @@ export interface MetricDefinition {
    * increasing risk conditions.
    */
   upperOnly: boolean;
+
+  /**
+   * Physically plausible values of the metric, in its unit.
+   *
+   * Thresholds outside this range are almost surely typing mistakes. Only metrics with thresholds have one.
+   */
+  range?: { min: number; max: number };
 }
 
 /**
@@ -71,11 +78,11 @@ export interface MetricDefinition {
  * defining their units, supported devices and configuration rules.
  */
 export const METRICS: readonly MetricDefinition[] = [
-  { metric: 'AIR_QUALITY', unit: 'ppm', deviceType: 'ENVIRONMENTAL_DEVICE', configurable: true, upperOnly: true },
+  { metric: 'AIR_QUALITY', unit: 'ppm', deviceType: 'ENVIRONMENTAL_DEVICE', configurable: true, upperOnly: true, range: { min: 0, max: 10000 } },
   { metric: 'MOTION', unit: 'event', deviceType: 'ENVIRONMENTAL_DEVICE', configurable: false, upperOnly: false },
-  { metric: 'TEMPERATURE', unit: '°C', deviceType: 'CONTAINER_MONITOR', configurable: true, upperOnly: false },
-  { metric: 'HUMIDITY', unit: '%RH', deviceType: 'CONTAINER_MONITOR', configurable: true, upperOnly: false },
-  { metric: 'LUMINOSITY', unit: 'lux', deviceType: 'CONTAINER_MONITOR', configurable: true, upperOnly: false },
+  { metric: 'TEMPERATURE', unit: '°C', deviceType: 'CONTAINER_MONITOR', configurable: true, upperOnly: false, range: { min: -100, max: 150 } },
+  { metric: 'HUMIDITY', unit: '%RH', deviceType: 'CONTAINER_MONITOR', configurable: true, upperOnly: false, range: { min: 0, max: 100 } },
+  { metric: 'LUMINOSITY', unit: 'lux', deviceType: 'CONTAINER_MONITOR', configurable: true, upperOnly: false, range: { min: 0, max: 100000 } },
   { metric: 'RFID_TAG', unit: 'tag', deviceType: 'CONTAINER_MONITOR', configurable: false, upperOnly: false },
 ];
 
