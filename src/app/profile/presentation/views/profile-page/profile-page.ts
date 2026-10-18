@@ -16,19 +16,13 @@ import { MAX_PHOTO_BYTES, PHOTO_TYPES, ProfileStore } from '../../../application
 import { IamStore } from '../../../../iam/application/iam.store';
 import { ApiError } from '../../../../shared/infrastructure/api-error';
 import { NotificationPreferencesForm } from '../../../../ca/presentation/components/notification-preferences-form/notification-preferences-form';
-
-/**
- * 6 to 15 digits with an optional + prefix, spaces, hyphens and parentheses (same rule as the platform).
- *
- * @param control - Control of the phone number; an empty value is valid
- * @returns `{ phoneNumber: true }` if the value breaks the rule, null otherwise
- */
-function phoneNumber(control: AbstractControl): ValidationErrors | null {
-  const value = String(control.value ?? '').trim();
-  if (!value) return null;
-  const digits = value.replace(/\D/g, '').length;
-  return /^\+?[0-9 ()-]+$/.test(value) && digits >= 6 && digits <= 15 ? null : { phoneNumber: true };
-}
+import { DigitsOnly } from '../../../../shared/presentation/directives/digits-only.directive';
+import { PhoneInput } from '../../../../shared/presentation/directives/phone-input.directive';
+import { dniValidator } from '../../../../shared/presentation/validators/dni.validator';
+import { emailValidator } from '../../../../shared/presentation/validators/email.validator';
+import { notBlankValidator } from '../../../../shared/presentation/validators/not-blank.validator';
+import { normalizePhone, phoneValidator } from '../../../../shared/presentation/validators/phone.validator';
+import { personNameValidator } from '../../../../shared/presentation/validators/person-name.validator';
 
 /**
  * Letters and digits, as the password policy of the platform requires.
@@ -63,6 +57,8 @@ function lettersAndDigits(control: AbstractControl): ValidationErrors | null {
     MatInputModule,
     MatProgressSpinnerModule,
     NotificationPreferencesForm,
+    DigitsOnly,
+    PhoneInput,
   ],
   templateUrl: './profile-page.html',
   styleUrls: ['../../../../shared/presentation/styles/operations-page.css', './profile-page.css'],
@@ -105,16 +101,19 @@ export class ProfilePage implements AfterViewInit {
 
   /** Form of the personal data: full name, DNI (8 digits), phone number and location. */
   protected readonly personalForm = this.fb.nonNullable.group({
-    fullName: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(120)]],
-    dni: ['', [Validators.pattern(/^\d{8}$/)]],
-    phoneNumber: ['', [Validators.maxLength(30), phoneNumber]],
-    location: ['', [Validators.minLength(2), Validators.maxLength(120)]],
+    fullName: [
+      '',
+      [Validators.required, notBlankValidator, personNameValidator, Validators.minLength(2), Validators.maxLength(120)],
+    ],
+    dni: ['', [dniValidator]],
+    phoneNumber: ['', [phoneValidator]],
+    location: ['', [notBlankValidator, Validators.minLength(2), Validators.maxLength(120)]],
   });
 
   /** Form of the account: username and e-mail, confirmed with the current password. */
   protected readonly accountForm = this.fb.nonNullable.group({
-    username: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(80)]],
-    email: ['', [Validators.required, Validators.email, Validators.maxLength(120)]],
+    username: ['', [Validators.required, notBlankValidator, Validators.minLength(3), Validators.maxLength(80)]],
+    email: ['', [Validators.required, emailValidator, Validators.maxLength(120)]],
     currentPassword: ['', Validators.required],
   });
 
@@ -214,7 +213,8 @@ export class ProfilePage implements AfterViewInit {
     if (this.personalForm.invalid || this.personalSaving()) return;
     this.personalSaving.set(true);
     this.personalMessage.set(null);
-    this.store.update(this.personalForm.getRawValue()).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+    const personal = this.personalForm.getRawValue();
+    this.store.update({ ...personal, phoneNumber: normalizePhone(personal.phoneNumber) ?? personal.phoneNumber }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
         this.personalSaving.set(false);
         this.personalForm.markAsPristine();

@@ -267,9 +267,9 @@
       "save": "Guardar datos",
       "saved": "Datos personales guardados.",
       "errors": {
-        "full-name": "Escribe tu nombre completo (de 2 a 120 caracteres).",
-        "dni": "El DNI tiene 8 dígitos.",
-        "phone": "Usa de 6 a 15 dígitos; puede empezar con +.",
+        "full-name": "Escribe tu nombre completo (de 2 a 120 caracteres, solo letras, espacios, apóstrofes, guiones y puntos).",
+        "dni": "El DNI debe tener 8 dígitos y no puede repetir el mismo número.",
+        "phone": "Escribe un celular de 9 dígitos que empiece con 9, o un fijo de 8 dígitos con código de área. Puede empezar con +51.",
         "location": "Usa de 2 a 120 caracteres.",
         "invalid": "Algún dato no es válido. Revísalo."
       }
