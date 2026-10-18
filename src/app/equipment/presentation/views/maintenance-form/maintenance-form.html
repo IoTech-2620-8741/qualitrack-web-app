@@ -20,7 +20,7 @@
         <div class="form-grid">
           <mat-form-field appearance="outline">
             <mat-label>{{ 'maintenance-history.fields.date' | translate }}</mat-label>
-            <input matInput [matDatepicker]="picker" [max]="today" formControlName="maintenanceDate">
+            <input matInput [matDatepicker]="picker" [min]="minDate" [max]="today" formControlName="maintenanceDate">
             <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
             <mat-datepicker #picker></mat-datepicker>
 
@@ -29,6 +29,12 @@
             }
             @if (form.get('maintenanceDate')?.hasError('matDatepickerMax')) {
               <mat-error>{{ 'maintenance-form.errors.future-date' | translate }}</mat-error>
+            }
+            @if (form.get('maintenanceDate')?.hasError('matDatepickerMin')) {
+              <mat-error>{{ 'common.dateMin' | translate }}</mat-error>
+            }
+            @if (form.get('maintenanceDate')?.hasError('matDatepickerParse')) {
+              <mat-error>{{ 'common.dateInvalid' | translate }}</mat-error>
             }
           </mat-form-field>
 
@@ -81,6 +87,10 @@
 
             @if (form.get('description')?.hasError('required')) {
               <mat-error>{{ 'common.required' | translate }}</mat-error>
+            }
+
+            @if (form.get('description')?.hasError('notBlank')) {
+              <mat-error>{{ 'common.notBlank' | translate }}</mat-error>
             }
 
             @if (form.get('description')?.hasError('maxlength')) {

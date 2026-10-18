@@ -13,11 +13,14 @@
             <input
               matInput
               formControlName="parameterName"
+              maxlength="100"
               [placeholder]="'bpm-config.placeholders.parameter' | translate">
             <mat-icon matSuffix>label</mat-icon>
 
             @if (form.get('parameterName')?.hasError('required')) {
               <mat-error>{{ 'common.required' | translate }}</mat-error>
+            } @else if (form.get('parameterName')?.hasError('notBlank')) {
+              <mat-error>{{ 'common.notBlank' | translate }}</mat-error>
             }
           </mat-form-field>
 
@@ -27,10 +30,15 @@
               matInput
               type="number"
               formControlName="minValue"
+              step="any"
+              [min]="-maxLimit"
+              [max]="maxLimit"
               placeholder="0.0">
 
             @if (form.get('minValue')?.hasError('required')) {
               <mat-error>{{ 'common.required' | translate }}</mat-error>
+            } @else if (form.get('minValue')?.hasError('min') || form.get('minValue')?.hasError('max')) {
+              <mat-error>{{ 'bpm-config.errors.limit' | translate }}</mat-error>
             }
           </mat-form-field>
 
@@ -40,10 +48,17 @@
               matInput
               type="number"
               formControlName="maxValue"
+              step="any"
+              [min]="-maxLimit"
+              [max]="maxLimit"
               placeholder="100.0">
 
             @if (form.get('maxValue')?.hasError('required')) {
               <mat-error>{{ 'common.required' | translate }}</mat-error>
+            } @else if (form.get('maxValue')?.hasError('min') || form.get('maxValue')?.hasError('max')) {
+              <mat-error>{{ 'bpm-config.errors.limit' | translate }}</mat-error>
+            } @else if (form.hasError('bpmRange') && form.get('maxValue')?.touched) {
+              <mat-error>{{ 'bpm-config.errors.range' | translate }}</mat-error>
             }
           </mat-form-field>
 
@@ -52,10 +67,13 @@
             <input
               matInput
               formControlName="unit"
+              maxlength="20"
               [placeholder]="'bpm-config.placeholders.unit' | translate">
 
             @if (form.get('unit')?.hasError('required')) {
               <mat-error>{{ 'common.required' | translate }}</mat-error>
+            } @else if (form.get('unit')?.hasError('notBlank')) {
+              <mat-error>{{ 'common.notBlank' | translate }}</mat-error>
             }
           </mat-form-field>
         </div>

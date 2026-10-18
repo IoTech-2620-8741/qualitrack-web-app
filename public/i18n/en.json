@@ -1025,7 +1025,11 @@
       "parameter": "E.g. Internal Temperature",
       "unit": "E.g. °C, %, bar, RPM"
     },
-    "saved": "BPM parameter saved."
+    "saved": "BPM parameter saved.",
+    "errors": {
+      "limit": "The value must be between -1,000,000 and 1,000,000",
+      "range": "The maximum must be greater than the minimum"
+    }
   },
   "maintenance-history": {
     "title": "Maintenance History",
@@ -1605,7 +1609,10 @@
       "environment": "Optional; it can also be associated later from the device detail."
     },
     "no-environment": "Associate later",
-    "occupied": "already has an environmental device"
+    "occupied": "already has an environmental device",
+    "errors": {
+      "firmware": "Use a format like 1.2.3, v1.2 or 2.0.1-beta.1"
+    }
   },
   "device-types": {
     "ENVIRONMENTAL_DEVICE": "Environmental device",

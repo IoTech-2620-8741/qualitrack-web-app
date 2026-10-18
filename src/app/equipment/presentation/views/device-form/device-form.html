@@ -24,9 +24,12 @@
 
           <mat-form-field appearance="outline">
             <mat-label>{{ 'equipment-list.fields.name' | translate }}</mat-label>
-            <input matInput formControlName="name" [placeholder]="'device-form.placeholders.name' | translate">
+            <input matInput formControlName="name" maxlength="150" [placeholder]="'device-form.placeholders.name' | translate">
             @if (form.controls.name.hasError('required')) {
               <mat-error>{{ 'common.required' | translate }}</mat-error>
+            }
+            @if (form.controls.name.hasError('notBlank')) {
+              <mat-error>{{ 'common.notBlank' | translate }}</mat-error>
             }
             @if (form.controls.name.hasError('minlength')) {
               <mat-error>{{ 'equipment-form.errors.name-minlength' | translate }}</mat-error>
@@ -35,32 +38,50 @@
 
           <mat-form-field appearance="outline">
             <mat-label>{{ 'device-form.fields.identifier' | translate }}</mat-label>
-            <input matInput formControlName="sensorExternalId" [placeholder]="'device-form.placeholders.identifier' | translate">
+            <input matInput formControlName="sensorExternalId" maxlength="50" autocomplete="off" [placeholder]="'device-form.placeholders.identifier' | translate">
             <mat-hint>{{ 'device-form.hints.identifier' | translate }}</mat-hint>
             @if (form.controls.sensorExternalId.hasError('required')) {
               <mat-error>{{ 'common.required' | translate }}</mat-error>
+            }
+            @if (form.controls.sensorExternalId.hasError('notBlank')) {
+              <mat-error>{{ 'common.notBlank' | translate }}</mat-error>
+            }
+            @if (form.controls.sensorExternalId.hasError('code')) {
+              <mat-error>{{ 'common.invalidCode' | translate }}</mat-error>
             }
           </mat-form-field>
 
           <mat-form-field appearance="outline">
             <mat-label>{{ 'device-form.fields.serial' | translate }}</mat-label>
-            <input matInput formControlName="serialNumber" [placeholder]="'device-form.placeholders.serial' | translate">
+            <input matInput formControlName="serialNumber" maxlength="50" autocomplete="off" [placeholder]="'device-form.placeholders.serial' | translate">
             @if (form.controls.serialNumber.hasError('required')) {
               <mat-error>{{ 'common.required' | translate }}</mat-error>
+            }
+            @if (form.controls.serialNumber.hasError('notBlank')) {
+              <mat-error>{{ 'common.notBlank' | translate }}</mat-error>
+            }
+            @if (form.controls.serialNumber.hasError('code')) {
+              <mat-error>{{ 'common.invalidCode' | translate }}</mat-error>
             }
           </mat-form-field>
 
           <mat-form-field appearance="outline">
             <mat-label>{{ 'equipment-list.fields.model' | translate }}</mat-label>
-            <input matInput formControlName="model">
+            <input matInput formControlName="model" maxlength="100">
             @if (form.controls.model.hasError('required')) {
               <mat-error>{{ 'common.required' | translate }}</mat-error>
+            }
+            @if (form.controls.model.hasError('notBlank')) {
+              <mat-error>{{ 'common.notBlank' | translate }}</mat-error>
             }
           </mat-form-field>
 
           <mat-form-field appearance="outline">
             <mat-label>{{ 'device-form.fields.firmware' | translate }}</mat-label>
-            <input matInput formControlName="firmwareVersion" [placeholder]="'device-form.placeholders.firmware' | translate">
+            <input matInput formControlName="firmwareVersion" maxlength="50" autocomplete="off" [placeholder]="'device-form.placeholders.firmware' | translate">
+            @if (form.controls.firmwareVersion.hasError('pattern')) {
+              <mat-error>{{ 'device-form.errors.firmware' | translate }}</mat-error>
+            }
           </mat-form-field>
 
           <mat-form-field appearance="outline">

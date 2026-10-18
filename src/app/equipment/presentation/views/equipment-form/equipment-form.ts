@@ -12,6 +12,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TranslatePipe } from '@ngx-translate/core';
 
 import { EquipmentStore } from '../../../application/equipment.store';
+import { notBlankValidator } from '../../../../shared/presentation/validators/not-blank.validator';
 
 /**
  * Registers an equipment of the laboratory (US45). IoT devices are registered with the device form.
@@ -53,9 +54,9 @@ export class EquipmentForm {
   ];
 
   protected readonly form = this.fb.nonNullable.group({
-    name: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(150)]],
+    name: ['', [Validators.required, notBlankValidator, Validators.minLength(3), Validators.maxLength(150)]],
     type: ['', [Validators.required, Validators.maxLength(100)]],
-    model: ['', [Validators.required, Validators.maxLength(100)]],
+    model: ['', [Validators.required, notBlankValidator, Validators.maxLength(100)]],
     serialNumber: ['', [Validators.required, Validators.maxLength(50), Validators.pattern(/^[a-zA-Z0-9-]+$/)]],
   });
 

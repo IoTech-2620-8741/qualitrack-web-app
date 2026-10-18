@@ -144,6 +144,9 @@
                   <mat-form-field appearance="outline" class="grow">
                     <mat-label>{{ 'equipment-detail.status-change.reason' | translate }}</mat-label>
                     <input matInput formControlName="reason" maxlength="500">
+                    @if (statusForm.controls.reason.hasError('notBlank')) {
+                      <mat-error>{{ 'common.notBlank' | translate }}</mat-error>
+                    }
                   </mat-form-field>
                   <button mat-flat-button color="primary" type="submit" [disabled]="statusForm.invalid || store.saving()">
                     <mat-icon>published_with_changes</mat-icon>
