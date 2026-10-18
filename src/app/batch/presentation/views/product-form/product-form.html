@@ -20,6 +20,10 @@
       <input matInput formControlName="code" maxlength="50" autocomplete="off" />
       @if (form.controls.code.hasError('required')) {
         <mat-error>{{ 'common.required' | translate }}</mat-error>
+      } @else if (form.controls.code.hasError('notBlank')) {
+        <mat-error>{{ 'common.notBlank' | translate }}</mat-error>
+      } @else if (form.controls.code.hasError('code')) {
+        <mat-error>{{ 'common.invalidCode' | translate }}</mat-error>
       }
     </mat-form-field>
     <!-- Product name, unique in the laboratory -->
@@ -28,6 +32,8 @@
       <input matInput formControlName="name" maxlength="150" />
       @if (form.controls.name.hasError('required')) {
         <mat-error>{{ 'common.required' | translate }}</mat-error>
+      } @else if (form.controls.name.hasError('notBlank')) {
+        <mat-error>{{ 'common.notBlank' | translate }}</mat-error>
       }
     </mat-form-field>
     <!-- Optional description -->
@@ -43,6 +49,8 @@
       <mat-hint>{{ 'product-form.specifications-hint' | translate }}</mat-hint>
       @if (form.controls.specifications.hasError('required')) {
         <mat-error>{{ 'common.required' | translate }}</mat-error>
+      } @else if (form.controls.specifications.hasError('notBlank')) {
+        <mat-error>{{ 'common.notBlank' | translate }}</mat-error>
       }
     </mat-form-field>
     <!-- Actions: the submit button is disabled for users who cannot register products -->

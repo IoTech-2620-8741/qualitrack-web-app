@@ -18,6 +18,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { TranslateModule } from '@ngx-translate/core';
 import { ProductStore } from '../../../application/product.store';
+import { codeValidator } from '../../../../shared/presentation/validators/code.validator';
+import { notBlankValidator } from '../../../../shared/presentation/validators/not-blank.validator';
 
 /**
  * Registers a pharmaceutical product in the environment taken from the route.
@@ -59,10 +61,10 @@ export class ProductForm implements OnInit {
    * specifications (up to 1000).
    */
   protected readonly form = this.fb.nonNullable.group({
-    code: ['', [Validators.required, Validators.maxLength(50)]],
-    name: ['', [Validators.required, Validators.maxLength(150)]],
+    code: ['', [Validators.required, notBlankValidator, codeValidator, Validators.maxLength(50)]],
+    name: ['', [Validators.required, notBlankValidator, Validators.maxLength(150)]],
     description: ['', Validators.maxLength(500)],
-    specifications: ['', [Validators.required, Validators.maxLength(1000)]],
+    specifications: ['', [Validators.required, notBlankValidator, Validators.maxLength(1000)]],
   });
 
   /**
