@@ -8,6 +8,7 @@ import { LabForm } from './lab-form';
 
 describe('LabForm', () => {
   const createLaboratory = vi.fn();
+  let element: HTMLElement;
 
   function create() {
     TestBed.configureTestingModule({
@@ -19,6 +20,7 @@ describe('LabForm', () => {
     });
     const fixture = TestBed.createComponent(LabForm);
     fixture.detectChanges();
+    element = fixture.nativeElement;
     const component = fixture.componentInstance as unknown as {
       form: import('@angular/forms').FormGroup;
       onSubmit(): void;
@@ -72,6 +74,15 @@ describe('LabForm', () => {
       },
       expect.any(Function),
     );
+  });
+
+  it('removes anything but digits from the RUC while typing', () => {
+    const { form } = create();
+    const input = element.querySelector<HTMLInputElement>('input[formControlName="ruc"]')!;
+    input.value = '20 12a3-4';
+    input.dispatchEvent(new Event('input'));
+    expect(input.value).toBe('201234');
+    expect(form.get('ruc')?.value).toBe('201234');
   });
 
   it('does not send an invalid form', () => {

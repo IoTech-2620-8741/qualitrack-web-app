@@ -30,7 +30,7 @@
 
         <mat-form-field appearance="outline" floatLabel="always" class="full-width">
           <mat-label>{{ 'lab-form.ruc' | translate }}</mat-label>
-          <input matInput formControlName="ruc" maxlength="11" inputmode="numeric">
+          <input matInput digitsOnly formControlName="ruc" maxlength="11" inputmode="numeric" autocomplete="off">
           <mat-icon matPrefix>badge</mat-icon>
 
           @if (form.get('ruc')?.hasError('required')) {
