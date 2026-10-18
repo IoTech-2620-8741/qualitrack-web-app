@@ -13,6 +13,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { LaboratoryStore } from '../../../application/laboratory.store';
 import { IamStore } from '../../../../iam/application/iam.store';
 import { UpdateLaboratoryCommand } from '../../../domain/model/update-laboratory.command';
+import { PhoneInput } from '../../../../shared/presentation/directives/phone-input.directive';
+import { notBlankValidator } from '../../../../shared/presentation/validators/not-blank.validator';
+import { normalizePhone, phoneValidator } from '../../../../shared/presentation/validators/phone.validator';
 
 /**
  * Component responsible for displaying and editing the current laboratory profile.
@@ -35,6 +38,7 @@ import { UpdateLaboratoryCommand } from '../../../domain/model/update-laboratory
     MatSelectModule,
     MatCardModule,
     MatProgressSpinnerModule,
+    PhoneInput,
   ],
   templateUrl: './lab-profile.html',
   styleUrl: './lab-profile.css',
@@ -69,9 +73,9 @@ export class LabProfile implements OnInit {
    * Reactive form used to update mutable laboratory profile data.
    */
   protected readonly form: FormGroup = this.fb.group({
-    name: ['', [Validators.required, Validators.maxLength(150)]],
-    address: ['', Validators.required],
-    phone: ['', Validators.required],
+    name: ['', [Validators.required, notBlankValidator, Validators.maxLength(100)]],
+    address: ['', [Validators.required, notBlankValidator, Validators.maxLength(250)]],
+    phone: ['', [Validators.required, phoneValidator]],
     applicableRegulations: [[], Validators.required],
   });
 
@@ -114,7 +118,13 @@ export class LabProfile implements OnInit {
   protected onSave(): void {
     if (this.form.invalid) return;
 
-    const command: UpdateLaboratoryCommand = this.form.getRawValue();
+    const value = this.form.getRawValue();
+    const command: UpdateLaboratoryCommand = {
+      ...value,
+      name: value.name.trim(),
+      address: value.address.trim(),
+      phone: normalizePhone(value.phone) ?? value.phone,
+    };
     this.store.updateLaboratory(this.currentLaboratoryId, command);
     this.isEditing.set(false);
   }

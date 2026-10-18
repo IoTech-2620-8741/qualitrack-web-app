@@ -19,6 +19,9 @@ import { IamStore } from '../../../../iam/application/iam.store';
 import { RegisteredStaff } from '../../../domain/model/register-staff.command';
 import { StaffAccessRole } from '../../../domain/model/staff-member.entity';
 import { ApiError } from '../../../../shared/infrastructure/api-error';
+import { emailValidator } from '../../../../shared/presentation/validators/email.validator';
+import { notBlankValidator } from '../../../../shared/presentation/validators/not-blank.validator';
+import { personNameValidator } from '../../../../shared/presentation/validators/person-name.validator';
 
 /**
  * Form with which a quality manager registers an operator or an auditor of the laboratory.
@@ -96,11 +99,17 @@ export class StaffForm {
    * Reactive form used to capture the staff member data.
    */
   protected readonly form = new FormGroup({
-    fullName: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.maxLength(150)] }),
-    role: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.maxLength(100)] }),
+    fullName: new FormControl('', {
+      nonNullable: true,
+      validators: [Validators.required, notBlankValidator, personNameValidator, Validators.minLength(2), Validators.maxLength(150)],
+    }),
+    role: new FormControl('', {
+      nonNullable: true,
+      validators: [Validators.required, notBlankValidator, Validators.maxLength(100)],
+    }),
     email: new FormControl('', {
       nonNullable: true,
-      validators: [Validators.required, Validators.email, Validators.maxLength(150)],
+      validators: [Validators.required, emailValidator, Validators.maxLength(150)],
     }),
     accessRole: new FormControl<StaffAccessRole>('OPERATOR', { nonNullable: true, validators: [Validators.required] }),
   });

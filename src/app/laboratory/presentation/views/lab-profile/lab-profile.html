@@ -73,17 +73,37 @@
           <form [formGroup]="form" (ngSubmit)="onSave()" class="edit-form">
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>{{ 'lab-profile.name' | translate }}</mat-label>
-              <input matInput formControlName="name" aria-label="Laboratory name">
+              <input matInput formControlName="name" maxlength="100" aria-label="Laboratory name">
+              @if (form.get('name')?.hasError('required')) {
+                <mat-error>{{ 'common.required' | translate }}</mat-error>
+              } @else if (form.get('name')?.hasError('notBlank')) {
+                <mat-error>{{ 'common.notBlank' | translate }}</mat-error>
+              }
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>{{ 'lab-profile.address' | translate }}</mat-label>
-              <input matInput formControlName="address" aria-label="Laboratory address">
+              <input matInput formControlName="address" maxlength="250" aria-label="Laboratory address">
+              @if (form.get('address')?.hasError('required')) {
+                <mat-error>{{ 'common.required' | translate }}</mat-error>
+              } @else if (form.get('address')?.hasError('notBlank')) {
+                <mat-error>{{ 'common.notBlank' | translate }}</mat-error>
+              }
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>{{ 'lab-profile.phone' | translate }}</mat-label>
-              <input matInput formControlName="phone" aria-label="Laboratory phone number">
+              <input matInput phoneInput formControlName="phone" type="tel" inputmode="tel" maxlength="20"
+                autocomplete="tel" aria-label="Laboratory phone number">
+              @if (form.get('phone')?.hasError('required')) {
+                <mat-error>{{ 'common.required' | translate }}</mat-error>
+              } @else if (form.get('phone')?.hasError('phoneChars')) {
+                <mat-error>{{ 'common.phoneChars' | translate }}</mat-error>
+              } @else if (form.get('phone')?.hasError('phoneFake')) {
+                <mat-error>{{ 'common.phoneFake' | translate }}</mat-error>
+              } @else if (form.get('phone')?.hasError('phone')) {
+                <mat-error>{{ 'common.invalidPhone' | translate }}</mat-error>
+              }
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="full-width">
