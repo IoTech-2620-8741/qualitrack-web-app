@@ -12,6 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Shared form validators in src/app/shared: Peruvian RUC (11 digits starting with 20), DNI (8 digits), mobile and landline phone numbers (sent as +51...), dates (from 2020-01-01), e-mail, person name, code and not-blank validators.
 - phoneInput and digitsOnly directives that remove the characters a field does not accept while typing or pasting.
 - Unit tests with Vitest for the validators and the forms, the first tests of the repository.
+- README.md explaining the context of the frontend project: overview, features, technologies, bounded-context architecture, environment variables and how to run the development server, builds and tests.
+- LICENSE.md with the MIT License.
 
 ### Fixed
 
