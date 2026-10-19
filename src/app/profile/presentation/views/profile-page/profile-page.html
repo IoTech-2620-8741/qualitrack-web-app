@@ -80,7 +80,7 @@
               </mat-form-field>
               <mat-form-field appearance="outline">
                 <mat-label>{{ 'profile.personal.dni' | translate }}</mat-label>
-                <input matInput formControlName="dni" inputmode="numeric" maxlength="8">
+                <input matInput digitsOnly formControlName="dni" inputmode="numeric" maxlength="8" autocomplete="off">
                 <mat-hint>{{ 'profile.personal.dni-hint' | translate }}</mat-hint>
                 @if (personalForm.controls.dni.invalid) {
                   <mat-error>{{ 'profile.personal.errors.dni' | translate }}</mat-error>
@@ -88,7 +88,7 @@
               </mat-form-field>
               <mat-form-field appearance="outline">
                 <mat-label>{{ 'profile.personal.phone' | translate }}</mat-label>
-                <input matInput formControlName="phoneNumber" type="tel" autocomplete="tel" maxlength="30">
+                <input matInput phoneInput formControlName="phoneNumber" type="tel" inputmode="tel" autocomplete="tel" maxlength="20">
                 @if (personalForm.controls.phoneNumber.invalid) {
                   <mat-error>{{ 'profile.personal.errors.phone' | translate }}</mat-error>
                 }

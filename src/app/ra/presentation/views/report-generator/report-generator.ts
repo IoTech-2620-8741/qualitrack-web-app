@@ -19,7 +19,15 @@ import { IamStore } from '../../../../iam/application/iam.store';
 import { BatchStore } from '../../../../batch/application/batch.store';
 import { EquipmentStore } from '../../../../equipment/application/equipment.store';
 import { EnvironmentStore } from '../../../../laboratory/application/environment.store';
-import { localIsoDate } from '../../../../shared/presentation/utils/local-date';
+import { localIsoDate, todayInLima } from '../../../../shared/presentation/utils/local-date';
+import { MIN_DATE } from '../../../../shared/presentation/validators/date.validators';
+import {
+  calendarDate,
+  MAX_REPORT_DAYS,
+  PERIOD_ERROR_KEYS,
+  PeriodError,
+  periodError,
+} from '../../utils/report-period';
 import { ALL_ENVIRONMENTS } from '../../../domain/model/indicator-period';
 
 /**
@@ -160,6 +168,48 @@ export class ReportGeneratorComponent implements OnInit {
   };
 
   /**
+   * Earliest day the date range pickers accept.
+   */
+  protected readonly minDate = calendarDate(MIN_DATE);
+
+  /**
+   * Latest day the date range pickers accept: today in Lima.
+   *
+   * @returns The Date of today at local midnight.
+   */
+  protected get maxDate(): Date {
+    return calendarDate(todayInLima());
+  }
+
+  /**
+   * Problem with the dates of the environmental report, if any.
+   *
+   * @returns The first problem found, or null.
+   */
+  protected get complianceError(): PeriodError | null {
+    return periodError(this.complianceForm.startDate, this.complianceForm.endDate, MAX_REPORT_DAYS);
+  }
+
+  /**
+   * Problem with the dates of the equipment log, if any.
+   *
+   * @returns The first problem found, or null.
+   */
+  protected get equipmentError(): PeriodError | null {
+    return periodError(this.equipmentForm.startDate, this.equipmentForm.endDate, MAX_REPORT_DAYS);
+  }
+
+  /**
+   * Translation key of the message for a problem with the dates.
+   *
+   * @param error - The problem found
+   * @returns The translation key.
+   */
+  protected periodMessage(error: PeriodError): string {
+    return PERIOD_ERROR_KEYS[error];
+  }
+
+  /**
    * Retrieves the current laboratory ID from the active application context.
    *
    * @returns The numeric laboratory identifier used for compliance reports.
@@ -195,7 +245,7 @@ export class ReportGeneratorComponent implements OnInit {
    * The days are sent in the browser time zone; {@link Date.toISOString} would move evening dates to the next day.
    */
   protected onGenerateComplianceReport(): void {
-    if (!this.complianceForm.startDate || !this.complianceForm.endDate || this.store.isLoading()) return;
+    if (!this.complianceForm.startDate || !this.complianceForm.endDate || this.complianceError || this.store.isLoading()) return;
 
     this.store.generateComplianceReport({
       laboratoryId: this.currentLaboratoryId,
@@ -229,7 +279,8 @@ export class ReportGeneratorComponent implements OnInit {
     if (
       !this.equipmentForm.equipmentId || !this.hasSelectedEquipment || this.store.isLoading() ||
       !this.equipmentForm.startDate ||
-      !this.equipmentForm.endDate
+      !this.equipmentForm.endDate ||
+      this.equipmentError
     ) {
       return;
     }

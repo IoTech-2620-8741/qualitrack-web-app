@@ -17,7 +17,20 @@ import { EquipmentStore } from '../../../application/equipment.store';
 import { IamStore } from '../../../../iam/application/iam.store';
 import { LaboratoryApi } from '../../../../laboratory/infrastructure/laboratory-api';
 import { StaffMember } from '../../../../laboratory/domain/model/staff-member.entity';
-import { localIsoDate } from '../../../../shared/presentation/utils/local-date';
+import { localIsoDate, todayInLima } from '../../../../shared/presentation/utils/local-date';
+import { MIN_DATE } from '../../../../shared/presentation/validators/date.validators';
+import { notBlankValidator } from '../../../../shared/presentation/validators/not-blank.validator';
+
+/**
+ * Builds the Date of a yyyy-MM-dd calendar day at local midnight, the way the date picker holds its dates.
+ *
+ * @param isoDate - The calendar day
+ * @returns The Date of that day
+ */
+function dateOf(isoDate: string): Date {
+  const [year, month, day] = isoDate.split('-').map(Number);
+  return new Date(year, month - 1, day);
+}
 
 /**
  * Registers a maintenance performed on an equipment located in an environment (US49).
@@ -71,16 +84,19 @@ export class MaintenanceForm implements OnInit {
     return selected?.id === this.equipmentId() ? selected : null;
   });
 
-  /** A performed maintenance cannot be dated in the future. */
-  protected readonly today = new Date();
+  /** A performed maintenance cannot be dated in the future: today in Lima is the latest date. */
+  protected readonly today = dateOf(todayInLima());
+
+  /** Earliest date accepted. */
+  protected readonly minDate = dateOf(MIN_DATE);
 
   protected readonly maintenanceTypes = ['PREVENTIVE', 'CORRECTIVE', 'CALIBRATION', 'INSPECTION', 'OTHER'];
 
   protected readonly form = this.fb.nonNullable.group({
-    maintenanceDate: [new Date(), Validators.required],
+    maintenanceDate: [dateOf(todayInLima()), Validators.required],
     technicianStaffId: [null as number | null, Validators.required],
     type: ['', Validators.required],
-    description: ['', [Validators.required, Validators.maxLength(1000)]],
+    description: ['', [Validators.required, notBlankValidator, Validators.maxLength(1000)]],
   });
 
   constructor() {
