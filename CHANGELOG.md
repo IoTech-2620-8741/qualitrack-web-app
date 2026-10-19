@@ -24,3 +24,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Reporting & Audit (ra): reports and the audit log require dates from 2020 to today with the end not before the start, and a report covers at most 366 days.
 - Tracking & Telemetry (tracking): thresholds must be inside the physical range of each metric, and the telemetry history cannot start before 2020.
 
+## [1.1.1] - 2026-10-12
+
+### Fixed
+
+- Internationalization: a missing comma in the English JSON translation file prevented the translations from loading, which left empty texts or visible keys in the interface (#14, released in #15).
+- Version 1.1.1 set in package.json and package-lock.json, following the release v1.1.0 flow (release branch from develop, merge to main to deploy to Firebase).
+
+## [1.1.0] - 2026-10-05
+
+### Added
+
+- Equipment management feature (#6).
+- Product Batch management feature (#7).
+- Application metadata (#9).
+- Laboratory management feature (#10).
+- Accessibility improvements for the shared language switcher (#11).
+- Release v1.1.0 (#12).
+
+## [1.0.0] - 2026-10-05
+
+### Added
+
+- Profile documentation with TSDoc in Identity & Access (iam) (#2).
+- CI: automatic deployment to Firebase Hosting on every push to main (#4).
+
+### Changed
+
+- Angular build: the initial bundle budget error limit was raised to 1.2MB (#1).
+- Production environment: the API now points to the Azure Container Apps backend (#3).
+- Release v1.0.0 (#5).
