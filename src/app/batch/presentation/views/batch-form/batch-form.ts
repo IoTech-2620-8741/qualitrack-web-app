@@ -1,21 +1,7 @@
-import {
-  Component,
-  DestroyRef,
-  OnInit,
-  inject
-} from '@angular/core';
+import { Component, DestroyRef, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import {
-  AbstractControl,
-  FormBuilder,
-  ReactiveFormsModule,
-  Validators
-} from '@angular/forms';
-import {
-  ActivatedRoute,
-  Router,
-  RouterLink
-} from '@angular/router';
+import { AbstractControl, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -23,7 +9,12 @@ import { MatSelectModule } from '@angular/material/select';
 import { TranslateModule } from '@ngx-translate/core';
 import { todayInLima } from '../../../../shared/presentation/utils/local-date';
 import { codeValidator } from '../../../../shared/presentation/validators/code.validator';
-import { addYears, maxDateValidator, MIN_DATE, minDateValidator } from '../../../../shared/presentation/validators/date.validators';
+import {
+  addYears,
+  maxDateValidator,
+  MIN_DATE,
+  minDateValidator,
+} from '../../../../shared/presentation/validators/date.validators';
 import { notBlankValidator } from '../../../../shared/presentation/validators/not-blank.validator';
 import { stockQuantityValidator } from '../../../../shared/presentation/validators/stock-quantity.validator';
 import { BatchStore } from '../../../application/batch.store';
@@ -54,6 +45,7 @@ import { BatchPath } from '../../../infrastructure/batch-api-endpoint';
     TranslateModule,
   ],
   templateUrl: './batch-form.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: '../../../../shared/presentation/styles/operations-page.css',
 })
 export class BatchForm implements OnInit {
@@ -105,7 +97,10 @@ export class BatchForm implements OnInit {
    * optional notes (up to 500 characters).
    */
   protected readonly form = this.fb.nonNullable.group({
-    batchNumber: ['', [Validators.required, notBlankValidator, codeValidator, Validators.maxLength(50)]],
+    batchNumber: [
+      '',
+      [Validators.required, notBlankValidator, codeValidator, Validators.maxLength(50)],
+    ],
     quantity: [
       1,
       [

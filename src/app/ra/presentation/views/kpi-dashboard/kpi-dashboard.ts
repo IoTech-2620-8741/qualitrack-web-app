@@ -1,4 +1,11 @@
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  computed,
+  inject,
+  signal,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { MatButtonModule } from '@angular/material/button';
@@ -23,10 +30,23 @@ const PERIOD_DAYS = [1, 7, 31] as const;
 @Component({
   selector: 'app-kpi-dashboard',
   standalone: true,
-  imports: [DatePipe, DecimalPipe, TranslateModule, MatButtonModule, MatButtonToggleModule, MatFormFieldModule,
-    MatIconModule, MatSelectModule, MatProgressSpinnerModule],
+  imports: [
+    DatePipe,
+    DecimalPipe,
+    TranslateModule,
+    MatButtonModule,
+    MatButtonToggleModule,
+    MatFormFieldModule,
+    MatIconModule,
+    MatSelectModule,
+    MatProgressSpinnerModule,
+  ],
   templateUrl: './kpi-dashboard.html',
-  styleUrls: ['../../../../shared/presentation/styles/operations-page.css', '../reporting-views.css'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  styleUrls: [
+    '../../../../shared/presentation/styles/operations-page.css',
+    '../reporting-views.css',
+  ],
 })
 export class KpiDashboardComponent implements OnInit {
   protected readonly store = inject(RaStore);
@@ -39,8 +59,12 @@ export class KpiDashboardComponent implements OnInit {
   /** Readings summarized per environment, in the order of the environments of the laboratory. */
   protected readonly groups = computed(() => {
     const summaries = this.store.dashboard()?.measurementSummaries ?? [];
-    return this.environments.environments()
-      .map((environment) => ({ environment, summaries: summaries.filter((item) => item.environmentId === environment.id) }))
+    return this.environments
+      .environments()
+      .map((environment) => ({
+        environment,
+        summaries: summaries.filter((item) => item.environmentId === environment.id),
+      }))
       .filter((group) => group.summaries.length);
   });
 

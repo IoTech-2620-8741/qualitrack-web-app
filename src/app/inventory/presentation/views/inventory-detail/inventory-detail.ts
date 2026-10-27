@@ -1,4 +1,11 @@
-import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  inject,
+  OnInit,
+  signal,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
@@ -44,6 +51,7 @@ import { stockQuantityValidator } from '../../../../shared/presentation/validato
     TranslateModule,
   ],
   templateUrl: './inventory-detail.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: '../../../../shared/presentation/styles/operations-page.css',
 })
 export class InventoryDetail implements OnInit {
@@ -78,7 +86,10 @@ export class InventoryDetail implements OnInit {
   ]);
   readonly receiptForm = this.fb.nonNullable.group({
     supplier: ['', [Validators.required, notBlankValidator, Validators.maxLength(150)]],
-    batchNumber: ['', [Validators.required, notBlankValidator, codeValidator, Validators.maxLength(50)]],
+    batchNumber: [
+      '',
+      [Validators.required, notBlankValidator, codeValidator, Validators.maxLength(50)],
+    ],
     amount: [0, [Validators.required, Validators.min(0.001), Validators.max(MAX_STOCK)]],
     receivedOn: this.receivedOn,
     expiresOn: [
@@ -109,7 +120,10 @@ export class InventoryDetail implements OnInit {
       this.editing.set(false);
       this.reviewing.set(null);
       this.storing.set(null);
-      void this.store.load(Number(params.get('environmentId')), Number(params.get('rawMaterialId')));
+      void this.store.load(
+        Number(params.get('environmentId')),
+        Number(params.get('rawMaterialId')),
+      );
     });
   }
   load() {
@@ -182,7 +196,9 @@ export class InventoryDetail implements OnInit {
   startStoring(receipt: RawMaterialBatch) {
     this.reviewing.set(null);
     this.storing.set(receipt);
-    const current = this.store.availableContainers().some((container) => container.id === receipt.containerMonitorId);
+    const current = this.store
+      .availableContainers()
+      .some((container) => container.id === receipt.containerMonitorId);
     this.containerForm.reset({ containerMonitorId: current ? receipt.containerMonitorId : null });
   }
   async storeInContainer() {

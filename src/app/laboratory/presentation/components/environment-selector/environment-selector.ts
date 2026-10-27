@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, input, output } from '@angular/core';
+import { Component, OnInit, inject, input, output, ChangeDetectionStrategy } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
@@ -21,23 +21,38 @@ import { EnvironmentStore } from '../../../application/environment.store';
     <mat-form-field appearance="outline" subscriptSizing="dynamic" class="environment-selector">
       <mat-label>{{ 'environments.selector' | translate }}</mat-label>
       <mat-icon matPrefix aria-hidden="true">meeting_room</mat-icon>
-      <mat-select [value]="selectedId()" (selectionChange)="selectedChange.emit($event.value)"
-                  [attr.aria-label]="'environments.selector' | translate">
+      <mat-select
+        [value]="selectedId()"
+        (selectionChange)="selectedChange.emit($event.value)"
+        [attr.aria-label]="'environments.selector' | translate"
+      >
         @for (environment of store.environments(); track environment.id) {
           <mat-option [value]="environment.id">
             {{ environment.code }} · {{ environment.name }}
             @if (environment.usage) {
-              <small class="usage">({{ 'environment-usage.' + environment.usage | translate }})</small>
+              <small class="usage"
+                >({{ 'environment-usage.' + environment.usage | translate }})</small
+              >
             }
           </mat-option>
         }
       </mat-select>
     </mat-form-field>
   `,
+  changeDetection: ChangeDetectionStrategy.Eager,
   styles: `
-    .environment-selector { min-width: 280px; }
-    .usage { color: #5f6368; }
-    @media (max-width: 600px) { .environment-selector { width: 100%; min-width: 0; } }
+    .environment-selector {
+      min-width: 280px;
+    }
+    .usage {
+      color: #5f6368;
+    }
+    @media (max-width: 600px) {
+      .environment-selector {
+        width: 100%;
+        min-width: 0;
+      }
+    }
   `,
 })
 export class EnvironmentSelector implements OnInit {

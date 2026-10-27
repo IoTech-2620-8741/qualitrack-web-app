@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -36,6 +36,7 @@ import { IamStore } from '../../../../iam/application/iam.store';
     MatProgressSpinnerModule,
   ],
   templateUrl: './billing-summary.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './billing-summary.css',
 })
 export class BillingSummary implements OnInit {
@@ -87,8 +88,12 @@ export class BillingSummary implements OnInit {
 
     if (!subscription || subscription.cancelAtPeriodEnd) return;
     const end = subscription.currentPeriodEnd
-      ? new Date(subscription.currentPeriodEnd).toLocaleDateString(this.translate.currentLang || 'en') : '';
-    if (!confirm(this.translate.instant('subscription.billing.cancel-renewal-confirm', { end }))) return;
+      ? new Date(subscription.currentPeriodEnd).toLocaleDateString(
+          this.translate.currentLang || 'en',
+        )
+      : '';
+    if (!confirm(this.translate.instant('subscription.billing.cancel-renewal-confirm', { end })))
+      return;
 
     this.store.cancelRenewal(subscription.id);
   }

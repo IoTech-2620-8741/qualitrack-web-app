@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { IamStore } from '../../../../iam/application/iam.store';
@@ -18,7 +18,10 @@ import { CreateLaboratoryCommand } from '../../../domain/model/create-laboratory
 import { DigitsOnly } from '../../../../shared/presentation/directives/digits-only.directive';
 import { PhoneInput } from '../../../../shared/presentation/directives/phone-input.directive';
 import { notBlankValidator } from '../../../../shared/presentation/validators/not-blank.validator';
-import { normalizePhone, phoneValidator } from '../../../../shared/presentation/validators/phone.validator';
+import {
+  normalizePhone,
+  phoneValidator,
+} from '../../../../shared/presentation/validators/phone.validator';
 import { rucValidator } from '../../../../shared/presentation/validators/ruc.validator';
 
 /**
@@ -47,6 +50,7 @@ import { rucValidator } from '../../../../shared/presentation/validators/ruc.val
     PhoneInput,
   ],
   templateUrl: './lab-form.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './lab-form.css',
 })
 export class LabForm {

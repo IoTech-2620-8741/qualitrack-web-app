@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
@@ -55,13 +55,13 @@ import { Measurement } from '../../../domain/model/measurement.entity';
     EnvironmentSelector,
   ],
   templateUrl: './environmental-monitoring.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: [
     '../../../../shared/presentation/styles/operations-page.css',
     '../tracking-views.css',
   ],
 })
 export class EnvironmentalMonitoring implements OnInit {
-
   /**
    * Central application store responsible for IoT telemetry state,
    * device snapshots and environmental monitoring information.

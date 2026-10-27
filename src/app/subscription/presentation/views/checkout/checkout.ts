@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
@@ -35,6 +35,7 @@ type BillingCycle = 'MONTHLY' | 'YEARLY';
     MatProgressSpinnerModule,
   ],
   templateUrl: './checkout.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './checkout.css',
 })
 export class Checkout implements OnInit {

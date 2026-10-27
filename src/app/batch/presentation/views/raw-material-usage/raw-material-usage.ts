@@ -1,19 +1,6 @@
-import {
-  Component,
-  OnInit,
-  effect,
-  inject,
-  input
-} from '@angular/core';
-import {
-  DatePipe,
-  DecimalPipe
-} from '@angular/common';
-import {
-  FormBuilder,
-  ReactiveFormsModule,
-  Validators
-} from '@angular/forms';
+import { Component, OnInit, effect, inject, input, ChangeDetectionStrategy } from '@angular/core';
+import { DatePipe, DecimalPipe } from '@angular/common';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
@@ -56,6 +43,7 @@ import { stockQuantityValidator } from '../../../../shared/presentation/validato
     EnvironmentSelector,
   ],
   templateUrl: './raw-material-usage.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: '../../../../shared/presentation/styles/operations-page.css',
 })
 export class RawMaterialUsageComponent implements OnInit {

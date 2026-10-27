@@ -1,4 +1,4 @@
-import { Component, OnInit, computed, inject } from '@angular/core';
+import { Component, OnInit, computed, inject, ChangeDetectionStrategy } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
@@ -62,6 +62,7 @@ const NO_METRICS: MonitoredMetric[] = [];
     ActuationRulesEditor,
   ],
   templateUrl: './environmental-profiles.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: [
     '../../../../shared/presentation/styles/operations-page.css',
     '../tracking-views.css',

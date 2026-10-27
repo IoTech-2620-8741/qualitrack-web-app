@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 
@@ -16,6 +16,7 @@ import { Toolbar } from '../../components/toolbar/toolbar';
   standalone: true,
   imports: [RouterLink, TranslatePipe, Toolbar],
   templateUrl: './about.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './about.css',
 })
 export class About {

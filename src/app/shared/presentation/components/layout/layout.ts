@@ -1,4 +1,13 @@
-import { Component, DestroyRef, computed, effect, inject, signal, viewChild } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  computed,
+  effect,
+  inject,
+  signal,
+  viewChild,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
@@ -45,7 +54,15 @@ interface NavigationOption {
 @Component({
   selector: 'app-layout',
   standalone: true,
-  providers: [LaboratoryStore, EquipmentStore, BatchStore, CaStore, RaStore, TrackingStore, SubscriptionStore],
+  providers: [
+    LaboratoryStore,
+    EquipmentStore,
+    BatchStore,
+    CaStore,
+    RaStore,
+    TrackingStore,
+    SubscriptionStore,
+  ],
   imports: [
     RouterOutlet,
     RouterLink,
@@ -61,6 +78,7 @@ interface NavigationOption {
     NotificationBell,
   ],
   templateUrl: './layout.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './layout.css',
 })
 export class Layout {
@@ -70,10 +88,14 @@ export class Layout {
   private readonly breakpoints = inject(BreakpointObserver);
   private readonly iam = inject(IamStore);
   private readonly drawer = viewChild(MatSidenav);
-  protected readonly mobile = toSignal(this.breakpoints.observe('(max-width: 1023px)').pipe(
-    map((state) => state.matches)), { initialValue: this.breakpoints.isMatched('(max-width: 1023px)') });
-  protected readonly sidenavMode = computed(() => this.mobile() ? 'over' : 'side');
-  protected readonly hasOperationalAccess = computed(() => this.iam.onboarding()?.nextStep === 'READY');
+  protected readonly mobile = toSignal(
+    this.breakpoints.observe('(max-width: 1023px)').pipe(map((state) => state.matches)),
+    { initialValue: this.breakpoints.isMatched('(max-width: 1023px)') },
+  );
+  protected readonly sidenavMode = computed(() => (this.mobile() ? 'over' : 'side'));
+  protected readonly hasOperationalAccess = computed(
+    () => this.iam.onboarding()?.nextStep === 'READY',
+  );
 
   /**
    * Indicates whether the sidenav starts opened.
@@ -105,7 +127,11 @@ export class Layout {
       link: '/equipments',
       children: [
         { label: 'nav.equipment-list', link: '/equipments/equipment-list' },
-        { label: 'nav.register-equipment', link: '/equipments/register-equipment', qualityOnly: true },
+        {
+          label: 'nav.register-equipment',
+          link: '/equipments/register-equipment',
+          qualityOnly: true,
+        },
         { label: 'nav.register-device', link: '/equipments/register-device', qualityOnly: true },
       ],
     },
@@ -144,9 +170,7 @@ export class Layout {
       label: 'nav.inventory',
       icon: 'inventory_2',
       link: '/inventory',
-      children: [
-        { label: 'nav.raw-material-catalog', link: '/inventory' },
-      ],
+      children: [{ label: 'nav.raw-material-catalog', link: '/inventory' }],
     },
     {
       label: 'nav.tracking',
@@ -190,10 +214,14 @@ export class Layout {
 
   constructor(private readonly router: Router) {
     effect(() => this.sidenavOpened.set(!this.mobile() && this.hasOperationalAccess()));
-    router.events.pipe(filter((event) => event instanceof NavigationEnd),
-      takeUntilDestroyed(inject(DestroyRef))).subscribe(() => {
+    router.events
+      .pipe(
+        filter((event) => event instanceof NavigationEnd),
+        takeUntilDestroyed(inject(DestroyRef)),
+      )
+      .subscribe(() => {
         if (this.mobile()) void this.drawer()?.close();
-    });
+      });
   }
 
   /**

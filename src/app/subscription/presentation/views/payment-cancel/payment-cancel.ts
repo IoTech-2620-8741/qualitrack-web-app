@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
@@ -26,6 +26,7 @@ import { MatIconModule } from '@angular/material/icon';
     MatIconModule,
   ],
   templateUrl: './payment-cancel.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './payment-cancel.css',
 })
 export class PaymentCancel {}

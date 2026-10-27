@@ -1,4 +1,11 @@
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  computed,
+  inject,
+  signal,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -54,6 +61,7 @@ function dateOf(isoDate: string): Date {
     TranslatePipe,
   ],
   templateUrl: './maintenance-form.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './maintenance-form.css',
 })
 export class MaintenanceForm implements OnInit {
@@ -90,7 +98,13 @@ export class MaintenanceForm implements OnInit {
   /** Earliest date accepted. */
   protected readonly minDate = dateOf(MIN_DATE);
 
-  protected readonly maintenanceTypes = ['PREVENTIVE', 'CORRECTIVE', 'CALIBRATION', 'INSPECTION', 'OTHER'];
+  protected readonly maintenanceTypes = [
+    'PREVENTIVE',
+    'CORRECTIVE',
+    'CALIBRATION',
+    'INSPECTION',
+    'OTHER',
+  ];
 
   protected readonly form = this.fb.nonNullable.group({
     maintenanceDate: [dateOf(todayInLima()), Validators.required],

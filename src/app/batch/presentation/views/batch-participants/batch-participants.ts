@@ -4,7 +4,8 @@ import {
   computed,
   inject,
   input,
-  signal
+  signal,
+  ChangeDetectionStrategy,
 } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -43,6 +44,7 @@ import { IamStore } from '../../../../iam/application/iam.store';
     TranslateModule,
   ],
   templateUrl: './batch-participants.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: '../../../../shared/presentation/styles/operations-page.css',
 })
 export class BatchParticipants implements OnInit {
@@ -126,11 +128,7 @@ export class BatchParticipants implements OnInit {
    */
   protected async addEquipment(): Promise<void> {
     if (this.equipmentId === null) return;
-    if (await this.store.registerEquipment(
-      this.path(),
-      this.batchId(),
-      this.equipmentId
-    ))
+    if (await this.store.registerEquipment(this.path(), this.batchId(), this.equipmentId))
       this.equipmentId = null;
   }
 

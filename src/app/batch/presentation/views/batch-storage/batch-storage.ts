@@ -4,7 +4,8 @@ import {
   computed,
   inject,
   input,
-  signal
+  signal,
+  ChangeDetectionStrategy,
 } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -63,6 +64,7 @@ interface StorageArea {
     TranslateModule,
   ],
   templateUrl: './batch-storage.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: '../../../../shared/presentation/styles/operations-page.css',
 })
 export class BatchStorage implements OnInit {

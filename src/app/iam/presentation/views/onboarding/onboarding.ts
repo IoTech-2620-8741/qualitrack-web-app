@@ -1,4 +1,4 @@
-import { Component, DestroyRef, inject, signal } from '@angular/core';
+import { Component, DestroyRef, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
@@ -40,8 +40,23 @@ import { Toolbar } from '../../../../shared/presentation/components/toolbar/tool
       }
     </main>
   `,
-  styles: [`.onboarding-status { max-width: 560px; margin: 96px auto 24px; padding: 24px;
-    text-align: center; } mat-spinner { margin: auto; } h1 { font-size: 24px; }`],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  styles: [
+    `
+      .onboarding-status {
+        max-width: 560px;
+        margin: 96px auto 24px;
+        padding: 24px;
+        text-align: center;
+      }
+      mat-spinner {
+        margin: auto;
+      }
+      h1 {
+        font-size: 24px;
+      }
+    `,
+  ],
 })
 export class Onboarding {
   private readonly iam = inject(IamStore);
@@ -53,7 +68,9 @@ export class Onboarding {
   protected readonly subscriptionPaused = signal(false);
 
   /** Resolves the destination as soon as the view opens. */
-  constructor() { this.resolve(); }
+  constructor() {
+    this.resolve();
+  }
 
   /**
    * Reads the onboarding state (ignoring the cached one) and navigates to the view the user must see, replacing this
@@ -62,23 +79,28 @@ export class Onboarding {
   protected resolve(): void {
     this.loading.set(true);
     this.subscriptionPaused.set(false);
-    this.iam.loadOnboarding(true).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (state) => {
-        const destination = onboardingDestination(state, this.iam.canManageQuality());
-        if (destination !== SUBSCRIPTION_PAUSED) {
-          void this.router.navigateByUrl(destination, { replaceUrl: true });
-          return;
-        }
-        this.subscriptionPaused.set(true);
-        this.loading.set(false);
-      },
-      error: () => {
-        this.loading.set(false);
-        if (!this.iam.isSignedIn()) void this.router.navigateByUrl('/iam/sign-in');
-      },
-    });
+    this.iam
+      .loadOnboarding(true)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (state) => {
+          const destination = onboardingDestination(state, this.iam.canManageQuality());
+          if (destination !== SUBSCRIPTION_PAUSED) {
+            void this.router.navigateByUrl(destination, { replaceUrl: true });
+            return;
+          }
+          this.subscriptionPaused.set(true);
+          this.loading.set(false);
+        },
+        error: () => {
+          this.loading.set(false);
+          if (!this.iam.isSignedIn()) void this.router.navigateByUrl('/iam/sign-in');
+        },
+      });
   }
 
   /** Ends the session and goes to the home page. */
-  protected signOut(): void { this.iam.signOut(this.router); }
+  protected signOut(): void {
+    this.iam.signOut(this.router);
+  }
 }

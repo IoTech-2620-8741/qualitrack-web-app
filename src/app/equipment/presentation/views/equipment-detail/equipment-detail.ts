@@ -1,4 +1,11 @@
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  computed,
+  inject,
+  signal,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, RouterModule } from '@angular/router';
@@ -42,6 +49,7 @@ import { notBlankValidator } from '../../../../shared/presentation/validators/no
     TranslatePipe,
   ],
   templateUrl: './equipment-detail.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './equipment-detail.css',
 })
 export class EquipmentDetail implements OnInit {
@@ -95,8 +103,17 @@ export class EquipmentDetail implements OnInit {
 
   /** An environment keeps a single environmental device (US52). */
   protected isOccupied(equipment: Equipment, environmentId: number): boolean {
-    return equipment.deviceType === 'ENVIRONMENTAL_DEVICE' && this.store.iotDevices().some((device) =>
-      device.id !== equipment.id && device.deviceType === 'ENVIRONMENTAL_DEVICE' && device.environmentId === environmentId);
+    return (
+      equipment.deviceType === 'ENVIRONMENTAL_DEVICE' &&
+      this.store
+        .iotDevices()
+        .some(
+          (device) =>
+            device.id !== equipment.id &&
+            device.deviceType === 'ENVIRONMENTAL_DEVICE' &&
+            device.environmentId === environmentId,
+        )
+    );
   }
 
   protected async onLocate(equipment: Equipment): Promise<void> {

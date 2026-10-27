@@ -1,4 +1,12 @@
-import { Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core';
+import {
+  Component,
+  computed,
+  DestroyRef,
+  inject,
+  OnInit,
+  signal,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -31,6 +39,7 @@ import { EnvironmentSelector } from '../../../../laboratory/presentation/compone
     EnvironmentSelector,
   ],
   templateUrl: './inventory-catalogue.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: '../../../../shared/presentation/styles/operations-page.css',
 })
 export class InventoryCatalogue implements OnInit {
@@ -58,7 +67,8 @@ export class InventoryCatalogue implements OnInit {
       this.showNearExpiry.set(false);
       this.importing.set(false);
       // Only environments the account can open become the default one.
-      if (await this.store.load(environmentId)) this.environments.rememberEnvironment(environmentId);
+      if (await this.store.load(environmentId))
+        this.environments.rememberEnvironment(environmentId);
     });
   }
   changeEnvironment(environmentId: number) {

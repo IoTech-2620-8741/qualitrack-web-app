@@ -1,4 +1,4 @@
-import { Component, DestroyRef, inject, signal } from '@angular/core';
+import { Component, DestroyRef, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TranslateModule } from '@ngx-translate/core';
@@ -14,6 +14,7 @@ import { onboardingDestination } from '../../../../iam/domain/model/onboarding-s
   standalone: true,
   imports: [RouterLink, TranslateModule, MatButtonModule, MatIconModule, MatProgressSpinnerModule],
   templateUrl: './payment-success.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './payment-success.css',
 })
 export class PaymentSuccess {
@@ -23,23 +24,27 @@ export class PaymentSuccess {
   protected readonly status = signal<'loading' | 'pending' | 'error' | 'confirmed'>('loading');
 
   constructor() {
-    this.retry.pipe(
-      switchMap(() => timer(0, 2000).pipe(
-        take(15),
-        exhaustMap(() => this.iam.loadOnboarding(true).pipe(catchError(() => of(null)))),
-        takeWhile((state) => state !== null && state.subscriptionStatus !== 'ACTIVE', true),
-      )),
-      takeUntilDestroyed(inject(DestroyRef)),
-    ).subscribe((state) => {
-      if (!state) {
-        this.status.set('error');
-      } else if (state.subscriptionStatus === 'ACTIVE') {
-        this.status.set('confirmed');
-        void this.router.navigateByUrl(onboardingDestination(state), { replaceUrl: true });
-      } else {
-        this.status.set('pending');
-      }
-    });
+    this.retry
+      .pipe(
+        switchMap(() =>
+          timer(0, 2000).pipe(
+            take(15),
+            exhaustMap(() => this.iam.loadOnboarding(true).pipe(catchError(() => of(null)))),
+            takeWhile((state) => state !== null && state.subscriptionStatus !== 'ACTIVE', true),
+          ),
+        ),
+        takeUntilDestroyed(inject(DestroyRef)),
+      )
+      .subscribe((state) => {
+        if (!state) {
+          this.status.set('error');
+        } else if (state.subscriptionStatus === 'ACTIVE') {
+          this.status.set('confirmed');
+          void this.router.navigateByUrl(onboardingDestination(state), { replaceUrl: true });
+        } else {
+          this.status.set('pending');
+        }
+      });
     this.verify();
   }
 

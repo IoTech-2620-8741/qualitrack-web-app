@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -15,7 +15,12 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { RaStore } from '../../../application/ra.store';
 import { todayInLima } from '../../../../shared/presentation/utils/local-date';
 import { MIN_DATE } from '../../../../shared/presentation/validators/date.validators';
-import { calendarDate, PERIOD_ERROR_KEYS, PeriodError, periodError } from '../../utils/report-period';
+import {
+  calendarDate,
+  PERIOD_ERROR_KEYS,
+  PeriodError,
+  periodError,
+} from '../../utils/report-period';
 import { AuditAction } from '../../../domain/model/audit-log-entry.entity';
 
 /**
@@ -44,6 +49,7 @@ import { AuditAction } from '../../../domain/model/audit-log-entry.entity';
     MatProgressSpinnerModule,
   ],
   templateUrl: './audit-log-viewer.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './audit-log-viewer.css',
 })
 export class AuditLogViewerComponent implements OnInit {
@@ -125,7 +131,11 @@ export class AuditLogViewerComponent implements OnInit {
    * @returns True if nothing in the filters is wrong.
    */
   protected get filtersValid(): boolean {
-    return !this.periodProblem && !this.isInvalidId(this.filters.equipmentId) && !this.isInvalidId(this.filters.batchId);
+    return (
+      !this.periodProblem &&
+      !this.isInvalidId(this.filters.equipmentId) &&
+      !this.isInvalidId(this.filters.batchId)
+    );
   }
 
   /**

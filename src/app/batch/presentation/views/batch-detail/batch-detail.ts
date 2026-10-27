@@ -1,17 +1,6 @@
-import {
-  Component,
-  DestroyRef,
-  OnInit,
-  inject
-} from '@angular/core';
-import {
-  DatePipe,
-  DecimalPipe
-} from '@angular/common';
-import {
-  ActivatedRoute,
-  RouterLink
-} from '@angular/router';
+import { Component, DestroyRef, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
+import { DatePipe, DecimalPipe } from '@angular/common';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatButtonModule } from '@angular/material/button';
@@ -53,6 +42,7 @@ import { BatchStorage } from '../batch-storage/batch-storage';
     BatchStorage,
   ],
   templateUrl: './batch-detail.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: '../../../../shared/presentation/styles/operations-page.css',
 })
 export class BatchDetail implements OnInit {

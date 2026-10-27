@@ -1,4 +1,4 @@
-import { Component, inject, input } from '@angular/core';
+import { Component, inject, input, ChangeDetectionStrategy } from '@angular/core';
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
@@ -17,6 +17,7 @@ import { DeviationAlert } from '../../../domain/model/deviation-alert.entity';
   standalone: true,
   imports: [DatePipe, DecimalPipe, RouterLink, MatIconModule, TranslateModule],
   templateUrl: './alert-table.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: '../../../../shared/presentation/styles/operations-page.css',
 })
 export class AlertTable {

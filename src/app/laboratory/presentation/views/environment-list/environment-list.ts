@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 
@@ -33,6 +33,7 @@ import { ENVIRONMENT_USAGES, EnvironmentUsage } from '../../../domain/model/envi
     MatTooltipModule,
   ],
   templateUrl: './environment-list.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './environment-list.css',
 })
 export class EnvironmentList implements OnInit {

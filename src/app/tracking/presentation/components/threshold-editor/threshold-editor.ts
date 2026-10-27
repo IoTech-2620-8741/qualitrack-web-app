@@ -1,4 +1,12 @@
-import { Component, effect, inject, input, output, signal } from '@angular/core';
+import {
+  Component,
+  effect,
+  inject,
+  input,
+  output,
+  signal,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { MatButtonModule } from '@angular/material/button';
@@ -6,7 +14,10 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
 
 import { MetricDefinition, MonitoredMetric } from '../../../domain/model/monitored-metric';
-import { EnvironmentalThreshold, ThresholdInput } from '../../../domain/model/environmental-profile.entity';
+import {
+  EnvironmentalThreshold,
+  ThresholdInput,
+} from '../../../domain/model/environmental-profile.entity';
 
 /**
  * Represents an editable threshold configuration row in the UI.
@@ -55,6 +66,7 @@ export interface ThresholdProblem {
   standalone: true,
   imports: [FormsModule, TranslateModule, MatButtonModule, MatCheckboxModule, MatIconModule],
   templateUrl: './threshold-editor.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: [
     '../../../../shared/presentation/styles/operations-page.css',
     '../../views/tracking-views.css',
@@ -121,7 +133,13 @@ export class ThresholdEditor {
         this.error.set(
           metric === undefined
             ? problem
-            : { ...problem, params: { ...problem.params, metric: this.translate.instant(`tracking.metrics.${metric}`) } },
+            : {
+                ...problem,
+                params: {
+                  ...problem.params,
+                  metric: this.translate.instant(`tracking.metrics.${metric}`),
+                },
+              },
         );
         return;
       }
@@ -168,18 +186,36 @@ export function validate(row: ThresholdRow): ThresholdProblem | null {
   const values = [row.normalMin, row.normalMax, row.criticalMin, row.criticalMax].map(number);
   const [normalMin, normalMax, criticalMin, criticalMax] = values;
   const range = row.definition.range;
-  if (values.some((value) => value !== null && (!Number.isFinite(value) || (range && (value < range.min || value > range.max))))) {
+  if (
+    values.some(
+      (value) =>
+        value !== null &&
+        (!Number.isFinite(value) || (range && (value < range.min || value > range.max))),
+    )
+  ) {
     return {
       key: 'tracking.profiles.errors.out-of-range',
-      params: { metric: row.definition.metric, min: range?.min ?? '', max: range?.max ?? '', unit: row.definition.unit },
+      params: {
+        metric: row.definition.metric,
+        min: range?.min ?? '',
+        max: range?.max ?? '',
+        unit: row.definition.unit,
+      },
     };
   }
-  if ((normalMin === null) !== (criticalMin === null) || (normalMax === null) !== (criticalMax === null)) {
+  if (
+    (normalMin === null) !== (criticalMin === null) ||
+    (normalMax === null) !== (criticalMax === null)
+  ) {
     return { key: 'tracking.profiles.errors.incomplete' };
   }
-  if (normalMin === null && normalMax === null) return { key: 'tracking.profiles.errors.no-limits' };
-  if (normalMin !== null && criticalMin !== null && criticalMin >= normalMin) return { key: 'tracking.profiles.errors.critical-min' };
-  if (normalMax !== null && criticalMax !== null && criticalMax <= normalMax) return { key: 'tracking.profiles.errors.critical-max' };
-  if (normalMin !== null && normalMax !== null && normalMin >= normalMax) return { key: 'tracking.profiles.errors.normal-range' };
+  if (normalMin === null && normalMax === null)
+    return { key: 'tracking.profiles.errors.no-limits' };
+  if (normalMin !== null && criticalMin !== null && criticalMin >= normalMin)
+    return { key: 'tracking.profiles.errors.critical-min' };
+  if (normalMax !== null && criticalMax !== null && criticalMax <= normalMax)
+    return { key: 'tracking.profiles.errors.critical-max' };
+  if (normalMin !== null && normalMax !== null && normalMin >= normalMax)
+    return { key: 'tracking.profiles.errors.normal-range' };
   return null;
 }

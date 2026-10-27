@@ -1,11 +1,5 @@
-import {
-  Component,
-  inject
-} from '@angular/core';
-import {
-  DatePipe,
-  DecimalPipe
-} from '@angular/common';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
+import { DatePipe, DecimalPipe } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { TranslateModule } from '@ngx-translate/core';
 import { BatchStore } from '../../../application/batch.store';
@@ -22,13 +16,9 @@ import { BatchStore } from '../../../application/batch.store';
 @Component({
   selector: 'app-batch-traceability',
   standalone: true,
-  imports: [
-    DatePipe,
-    DecimalPipe,
-    MatIconModule,
-    TranslateModule
-  ],
+  imports: [DatePipe, DecimalPipe, MatIconModule, TranslateModule],
   templateUrl: './batch-traceability.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: '../../../../shared/presentation/styles/operations-page.css',
 })
 export class BatchTraceabilityView {

@@ -1,4 +1,4 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, inject, ChangeDetectionStrategy } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { TranslateModule } from '@ngx-translate/core';
@@ -17,6 +17,7 @@ import { IamStore } from '../../../../iam/application/iam.store';
   standalone: true,
   imports: [MatToolbarModule, RouterLink, TranslateModule, LanguageSwitcher],
   templateUrl: './toolbar.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './toolbar.css',
 })
 export class Toolbar {
@@ -24,5 +25,7 @@ export class Toolbar {
 
   /** The logo and the name lead to the home page before signing in and to the dashboard afterwards. */
   protected readonly brandLink = computed(() => (this.iam.isSignedIn() ? '/dashboard' : '/home'));
-  protected readonly brandLabel = computed(() => (this.iam.isSignedIn() ? 'brand.go-dashboard' : 'brand.go-home'));
+  protected readonly brandLabel = computed(() =>
+    this.iam.isSignedIn() ? 'brand.go-dashboard' : 'brand.go-home',
+  );
 }

@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject } from '@angular/core';
+import { Component, computed, effect, inject, ChangeDetectionStrategy } from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
@@ -17,8 +17,16 @@ import { ProfileStore } from '../../../../profile/application/profile.store';
 @Component({
   selector: 'app-user-session-section',
   standalone: true,
-  imports: [NgTemplateOutlet, RouterLink, TranslateModule, MatButtonModule, MatIconModule, MatTooltipModule],
+  imports: [
+    NgTemplateOutlet,
+    RouterLink,
+    TranslateModule,
+    MatButtonModule,
+    MatIconModule,
+    MatTooltipModule,
+  ],
   templateUrl: './user-session-section.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './user-session-section.css',
 })
 export class UserSessionSection {
