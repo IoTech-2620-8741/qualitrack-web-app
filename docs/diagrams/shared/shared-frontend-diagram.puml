@@ -6,14 +6,6 @@ skinparam classAttributeIconSize 0
 
 package "external bounded contexts" <<External>> {
   class IamStore
-  class LaboratoryApi
-  class InventoryApi
-  class EquipmentApi
-  class BatchApi
-  class CaApi
-  class TrackingApi
-  class SubscriptionApi
-  class recentPeriod <<function>>
   class AuthenticationSection
 }
 
@@ -67,25 +59,20 @@ package "shared" {
     }
   }
 
-  package "application" {
-    class DashboardStore <<view-scoped>> {
-      -iam: IamStore
-      -trackingApi: TrackingApi
-      +laboratory / equipment / batches / materials: Signal<LoadState>
-      +alerts / measurements / subscription / plans: Signal<LoadState>
-      +devices: Signal<Equipment[]>
-      +selectedEquipmentId: Signal<number | null>
-      +series / readings / latestReading / readingRange: Signal
-      +reload(): void
-      +loadSubscription(): void
-      +loadPlans(): void
-      +loadAlerts(): void
-      +selectEquipment(id: number | null): void
-      +equipmentName(id: number): string
-    }
-  }
-
   package "presentation.components" {
+    class EnvironmentSelector {
+      +environments: InputSignal<EnvironmentOption[]>
+      +selectedId: InputSignal<number | null>
+      +selectedChange: OutputEmitterRef<number>
+    }
+
+    interface EnvironmentOption {
+      +id: number
+      +code: string
+      +name: string
+      +usage?: string | null
+    }
+
     class LanguageSwitcher {
       #currentLang: string
       #languages: string[]
@@ -143,20 +130,6 @@ package "shared" {
       +ngOnInit(): void
       #navigateToHome(): void
     }
-
-    class Dashboard {
-      #store: DashboardStore
-      -translate: TranslateService
-      #summaryCards: Signal<object[]>
-      #batchDistribution: Signal<object[]>
-      #recentBatches: Signal<Batch[]>
-      #chartData: Signal<ChartData>
-      #chartOptions: Signal<ChartOptions>
-      #reloadAll(): void
-      #retryTelemetry(): void
-      #retrySubscription(): void
-      #retryAlerts(): void
-    }
   }
 }
 
@@ -205,20 +178,10 @@ Home --> AuthenticationSection
 PageNotFound --> Router
 PageNotFound --> ActivatedRoute
 
-Dashboard *-- DashboardStore
-DashboardStore --> IamStore
-DashboardStore --> LaboratoryApi
-DashboardStore --> InventoryApi
-DashboardStore --> EquipmentApi
-DashboardStore --> BatchApi
-DashboardStore --> CaApi : open alerts of every environment
-DashboardStore --> TrackingApi
-DashboardStore --> SubscriptionApi
-DashboardStore ..> recentPeriod
-note bottom of DashboardStore
-  Telemetry widget: readings of the last 24 hours of the selected IoT device,
-  from its environment (environmental device) or container monitor route.
+EnvironmentSelector ..> EnvironmentOption
+note bottom of EnvironmentSelector
+  Visual component without store: the views of inventory, products, alerts,
+  telemetry and reports pass the environments of their own context.
 end note
-Dashboard --> TranslateService
 
 @enduml

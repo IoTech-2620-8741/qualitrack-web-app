@@ -7,6 +7,7 @@ skinparam classAttributeIconSize 0
 hide empty members
 
 package "shared" {
+  class EnvironmentSelector <<component>>
   interface BaseEntity
   class BaseApi
   class BaseApiEndpoint
@@ -35,7 +36,6 @@ package "laboratory" {
     +preferredEnvironment(usage?, scope?): Environment
     +rememberEnvironment(id, scope?): void
   }
-  class EnvironmentSelector <<component>>
 }
 
 package "equipment.infrastructure" {
