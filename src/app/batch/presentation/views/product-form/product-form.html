@@ -6,11 +6,11 @@
   </header>
   <p class="muted">{{ 'product-form.subtitle' | translate }}</p>
   <!-- Notice for users who cannot register products -->
-  @if (!store.canManage()) {
+  @if (!store.canManageProducts()) {
     <p class="notice" role="status">{{ 'product-form.quality-only' | translate }}</p>
   }
-  @if (store.error()) {
-    <p class="error" role="alert">{{ store.error()! | translate }}</p>
+  @if (store.productError()) {
+    <p class="error" role="alert">{{ store.productError()! | translate }}</p>
   }
   <!-- Registration form of the product -->
   <form class="editor form-grid" [formGroup]="form" (ngSubmit)="save()">
@@ -56,7 +56,7 @@
     <!-- Actions: the submit button is disabled for users who cannot register products -->
     <div class="actions full-width">
       <a mat-button [routerLink]="catalogueLink">{{ 'common.cancel' | translate }}</a>
-      <button mat-flat-button type="submit" [disabled]="store.saving() || !store.canManage()">
+      <button mat-flat-button type="submit" [disabled]="store.productSaving() || !store.canManageProducts()">
         <mat-icon>save</mat-icon>{{ 'common.register' | translate }}
       </button>
     </div>

@@ -1,10 +1,10 @@
 <main class="operations-page">
   <!-- Back link to the products of the environment -->
   <a [routerLink]="['/batches/environments', environmentId, 'products']">{{ 'product-catalog.title' | translate }}</a>
-  @if (products.error()) {
-    <p class="error" role="alert">{{ products.error()! | translate }}</p>
+  @if (batches.productError()) {
+    <p class="error" role="alert">{{ batches.productError()! | translate }}</p>
   }
-  @if (products.product(); as product) {
+  @if (batches.product(); as product) {
     <!-- Heading with the new batch action, only for users who operate -->
     <header class="page-heading">
       <h1><mat-icon aria-hidden="true">medication</mat-icon>{{ product.name }}</h1>
@@ -65,7 +65,7 @@
         }
       </tbody>
     </table>
-  } @else if (products.loading()) {
+  } @else if (batches.productsLoading()) {
     <p role="status">{{ 'common.status-loading' | translate }}</p>
   }
 </main>

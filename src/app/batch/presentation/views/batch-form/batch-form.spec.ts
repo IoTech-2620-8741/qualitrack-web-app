@@ -7,7 +7,6 @@ import { IamStore } from '../../../../iam/application/iam.store';
 import { addYears } from '../../../../shared/presentation/validators/date.validators';
 import { todayInLima } from '../../../../shared/presentation/utils/local-date';
 import { BatchStore } from '../../../application/batch.store';
-import { ProductStore } from '../../../application/product.store';
 import { BatchForm } from './batch-form';
 
 describe('BatchForm', () => {
@@ -21,12 +20,11 @@ describe('BatchForm', () => {
         provideHttpClient(),
         provideHttpClientTesting(),
         provideRouter([]),
-        ProductStore,
         { provide: IamStore, useValue: { requireLaboratoryId: () => 1, canManageQuality: () => true, canOperate: () => true } },
         { provide: ActivatedRoute, useValue: { snapshot: { paramMap: { get: () => '3' } } } },
       ],
     });
-    vi.spyOn(TestBed.inject(ProductStore), 'loadProduct').mockResolvedValue(undefined as never);
+    vi.spyOn(TestBed.inject(BatchStore), 'loadProduct').mockResolvedValue(undefined as never);
     vi.spyOn(TestBed.inject(BatchStore), 'createBatch').mockImplementation(createBatch);
     const fixture = TestBed.createComponent(BatchForm);
     fixture.detectChanges();
