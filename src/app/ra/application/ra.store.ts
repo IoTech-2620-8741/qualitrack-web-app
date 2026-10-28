@@ -1,6 +1,7 @@
+import { AuditedStaffMember } from '../domain/model/audited-staff-member.entity';
 import { DestroyRef, Injectable, WritableSignal, computed, signal, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Observable, Subject, Subscription as Request, firstValueFrom, from, map, mergeMap, takeUntil, toArray } from 'rxjs';
+import { Observable, Subject, Subscription as Request, firstValueFrom, forkJoin, from, map, mergeMap, takeUntil, toArray } from 'rxjs';
 import { RaApi } from '../infrastructure/ra-api';
 import { IamStore } from '../../iam/application/iam.store';
 import { EnvironmentPreference } from '../../shared/infrastructure/environment-preference';
@@ -62,6 +63,52 @@ export class RaStore {
   private readonly reloadDashboard = new Subject<void>();
   private readonly reloadTrends = new Subject<void>();
   private readonly reloadAudit = new Subject<void>();
+  private readonly reloadStaffActivity = new Subject<void>();
+  private readonly _staffActivity = signal<AuditLogEntry[]>([]);
+  private readonly _auditedStaffMember = signal<AuditedStaffMember | null>(null);
+  private readonly _staffActivityLoading = signal(false);
+  private readonly _staffActivityError = signal<string | null>(null);
+
+  /** Activity of the selected staff member, newest first. */
+  readonly staffActivity = this._staffActivity.asReadonly();
+  /** Identity read through the Laboratory ACL. */
+  readonly auditedStaffMember = this._auditedStaffMember.asReadonly();
+  readonly staffActivityLoading = this._staffActivityLoading.asReadonly();
+  readonly staffActivityError = this._staffActivityError.asReadonly();
+
+  /** Cancels the previous request and releases state when the activity route changes or is left. */
+  clearStaffActivity(): void {
+    this.reloadStaffActivity.next();
+    this._staffActivity.set([]);
+    this._auditedStaffMember.set(null);
+    this._staffActivityLoading.set(false);
+    this._staffActivityError.set(null);
+  }
+
+  /** Loads a staff identity and its audit entries without sharing models with Laboratory. */
+  loadStaffActivity(staffId: number): void {
+    this.clearStaffActivity();
+    if (!Number.isSafeInteger(staffId) || staffId <= 0) {
+      this._staffActivityError.set('staff.detail.load-error');
+      return;
+    }
+    this._staffActivityLoading.set(true);
+    const laboratoryId = this.iam.requireLaboratoryId();
+    forkJoin({
+      member: this.api.getAuditedStaffMember(laboratoryId, staffId),
+      activity: this.api.getStaffActivity(laboratoryId, staffId),
+    }).pipe(takeUntil(this.reloadStaffActivity), takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: ({ member, activity }) => {
+        this._auditedStaffMember.set(member);
+        this._staffActivity.set([...activity].sort((a, b) => b.timestamp.localeCompare(a.timestamp)));
+        this._staffActivityLoading.set(false);
+      },
+      error: () => {
+        this._staffActivityError.set('staff.detail.load-error');
+        this._staffActivityLoading.set(false);
+      },
+    });
+  }
 
   /**
    * Indicators loaded for the selected period and environment.
