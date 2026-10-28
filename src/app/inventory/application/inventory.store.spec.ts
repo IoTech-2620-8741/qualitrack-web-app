@@ -1,3 +1,6 @@
+import { of, Subject, throwError } from 'rxjs';
+import { LegacyMaterialSnapshot } from '../domain/model/legacy-material-snapshot.entity';
+import { ConsumingBatch } from '../domain/model/consuming-batch.entity';
 import { TestBed } from '@angular/core/testing';
 import { IamStore } from '../../iam/application/iam.store';
 import { InventoryApi } from '../infrastructure/inventory-api';
@@ -30,5 +33,57 @@ describe('InventoryStore affected batches', () => {
     store.receipts.set([receipt(1, 'RELEASED')]);
     expect(store.affectedBatches()).toEqual([]);
     expect(store.usages().length).toBe(2);
+  });
+});
+
+describe('InventoryStore legacy detail', () => {
+  const material = new LegacyMaterialSnapshot({ id: 3, name: 'Legacy material', code: 'OLD-3', supplier: 'Supplier', batchNumber: 'OLD-LOT', expirationDate: '2026-09-01', quantityInStock: 0, minimumStock: 4, unit: 'kg' });
+  const consumption = new MaterialConsumption({ id: 1, batchId: 8, quantityUsed: 4, unit: 'kg', usageDate: '2026-09-01' });
+  const api = { legacyMaterialSnapshots: vi.fn(), legacyMaterialConsumptions: vi.fn(), consumingBatches: vi.fn() };
+  beforeEach(() => {
+    api.legacyMaterialSnapshots.mockReset().mockReturnValue(of([material]));
+    api.legacyMaterialConsumptions.mockReset().mockReturnValue(of([consumption]));
+    api.consumingBatches.mockReset().mockReturnValue(of([new ConsumingBatch({ id: 8, batchNumber: 'PB-8' })]));
+    TestBed.configureTestingModule({ providers: [
+      { provide: InventoryApi, useValue: api },
+      { provide: IamStore, useValue: { requireLaboratoryId: () => 7, canManageQuality: () => true, canOperate: () => true } },
+    ] });
+  });
+  it('keeps an empty material with historical consumption, labels and unrecorded balances', () => {
+    const store = TestBed.inject(InventoryStore); store.loadLegacyDetail(3);
+    expect(store.legacyDetailMaterial()).toBe(material);
+    expect(store.legacyDetailConsumptions()).toEqual([consumption]);
+    expect(store.legacyDetailHasUnrecordedStock()).toBe(true);
+    expect(store.legacyDetailBatchLabel(8)).toBe('PB-8');
+    expect(store.legacyDetailBatchLabel(99)).toBe('#99');
+    expect(api.legacyMaterialConsumptions).toHaveBeenCalledWith(7, 3);
+    expect(store.legacyDetailLoading()).toBe(false);
+  });
+  it('discards stale responses and clears history when the page is left', () => {
+    const stale = new Subject<MaterialConsumption[]>();
+    api.legacyMaterialConsumptions.mockReturnValueOnce(stale);
+    const store = TestBed.inject(InventoryStore); store.loadLegacyDetail(3);
+    store.clearLegacyDetail(); stale.next([consumption]); stale.complete();
+    expect(store.legacyDetailMaterial()).toBeNull();
+    expect(store.legacyDetailConsumptions()).toEqual([]);
+    expect(store.legacyDetailLoading()).toBe(false);
+  });
+  it('shows not found for missing historical materials', () => {
+    const store = TestBed.inject(InventoryStore); store.loadLegacyDetail(999);
+    expect(store.legacyDetailError()).toBe('material-history.not-found');
+    expect(store.legacyDetailMaterial()).toBeNull();
+  });
+  it('reports load failure instead of showing stale stock', () => {
+    const store = TestBed.inject(InventoryStore); store.loadLegacyDetail(3);
+    api.legacyMaterialSnapshots.mockReturnValue(throwError(() => new Error('unavailable')));
+    store.loadLegacyDetail(3);
+    expect(store.legacyDetailError()).toBe('material-history.load-error');
+    expect(store.legacyDetailMaterial()).toBeNull();
+    expect(store.legacyDetailLoading()).toBe(false);
+  });
+  it.each([0, -1, NaN, 1.5])('does not request history for invalid identifiers: %s', (id) => {
+    const store = TestBed.inject(InventoryStore); store.loadLegacyDetail(id);
+    expect(api.legacyMaterialSnapshots).not.toHaveBeenCalled();
+    expect(store.legacyDetailError()).toBe('material-history.not-found');
   });
 });

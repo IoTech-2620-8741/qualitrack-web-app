@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -7,8 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslatePipe } from '@ngx-translate/core';
-import { RawMaterialHistoryStore } from '../../../application/raw-material-history.store';
-import { IamStore } from '../../../../iam/application/iam.store';
+import { InventoryStore } from '../../../application/inventory.store';
 
 /**
  * Component that shows a raw material and the history of its usages in production batches.
@@ -18,7 +17,7 @@ import { IamStore } from '../../../../iam/application/iam.store';
  * that parameter changes.
  */
 @Component({
-  selector: 'app-raw-material-detail',
+  selector: 'app-legacy-material-detail',
   standalone: true,
   imports: [
     CommonModule,
@@ -29,25 +28,22 @@ import { IamStore } from '../../../../iam/application/iam.store';
     MatProgressSpinnerModule,
     MatTooltipModule,
   ],
-  templateUrl: './raw-material-detail.html',
+  templateUrl: './legacy-material-detail.html',
   changeDetection: ChangeDetectionStrategy.Eager,
-  styleUrl: './raw-material-detail.css',
+  styleUrl: './legacy-material-detail.css',
 })
-export class RawMaterialDetail implements OnInit {
+export class LegacyMaterialDetail implements OnInit {
   /**
    * Store that loads the raw material and its usage history.
    */
-  protected readonly store = inject(RawMaterialHistoryStore);
+  protected readonly store = inject(InventoryStore);
 
   /**
    * Current route, which carries the identifier of the raw material.
    */
   private readonly route = inject(ActivatedRoute);
 
-  /**
-   * Store that exposes the laboratory of the authenticated session.
-   */
-  private readonly iam = inject(IamStore);
+  constructor() { inject(DestroyRef).onDestroy(() => this.store.clearLegacyDetail()); }
 
   /**
    * Route parameters, completed when the component is destroyed.
@@ -73,6 +69,6 @@ export class RawMaterialDetail implements OnInit {
    * Loads again the history of the current raw material.
    */
   protected reload(): void {
-    this.store.load(this.iam.requireLaboratoryId(), this.materialId);
+    this.store.loadLegacyDetail(this.materialId);
   }
 }

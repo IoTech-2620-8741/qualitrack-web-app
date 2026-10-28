@@ -30,9 +30,18 @@ package "shared.infrastructure" {
 }
 
 package "inventory.domain.model" {
+  class LegacyMaterialSnapshot {
+    +id / name / code / supplier / batchNumber
+    +expirationDate / quantityInStock / unit / minimumStock
+  }
+  class ConsumingBatch {
+    +id: number
+    +batchNumber: string
+  }
   class MaterialConsumption {
     +id / batchId / inventoryReceiptId
     +quantityUsed / unit / usageDate
+    +stockBefore / stockAfter: number | null
   }
   class StorageEnvironment {
     +id / code / name
@@ -82,6 +91,12 @@ RawMaterialBatch ..|> BaseEntity
 InventoryMovement ..|> BaseEntity
 
 package "inventory.infrastructure" {
+  interface LegacyMaterialSnapshotResource
+  class LegacyMaterialSnapshotAssembler
+  class LegacyMaterialSnapshotApiEndpoint
+  interface ConsumingBatchResource
+  class ConsumingBatchAssembler
+  class ConsumingBatchApiEndpoint
   interface MaterialConsumptionResource
   class MaterialConsumptionAssembler
   class MaterialConsumptionApiEndpoint
@@ -141,6 +156,11 @@ end note
 
 package "inventory.application" {
   class InventoryStore <<root>> {
+    +legacyDetailMaterial / legacyDetailConsumptions / legacyDetailBatches
+    +legacyDetailLoading / legacyDetailError / legacyDetailHasUnrecordedStock
+    +loadLegacyDetail(materialId): void
+    +clearLegacyDetail(): void
+    +legacyDetailBatchLabel(batchId): string
     +environments: Signal<StorageEnvironment[]>
     +environmentsLoaded / environmentsLoading / environmentsError / environmentsEmpty
     +loadEnvironments(): Promise<void>
@@ -180,6 +200,7 @@ InventoryStore --> EnvironmentPreference
 InventoryStore ..> StorageContainer
 
 package "inventory.presentation" {
+  class LegacyMaterialDetail
   class InventoryHome
   class InventoryCatalogue
   class InventoryDetail
@@ -231,6 +252,27 @@ note bottom of MaterialConsumption
   Read-only ACL from Product Batch. Used for affected production batches
   (OBSERVED or REJECTED receipts) and pre-Inventory consumption history.
   Product Batch retains consumption ownership and writes.
+end note
+
+LegacyMaterialSnapshot ..|> BaseEntity
+ConsumingBatch ..|> BaseEntity
+InventoryApi --> LegacyMaterialSnapshotApiEndpoint
+InventoryApi --> ConsumingBatchApiEndpoint
+LegacyMaterialSnapshotApiEndpoint --|> ErrorHandlingEnabledBaseType
+LegacyMaterialSnapshotApiEndpoint --> LegacyMaterialSnapshotAssembler
+LegacyMaterialSnapshotAssembler ..> LegacyMaterialSnapshotResource
+LegacyMaterialSnapshotAssembler ..> LegacyMaterialSnapshot
+ConsumingBatchApiEndpoint --|> ErrorHandlingEnabledBaseType
+ConsumingBatchApiEndpoint --> ConsumingBatchAssembler
+ConsumingBatchAssembler ..> ConsumingBatchResource
+ConsumingBatchAssembler ..> ConsumingBatch
+LegacyMaterialDetail --> InventoryStore
+InventoryRoutes --> LegacyMaterialDetail
+note bottom of LegacyMaterialDetail
+  /inventory/legacy-materials/:id preserves the old stock summary,
+  consumption history, before/after balances, production batch names and links.
+  Reads all old materials, including imported and empty ones.
+  Previous-balance import remains available in the catalogue.
 end note
 
 @enduml

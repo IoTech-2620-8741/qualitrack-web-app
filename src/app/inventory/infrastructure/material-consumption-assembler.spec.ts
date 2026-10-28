@@ -6,7 +6,7 @@ describe('MaterialConsumptionAssembler', () => {
   it('preserves quantities and receipt identifiers used by the quality warning', () => {
     const entity = new MaterialConsumptionAssembler().toEntityFromResource({ ...base, inventoryReceiptId: 3 });
     expect(entity).toBeInstanceOf(MaterialConsumption);
-    expect(entity).toEqual({ ...base, inventoryReceiptId: 3 });
+    expect(entity).toEqual({ ...base, inventoryReceiptId: 3, stockBefore: null, stockAfter: null });
   });
   it.each([undefined, null])('preserves history without an inventory receipt: %s', (inventoryReceiptId) => {
     const entity = new MaterialConsumptionAssembler().toEntityFromResource({ ...base, inventoryReceiptId });

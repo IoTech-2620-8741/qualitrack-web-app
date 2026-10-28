@@ -21,13 +21,6 @@ package "iam.application" {
   }
 }
 
-package "batch.infrastructure" {
-  class BatchApi {
-    +getBatches(lab)
-    +getMaterialHistory(laboratoryId, legacyRawMaterialId)
-  }
-}
-
 package "laboratory.domain.model" {
   class Laboratory {
     +id: number
@@ -76,7 +69,6 @@ package "laboratory.domain.model" {
     PRODUCT_STORAGE
     OTHER
   }
-  class RawMaterial <<legacy, read-only>>
   interface CreateLaboratoryCommand
   interface UpdateLaboratoryCommand
   interface RegisterStaffCommand
@@ -101,7 +93,6 @@ package "laboratory.infrastructure" {
     +getStaffMember(laboratoryId, staffId)
     +registerStaff(laboratoryId, request): Observable<RegisteredStaff>
     +deactivateStaff(laboratoryId, staffId): Observable<StaffMember>
-    +getRawMaterials(laboratoryId)
     +getEnvironments(laboratoryId)
     +getEnvironment(laboratoryId, environmentId)
     +createEnvironment(laboratoryId, request)
@@ -111,26 +102,21 @@ package "laboratory.infrastructure" {
   class LaboratoryApiEndpoint
   class StaffApiEndpoint
   class EnvironmentApiEndpoint
-  class RawMaterialApiEndpoint
   class LaboratoryAssembler
   class StaffAssembler
   class EnvironmentAssembler
-  class RawMaterialAssembler
 }
 
 LaboratoryApi --|> BaseApi
 LaboratoryApi --> LaboratoryApiEndpoint
 LaboratoryApi --> StaffApiEndpoint
 LaboratoryApi --> EnvironmentApiEndpoint
-LaboratoryApi --> RawMaterialApiEndpoint
 LaboratoryApiEndpoint --|> BaseApiEndpoint
 StaffApiEndpoint --|> BaseApiEndpoint
 EnvironmentApiEndpoint --|> BaseApiEndpoint
-RawMaterialApiEndpoint --|> BaseApiEndpoint
 LaboratoryApiEndpoint --> LaboratoryAssembler
 StaffApiEndpoint --> StaffAssembler
 EnvironmentApiEndpoint --> EnvironmentAssembler
-RawMaterialApiEndpoint --> RawMaterialAssembler
 note bottom of StaffApiEndpoint
   GET/POST /laboratories/{laboratoryId}/staff, GET .../staff/{staffId},
   POST .../staff/{staffId}/deactivations
@@ -157,17 +143,10 @@ package "laboratory.application" {
     +updateEnvironment(environmentId, command)
     +assignEnvironmentUsage(environmentId, usage)
   }
-  class RawMaterialHistoryStore <<component scoped>> {
-    +material
-    +usages
-    +load(laboratoryId, materialId)
-  }
 }
 
 LaboratoryStore --> LaboratoryApi
 LaboratoryStore --> IamStore
-RawMaterialHistoryStore --> LaboratoryApi
-RawMaterialHistoryStore --> BatchApi
 note right of LaboratoryStore
   Single store of the context (application/laboratory.store.ts).
   The other contexts read environments and staff through their
@@ -182,7 +161,6 @@ package "laboratory.presentation" {
   class StaffList
   class StaffForm
   class StaffDetail
-  class RawMaterialDetail
   class LaboratoryRoutes
 }
 
@@ -207,12 +185,11 @@ note right of StaffDetail
   /reports/staff-activity/:staffId (quality managers and auditors).
   No Profile or Reporting & Audit code is imported.
 end note
-RawMaterialDetail --> RawMaterialHistoryStore
 
 note bottom of LaboratoryRoutes
   /laboratories/lab-profile, environments[/new|/:environmentId/edit],
   staff-list, staff-form (quality managers), staff/:staffId (quality managers and auditors),
-  raw-materials/:id (legacy history).
+  raw-materials/:id redirects to /inventory/legacy-materials/:id.
   product-catalog and product-form redirect to /batches;
   raw-material-list and raw-material-form redirect to /inventory.
 end note

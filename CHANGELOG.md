@@ -25,15 +25,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Shared (shared): the environment selector is now a visual component without a store, and the operational overview (dashboard) moved to Reporting & Audit (#41).
 
-- Product Batch (batch): products and raw material consumption are now kept in `BatchStore` (#40) and the batch path moved to the domain (#39); the equipment (#43), environments, staff and raw material lots a batch uses are now read through the models of Product Batch (#44).
+- Product Batch (batch): products and raw material consumption are now kept in `BatchStore` (#40) and the batch path moved to the domain (#39); the equipment (#43), environments, staff and raw material lots a batch uses are now read through the models of Product Batch (#44). Historical consumption links open the preserved material detail in Inventory (#49).
 
 - Compliance & Alerts (ca): the notifications of the bell are now kept in `CaStore` (#40); the devices (#43) and environments (#44) of the alerts are now read through the models of Compliance & Alerts. Notification preferences now have their own page, reachable from the profile and toolbar bell (#47).
 
 - Equipment (equipment): the environments where equipment is installed and the technicians of a maintenance are now read through the models of Equipment (#44).
 
-- Inventory (inventory): the storage containers (#43) and the environments (#44) are now read through the models of Inventory. Current and historical material consumption also use an Inventory model and endpoint, preserving the warning for production batches affected by observed or rejected receipts (#48).
+- Inventory (inventory): the storage containers (#43) and the environments (#44) are now read through the models of Inventory. Current and historical material consumption also use an Inventory model and endpoint, preserving the warning for production batches affected by observed or rejected receipts (#48). Historical material details now belong to Inventory with its own material snapshot and batch-label models; previous-balance imports remain available (#49).
 
-- Laboratory (laboratory): the environments are now managed by `LaboratoryStore`, the single store of the context (#44), and the staff member detail is read through it (#39). Staff detail now links to separate profile and activity pages while retaining employment data and deactivation (#46).
+- Laboratory (laboratory): the environments are now managed by `LaboratoryStore`, the single store of the context (#44), and the staff member detail is read through it (#39). Staff detail now links to separate profile and activity pages while retaining employment data and deactivation (#46). Historical material URLs redirect to Inventory (#49).
 
 - Reporting & Audit (ra): the operational overview shows its data through the models of Reporting & Audit (#41); the equipment of the reports (#43) and the environments and batches of the indicators, trends and reports are read through them too (#44). Staff activity now has its own page with record-type filtering and a staff identity read through an independent Laboratory ACL (#46).
 
@@ -43,7 +43,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
-- Laboratory (laboratory): `EnvironmentStore`; Product Batch, Compliance & Alerts, Equipment, Inventory, Reporting & Audit and Tracking & Telemetry no longer import code of Laboratory to read environments and staff (#42, #44).
+- Laboratory (laboratory): `EnvironmentStore`; Product Batch, Compliance & Alerts, Equipment, Inventory, Reporting & Audit and Tracking & Telemetry no longer import code of Laboratory to read environments and staff (#42, #44). The unused historical material store, model and infrastructure were removed after moving the complete detail to Inventory (#49).
 
 ## [1.2.0] - 2026-10-19
 
