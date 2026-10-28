@@ -2,13 +2,13 @@
   <header class="page-header">
     <div>
       <p class="eyebrow">{{ 'nav.dashboard' | translate }}</p>
-      <h1>{{ store.laboratory().data?.name || ('dashboard.fallback-title' | translate) }}</h1>
+      <h1>{{ store.overviewLaboratory().data?.name || ('dashboard.fallback-title' | translate) }}</h1>
     </div>
     <button
       mat-icon-button
       type="button"
-      (click)="store.reload()"
-      [disabled]="store.isLoading()"
+      (click)="store.reloadOverview()"
+      [disabled]="store.overviewLoading()"
       [matTooltip]="'dashboard.overview.refresh' | translate"
       [attr.aria-label]="'dashboard.overview.refresh' | translate"
     >
@@ -44,21 +44,21 @@
           ><mat-icon>arrow_forward</mat-icon></a
         >
       </header>
-      @if (store.equipment().status === 'loading') {
+      @if (store.overviewEquipment().status === 'loading') {
         <ng-container *ngTemplateOutlet="loading" />
-      } @else if (store.equipment().status === 'error') {
+      } @else if (store.overviewEquipment().status === 'error') {
         <ng-container *ngTemplateOutlet="error; context: { retry: reloadAll }" />
-      } @else if (!store.devices().length) {
+      } @else if (!store.overviewDevices().length) {
         <p class="empty">{{ 'dashboard.overview.no-devices' | translate }}</p>
       } @else {
         <div class="telemetry-filters">
           <mat-form-field appearance="outline" subscriptSizing="dynamic">
             <mat-label>{{ 'dashboard.overview.equipment' | translate }}</mat-label>
             <mat-select
-              [value]="store.selectedEquipmentId()"
-              (selectionChange)="store.selectEquipment($event.value)"
+              [value]="store.overviewDeviceId()"
+              (selectionChange)="store.selectOverviewDevice($event.value)"
             >
-              @for (equipment of store.devices(); track equipment.id) {
+              @for (equipment of store.overviewDevices(); track equipment.id) {
                 <mat-option [value]="equipment.id">{{ equipment.name }}</mat-option>
               }
             </mat-select>
@@ -66,11 +66,11 @@
           <mat-form-field appearance="outline" subscriptSizing="dynamic">
             <mat-label>{{ 'dashboard.overview.parameter' | translate }}</mat-label>
             <mat-select
-              [value]="$safeNavigationMigration(store.activeSeries()?.key)"
-              [disabled]="!store.series().length"
-              (selectionChange)="store.selectedSeriesKey.set($event.value)"
+              [value]="$safeNavigationMigration(store.overviewActiveSeries()?.key)"
+              [disabled]="!store.overviewSeries().length"
+              (selectionChange)="store.selectOverviewSeries($event.value)"
             >
-              @for (series of store.series(); track series.key) {
+              @for (series of store.overviewSeries(); track series.key) {
                 <mat-option [value]="series.key"
                   >{{ 'tracking.metrics.' + series.parameter | translate }} ({{
                     series.unit
@@ -80,11 +80,11 @@
             </mat-select>
           </mat-form-field>
         </div>
-        @if (store.measurements().status === 'loading') {
+        @if (store.overviewMeasurements().status === 'loading') {
           <ng-container *ngTemplateOutlet="loading" />
-        } @else if (store.measurements().status === 'error') {
+        } @else if (store.overviewMeasurements().status === 'error') {
           <ng-container *ngTemplateOutlet="error; context: { retry: retryTelemetry }" />
-        } @else if (store.latestReading(); as latest) {
+        } @else if (store.overviewLatestReading(); as latest) {
           <div class="latest-reading">
             <div>
               <span>{{ 'dashboard.overview.latest' | translate }}</span>
@@ -104,7 +104,7 @@
               [attr.aria-label]="
                 ('dashboard.overview.telemetry' | translate) +
                 ': ' +
-                ('tracking.metrics.' + $safeNavigationMigration(store.activeSeries()?.parameter)
+                ('tracking.metrics.' + $safeNavigationMigration(store.overviewActiveSeries()?.parameter)
                   | translate)
               "
               aria-describedby="telemetry-summary"
@@ -115,9 +115,9 @@
               'dashboard.overview.reading-summary'
                 | translate
                   : {
-                      count: store.readings().length,
-                      min: ($safeNavigationMigration(store.readingRange()?.min) | number: '1.0-2'),
-                      max: ($safeNavigationMigration(store.readingRange()?.max) | number: '1.0-2'),
+                      count: store.overviewReadings().length,
+                      min: ($safeNavigationMigration(store.overviewReadingRange()?.min) | number: '1.0-2'),
+                      max: ($safeNavigationMigration(store.overviewReadingRange()?.max) | number: '1.0-2'),
                       unit: latest.unit,
                     }
             }}
@@ -138,13 +138,13 @@
             <mat-icon>credit_card</mat-icon>{{ 'dashboard.subscription.title' | translate }}
           </h2>
         </header>
-        @if (store.subscription().status === 'loading') {
+        @if (store.overviewSubscription().status === 'loading') {
           <ng-container *ngTemplateOutlet="loading" />
-        } @else if (store.subscription().status === 'error') {
+        } @else if (store.overviewSubscription().status === 'error') {
           <ng-container *ngTemplateOutlet="error; context: { retry: retrySubscription }" />
-        } @else if (store.subscription().data; as subscription) {
+        } @else if (store.overviewSubscription().data; as subscription) {
           <div class="plan-heading">
-            <h3>{{ store.currentPlan()?.name || subscription.planCode }}</h3>
+            <h3>{{ store.overviewCurrentPlan()?.name || subscription.planCode }}</h3>
             <span class="status ACTIVE">{{
               'dashboard.overview.status.' + subscription.status | translate
             }}</span>
@@ -165,7 +165,7 @@
                 <dd>{{ formatDate(subscription.currentPeriodEnd) }}</dd>
               </div>
             }
-            @if (store.currentPlan(); as plan) {
+            @if (store.overviewCurrentPlan(); as plan) {
               <div>
                 <dt>{{ 'dashboard.overview.catalog-price' | translate }}</dt>
                 <dd>{{ plan.priceAmount | currency: plan.currency : 'code' }}</dd>
@@ -176,7 +176,7 @@
               </div>
             }
           </dl>
-          @if (store.plans().status === 'error') {
+          @if (store.overviewPlans().status === 'error') {
             <p class="muted">{{ 'dashboard.overview.plan-unavailable' | translate }}</p>
           }
         } @else {
@@ -200,16 +200,16 @@
           ><mat-icon>arrow_forward</mat-icon></a
         >
       </header>
-      @if (store.alerts().status === 'loading') {
+      @if (store.overviewAlerts().status === 'loading') {
         <ng-container *ngTemplateOutlet="loading" />
-      } @else if (store.alerts().status === 'error') {
+      } @else if (store.overviewAlerts().status === 'error') {
         <ng-container *ngTemplateOutlet="error; context: { retry: retryAlerts }" />
       } @else {
-        @for (alert of store.openAlerts().slice(0, 4); track alert.id) {
+        @for (alert of store.overviewOpenAlerts().slice(0, 4); track alert.id) {
           <a class="record-row" [routerLink]="['/alerts/deviation-detail', alert.id]">
             <span class="severity-mark" [class.critical]="alert.severity === 'CRITICAL'"></span>
             <div class="record-main">
-              <strong>{{ store.equipmentName(alert.equipmentId) }}</strong>
+              <strong>{{ store.overviewEquipmentName(alert.equipmentId) }}</strong>
               <span>{{ alert.parameterName }}: {{ alert.recordedValue }} {{ alert.unit }}</span>
               <small>{{ formatDate(alert.timestamp) }}</small>
             </div>
@@ -238,11 +238,11 @@
           ><mat-icon>arrow_forward</mat-icon></a
         >
       </header>
-      @if (store.batches().status === 'loading') {
+      @if (store.overviewBatches().status === 'loading') {
         <ng-container *ngTemplateOutlet="loading" />
-      } @else if (store.batches().status === 'error') {
+      } @else if (store.overviewBatches().status === 'error') {
         <ng-container *ngTemplateOutlet="error; context: { retry: reloadAll }" />
-      } @else if (!store.batches().data?.length) {
+      } @else if (!store.overviewBatches().data?.length) {
         <p class="empty">{{ 'dashboard.overview.no-batches' | translate }}</p>
       } @else {
         <div class="batch-distribution">
@@ -252,7 +252,7 @@
               <meter
                 [class]="item.status"
                 min="0"
-                [max]="store.batches().data?.length || 1"
+                [max]="store.overviewBatches().data?.length || 1"
                 [value]="item.count"
                 [attr.aria-label]="'dashboard.overview.status.' + item.status | translate"
               ></meter

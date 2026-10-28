@@ -8,7 +8,7 @@ import { qualityManagerGuard } from './iam/infrastructure/role-guards';
 const about = () => import('./shared/presentation/views/about/about').then((m) => m.About);
 
 const dashboard = () =>
-  import('./shared/presentation/views/dashboard/dashboard').then((m) => m.Dashboard);
+  import('./ra/presentation/views/dashboard/dashboard').then((m) => m.Dashboard);
 
 const pageNotFound = () =>
   import('./shared/presentation/views/page-not-found/page-not-found').then((m) => m.PageNotFound);

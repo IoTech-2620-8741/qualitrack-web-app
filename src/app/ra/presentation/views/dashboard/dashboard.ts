@@ -11,7 +11,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartData, ChartOptions } from 'chart.js';
-import { DashboardStore } from '../../../application/dashboard.store';
+import { RaStore } from '../../../application/ra.store';
 
 @Component({
   selector: 'app-dashboard',
@@ -28,44 +28,43 @@ import { DashboardStore } from '../../../application/dashboard.store';
     MatProgressSpinnerModule,
     BaseChartDirective,
   ],
-  providers: [DashboardStore],
   templateUrl: './dashboard.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './dashboard.css',
 })
 export class Dashboard {
-  protected readonly store = inject(DashboardStore);
+  protected readonly store = inject(RaStore);
   private readonly translate = inject(TranslateService);
   private readonly language = toSignal(this.translate.onLangChange);
   protected readonly summaryCards = computed(() => [
     {
       key: 'equipment',
-      value: this.store.equipment().data?.length,
-      state: this.store.equipment().status,
+      value: this.store.overviewEquipment().data?.length,
+      state: this.store.overviewEquipment().status,
       icon: 'precision_manufacturing',
       route: '/equipments/equipment-list',
       color: 'blue',
     },
     {
       key: 'in-progress',
-      value: this.store.batches().data?.filter((item) => item.status === 'IN_PROGRESS').length,
-      state: this.store.batches().status,
+      value: this.store.overviewBatches().data?.filter((item) => item.status === 'IN_PROGRESS').length,
+      state: this.store.overviewBatches().status,
       icon: 'inventory_2',
       route: '/batches/batch-list',
       color: 'teal',
     },
     {
       key: 'open-alerts',
-      value: this.store.openAlerts().length,
-      state: this.store.alerts().status,
+      value: this.store.overviewOpenAlerts().length,
+      state: this.store.overviewAlerts().status,
       icon: 'warning_amber',
       route: '/alerts/alert-dashboard',
       color: 'red',
     },
     {
       key: 'low-stock',
-      value: this.store.lowStock().length,
-      state: this.store.materials().status,
+      value: this.store.overviewLowStock().length,
+      state: this.store.overviewMaterials().status,
       icon: 'inventory_2',
       route: '/inventory',
       color: 'amber',
@@ -75,20 +74,20 @@ export class Dashboard {
   protected readonly batchDistribution = computed(() =>
     this.batchStatuses.map((status) => ({
       status,
-      count: this.store.batches().data?.filter((batch) => batch.status === status).length ?? 0,
+      count: this.store.overviewBatches().data?.filter((batch) => batch.status === status).length ?? 0,
     })),
   );
   protected readonly recentBatches = computed(() =>
-    [...(this.store.batches().data ?? [])].sort((a, b) => b.id - a.id).slice(0, 4),
+    [...(this.store.overviewBatches().data ?? [])].sort((a, b) => b.id - a.id).slice(0, 4),
   );
   protected readonly chartData = computed<ChartData<'line'>>(() => {
     this.language();
     return {
       datasets: [
         {
-          label: this.store.activeSeries()?.parameter,
+          label: this.store.overviewActiveSeries()?.parameter,
           data: this.store
-            .readings()
+            .overviewReadings()
             .map((point) => ({ x: Date.parse(point.measuredAt), y: point.value ?? 0 })),
           borderColor: '#158378',
           backgroundColor: '#15837818',
@@ -112,7 +111,7 @@ export class Dashboard {
         tooltip: {
           callbacks: {
             title: (items) => this.formatDate(items[0].parsed.x ?? 0),
-            label: (item) => `${item.parsed.y} ${this.store.activeSeries()?.unit ?? ''}`,
+            label: (item) => `${item.parsed.y} ${this.store.overviewActiveSeries()?.unit ?? ''}`,
           },
         },
       },
@@ -126,17 +125,17 @@ export class Dashboard {
             callback: (value) => this.formatDate(Number(value), true),
           },
         },
-        y: { title: { display: true, text: this.store.activeSeries()?.unit ?? '' } },
+        y: { title: { display: true, text: this.store.overviewActiveSeries()?.unit ?? '' } },
       },
     };
   });
-  protected readonly reloadAll = () => this.store.reload();
+  protected readonly reloadAll = () => this.store.reloadOverview();
   protected readonly retryTelemetry = () =>
-    this.store.selectEquipment(this.store.selectedEquipmentId());
-  protected readonly retrySubscription = () => this.store.loadSubscription();
-  protected readonly retryAlerts = () => this.store.loadAlerts();
+    this.store.selectOverviewDevice(this.store.overviewDeviceId());
+  protected readonly retrySubscription = () => this.store.loadOverviewSubscription();
+  protected readonly retryAlerts = () => this.store.loadOverviewAlerts();
   constructor() {
-    this.store.reload();
+    this.store.reloadOverview();
   }
   protected formatDate(value: string | number, short = false): string {
     this.language();

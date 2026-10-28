@@ -49,10 +49,10 @@ src/app/<context>/
 | `tracking` | Tracking & Telemetry |
 | `batch` | Product Batch Management |
 | `ca` | Compliance & Alerting |
-| `ra` | Reporting & Audit |
+| `ra` | Reporting & Audit, including the operational overview (dashboard) |
 | `subscription` | Payments & Subscriptions |
 | `profile` | Profile |
-| `shared` | Layout, dashboard, home, about and common components |
+| `shared` | Layout, home, about and common components |
 
 The imports between layers and contexts are checked with:
 

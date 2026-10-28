@@ -11,6 +11,15 @@ import { KpiApiEndpoint } from './kpi-api-endpoint';
 import { DeviationTrendApiEndpoint } from './deviation-trend-api-endpoint';
 import { AuditLogApiEndpoint } from './audit-log-api-endpoint';
 import { ReportApiEndpoint } from './report-api-endpoint';
+import { OperationalOverviewApiEndpoint } from './operational-overview-api-endpoint';
+import { OverviewLaboratory } from '../domain/model/overview-laboratory.entity';
+import { OverviewRawMaterial } from '../domain/model/overview-raw-material.entity';
+import { OverviewBatch } from '../domain/model/overview-batch.entity';
+import { OverviewEquipment } from '../domain/model/overview-equipment.entity';
+import { OverviewAlert } from '../domain/model/overview-alert.entity';
+import { OverviewReading } from '../domain/model/overview-reading.entity';
+import { OverviewSubscription } from '../domain/model/overview-subscription.entity';
+import { OverviewPlan } from '../domain/model/overview-plan.entity';
 import { IndicatorPeriod } from '../domain/model/indicator-period';
 
 import {
@@ -56,6 +65,8 @@ export class RaApi extends BaseApi {
    */
   private readonly _reportEndpoint: ReportApiEndpoint;
 
+  private readonly _overviewEndpoint: OperationalOverviewApiEndpoint;
+
   /**
    * Creates an instance of RaApi.
    *
@@ -71,6 +82,7 @@ export class RaApi extends BaseApi {
     this._deviationTrendEndpoint = new DeviationTrendApiEndpoint(http);
     this._auditLogEndpoint = new AuditLogApiEndpoint(http);
     this._reportEndpoint = new ReportApiEndpoint(http);
+    this._overviewEndpoint = new OperationalOverviewApiEndpoint(http);
   }
 
   /**
@@ -182,5 +194,55 @@ export class RaApi extends BaseApi {
 
   exportEquipmentLog(request: ExportEquipmentLogRequest): Observable<Blob> {
     return this._reportEndpoint.exportEquipmentLog(request);
+  }
+
+  /** Laboratory shown by the operational overview. */
+  getOverviewLaboratory(laboratoryId: number): Observable<OverviewLaboratory> {
+    return this._overviewEndpoint.getLaboratory(laboratoryId);
+  }
+
+  /** Identifiers of the environments of the laboratory, to read their alerts and stock. */
+  getOverviewEnvironmentIds(laboratoryId: number): Observable<number[]> {
+    return this._overviewEndpoint.getEnvironmentIds(laboratoryId);
+  }
+
+  /** Raw materials of an environment whose usable stock is low. */
+  getOverviewLowStockMaterials(laboratoryId: number, environmentId: number): Observable<OverviewRawMaterial[]> {
+    return this._overviewEndpoint.getLowStockMaterials(laboratoryId, environmentId);
+  }
+
+  /** Production batches of the laboratory. */
+  getOverviewBatches(laboratoryId: number): Observable<OverviewBatch[]> {
+    return this._overviewEndpoint.getBatches(laboratoryId);
+  }
+
+  /** Equipment and IoT devices of the laboratory. */
+  getOverviewEquipment(laboratoryId: number): Observable<OverviewEquipment[]> {
+    return this._overviewEndpoint.getEquipment(laboratoryId);
+  }
+
+  /** Open alerts of an environment. */
+  getOverviewOpenAlerts(laboratoryId: number, environmentId: number): Observable<OverviewAlert[]> {
+    return this._overviewEndpoint.getOpenAlerts(laboratoryId, environmentId);
+  }
+
+  /** Readings of an environment, or of one container monitor, in a period. */
+  getOverviewReadings(
+    laboratoryId: number,
+    environmentId: number,
+    containerMonitorId: number | null,
+    period: IndicatorPeriod,
+  ): Observable<OverviewReading[]> {
+    return this._overviewEndpoint.getReadings(laboratoryId, environmentId, containerMonitorId, period);
+  }
+
+  /** Active subscription of the laboratory, or null when it has none. */
+  getOverviewSubscription(laboratoryId: number): Observable<OverviewSubscription | null> {
+    return this._overviewEndpoint.getActiveSubscription(laboratoryId);
+  }
+
+  /** Subscription plans, to show the name, price and equipment limit of the current one. */
+  getOverviewPlans(): Observable<OverviewPlan[]> {
+    return this._overviewEndpoint.getPlans();
   }
 }
