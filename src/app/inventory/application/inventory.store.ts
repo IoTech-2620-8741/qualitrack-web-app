@@ -7,8 +7,7 @@ import { RawMaterial } from '../domain/model/raw-material.entity';
 import { InventoryMovement } from '../domain/model/inventory-movement.entity';
 import { LegacyMaterial } from '../domain/model/legacy-material.entity';
 import { RawMaterialBatch } from '../domain/model/raw-material-batch.entity';
-import { BatchApi } from '../../batch/infrastructure/batch-api';
-import { RawMaterialUsage } from '../../batch/domain/model/raw-material-usage.entity';
+import { MaterialConsumption } from '../domain/model/material-consumption.entity';
 import { IamStore } from '../../iam/application/iam.store';
 import { StorageContainer } from '../domain/model/storage-container.entity';
 import { StorageEnvironment } from '../domain/model/storage-environment.entity';
@@ -65,12 +64,6 @@ export class InventoryStore {
    * @private
    */
   private readonly iam = inject(IamStore);
-
-  /**
-   * API service for product batches and material usage.
-   * @private
-   */
-  private readonly batchApi = inject(BatchApi);
 
   /**
    * Raw material storage opened last time in this browser.
@@ -139,7 +132,7 @@ export class InventoryStore {
   /**
    * Signal containing usage records of the selected raw material.
    */
-  readonly usages = signal<RawMaterialUsage[]>([]);
+  readonly usages = signal<MaterialConsumption[]>([]);
 
   /**
    * Signal containing legacy inventory materials.
@@ -149,7 +142,7 @@ export class InventoryStore {
   /**
    * Signal containing historical usage records of a legacy material.
    */
-  readonly legacyHistory = signal<RawMaterialUsage[]>([]);
+  readonly legacyHistory = signal<MaterialConsumption[]>([]);
 
   /**
    * Signal containing errors related to legacy material history.
@@ -472,7 +465,7 @@ export class InventoryStore {
           forkJoin({
             receipts: this.api.receipts(this.lab, environmentId, id),
             movements: this.api.movements(this.lab, environmentId, id),
-            usages: this.batchApi.getRawMaterialUsages(this.lab, environmentId, id),
+            usages: this.api.materialConsumptions(this.lab, environmentId, id),
           }),
         );
         if (generation !== this.generation) return false;
@@ -483,7 +476,7 @@ export class InventoryStore {
         const legacyId = this.selected()?.legacyId;
         if (legacyId) {
           try {
-            const history = await firstValueFrom(this.batchApi.getMaterialHistory(this.lab, legacyId));
+            const history = await firstValueFrom(this.api.legacyMaterialConsumptions(this.lab, legacyId));
             if (generation === this.generation) this.legacyHistory.set(history);
           } catch (error) {
             if (generation === this.generation) this.legacyError.set(inventoryError(error));

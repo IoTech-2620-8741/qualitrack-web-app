@@ -29,14 +29,11 @@ package "shared.infrastructure" {
   }
 }
 
-package "batch.infrastructure" {
-  class BatchApi {
-    +getRawMaterialUsages(lab, environmentId, rawMaterialId)
-    +getMaterialHistory(laboratoryId, legacyRawMaterialId)
-  }
-}
-
 package "inventory.domain.model" {
+  class MaterialConsumption {
+    +id / batchId / inventoryReceiptId
+    +quantityUsed / unit / usageDate
+  }
   class StorageEnvironment {
     +id / code / name
     +usage: string | null
@@ -85,6 +82,9 @@ RawMaterialBatch ..|> BaseEntity
 InventoryMovement ..|> BaseEntity
 
 package "inventory.infrastructure" {
+  interface MaterialConsumptionResource
+  class MaterialConsumptionAssembler
+  class MaterialConsumptionApiEndpoint
   class StorageContainerApiEndpoint {
     +getContainers(laboratoryId, environmentId)
   }
@@ -152,7 +152,7 @@ package "inventory.application" {
     +receipts: Signal<RawMaterialBatch[]>
     +nearExpiry: Signal<RawMaterialBatch[]>
     +movements: Signal<InventoryMovement[]>
-    +usages: Signal<RawMaterialUsage[]>
+    +usages: Signal<MaterialConsumption[]>
     +affectedBatches: Signal<number[]>
     +canReview: Signal<boolean>
     +canOperate: Signal<boolean>
@@ -175,7 +175,6 @@ package "inventory.application" {
 }
 
 InventoryStore --> InventoryApi
-InventoryStore --> BatchApi
 InventoryStore --> IamStore
 InventoryStore --> EnvironmentPreference
 InventoryStore ..> StorageContainer
@@ -222,4 +221,16 @@ note bottom of StorageEnvironmentApiEndpoint
   Laboratory -> Inventory (Customer/Supplier):
   GET /laboratories/{id}/environments[/{environmentId}] in Inventory's own model.
 end note
+MaterialConsumption ..|> BaseEntity
+InventoryApi --> MaterialConsumptionApiEndpoint
+MaterialConsumptionApiEndpoint --|> ErrorHandlingEnabledBaseType
+MaterialConsumptionApiEndpoint --> MaterialConsumptionAssembler
+MaterialConsumptionAssembler ..> MaterialConsumption
+MaterialConsumptionAssembler ..> MaterialConsumptionResource
+note bottom of MaterialConsumption
+  Read-only ACL from Product Batch. Used for affected production batches
+  (OBSERVED or REJECTED receipts) and pre-Inventory consumption history.
+  Product Batch retains consumption ownership and writes.
+end note
+
 @enduml
