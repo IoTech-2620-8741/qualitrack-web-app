@@ -118,6 +118,17 @@ export class BatchStore {
   }
 
   /**
+   * Finds a batch of the laboratory of the session by its identifier.
+   *
+   * @param batchId - The batch identifier.
+   * @returns The batch, or undefined if the laboratory has no batch with that identifier.
+   */
+  async findBatch(batchId: number): Promise<Batch | undefined> {
+    const batches = await firstValueFrom(this.api.getBatches(this.iam.requireLaboratoryId()));
+    return batches.find((batch) => batch.id === batchId);
+  }
+
+  /**
    * Loads the batches of one product.
    *
    * @param path - Laboratory, environment and product of the batches.
