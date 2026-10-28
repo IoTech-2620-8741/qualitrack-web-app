@@ -6,6 +6,7 @@ import { RawMaterialBatchApiEndpoint } from './raw-material-batch-api-endpoint';
 import { InventoryMovementApiEndpoint } from './inventory-movement-api-endpoint';
 import { LegacyInventoryApiEndpoint } from './legacy-inventory-api-endpoint';
 import { StorageContainerApiEndpoint } from './storage-container-api-endpoint';
+import { StorageEnvironmentApiEndpoint } from './storage-environment-api-endpoint';
 import { SaveRawMaterialRequest } from './raw-material.request';
 import { ReceiveRawMaterialBatchRequest } from './raw-material-batch.request';
 import { ExpirationStatus, RawMaterialBatchStatus } from '../domain/model/raw-material-batch.entity';
@@ -55,6 +56,9 @@ export class InventoryApi extends BaseApi {
   /** Reads the container monitors of Equipment Management where lots are stored. */
   private readonly containerEndpoint: StorageContainerApiEndpoint;
 
+  /** Reads the environments of Laboratory Management where raw materials are kept. */
+  private readonly environmentEndpoint: StorageEnvironmentApiEndpoint;
+
   /**
    * Creates an instance of InventoryApi.
    *
@@ -71,6 +75,17 @@ export class InventoryApi extends BaseApi {
     this.movementEndpoint = new InventoryMovementApiEndpoint(http);
     this.legacyEndpoint = new LegacyInventoryApiEndpoint(http);
     this.containerEndpoint = new StorageContainerApiEndpoint(http);
+    this.environmentEndpoint = new StorageEnvironmentApiEndpoint(http);
+  }
+
+  /** Environments of the laboratory where raw materials can be kept. */
+  environments(lab: number) {
+    return this.environmentEndpoint.getEnvironments(lab);
+  }
+
+  /** One environment of the laboratory, with its usage. */
+  environment(lab: number, environmentId: number) {
+    return this.environmentEndpoint.getEnvironment(lab, environmentId);
   }
 
   /**

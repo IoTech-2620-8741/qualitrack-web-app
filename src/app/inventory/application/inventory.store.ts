@@ -11,8 +11,8 @@ import { BatchApi } from '../../batch/infrastructure/batch-api';
 import { RawMaterialUsage } from '../../batch/domain/model/raw-material-usage.entity';
 import { IamStore } from '../../iam/application/iam.store';
 import { StorageContainer } from '../domain/model/storage-container.entity';
-import { LaboratoryApi } from '../../laboratory/infrastructure/laboratory-api';
-import { EnvironmentUsage } from '../../laboratory/domain/model/environment-usage';
+import { StorageEnvironment } from '../domain/model/storage-environment.entity';
+import { EnvironmentPreference } from '../../shared/infrastructure/environment-preference';
 import { SaveRawMaterialCommand } from '../domain/model/save-raw-material.command';
 import { ReceiveRawMaterialBatchCommand } from '../domain/model/receive-raw-material-batch.command';
 import { ReviewRawMaterialBatchCommand } from '../domain/model/review-raw-material-batch.command';
@@ -73,10 +73,35 @@ export class InventoryStore {
   private readonly batchApi = inject(BatchApi);
 
   /**
-   * API service for laboratory environment information.
+   * Raw material storage opened last time in this browser.
    * @private
    */
-  private readonly laboratoryApi = inject(LaboratoryApi);
+  private readonly environmentPreference = new EnvironmentPreference('inventory');
+
+  /**
+   * Signal containing the environments of the laboratory where raw materials can be kept.
+   */
+  readonly environments = signal<StorageEnvironment[]>([]);
+
+  /**
+   * Signal indicating whether the environments have been read at least once.
+   */
+  readonly environmentsLoaded = signal(false);
+
+  /**
+   * Signal indicating whether the environments are being read.
+   */
+  readonly environmentsLoading = signal(false);
+
+  /**
+   * Signal containing the translation key of the failure to read the environments, or an empty string.
+   */
+  readonly environmentsError = signal('');
+
+  /**
+   * Indicates whether the laboratory has no environment yet.
+   */
+  readonly environmentsEmpty = computed(() => this.environmentsLoaded() && this.environments().length === 0);
 
   /**
    * Signal containing the selected storage environment identifier.
@@ -142,7 +167,7 @@ export class InventoryStore {
   /**
    * Signal containing the usage classification of the environment.
    */
-  readonly environmentUsage = signal<EnvironmentUsage | null>(null);
+  readonly environmentUsage = signal<string | null>(null);
 
   /**
    * Signal containing errors related to storage information.
@@ -269,6 +294,46 @@ export class InventoryStore {
    */
   get lab(): number {
     return this.iam.requireLaboratoryId();
+  }
+
+  /**
+   * Reads the environments of the laboratory (Laboratory → Inventory).
+   *
+   * @returns A Promise that resolves when the operation finishes.
+   *
+   * @remarks
+   * On failure the previous list is kept and the reason is exposed through {@link InventoryStore.environmentsError}.
+   */
+  async loadEnvironments(): Promise<void> {
+    this.environmentsLoading.set(true);
+    this.environmentsError.set('');
+    try {
+      this.environments.set(await firstValueFrom(this.api.environments(this.lab)));
+      this.environmentsLoaded.set(true);
+    } catch (error) {
+      this.environmentsError.set(inventoryError(error));
+    } finally {
+      this.environmentsLoading.set(false);
+    }
+  }
+
+  /**
+   * Picks the environment to open: the last one used in this browser, otherwise the first raw material storage,
+   * otherwise the first environment of the laboratory.
+   *
+   * @returns The environment, or null when the laboratory has none.
+   */
+  preferredEnvironment(): StorageEnvironment | null {
+    return this.environmentPreference.choose(this.lab, this.environments(), 'RAW_MATERIAL_STORAGE');
+  }
+
+  /**
+   * Remembers the environment whose raw materials the user opened.
+   *
+   * @param environmentId - Identifier of the storage environment.
+   */
+  rememberEnvironment(environmentId: number): void {
+    this.environmentPreference.remember(this.lab, environmentId);
   }
 
   /**
@@ -454,7 +519,7 @@ export class InventoryStore {
       const storage = await firstValueFrom(
         forkJoin({
           containers: this.api.containers(this.lab, environmentId),
-          environment: this.laboratoryApi.getEnvironment(this.lab, environmentId),
+          environment: this.api.environment(this.lab, environmentId),
         }),
       );
       if (generation !== this.generation) return;
