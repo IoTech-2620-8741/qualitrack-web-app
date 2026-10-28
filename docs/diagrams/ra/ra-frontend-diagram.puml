@@ -613,4 +613,11 @@ note bottom of StaffActivity
   GET /laboratories/{lab}/staff/{staffId}.
 end note
 
+note left of RaRoutes
+  Source: ra/presentation/ra.routes.ts
+  Public paths and guards remain unchanged.
+end note
+
+ReportApiEndpoint --|> ErrorHandlingEnabledBaseType
+
 @enduml

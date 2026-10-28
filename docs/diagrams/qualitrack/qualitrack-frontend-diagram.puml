@@ -154,7 +154,7 @@ package "qualitrack-frontend" {
       class "RawMaterialBatch" as InvRawMaterialBatch
       class "InventoryMovement" as InvInventoryMovement
       interface "AvailableReceipt" as InvAvailableReceipt
-      interface "LegacyMaterial" as InvLegacyMaterial
+      class "LegacyMaterial" as InvLegacyMaterial
     }
     package "application" {
       class "InventoryStore" as InvInventoryStore
@@ -532,7 +532,7 @@ InvRawMaterial ..|> BaseEntity
 InvRawMaterialBatch ..|> BaseEntity
 InvInventoryMovement ..|> BaseEntity
 InvAvailableReceipt --|> BaseEntity
-InvLegacyMaterial --|> BaseEntity
+InvLegacyMaterial ..|> BaseEntity
 InvRawMaterial "1" <-- "0..*" InvRawMaterialBatch : rawMaterialId
 InvRawMaterialBatch "1" <-- "0..*" InvInventoryMovement : receiptId
 
@@ -545,6 +545,13 @@ end note
 note bottom of RawMaterial
   Laboratory legacy model retained for historical records.
   New catalogue, receipts and stock movements belong to Inventory.
+end note
+
+PasswordRecoveryApiEndpoint --|> ErrorHandlingEnabledBaseType
+ReportApiEndpoint --|> ErrorHandlingEnabledBaseType
+note right of AppRoutes
+  Each context defines its routes in presentation/<bc>.routes.ts.
+  Public URLs and guards are preserved.
 end note
 
 @enduml

@@ -194,4 +194,9 @@ note bottom of LaboratoryRoutes
   raw-material-list and raw-material-form redirect to /inventory.
 end note
 
+note left of LaboratoryRoutes
+  Source: laboratory/presentation/laboratory.routes.ts
+  Public paths and guards remain unchanged.
+end note
+
 @enduml

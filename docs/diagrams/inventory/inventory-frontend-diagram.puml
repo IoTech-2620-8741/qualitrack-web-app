@@ -80,7 +80,9 @@ package "inventory.domain.model" {
     +containerMonitorId: number | null
   }
   class InventoryMovement
-  class LegacyMaterial
+  class LegacyMaterial {
+    +constructor(params)
+  }
   interface SaveRawMaterialCommand
   interface ReceiveRawMaterialBatchCommand
   interface ReviewRawMaterialBatchCommand
@@ -89,6 +91,7 @@ package "inventory.domain.model" {
 RawMaterial ..|> BaseEntity
 RawMaterialBatch ..|> BaseEntity
 InventoryMovement ..|> BaseEntity
+LegacyMaterial ..|> BaseEntity
 
 package "inventory.infrastructure" {
   interface LegacyMaterialSnapshotResource
@@ -273,6 +276,11 @@ note bottom of LegacyMaterialDetail
   consumption history, before/after balances, production batch names and links.
   Reads all old materials, including imported and empty ones.
   Previous-balance import remains available in the catalogue.
+end note
+
+note left of InventoryRoutes
+  Source: inventory/presentation/inventory.routes.ts
+  Public paths and guards remain unchanged.
 end note
 
 @enduml
