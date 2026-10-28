@@ -1,4 +1,5 @@
 import { OverviewLaboratory } from '../domain/model/overview-laboratory.entity';
+import { OverviewEnvironment } from '../domain/model/overview-environment.entity';
 import { OverviewRawMaterial } from '../domain/model/overview-raw-material.entity';
 import { OverviewBatch } from '../domain/model/overview-batch.entity';
 import { OverviewEquipment } from '../domain/model/overview-equipment.entity';
@@ -9,6 +10,7 @@ import { OverviewPlan } from '../domain/model/overview-plan.entity';
 import {
   OverviewAlertResource,
   OverviewBatchResource,
+  OverviewEnvironmentResource,
   OverviewEquipmentResource,
   OverviewLaboratoryResource,
   OverviewMeasurementResource,
@@ -25,6 +27,15 @@ import {
 export class OperationalOverviewAssembler {
   toLaboratory(resource: OverviewLaboratoryResource): OverviewLaboratory {
     return new OverviewLaboratory({ id: resource.id, name: resource.name });
+  }
+
+  toEnvironment(resource: OverviewEnvironmentResource): OverviewEnvironment {
+    return new OverviewEnvironment({
+      id: resource.id,
+      code: resource.code,
+      name: resource.name,
+      usage: resource.usage ?? null,
+    });
   }
 
   toRawMaterial(resource: OverviewRawMaterialResource): OverviewRawMaterial {

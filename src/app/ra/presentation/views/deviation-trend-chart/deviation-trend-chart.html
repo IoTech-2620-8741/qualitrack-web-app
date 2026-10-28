@@ -11,7 +11,7 @@
           <mat-button-toggle [value]="option">{{ 'reporting.period.days-' + option | translate }}</mat-button-toggle>
         }
       </mat-button-toggle-group>
-      <app-environment-selector [environments]="environments.environments()" [selectedId]="environmentId()" (selectedChange)="changeEnvironment($event)" />
+      <app-environment-selector [environments]="store.environments()" [selectedId]="environmentId()" (selectedChange)="changeEnvironment($event)" />
     </div>
   </header>
 
@@ -19,7 +19,7 @@
     <p class="error" role="alert">{{ error | translate }}</p>
   }
 
-  @if (environments.isEmpty()) {
+  @if (store.environmentsEmpty()) {
     <p class="notice">{{ 'reporting.no-environments' | translate }}</p>
   } @else if (store.isLoading()) {
     <div class="loading" role="status"><mat-spinner diameter="40" [attr.aria-label]="'onboarding.loading-data' | translate" /></div>

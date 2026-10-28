@@ -17,7 +17,6 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { RaStore } from '../../../application/ra.store';
 import { ALL_ENVIRONMENTS, lastDays } from '../../../domain/model/indicator-period';
-import { EnvironmentStore } from '../../../../laboratory/application/environment.store';
 
 /** Lengths of the period offered, in days; the platform accepts up to 31. */
 const PERIOD_DAYS = [1, 7, 31] as const;
@@ -50,7 +49,6 @@ const PERIOD_DAYS = [1, 7, 31] as const;
 })
 export class KpiDashboardComponent implements OnInit {
   protected readonly store = inject(RaStore);
-  protected readonly environments = inject(EnvironmentStore);
   protected readonly periods = PERIOD_DAYS;
   protected readonly ALL_ENVIRONMENTS = ALL_ENVIRONMENTS;
   protected readonly days = signal<number>(7);
@@ -59,7 +57,7 @@ export class KpiDashboardComponent implements OnInit {
   /** Readings summarized per environment, in the order of the environments of the laboratory. */
   protected readonly groups = computed(() => {
     const summaries = this.store.dashboard()?.measurementSummaries ?? [];
-    return this.environments
+    return this.store
       .environments()
       .map((environment) => ({
         environment,
@@ -70,7 +68,7 @@ export class KpiDashboardComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     this.store.loadDevices();
-    if (!this.environments.loaded()) await this.environments.loadEnvironments();
+    if (!this.store.environmentsLoaded()) await this.store.loadEnvironments();
     this.reload();
   }
 
