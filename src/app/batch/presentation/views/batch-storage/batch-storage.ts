@@ -14,7 +14,7 @@ import { firstValueFrom } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { BatchStore, batchError } from '../../../application/batch.store';
 import { BatchPath } from '../../../infrastructure/batch-api-endpoint';
 import { EquipmentApi } from '../../../../equipment/infrastructure/equipment-api';
@@ -61,7 +61,7 @@ interface StorageArea {
     MatButtonModule,
     MatIconModule,
     MatSelectModule,
-    TranslateModule,
+    TranslatePipe,
   ],
   templateUrl: './batch-storage.html',
   changeDetection: ChangeDetectionStrategy.Eager,

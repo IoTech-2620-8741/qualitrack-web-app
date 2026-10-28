@@ -4,7 +4,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { ProductStore } from '../../../application/product.store';
 import { codeValidator } from '../../../../shared/presentation/validators/code.validator';
 import { notBlankValidator } from '../../../../shared/presentation/validators/not-blank.validator';
@@ -28,7 +28,7 @@ import { notBlankValidator } from '../../../../shared/presentation/validators/no
     MatButtonModule,
     MatIconModule,
     MatInputModule,
-    TranslateModule,
+    TranslatePipe,
   ],
   templateUrl: './product-form.html',
   changeDetection: ChangeDetectionStrategy.Eager,

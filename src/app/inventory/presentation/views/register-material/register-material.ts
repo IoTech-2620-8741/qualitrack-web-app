@@ -6,7 +6,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { InventoryStore } from '../../../application/inventory.store';
 import { InventoryUnit } from '../../../domain/model/raw-material.entity';
 import { MAX_STOCK } from '../../../domain/model/stock-limits';
@@ -25,7 +25,7 @@ import { stockQuantityValidator } from '../../../../shared/presentation/validato
     MatIconModule,
     MatInputModule,
     MatSelectModule,
-    TranslateModule,
+    TranslatePipe,
   ],
   templateUrl: './register-material.html',
   changeDetection: ChangeDetectionStrategy.Eager,

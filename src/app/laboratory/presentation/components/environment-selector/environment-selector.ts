@@ -1,5 +1,5 @@
 import { Component, OnInit, inject, input, output, ChangeDetectionStrategy } from '@angular/core';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
@@ -16,7 +16,7 @@ import { EnvironmentStore } from '../../../application/environment.store';
 @Component({
   selector: 'app-environment-selector',
   standalone: true,
-  imports: [TranslateModule, MatFormFieldModule, MatSelectModule, MatIconModule],
+  imports: [TranslatePipe, MatFormFieldModule, MatSelectModule, MatIconModule],
   template: `
     <mat-form-field appearance="outline" subscriptSizing="dynamic" class="environment-selector">
       <mat-label>{{ 'environments.selector' | translate }}</mat-label>

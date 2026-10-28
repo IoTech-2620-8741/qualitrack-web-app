@@ -20,7 +20,7 @@ import { CaStore } from '../../../../ca/application/ca.store';
 import { RaStore } from '../../../../ra/application/ra.store';
 import { TrackingStore } from '../../../../tracking/application/tracking.store';
 import { SubscriptionStore } from '../../../../subscription/application/subscription.store';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
@@ -66,7 +66,7 @@ interface NavigationOption {
   imports: [
     RouterOutlet,
     RouterLink,
-    TranslateModule,
+    TranslatePipe,
     MatToolbarModule,
     MatSidenavModule,
     MatIconModule,

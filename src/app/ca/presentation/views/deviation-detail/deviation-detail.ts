@@ -15,7 +15,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 import { CaStore } from '../../../application/ca.store';
 import { DeviationAlert } from '../../../domain/model/deviation-alert.entity';
@@ -37,7 +37,7 @@ import { EnvironmentStore } from '../../../../laboratory/application/environment
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,
-    TranslateModule,
+    TranslatePipe,
   ],
   templateUrl: './deviation-detail.html',
   changeDetection: ChangeDetectionStrategy.Eager,

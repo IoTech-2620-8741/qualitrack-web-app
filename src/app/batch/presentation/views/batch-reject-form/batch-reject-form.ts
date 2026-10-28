@@ -4,7 +4,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { todayInLima } from '../../../../shared/presentation/utils/local-date';
 import {
   afterDateValidator,
@@ -35,7 +35,7 @@ import { BatchPath } from '../../../infrastructure/batch-api-endpoint';
     MatButtonModule,
     MatIconModule,
     MatInputModule,
-    TranslateModule,
+    TranslatePipe,
   ],
   templateUrl: './batch-reject-form.html',
   changeDetection: ChangeDetectionStrategy.Eager,

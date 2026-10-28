@@ -2,7 +2,7 @@ import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/cor
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router, RouterLink } from '@angular/router';
 import { CdkConnectedOverlay, CdkOverlayOrigin, ConnectedPosition } from '@angular/cdk/overlay';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { switchMap, timer } from 'rxjs';
 
 import { MatBadgeModule } from '@angular/material/badge';
@@ -30,7 +30,7 @@ const KNOWN_METRICS = new Set(['AIR_QUALITY', 'TEMPERATURE', 'HUMIDITY', 'LUMINO
     RouterLink,
     CdkConnectedOverlay,
     CdkOverlayOrigin,
-    TranslateModule,
+    TranslatePipe,
     MatBadgeModule,
     MatButtonModule,
     MatIconModule,

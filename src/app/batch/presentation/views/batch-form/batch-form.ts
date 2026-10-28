@@ -6,7 +6,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { todayInLima } from '../../../../shared/presentation/utils/local-date';
 import { codeValidator } from '../../../../shared/presentation/validators/code.validator';
 import {
@@ -42,7 +42,7 @@ import { BatchPath } from '../../../infrastructure/batch-api-endpoint';
     MatIconModule,
     MatInputModule,
     MatSelectModule,
-    TranslateModule,
+    TranslatePipe,
   ],
   templateUrl: './batch-form.html',
   changeDetection: ChangeDetectionStrategy.Eager,

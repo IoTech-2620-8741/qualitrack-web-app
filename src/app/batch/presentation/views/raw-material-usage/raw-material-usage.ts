@@ -7,7 +7,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { BatchStore } from '../../../application/batch.store';
 import { RawMaterialConsumptionStore } from '../../../application/raw-material-consumption.store';
 import { BatchPath } from '../../../infrastructure/batch-api-endpoint';
@@ -39,7 +39,7 @@ import { stockQuantityValidator } from '../../../../shared/presentation/validato
     MatIconModule,
     MatInputModule,
     MatSelectModule,
-    TranslateModule,
+    TranslatePipe,
     EnvironmentSelector,
   ],
   templateUrl: './raw-material-usage.html',

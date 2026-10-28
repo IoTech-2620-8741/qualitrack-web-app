@@ -8,7 +8,7 @@ import {
   ChangeDetectionStrategy,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
@@ -64,7 +64,7 @@ export interface ThresholdProblem {
 @Component({
   selector: 'app-threshold-editor',
   standalone: true,
-  imports: [FormsModule, TranslateModule, MatButtonModule, MatCheckboxModule, MatIconModule],
+  imports: [FormsModule, TranslatePipe, MatButtonModule, MatCheckboxModule, MatIconModule],
   templateUrl: './threshold-editor.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: [

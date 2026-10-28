@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { RaStore } from '../../../application/ra.store';
 import { calendarDate } from '../../utils/report-period';
 import { AuditLogViewerComponent } from './audit-log-viewer';
@@ -18,7 +18,7 @@ describe('AuditLogViewerComponent', () => {
 
   function create() {
     TestBed.configureTestingModule({
-      imports: [AuditLogViewerComponent, TranslateModule.forRoot()],
+      imports: [AuditLogViewerComponent, TranslatePipe.forRoot()],
       providers: [provideHttpClient(), provideHttpClientTesting()],
     });
     vi.spyOn(TestBed.inject(RaStore), 'loadAuditLog').mockImplementation(loadAuditLog);

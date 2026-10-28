@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { METRICS, metricDefinition } from '../../../domain/model/monitored-metric';
 import { ThresholdEditor, ThresholdRow, validate } from './threshold-editor';
 
@@ -65,7 +65,7 @@ describe('metric ranges', () => {
 
 describe('ThresholdEditor', () => {
   function create() {
-    TestBed.configureTestingModule({ imports: [ThresholdEditor, TranslateModule.forRoot()] });
+    TestBed.configureTestingModule({ imports: [ThresholdEditor, TranslatePipe.forRoot()] });
     const fixture = TestBed.createComponent(ThresholdEditor);
     fixture.componentRef.setInput('metrics', [metricDefinition('TEMPERATURE')!]);
     fixture.detectChanges();

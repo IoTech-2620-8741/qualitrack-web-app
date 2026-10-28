@@ -21,7 +21,7 @@ import {
   ValidationErrors,
   Validators,
 } from '@angular/forms';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -70,7 +70,7 @@ function lettersAndDigits(control: AbstractControl): ValidationErrors | null {
   imports: [
     DatePipe,
     ReactiveFormsModule,
-    TranslateModule,
+    TranslatePipe,
     MatButtonModule,
     MatFormFieldModule,
     MatIconModule,

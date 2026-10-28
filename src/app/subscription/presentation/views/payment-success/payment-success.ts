@@ -1,7 +1,7 @@
 import { Component, DestroyRef, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -12,7 +12,7 @@ import { onboardingDestination } from '../../../../iam/domain/model/onboarding-s
 @Component({
   selector: 'app-payment-success',
   standalone: true,
-  imports: [RouterLink, TranslateModule, MatButtonModule, MatIconModule, MatProgressSpinnerModule],
+  imports: [RouterLink, TranslatePipe, MatButtonModule, MatIconModule, MatProgressSpinnerModule],
   templateUrl: './payment-success.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './payment-success.css',

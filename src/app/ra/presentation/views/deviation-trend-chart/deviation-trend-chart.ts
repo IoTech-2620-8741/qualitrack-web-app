@@ -7,7 +7,7 @@ import {
   ChangeDetectionStrategy,
 } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
@@ -44,7 +44,7 @@ const STATE_COLORS: Record<ReadingState, string> = {
   standalone: true,
   imports: [
     DecimalPipe,
-    TranslateModule,
+    TranslatePipe,
     MatButtonModule,
     MatButtonToggleModule,
     MatIconModule,
@@ -195,7 +195,7 @@ export class DeviationTrendChartComponent implements OnInit {
   }
 
   private formatDate(value: number): string {
-    return new Intl.DateTimeFormat(this.translate.currentLang || 'en', {
+    return new Intl.DateTimeFormat(this.translate.currentLang() || 'en', {
       dateStyle: 'short',
       timeStyle: 'short',
     }).format(new Date(value));

@@ -7,7 +7,7 @@ import {
   ChangeDetectionStrategy,
 } from '@angular/core';
 import { DatePipe, DecimalPipe } from '@angular/common';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -33,7 +33,7 @@ const PERIOD_DAYS = [1, 7, 31] as const;
   imports: [
     DatePipe,
     DecimalPipe,
-    TranslateModule,
+    TranslatePipe,
     MatButtonModule,
     MatButtonToggleModule,
     MatFormFieldModule,

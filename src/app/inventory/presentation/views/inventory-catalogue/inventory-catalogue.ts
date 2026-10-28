@@ -15,7 +15,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { InventoryStore } from '../../../application/inventory.store';
 import { EnvironmentStore } from '../../../../laboratory/application/environment.store';
 import { EnvironmentSelector } from '../../../../laboratory/presentation/components/environment-selector/environment-selector';
@@ -35,7 +35,7 @@ import { EnvironmentSelector } from '../../../../laboratory/presentation/compone
     MatIconModule,
     MatInputModule,
     MatCheckboxModule,
-    TranslateModule,
+    TranslatePipe,
     EnvironmentSelector,
   ],
   templateUrl: './inventory-catalogue.html',

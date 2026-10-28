@@ -4,7 +4,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { ProductStore } from '../../../application/product.store';
 import { BatchStore } from '../../../application/batch.store';
 import { IamStore } from '../../../../iam/application/iam.store';
@@ -22,7 +22,7 @@ import { IamStore } from '../../../../iam/application/iam.store';
   selector: 'app-product-detail',
   standalone: true,
   providers: [ProductStore],
-  imports: [DatePipe, DecimalPipe, RouterLink, MatButtonModule, MatIconModule, TranslateModule],
+  imports: [DatePipe, DecimalPipe, RouterLink, MatButtonModule, MatIconModule, TranslatePipe],
   templateUrl: './product-detail.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: '../../../../shared/presentation/styles/operations-page.css',

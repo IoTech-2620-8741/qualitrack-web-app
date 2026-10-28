@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { IamStore } from '../../../application/iam.store';
 import { onboardingDestination, SUBSCRIPTION_PAUSED } from '../../../domain/model/onboarding-state';
 import { Toolbar } from '../../../../shared/presentation/components/toolbar/toolbar';
@@ -20,7 +20,7 @@ import { Toolbar } from '../../../../shared/presentation/components/toolbar/tool
 @Component({
   selector: 'app-onboarding',
   standalone: true,
-  imports: [Toolbar, TranslateModule, MatButtonModule, MatProgressSpinnerModule],
+  imports: [Toolbar, TranslatePipe, MatButtonModule, MatProgressSpinnerModule],
   template: `
     <app-toolbar />
     <main class="onboarding-status" aria-live="polite">

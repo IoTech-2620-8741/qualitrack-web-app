@@ -1,6 +1,6 @@
 import { Component, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
@@ -24,7 +24,7 @@ import { ENVIRONMENT_USAGES, EnvironmentUsage } from '../../../domain/model/envi
   selector: 'app-environment-list',
   standalone: true,
   imports: [
-    TranslateModule,
+    TranslatePipe,
     MatTableModule,
     MatButtonModule,
     MatIconModule,

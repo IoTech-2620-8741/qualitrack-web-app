@@ -9,7 +9,7 @@ import {
 import { DatePipe } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { catchError, forkJoin, of, switchMap } from 'rxjs';
 
 import { MatButtonModule } from '@angular/material/button';
@@ -80,7 +80,7 @@ const KNOWN_ACTIONS = new Set([
   imports: [
     DatePipe,
     RouterLink,
-    TranslateModule,
+    TranslatePipe,
     MatButtonModule,
     MatIconModule,
     MatFormFieldModule,

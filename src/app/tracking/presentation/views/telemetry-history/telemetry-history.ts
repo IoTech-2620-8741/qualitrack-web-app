@@ -8,7 +8,7 @@ import {
 } from '@angular/core';
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
@@ -57,7 +57,7 @@ export const MIN_HISTORY_START = '2020-01-01T00:00';
     DatePipe,
     DecimalPipe,
     FormsModule,
-    TranslateModule,
+    TranslatePipe,
     MatButtonModule,
     MatButtonToggleModule,
     MatFormFieldModule,
@@ -321,7 +321,7 @@ export class TelemetryHistory implements OnInit {
    * Formats timestamps according to the current application language.
    */
   private formatDate(value: number): string {
-    return new Intl.DateTimeFormat(this.translate.currentLang || 'en', {
+    return new Intl.DateTimeFormat(this.translate.currentLang() || 'en', {
       dateStyle: 'short',
       timeStyle: 'short',
     }).format(new Date(value));

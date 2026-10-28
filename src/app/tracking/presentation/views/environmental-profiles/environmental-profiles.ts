@@ -1,7 +1,7 @@
 import { Component, OnInit, computed, inject, ChangeDetectionStrategy } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
@@ -54,7 +54,7 @@ const NO_METRICS: MonitoredMetric[] = [];
   imports: [
     DatePipe,
     RouterLink,
-    TranslateModule,
+    TranslatePipe,
     MatIconModule,
     MatProgressSpinnerModule,
     EnvironmentSelector,

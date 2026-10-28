@@ -15,7 +15,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTabsModule } from '@angular/material/tabs';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { InventoryStore } from '../../../application/inventory.store';
 import {
   RawMaterialBatch,
@@ -48,7 +48,7 @@ import { stockQuantityValidator } from '../../../../shared/presentation/validato
     MatInputModule,
     MatSelectModule,
     MatTabsModule,
-    TranslateModule,
+    TranslatePipe,
   ],
   templateUrl: './inventory-detail.html',
   changeDetection: ChangeDetectionStrategy.Eager,

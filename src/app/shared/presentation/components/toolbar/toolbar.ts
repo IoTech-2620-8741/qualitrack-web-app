@@ -1,7 +1,7 @@
 import { Component, computed, inject, ChangeDetectionStrategy } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { LanguageSwitcher } from '../language-switcher/language-switcher';
 import { IamStore } from '../../../../iam/application/iam.store';
 
@@ -15,7 +15,7 @@ import { IamStore } from '../../../../iam/application/iam.store';
 @Component({
   selector: 'app-toolbar',
   standalone: true,
-  imports: [MatToolbarModule, RouterLink, TranslateModule, LanguageSwitcher],
+  imports: [MatToolbarModule, RouterLink, TranslatePipe, LanguageSwitcher],
   templateUrl: './toolbar.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './toolbar.css',
