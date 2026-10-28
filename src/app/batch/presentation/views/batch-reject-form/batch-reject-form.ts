@@ -39,7 +39,7 @@ import { BatchPath } from '../../../domain/model/batch-path';
   ],
   templateUrl: './batch-reject-form.html',
   changeDetection: ChangeDetectionStrategy.Eager,
-  styleUrl: '../../../../shared/presentation/styles/operations-page.css',
+  styleUrl: './batch-reject-form.css',
 })
 export class BatchRejectForm implements OnInit {
   protected readonly store = inject(BatchStore);

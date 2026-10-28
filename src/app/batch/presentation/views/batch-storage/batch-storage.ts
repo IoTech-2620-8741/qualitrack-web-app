@@ -62,7 +62,7 @@ interface StorageArea {
   ],
   templateUrl: './batch-storage.html',
   changeDetection: ChangeDetectionStrategy.Eager,
-  styleUrl: '../../../../shared/presentation/styles/operations-page.css',
+  styleUrl: './batch-storage.css',
 })
 export class BatchStorage implements OnInit {
   /** Laboratory, environment and product of the batch. */

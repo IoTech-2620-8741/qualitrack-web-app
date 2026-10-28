@@ -23,7 +23,7 @@ import { IamStore } from '../../../../iam/application/iam.store';
   imports: [DatePipe, DecimalPipe, RouterLink, MatButtonModule, MatIconModule, TranslatePipe],
   templateUrl: './product-detail.html',
   changeDetection: ChangeDetectionStrategy.Eager,
-  styleUrl: '../../../../shared/presentation/styles/operations-page.css',
+  styleUrl: './product-detail.css',
 })
 export class ProductDetail implements OnInit {
   protected readonly batches = inject(BatchStore);
