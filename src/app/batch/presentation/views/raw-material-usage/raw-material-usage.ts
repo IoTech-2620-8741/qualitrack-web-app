@@ -135,7 +135,7 @@ export class RawMaterialUsageComponent implements OnInit {
    */
   protected materialLink(usage: TracedRawMaterialUsage): (string | number)[] | null {
     if (usage.inventoryReceiptId === null)
-      return ['/laboratories/raw-materials', usage.rawMaterialId];
+      return ['/inventory/legacy-materials', usage.rawMaterialId];
     return usage.rawMaterialEnvironmentId === null
       ? null
       : [
