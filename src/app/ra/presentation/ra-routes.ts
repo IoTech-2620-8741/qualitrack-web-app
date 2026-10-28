@@ -1,3 +1,4 @@
+import { staffActivityGuard } from '../../iam/infrastructure/role-guards';
 import { Routes } from '@angular/router';
 import { Layout } from '../../shared/presentation/components/layout/layout';
 
@@ -20,6 +21,7 @@ const raRoutes: Routes = [
     path: '',
     component: Layout,
     children: [
+      { path: 'staff-activity/:staffId', loadComponent: () => import('./views/staff-activity/staff-activity').then((m) => m.StaffActivity), canActivate: [staffActivityGuard], title: 'Staff activity - QualiTrack' },
       { path: 'kpi-dashboard', loadComponent: kpiDashboard },
       { path: 'deviation-trends', loadComponent: deviationTrendChart },
       { path: 'report-generator', loadComponent: reportGenerator },

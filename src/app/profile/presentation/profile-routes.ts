@@ -1,3 +1,4 @@
+import { qualityManagerGuard } from '../../iam/infrastructure/role-guards';
 import { Routes } from '@angular/router';
 import { Layout } from '../../shared/presentation/components/layout/layout';
 
@@ -16,7 +17,10 @@ const profileRoutes: Routes = [
   {
     path: '',
     component: Layout,
-    children: [{ path: '', loadComponent: profilePage, title: 'Profile - QualiTrack' }],
+    children: [
+      { path: 'staff/:staffId', loadComponent: () => import('./views/staff-profile/staff-profile').then((m) => m.StaffProfilePage), canActivate: [qualityManagerGuard], title: 'Staff profile - QualiTrack' },
+      { path: '', loadComponent: profilePage, title: 'Profile - QualiTrack' },
+    ],
   },
 ];
 
