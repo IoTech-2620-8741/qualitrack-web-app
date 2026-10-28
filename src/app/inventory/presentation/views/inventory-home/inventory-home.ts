@@ -42,7 +42,7 @@ import { IamStore } from '../../../../iam/application/iam.store';
     </main>
   `,
   changeDetection: ChangeDetectionStrategy.Eager,
-  styleUrl: '../../../../shared/presentation/styles/operations-page.css',
+  styleUrl: './inventory-home.css',
 })
 export class InventoryHome implements OnInit {
   protected readonly store = inject(InventoryStore);
