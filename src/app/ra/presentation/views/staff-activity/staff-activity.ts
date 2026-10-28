@@ -57,7 +57,7 @@ const KNOWN_ACTIONS = new Set([
   imports: [DatePipe, RouterLink, TranslatePipe, MatIconModule, MatFormFieldModule, MatSelectModule, MatProgressSpinnerModule],
   templateUrl: './staff-activity.html',
   changeDetection: ChangeDetectionStrategy.Eager,
-  styleUrls: ['../../../../shared/presentation/styles/operations-page.css', './staff-activity.css'],
+  styleUrl: './staff-activity.css',
 })
 export class StaffActivity {
   protected readonly store = inject(RaStore);

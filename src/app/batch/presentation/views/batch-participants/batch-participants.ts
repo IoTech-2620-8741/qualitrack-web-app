@@ -42,7 +42,7 @@ import { IamStore } from '../../../../iam/application/iam.store';
   ],
   templateUrl: './batch-participants.html',
   changeDetection: ChangeDetectionStrategy.Eager,
-  styleUrl: '../../../../shared/presentation/styles/operations-page.css',
+  styleUrl: './batch-participants.css',
 })
 export class BatchParticipants implements OnInit {
   /** Laboratory, environment and product of the batch. */

@@ -38,7 +38,7 @@ import { EnvironmentSelector } from '../../../../shared/presentation/components/
   ],
   templateUrl: './inventory-catalogue.html',
   changeDetection: ChangeDetectionStrategy.Eager,
-  styleUrl: '../../../../shared/presentation/styles/operations-page.css',
+  styleUrl: './inventory-catalogue.css',
 })
 export class InventoryCatalogue implements OnInit {
   readonly store = inject(InventoryStore);

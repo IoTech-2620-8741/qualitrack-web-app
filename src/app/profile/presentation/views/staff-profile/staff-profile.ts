@@ -16,7 +16,7 @@ import { ProfileStore, StaffProfile } from '../../../application/profile.store';
   imports: [DatePipe, RouterLink, TranslatePipe, MatIconModule, MatProgressSpinnerModule],
   templateUrl: './staff-profile.html',
   changeDetection: ChangeDetectionStrategy.Eager,
-  styleUrls: ['../../../../shared/presentation/styles/operations-page.css', './staff-profile.css'],
+  styleUrl: './staff-profile.css',
 })
 export class StaffProfilePage {
   private readonly route = inject(ActivatedRoute);

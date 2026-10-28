@@ -67,10 +67,7 @@ export interface ThresholdProblem {
   imports: [FormsModule, TranslatePipe, MatButtonModule, MatCheckboxModule, MatIconModule],
   templateUrl: './threshold-editor.html',
   changeDetection: ChangeDetectionStrategy.Eager,
-  styleUrls: [
-    '../../../../shared/presentation/styles/operations-page.css',
-    '../../views/tracking-views.css',
-  ],
+  styleUrl: './threshold-editor.css',
 })
 export class ThresholdEditor {
   private readonly translate = inject(TranslateService);

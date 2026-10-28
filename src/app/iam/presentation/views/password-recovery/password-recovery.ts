@@ -41,7 +41,7 @@ type PasswordField = 'newPassword' | 'confirmPassword';
   ],
   templateUrl: './password-recovery.html',
   changeDetection: ChangeDetectionStrategy.Eager,
-  styleUrls: ['../sign-in-form/sign-in-form.css'],
+  styleUrl: './password-recovery.css',
 })
 export class PasswordRecovery {
   /** Session store that sends the code and resets the password. */

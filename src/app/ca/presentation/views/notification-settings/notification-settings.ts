@@ -8,7 +8,7 @@ import { NotificationPreferencesForm } from '../../components/notification-prefe
   standalone: true,
   imports: [TranslatePipe, NotificationPreferencesForm],
   templateUrl: './notification-settings.html',
-  styleUrls: ['../../../../shared/presentation/styles/operations-page.css', './notification-settings.css'],
+  styleUrl: './notification-settings.css',
   changeDetection: ChangeDetectionStrategy.Eager,
 })
 export class NotificationSettings {}
