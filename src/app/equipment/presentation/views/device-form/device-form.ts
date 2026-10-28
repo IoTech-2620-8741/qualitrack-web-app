@@ -41,7 +41,7 @@ export const FIRMWARE_VERSION = /^v?\d+(\.\d+){1,3}([-+][0-9A-Za-z.-]+)?$/;
   ],
   templateUrl: './device-form.html',
   changeDetection: ChangeDetectionStrategy.Eager,
-  styleUrl: '../equipment-form/equipment-form.css',
+  styleUrl: './device-form.css',
 })
 export class DeviceForm implements OnInit {
   private readonly fb = inject(FormBuilder);
