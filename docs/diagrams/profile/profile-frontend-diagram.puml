@@ -10,7 +10,7 @@ package "shared" <<External>> {
   interface BaseEntity
   class BaseApi
   abstract class ErrorHandlingEnabledBaseType
-  class ApiError
+  class errorStatus <<function>>
   class Layout
   class "operations-page.css" as OperationsPage <<stylesheet>>
 }
@@ -152,7 +152,7 @@ ProfileRoutes --> ProfilePage
 ProfilePage --> ProfileStore
 ProfilePage --> IamStore : account and password
 ProfilePage *-- NotificationPreferencesForm : #notifications
-ProfilePage ..> ApiError
+ProfilePage ..> errorStatus
 ProfilePage ..> OperationsPage
 note bottom of ProfilePage
   /profile, opened from the name in the toolbar: photo (JPG, PNG or WebP

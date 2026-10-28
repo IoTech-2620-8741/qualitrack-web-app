@@ -92,6 +92,7 @@ package "iam.application" {
     + isAuditor: Signal<boolean>
     + canOperate: Signal<boolean>
     + loadOnboarding(force?: boolean): Observable<OnboardingState>
+    + nextViewOf(state: OnboardingState): string
     + invalidateOnboarding(): void
     + changePassword(currentPassword: string, newPassword: string): Observable<void>
     + updateAccount(command: UpdateAccountCommand): Observable<void>
