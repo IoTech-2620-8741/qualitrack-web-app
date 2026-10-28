@@ -6,6 +6,7 @@
 //    and an assembler of its own (Anti-Corruption Layer of the Context Mapping of the report).
 // R5 shared: shared imports no context, except the layout that composes their components.
 // R6 session: other contexts only use IamStore and the IAM guards in their routes.
+// R7 stores: the application layer of a context only has <context>.store.ts, as in the course example; shared has none.
 // It fails when an import breaks a rule and is not listed in tools/architecture-exceptions.json.
 // Usage: npm run check:architecture
 import { readdirSync, readFileSync } from 'node:fs';
@@ -105,6 +106,17 @@ for (const file of sources(appDir)) {
   }
 }
 
+for (const file of sources(appDir)) {
+  const module = locate(relative(appDir, file).split(sep).join('/').replace(/.ts$/, ''));
+  if (module.layer !== 'application') continue;
+  const store = `${module.context}/application/${module.context}.store`;
+  if (module.context === 'shared') {
+    violations.set(`${module.path}.ts -> no application layer in shared`, 'R7: shared has no application layer');
+  } else if (module.path !== store) {
+    violations.set(`${module.path}.ts -> ${store}`, `R7: the application layer of ${module.context} only has ${module.context}.store.ts`);
+  }
+}
+
 const { exceptions } = JSON.parse(readFileSync(exceptionsFile, 'utf8'));
 const unexpected = [...violations].filter(([key]) => !(key in exceptions));
 const fixed = Object.keys(exceptions).filter((key) => !violations.has(key));
@@ -113,7 +125,7 @@ for (const key of fixed) {
   console.warn(`fixed, remove it from tools/architecture-exceptions.json: ${key}`);
 }
 if (unexpected.length) {
-  console.error(`${unexpected.length} import(s) break the DDD rules (see the header of tools/check-architecture.mjs):`);
+  console.error(`${unexpected.length} problem(s) with the DDD rules (see the header of tools/check-architecture.mjs):`);
   for (const [key, rule] of unexpected.sort()) console.error(`  src/app/${key}\n    ${rule}`);
   process.exit(1);
 }

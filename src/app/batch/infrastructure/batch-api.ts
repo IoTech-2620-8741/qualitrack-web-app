@@ -13,7 +13,8 @@ import {
 } from '../domain/model/batch-participation.entity';
 import { PharmaceuticalProduct } from '../domain/model/pharmaceutical-product.entity';
 import { RawMaterialUsage } from '../domain/model/raw-material-usage.entity';
-import { BatchApiEndpoint, BatchPath } from './batch-api-endpoint';
+import { BatchApiEndpoint } from './batch-api-endpoint';
+import { BatchPath } from '../domain/model/batch-path';
 import { ProductApiEndpoint } from './product-api-endpoint';
 import { RawMaterialUsageApiEndpoint } from './raw-material-usage-api-endpoint';
 import {

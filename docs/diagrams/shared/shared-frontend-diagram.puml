@@ -42,6 +42,15 @@ package "shared" {
     abstract class BaseApi {
     }
 
+    class ApiError {
+      +status: number
+      +details?: string
+    }
+
+    class errorStatus <<function>> {
+      +errorStatus(error: unknown): number | null
+    }
+
     abstract class ErrorHandlingEnabledBaseType {
       #handleError(operation: string): Function
     }
@@ -153,6 +162,7 @@ package "shared" {
 
 BaseResource --|> BaseEntity
 BaseApiEndpoint --|> ErrorHandlingEnabledBaseType
+errorStatus ..> ApiError
 BaseApiEndpoint ..> BaseEntity
 BaseApiEndpoint ..> BaseResource
 BaseApiEndpoint ..> BaseResponse

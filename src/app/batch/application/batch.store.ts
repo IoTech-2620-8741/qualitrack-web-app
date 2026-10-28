@@ -8,7 +8,7 @@ import { firstValueFrom } from 'rxjs';
 import { ApiError } from '../../shared/infrastructure/api-error';
 import { IamStore } from '../../iam/application/iam.store';
 import { BatchApi } from '../infrastructure/batch-api';
-import { BatchPath } from '../infrastructure/batch-api-endpoint';
+import { BatchPath } from '../domain/model/batch-path';
 import { Batch } from '../domain/model/batch.entity';
 import { BatchTraceability } from '../domain/model/batch-traceability.entity';
 import { CreateBatchCommand } from '../domain/model/create-batch.command';
@@ -115,6 +115,17 @@ export class BatchStore {
       },
       error: (error) => this.fail(error),
     });
+  }
+
+  /**
+   * Finds a batch of the laboratory of the session by its identifier.
+   *
+   * @param batchId - The batch identifier.
+   * @returns The batch, or undefined if the laboratory has no batch with that identifier.
+   */
+  async findBatch(batchId: number): Promise<Batch | undefined> {
+    const batches = await firstValueFrom(this.api.getBatches(this.iam.requireLaboratoryId()));
+    return batches.find((batch) => batch.id === batchId);
   }
 
   /**

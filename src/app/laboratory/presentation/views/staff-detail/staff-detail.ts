@@ -19,7 +19,6 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { IamStore } from '../../../../iam/application/iam.store';
-import { LaboratoryApi } from '../../../infrastructure/laboratory-api';
 import { LaboratoryStore } from '../../../application/laboratory.store';
 import { StaffMember } from '../../../domain/model/staff-member.entity';
 import { RaApi } from '../../../../ra/infrastructure/ra-api';
@@ -103,12 +102,7 @@ export class StaffDetail {
   private readonly route = inject(ActivatedRoute);
 
   /**
-   * Laboratory API facade used to read the staff member.
-   */
-  private readonly laboratoryApi = inject(LaboratoryApi);
-
-  /**
-   * Store used to deactivate the staff member.
+   * Store used to read and deactivate the staff member.
    */
   private readonly laboratoryStore = inject(LaboratoryStore);
 
@@ -209,7 +203,7 @@ export class StaffDetail {
           if (!Number.isSafeInteger(staffId) || staffId <= 0) return of(null);
           const laboratoryId = this.iam.requireLaboratoryId();
           return forkJoin({
-            member: this.laboratoryApi.getStaffMember(laboratoryId, staffId),
+            member: this.laboratoryStore.staffMember(laboratoryId, staffId),
             activity: this.raApi.getStaffActivity(laboratoryId, staffId),
           }).pipe(catchError(() => of(null)));
         }),

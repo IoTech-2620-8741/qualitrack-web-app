@@ -14,11 +14,10 @@ import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
-import { LaboratoryStore } from '../../../application/laboratory.store';
+import { LaboratoryStore, errorStatus } from '../../../application/laboratory.store';
 import { IamStore } from '../../../../iam/application/iam.store';
 import { RegisteredStaff } from '../../../domain/model/register-staff.command';
 import { StaffAccessRole } from '../../../domain/model/staff-member.entity';
-import { ApiError } from '../../../../shared/infrastructure/api-error';
 import { emailValidator } from '../../../../shared/presentation/validators/email.validator';
 import { notBlankValidator } from '../../../../shared/presentation/validators/not-blank.validator';
 import { personNameValidator } from '../../../../shared/presentation/validators/person-name.validator';
@@ -181,7 +180,7 @@ export class StaffForm {
    * @returns Translation key that explains the error to the quality manager
    */
   private errorKey(error: unknown): string {
-    const status = error instanceof ApiError ? error.status : 0;
+    const status = errorStatus(error) ?? 0;
     if (status === 409) return 'staff-form.errors.email-taken';
     if (status === 400) return 'staff-form.errors.invalid';
     if (status === 403) return 'staff-form.errors.forbidden';

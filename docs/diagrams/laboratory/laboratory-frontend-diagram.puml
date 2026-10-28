@@ -10,6 +10,7 @@ package "shared" {
   interface BaseEntity
   class BaseApi
   class BaseApiEndpoint
+  class errorStatus <<function>>
   interface BaseAssembler
 }
 
@@ -150,6 +151,7 @@ package "laboratory.application" {
     +createLaboratory(command)
     +updateLaboratory(laboratoryId, command)
     +loadStaff(laboratoryId)
+    +staffMember(laboratoryId, staffId): Observable<StaffMember>
     +registerStaff(laboratoryId, command): Observable<RegisteredStaff>
     +deactivateStaff(laboratoryId, staffId): Observable<StaffMember>
   }
@@ -200,9 +202,9 @@ EnvironmentForm --> EnvironmentStore
 EnvironmentSelector --> EnvironmentStore
 StaffList --> LaboratoryStore
 StaffForm --> LaboratoryStore
+StaffForm ..> errorStatus
 StaffForm ..> RegisteredStaff
 StaffList --> IamStore
-StaffDetail --> LaboratoryApi
 StaffDetail --> LaboratoryStore
 StaffDetail --> RaApi
 StaffDetail --> ProfileStore : photo and personal data (quality managers)

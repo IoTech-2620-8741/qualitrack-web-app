@@ -95,6 +95,11 @@ package "batch.domain.model" {
     +assignedBy: number
     +assignedAt: string
   }
+  interface BatchPath {
+    +laboratoryId: number
+    +environmentId: number
+    +productId: number
+  }
   interface CreateProductCommand
   interface CreateBatchCommand
   interface ReleaseBatchCommand
@@ -127,11 +132,6 @@ package "batch.infrastructure" {
     +assignContainer(path, batchId, containerMonitorId)
     +getRawMaterialUsages(lab, environmentId, rawMaterialId)
     +getMaterialHistory(laboratoryId, legacyRawMaterialId)
-  }
-  interface BatchPath {
-    +laboratoryId: number
-    +environmentId: number
-    +productId: number
   }
   class ProductApiEndpoint
   class BatchApiEndpoint
@@ -170,6 +170,7 @@ package "batch.application" {
     +traceability: Signal<BatchTraceability>
     +canDecide: Signal<boolean>
     +loadBatches(labId)
+    +findBatch(batchId): Promise<Batch | undefined>
     +loadProductBatches(path)
     +loadBatch(path, batchId)
     +createBatch(path, command)
@@ -266,7 +267,7 @@ note bottom of BatchStorage
   PRODUCT_STORAGE environment; auditors only see the current container.
   "View container conditions" -> /tracking/history?environmentId=&deviceId=.
 end note
-BatchRedirect --> BatchApi
+BatchRedirect --> BatchStore
 BatchForm ..> localIsoDate
 BatchReleaseForm ..> localIsoDate
 BatchRejectForm ..> localIsoDate

@@ -10,6 +10,8 @@ import { CreateLaboratoryCommand } from '../domain/model/create-laboratory.comma
 import { UpdateLaboratoryCommand } from '../domain/model/update-laboratory.command';
 import { RegisterStaffCommand, RegisteredStaff } from '../domain/model/register-staff.command';
 
+export { errorStatus } from '../../shared/infrastructure/api-error';
+
 /**
  * Application store for managing Laboratory bounded context state.
  *
@@ -176,6 +178,17 @@ export class LaboratoryStore {
           this.failOperation(error, 'Failed to load staff');
         },
       });
+  }
+
+  /**
+   * Reads one staff member of a laboratory.
+   *
+   * @param laboratoryId - Numeric identifier of the laboratory
+   * @param staffId - Numeric identifier of the staff member
+   * @returns Observable emitting the staff member
+   */
+  staffMember(laboratoryId: number, staffId: number): Observable<StaffMember> {
+    return this.api.getStaffMember(laboratoryId, staffId);
   }
 
   /**

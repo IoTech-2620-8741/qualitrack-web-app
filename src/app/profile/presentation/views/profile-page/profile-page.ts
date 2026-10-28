@@ -13,7 +13,6 @@ import {
 import { DatePipe } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
-import { HttpErrorResponse } from '@angular/common/http';
 import {
   AbstractControl,
   FormBuilder,
@@ -29,9 +28,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
-import { MAX_PHOTO_BYTES, PHOTO_TYPES, ProfileStore } from '../../../application/profile.store';
+import { MAX_PHOTO_BYTES, PHOTO_TYPES, ProfileStore, errorStatus } from '../../../application/profile.store';
 import { IamStore } from '../../../../iam/application/iam.store';
-import { ApiError } from '../../../../shared/infrastructure/api-error';
 import { NotificationPreferencesForm } from '../../../../ca/presentation/components/notification-preferences-form/notification-preferences-form';
 import { DigitsOnly } from '../../../../shared/presentation/directives/digits-only.directive';
 import { PhoneInput } from '../../../../shared/presentation/directives/phone-input.directive';
@@ -232,9 +230,9 @@ export class ProfilePage implements AfterViewInit {
         error: (error) => {
           this.photoBusy.set(false);
           this.photoError.set(
-            statusOf(error) === 413
+            errorStatus(error) === 413
               ? 'profile.photo.errors.size'
-              : statusOf(error) === 400 || statusOf(error) === 415
+              : errorStatus(error) === 400 || errorStatus(error) === 415
                 ? 'profile.photo.errors.type'
                 : 'profile.photo.errors.failed',
           );
@@ -283,7 +281,7 @@ export class ProfilePage implements AfterViewInit {
           this.personalMessage.set({
             ok: false,
             key:
-              statusOf(error) === 400 ? 'profile.personal.errors.invalid' : 'profile.errors.failed',
+              errorStatus(error) === 400 ? 'profile.personal.errors.invalid' : 'profile.errors.failed',
           });
         },
       });
@@ -313,7 +311,7 @@ export class ProfilePage implements AfterViewInit {
         },
         error: (error) => {
           this.accountSaving.set(false);
-          const status = statusOf(error);
+          const status = errorStatus(error);
           this.accountMessage.set({
             ok: false,
             key:
@@ -359,21 +357,11 @@ export class ProfilePage implements AfterViewInit {
           this.passwordMessage.set({
             ok: false,
             key:
-              statusOf(error) === 400
+              errorStatus(error) === 400
                 ? 'iam.change-password.errors.current-password'
                 : 'iam.change-password.errors.unavailable',
           });
         },
       });
   }
-}
-
-/**
- * Reads the HTTP status of a failed request.
- *
- * @param error - Error emitted by the store
- * @returns The HTTP status, or null if the error did not come from the server
- */
-function statusOf(error: unknown): number | null {
-  return error instanceof ApiError || error instanceof HttpErrorResponse ? error.status : null;
 }

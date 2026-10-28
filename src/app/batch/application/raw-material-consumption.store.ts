@@ -10,7 +10,7 @@ import { InventoryApi } from '../../inventory/infrastructure/inventory-api';
 import { RawMaterial } from '../../inventory/domain/model/raw-material.entity';
 import { RawMaterialBatch } from '../../inventory/domain/model/raw-material-batch.entity';
 import { BatchApi } from '../infrastructure/batch-api';
-import { BatchPath } from '../infrastructure/batch-api-endpoint';
+import { BatchPath } from '../domain/model/batch-path';
 import { batchError } from './batch.store';
 
 /**
