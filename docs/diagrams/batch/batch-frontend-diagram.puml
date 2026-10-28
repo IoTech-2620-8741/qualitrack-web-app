@@ -40,13 +40,13 @@ package "inventory.infrastructure" {
   }
 }
 
-package "equipment.infrastructure" {
-  class EquipmentApi {
-    +getEquipment(labId)
-  }
-}
-
 package "batch.domain.model" {
+  class ProductionEquipment {
+    +id / name / serialNumber / status
+    +deviceType: string | null
+    +environmentId: number | null
+    +isIotDevice / isOperational / isContainerMonitor
+  }
   class PharmaceuticalProduct {
     +id: number
     +laboratoryId: number
@@ -115,6 +115,10 @@ BatchTraceability --> StaffParticipation
 BatchTraceability --> "0..1" BatchContainer
 
 package "batch.infrastructure" {
+  class ProductionEquipmentApiEndpoint {
+    +getEquipment(laboratoryId)
+  }
+  class ProductionEquipmentAssembler
   class BatchApi {
     +getProducts(lab, environmentId)
     +getProduct(lab, environmentId, productId)
@@ -242,7 +246,6 @@ BatchRejectForm --> BatchStore
 RawMaterialUsageComponent --> BatchStore
 RawMaterialUsageComponent --> EnvironmentSelector
 BatchParticipants --> BatchStore
-BatchParticipants --> EquipmentApi
 BatchParticipants --> LaboratoryApi
 BatchParticipants --> IamStore
 note bottom of BatchParticipants
@@ -251,7 +254,6 @@ note bottom of BatchParticipants
 end note
 BatchTraceabilityView --> BatchStore
 BatchStorage --> BatchStore
-BatchStorage --> EquipmentApi
 BatchStorage --> EnvironmentStore
 BatchStorage --> IamStore
 note bottom of BatchStorage
@@ -274,4 +276,12 @@ note bottom of BatchRoutes
   /batches/batch-list and /batches/batch-detail/:id (resolves the full path)
 end note
 
+BatchApi --> ProductionEquipmentApiEndpoint
+ProductionEquipmentApiEndpoint --> ProductionEquipmentAssembler
+ProductionEquipmentAssembler ..> ProductionEquipment
+BatchStore ..> ProductionEquipment : loadProductionEquipment()
+note bottom of ProductionEquipmentApiEndpoint
+  Equipment -> Product Batch (Customer/Supplier):
+  GET /laboratories/{id}/equipments in Batch's own model.
+end note
 @enduml
