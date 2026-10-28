@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.0] - 2026-10-28
+
 ### Added
 
 - CI: the pull request build now runs unit tests (#37). Architecture checks guided the DDD refactor (#38, #39) and are maintained locally; CI continues to require unit tests and the production build (#51).
@@ -14,6 +16,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Shared (shared): `EnvironmentPreference` remembers in the browser the environment opened in inventory, production and monitoring, with the same keys as before, so nobody loses the remembered environment (#44).
 
 ### Changed
+
+- Release: package and lockfile versions are now 1.3.0.
+
+- Licensing: the project uses the QualiTrack Proprietary Software License; package metadata now refers to `LICENSE.md`.
 
 - Profile (profile): the toolbar photo or initials, name and role are now displayed by a Profile component composed by the layout, preserving the profile link and mobile appearance (#45). Quality managers can now open staff photos and personal data on a separate page linked from the staff detail (#46). Notification preferences open from a profile card in Compliance & Alerts; the legacy /profile#notifications link redirects to that page (#47). Route configuration now uses `profile.routes.ts`, preserving public paths (#50).
 
