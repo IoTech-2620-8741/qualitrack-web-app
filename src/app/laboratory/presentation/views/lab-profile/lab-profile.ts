@@ -1,6 +1,6 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -15,7 +15,10 @@ import { IamStore } from '../../../../iam/application/iam.store';
 import { UpdateLaboratoryCommand } from '../../../domain/model/update-laboratory.command';
 import { PhoneInput } from '../../../../shared/presentation/directives/phone-input.directive';
 import { notBlankValidator } from '../../../../shared/presentation/validators/not-blank.validator';
-import { normalizePhone, phoneValidator } from '../../../../shared/presentation/validators/phone.validator';
+import {
+  normalizePhone,
+  phoneValidator,
+} from '../../../../shared/presentation/validators/phone.validator';
 
 /**
  * Component responsible for displaying and editing the current laboratory profile.
@@ -30,7 +33,7 @@ import { normalizePhone, phoneValidator } from '../../../../shared/presentation/
   standalone: true,
   imports: [
     ReactiveFormsModule,
-    TranslateModule,
+    TranslatePipe,
     MatFormFieldModule,
     MatInputModule,
     MatIconModule,
@@ -41,6 +44,7 @@ import { normalizePhone, phoneValidator } from '../../../../shared/presentation/
     PhoneInput,
   ],
   templateUrl: './lab-profile.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './lab-profile.css',
 })
 export class LabProfile implements OnInit {

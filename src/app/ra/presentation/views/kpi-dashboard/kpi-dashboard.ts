@@ -1,6 +1,13 @@
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  computed,
+  inject,
+  signal,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { DatePipe, DecimalPipe } from '@angular/common';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -10,7 +17,6 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { RaStore } from '../../../application/ra.store';
 import { ALL_ENVIRONMENTS, lastDays } from '../../../domain/model/indicator-period';
-import { EnvironmentStore } from '../../../../laboratory/application/environment.store';
 
 /** Lengths of the period offered, in days; the platform accepts up to 31. */
 const PERIOD_DAYS = [1, 7, 31] as const;
@@ -23,14 +29,26 @@ const PERIOD_DAYS = [1, 7, 31] as const;
 @Component({
   selector: 'app-kpi-dashboard',
   standalone: true,
-  imports: [DatePipe, DecimalPipe, TranslateModule, MatButtonModule, MatButtonToggleModule, MatFormFieldModule,
-    MatIconModule, MatSelectModule, MatProgressSpinnerModule],
+  imports: [
+    DatePipe,
+    DecimalPipe,
+    TranslatePipe,
+    MatButtonModule,
+    MatButtonToggleModule,
+    MatFormFieldModule,
+    MatIconModule,
+    MatSelectModule,
+    MatProgressSpinnerModule,
+  ],
   templateUrl: './kpi-dashboard.html',
-  styleUrls: ['../../../../shared/presentation/styles/operations-page.css', '../reporting-views.css'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  styleUrls: [
+    '../../../../shared/presentation/styles/operations-page.css',
+    '../reporting-views.css',
+  ],
 })
 export class KpiDashboardComponent implements OnInit {
   protected readonly store = inject(RaStore);
-  protected readonly environments = inject(EnvironmentStore);
   protected readonly periods = PERIOD_DAYS;
   protected readonly ALL_ENVIRONMENTS = ALL_ENVIRONMENTS;
   protected readonly days = signal<number>(7);
@@ -39,14 +57,18 @@ export class KpiDashboardComponent implements OnInit {
   /** Readings summarized per environment, in the order of the environments of the laboratory. */
   protected readonly groups = computed(() => {
     const summaries = this.store.dashboard()?.measurementSummaries ?? [];
-    return this.environments.environments()
-      .map((environment) => ({ environment, summaries: summaries.filter((item) => item.environmentId === environment.id) }))
+    return this.store
+      .environments()
+      .map((environment) => ({
+        environment,
+        summaries: summaries.filter((item) => item.environmentId === environment.id),
+      }))
       .filter((group) => group.summaries.length);
   });
 
   async ngOnInit(): Promise<void> {
     this.store.loadDevices();
-    if (!this.environments.loaded()) await this.environments.loadEnvironments();
+    if (!this.store.environmentsLoaded()) await this.store.loadEnvironments();
     this.reload();
   }
 

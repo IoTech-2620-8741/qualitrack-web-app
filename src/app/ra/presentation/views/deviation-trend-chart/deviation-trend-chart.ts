@@ -1,6 +1,13 @@
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  computed,
+  inject,
+  signal,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { DecimalPipe } from '@angular/common';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
@@ -10,15 +17,22 @@ import { BaseChartDirective } from 'ng2-charts';
 import { ChartData, ChartOptions } from 'chart.js';
 
 import { RaStore } from '../../../application/ra.store';
-import { DeviationTrend, ReadingState, TrendDirection } from '../../../domain/model/deviation-trend.entity';
+import {
+  DeviationTrend,
+  ReadingState,
+  TrendDirection,
+} from '../../../domain/model/deviation-trend.entity';
 import { lastDays } from '../../../domain/model/indicator-period';
-import { EnvironmentStore } from '../../../../laboratory/application/environment.store';
-import { EnvironmentSelector } from '../../../../laboratory/presentation/components/environment-selector/environment-selector';
+import { EnvironmentSelector } from '../../../../shared/presentation/components/environment-selector/environment-selector';
 
 /** Lengths of the period offered, in days; the platform accepts up to 31. */
 const PERIOD_DAYS = [1, 7, 31] as const;
 
-const STATE_COLORS: Record<ReadingState, string> = { NORMAL: '#158378', WARNING: '#c08a00', CRITICAL: '#c62828' };
+const STATE_COLORS: Record<ReadingState, string> = {
+  NORMAL: '#158378',
+  WARNING: '#c08a00',
+  CRITICAL: '#c62828',
+};
 
 /**
  * Deviation indicators of an environment (US94): for each device and variable, the time in range, the deviations and
@@ -27,14 +41,25 @@ const STATE_COLORS: Record<ReadingState, string> = { NORMAL: '#158378', WARNING:
 @Component({
   selector: 'app-deviation-trend-chart',
   standalone: true,
-  imports: [DecimalPipe, TranslateModule, MatButtonModule, MatButtonToggleModule, MatIconModule,
-    MatProgressSpinnerModule, BaseChartDirective, EnvironmentSelector],
+  imports: [
+    DecimalPipe,
+    TranslatePipe,
+    MatButtonModule,
+    MatButtonToggleModule,
+    MatIconModule,
+    MatProgressSpinnerModule,
+    BaseChartDirective,
+    EnvironmentSelector,
+  ],
   templateUrl: './deviation-trend-chart.html',
-  styleUrls: ['../../../../shared/presentation/styles/operations-page.css', '../reporting-views.css'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  styleUrls: [
+    '../../../../shared/presentation/styles/operations-page.css',
+    '../reporting-views.css',
+  ],
 })
 export class DeviationTrendChartComponent implements OnInit {
   protected readonly store = inject(RaStore);
-  protected readonly environments = inject(EnvironmentStore);
   private readonly translate = inject(TranslateService);
   private readonly language = toSignal(this.translate.onLangChange, { initialValue: null });
 
@@ -53,14 +78,26 @@ export class DeviationTrendChartComponent implements OnInit {
     this.language();
     const trend = this.activeTrend();
     if (!trend) return { datasets: [] };
-    const points = trend.dataPoints.map((point) => ({ x: Date.parse(point.timestamp), y: point.recordedValue }));
-    const colors = trend.dataPoints.map((point) => point.state ? STATE_COLORS[point.state] : '#7d8f96');
+    const points = trend.dataPoints.map((point) => ({
+      x: Date.parse(point.timestamp),
+      y: point.recordedValue,
+    }));
+    const colors = trend.dataPoints.map((point) =>
+      point.state ? STATE_COLORS[point.state] : '#7d8f96',
+    );
     return {
-      datasets: [{
-        label: this.translate.instant('tracking.metrics.' + trend.parameterName),
-        data: points, borderColor: '#8fa7ae', borderWidth: 1.5, tension: 0,
-        pointRadius: 3, pointBackgroundColor: colors, pointBorderColor: colors,
-      }],
+      datasets: [
+        {
+          label: this.translate.instant('tracking.metrics.' + trend.parameterName),
+          data: points,
+          borderColor: '#8fa7ae',
+          borderWidth: 1.5,
+          tension: 0,
+          pointRadius: 3,
+          pointBackgroundColor: colors,
+          pointBorderColor: colors,
+        },
+      ],
     };
   });
 
@@ -69,21 +106,35 @@ export class DeviationTrendChartComponent implements OnInit {
     const trend = this.activeTrend();
     const unit = trend?.unit ?? '';
     return {
-      responsive: true, maintainAspectRatio: false, animation: false, parsing: false,
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: false,
+      parsing: false,
       plugins: {
         legend: { display: false },
-        tooltip: { callbacks: {
-          title: (items) => this.formatDate(items[0].parsed.x ?? 0),
-          label: (item) => {
-            const state = trend?.dataPoints[item.dataIndex]?.state;
-            const condition = state ? ` · ${this.translate.instant('tracking.states.' + state)}` : '';
-            return `${item.parsed.y} ${unit}${condition}`;
+        tooltip: {
+          callbacks: {
+            title: (items) => this.formatDate(items[0].parsed.x ?? 0),
+            label: (item) => {
+              const state = trend?.dataPoints[item.dataIndex]?.state;
+              const condition = state
+                ? ` · ${this.translate.instant('tracking.states.' + state)}`
+                : '';
+              return `${item.parsed.y} ${unit}${condition}`;
+            },
           },
-        } },
+        },
       },
       scales: {
-        x: { type: 'linear', grid: { display: false },
-          ticks: { maxTicksLimit: 6, maxRotation: 0, callback: (value) => this.formatDate(Number(value)) } },
+        x: {
+          type: 'linear',
+          grid: { display: false },
+          ticks: {
+            maxTicksLimit: 6,
+            maxRotation: 0,
+            callback: (value) => this.formatDate(Number(value)),
+          },
+        },
         y: { title: { display: true, text: unit } },
       },
     };
@@ -91,13 +142,13 @@ export class DeviationTrendChartComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     this.store.loadDevices();
-    if (!this.environments.loaded()) await this.environments.loadEnvironments();
-    const preferred = this.environments.preferredEnvironment(undefined, 'tracking');
-    if (preferred) this.changeEnvironment(preferred.id);
+    if (!this.store.environmentsLoaded()) await this.store.loadEnvironments();
+    const preferred = this.store.preferredEnvironmentId();
+    if (preferred !== null) this.changeEnvironment(preferred);
   }
 
   protected changeEnvironment(environmentId: number): void {
-    this.environments.rememberEnvironment(environmentId, 'tracking');
+    this.store.rememberEnvironment(environmentId);
     this.environmentId.set(environmentId);
     this.reload();
   }
@@ -142,7 +193,9 @@ export class DeviationTrendChartComponent implements OnInit {
   }
 
   private formatDate(value: number): string {
-    return new Intl.DateTimeFormat(this.translate.currentLang || 'en', { dateStyle: 'short', timeStyle: 'short' })
-      .format(new Date(value));
+    return new Intl.DateTimeFormat(this.translate.currentLang() || 'en', {
+      dateStyle: 'short',
+      timeStyle: 'short',
+    }).format(new Date(value));
   }
 }

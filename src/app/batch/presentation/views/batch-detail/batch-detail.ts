@@ -1,25 +1,14 @@
-import {
-  Component,
-  DestroyRef,
-  OnInit,
-  inject
-} from '@angular/core';
-import {
-  DatePipe,
-  DecimalPipe
-} from '@angular/common';
-import {
-  ActivatedRoute,
-  RouterLink
-} from '@angular/router';
+import { Component, DestroyRef, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
+import { DatePipe, DecimalPipe } from '@angular/common';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { BatchStore } from '../../../application/batch.store';
 import { IamStore } from '../../../../iam/application/iam.store';
-import { BatchPath } from '../../../infrastructure/batch-api-endpoint';
+import { BatchPath } from '../../../domain/model/batch-path';
 import { RawMaterialUsageComponent } from '../raw-material-usage/raw-material-usage';
 import { BatchParticipants } from '../batch-participants/batch-participants';
 import { BatchTraceabilityView } from '../batch-traceability/batch-traceability';
@@ -46,13 +35,14 @@ import { BatchStorage } from '../batch-storage/batch-storage';
     MatTabsModule,
     MatButtonModule,
     MatIconModule,
-    TranslateModule,
+    TranslatePipe,
     RawMaterialUsageComponent,
     BatchParticipants,
     BatchTraceabilityView,
     BatchStorage,
   ],
   templateUrl: './batch-detail.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: '../../../../shared/presentation/styles/operations-page.css',
 })
 export class BatchDetail implements OnInit {

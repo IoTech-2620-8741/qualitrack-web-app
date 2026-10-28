@@ -7,10 +7,14 @@ import { Equipment } from '../domain/model/equipment.entity';
 import { BpmParameterConfig } from '../domain/model/bpm-parameter-config.entity';
 import { MaintenanceRecord } from '../domain/model/maintenance-record.entity';
 import { IotDeviceType } from '../domain/model/iot-device-type';
+import { InstallationEnvironment } from '../domain/model/installation-environment.entity';
+import { MaintenanceTechnician } from '../domain/model/maintenance-technician.entity';
 
 import { EquipmentApiEndpoint } from './equipment-api-endpoint';
 import { BpmConfigApiEndpoint } from './bpm-config-api-endpoint';
 import { MaintenanceApiEndpoint } from './maintenance-api-endpoint';
+import { InstallationEnvironmentApiEndpoint } from './installation-environment-api-endpoint';
+import { MaintenanceTechnicianApiEndpoint } from './maintenance-technician-api-endpoint';
 
 import { ChangeEquipmentStatusRequest, RegisterEquipmentRequest, RegisterIotDeviceRequest } from './equipment.request';
 import { ConfigureBpmRequest } from './bpm-config.request';
@@ -46,6 +50,12 @@ export class EquipmentApi extends BaseApi {
   /** Endpoint for the maintenance records. */
   private readonly _maintenanceEndpoint: MaintenanceApiEndpoint;
 
+  /** Endpoint for the environments of Laboratory Management where equipment is installed. */
+  private readonly _environmentEndpoint: InstallationEnvironmentApiEndpoint;
+
+  /** Endpoint for the staff of Laboratory Management who perform maintenance. */
+  private readonly _technicianEndpoint: MaintenanceTechnicianApiEndpoint;
+
   /**
    * Creates the facade and its endpoints.
    *
@@ -56,6 +66,28 @@ export class EquipmentApi extends BaseApi {
     this._equipmentEndpoint = new EquipmentApiEndpoint(http);
     this._bpmEndpoint = new BpmConfigApiEndpoint(http);
     this._maintenanceEndpoint = new MaintenanceApiEndpoint(http);
+    this._environmentEndpoint = new InstallationEnvironmentApiEndpoint(http);
+    this._technicianEndpoint = new MaintenanceTechnicianApiEndpoint(http);
+  }
+
+  /**
+   * Retrieves the environments of a laboratory where equipment can be installed.
+   *
+   * @param laboratoryId - The identifier of the laboratory.
+   * @returns An observable that emits the environments of the laboratory.
+   */
+  getEnvironments(laboratoryId: number): Observable<InstallationEnvironment[]> {
+    return this._environmentEndpoint.getEnvironments(laboratoryId);
+  }
+
+  /**
+   * Retrieves the staff of a laboratory, to choose who performed a maintenance.
+   *
+   * @param laboratoryId - The identifier of the laboratory.
+   * @returns An observable that emits the staff members of the laboratory.
+   */
+  getTechnicians(laboratoryId: number): Observable<MaintenanceTechnician[]> {
+    return this._technicianEndpoint.getStaff(laboratoryId);
   }
 
   /**

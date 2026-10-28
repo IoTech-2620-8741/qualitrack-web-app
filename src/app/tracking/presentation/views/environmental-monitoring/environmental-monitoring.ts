@@ -1,14 +1,13 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { TrackingStore, DeviceSnapshot } from '../../../application/tracking.store';
-import { EnvironmentStore } from '../../../../laboratory/application/environment.store';
-import { EnvironmentSelector } from '../../../../laboratory/presentation/components/environment-selector/environment-selector';
+import { EnvironmentSelector } from '../../../../shared/presentation/components/environment-selector/environment-selector';
 import { MonitoredMetric } from '../../../domain/model/monitored-metric';
 import { Measurement } from '../../../domain/model/measurement.entity';
 
@@ -48,31 +47,25 @@ import { Measurement } from '../../../domain/model/measurement.entity';
     DatePipe,
     DecimalPipe,
     RouterLink,
-    TranslateModule,
+    TranslatePipe,
     MatButtonModule,
     MatIconModule,
     MatProgressSpinnerModule,
     EnvironmentSelector,
   ],
   templateUrl: './environmental-monitoring.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: [
     '../../../../shared/presentation/styles/operations-page.css',
     '../tracking-views.css',
   ],
 })
 export class EnvironmentalMonitoring implements OnInit {
-
   /**
    * Central application store responsible for IoT telemetry state,
    * device snapshots and environmental monitoring information.
    */
   protected readonly store = inject(TrackingStore);
-
-  /**
-   * Store responsible for managing laboratory environments
-   * and user environment preferences.
-   */
-  protected readonly environments = inject(EnvironmentStore);
 
   /**
    * Metrics displayed for container monitoring devices.
@@ -96,10 +89,10 @@ export class EnvironmentalMonitoring implements OnInit {
    * the latest device snapshots for monitoring purposes.
    */
   async ngOnInit(): Promise<void> {
-    if (!this.environments.loaded()) await this.environments.loadEnvironments();
+    if (!this.store.environmentsLoaded()) await this.store.loadEnvironments();
     const current =
       this.store.environmentId() ??
-      this.environments.preferredEnvironment(undefined, 'tracking')?.id ??
+      this.store.preferredEnvironmentId() ??
       null;
     if (current !== null) await this.changeEnvironment(current);
   }
@@ -115,7 +108,7 @@ export class EnvironmentalMonitoring implements OnInit {
    * @param environmentId Identifier of the selected environment.
    */
   protected async changeEnvironment(environmentId: number): Promise<void> {
-    this.environments.rememberEnvironment(environmentId, 'tracking');
+    this.store.rememberEnvironment(environmentId);
     await this.store.selectEnvironment(environmentId);
     await this.store.loadSnapshots();
   }

@@ -1635,6 +1635,9 @@
     },
     "no-account": "Sin cuenta",
     "detail": {
+      "view-profile": "Ver perfil",
+      "view-activity": "Ver actividad",
+      "back": "Volver al detalle del trabajador",
       "load-error": "No se pudo cargar al miembro del personal.",
       "activities": "Actividades registradas",
       "last-activity": "Última actividad",

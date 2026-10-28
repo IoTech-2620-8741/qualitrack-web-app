@@ -1,4 +1,11 @@
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  computed,
+  inject,
+  signal,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, RouterModule } from '@angular/router';
@@ -16,7 +23,6 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { EquipmentStore } from '../../../application/equipment.store';
 import { Equipment } from '../../../domain/model/equipment.entity';
 import { EQUIPMENT_STATUSES, EquipmentStatus } from '../../../domain/model/equipment-status';
-import { EnvironmentStore } from '../../../../laboratory/application/environment.store';
 import { notBlankValidator } from '../../../../shared/presentation/validators/not-blank.validator';
 
 /**
@@ -42,6 +48,7 @@ import { notBlankValidator } from '../../../../shared/presentation/validators/no
     TranslatePipe,
   ],
   templateUrl: './equipment-detail.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './equipment-detail.css',
 })
 export class EquipmentDetail implements OnInit {
@@ -50,8 +57,6 @@ export class EquipmentDetail implements OnInit {
   private readonly fb = inject(FormBuilder);
 
   protected readonly store = inject(EquipmentStore);
-
-  protected readonly environments = inject(EnvironmentStore);
 
   protected readonly equipmentId = signal<number | null>(null);
 
@@ -76,7 +81,7 @@ export class EquipmentDetail implements OnInit {
     const id = Number(this.route.snapshot.paramMap.get('id'));
     if (!Number.isSafeInteger(id) || id <= 0) return;
     this.equipmentId.set(id);
-    void this.environments.loadEnvironments();
+    void this.store.loadEnvironments();
     this.store.loadEquipment();
     this.store.loadBpmConfig(id);
     void this.load(id);
@@ -89,14 +94,23 @@ export class EquipmentDetail implements OnInit {
 
   protected environmentName(environmentId: number | null): string | null {
     if (environmentId === null) return null;
-    const environment = this.environments.environments().find((item) => item.id === environmentId);
+    const environment = this.store.environments().find((item) => item.id === environmentId);
     return environment ? `${environment.code} - ${environment.name}` : `#${environmentId}`;
   }
 
   /** An environment keeps a single environmental device (US52). */
   protected isOccupied(equipment: Equipment, environmentId: number): boolean {
-    return equipment.deviceType === 'ENVIRONMENTAL_DEVICE' && this.store.iotDevices().some((device) =>
-      device.id !== equipment.id && device.deviceType === 'ENVIRONMENTAL_DEVICE' && device.environmentId === environmentId);
+    return (
+      equipment.deviceType === 'ENVIRONMENTAL_DEVICE' &&
+      this.store
+        .iotDevices()
+        .some(
+          (device) =>
+            device.id !== equipment.id &&
+            device.deviceType === 'ENVIRONMENTAL_DEVICE' &&
+            device.environmentId === environmentId,
+        )
+    );
   }
 
   protected async onLocate(equipment: Equipment): Promise<void> {

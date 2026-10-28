@@ -37,7 +37,7 @@ src/app/<context>/
 ├── domain/          # entities, value objects and commands
 ├── application/     # stores (state and use cases)
 ├── infrastructure/  # API endpoints, assemblers, requests and responses
-└── presentation/    # views, components and routes
+└── presentation/    # views, components and <bc>.routes.ts
 ```
 
 | Folder | Bounded context |
@@ -49,10 +49,10 @@ src/app/<context>/
 | `tracking` | Tracking & Telemetry |
 | `batch` | Product Batch Management |
 | `ca` | Compliance & Alerting |
-| `ra` | Reporting & Audit |
+| `ra` | Reporting & Audit, including the operational overview (dashboard) |
 | `subscription` | Payments & Subscriptions |
 | `profile` | Profile |
-| `shared` | Layout, dashboard, home, about and common components |
+| `shared` | Layout, home, about and common components |
 
 ## Documentation
 - **Class Diagrams**: The frontend class diagram of every bounded context is available in [docs/diagrams](docs/diagrams), one folder per context.

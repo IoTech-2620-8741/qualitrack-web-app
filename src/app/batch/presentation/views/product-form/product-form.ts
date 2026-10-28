@@ -1,23 +1,11 @@
-import {
-  Component,
-  OnInit,
-  inject
-} from '@angular/core';
-import {
-  FormBuilder,
-  ReactiveFormsModule,
-  Validators
-} from '@angular/forms';
-import {
-  ActivatedRoute,
-  Router,
-  RouterLink
-} from '@angular/router';
+import { Component, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { TranslateModule } from '@ngx-translate/core';
-import { ProductStore } from '../../../application/product.store';
+import { TranslatePipe } from '@ngx-translate/core';
+import { BatchStore } from '../../../application/batch.store';
 import { codeValidator } from '../../../../shared/presentation/validators/code.validator';
 import { notBlankValidator } from '../../../../shared/presentation/validators/not-blank.validator';
 
@@ -33,20 +21,20 @@ import { notBlankValidator } from '../../../../shared/presentation/validators/no
 @Component({
   selector: 'app-product-form',
   standalone: true,
-  providers: [ProductStore],
   imports: [
     ReactiveFormsModule,
     RouterLink,
     MatButtonModule,
     MatIconModule,
     MatInputModule,
-    TranslateModule,
+    TranslatePipe,
   ],
   templateUrl: './product-form.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: '../../../../shared/presentation/styles/operations-page.css',
 })
 export class ProductForm implements OnInit {
-  protected readonly store = inject(ProductStore);
+  protected readonly store = inject(BatchStore);
   private readonly fb = inject(FormBuilder);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
@@ -72,7 +60,7 @@ export class ProductForm implements OnInit {
    */
   ngOnInit(): void {
     this.environmentId = Number(this.route.snapshot.paramMap.get('environmentId'));
-    this.store.environmentId.set(this.environmentId);
+    this.store.selectProductEnvironment(this.environmentId);
   }
 
   /**
@@ -91,7 +79,7 @@ export class ProductForm implements OnInit {
     this.form.markAllAsTouched();
     if (this.form.invalid) return;
     const value = this.form.getRawValue();
-    const product = await this.store.create(this.environmentId, {
+    const product = await this.store.createProduct(this.environmentId, {
       code: value.code.trim(),
       name: value.name.trim(),
       description: value.description.trim() || null,

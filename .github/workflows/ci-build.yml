@@ -21,5 +21,8 @@ jobs:
       - name: Instalar dependencias
         run: npm ci
 
+      - name: Pruebas unitarias
+        run: npm test -- --watch=false
+
       - name: Build de producción
         run: npm run build

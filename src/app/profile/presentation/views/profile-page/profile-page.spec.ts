@@ -1,8 +1,8 @@
 import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { ActivatedRoute } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { ActivatedRoute, Router, provideRouter } from '@angular/router';
+import { provideTranslateService } from '@ngx-translate/core';
 import { of } from 'rxjs';
 import { ProfileStore } from '../../../application/profile.store';
 import { ProfilePage } from './profile-page';
@@ -10,15 +10,18 @@ import { ProfilePage } from './profile-page';
 describe('ProfilePage', () => {
   const update = vi.fn(() => of({}));
 
-  function create() {
+  function create(fragment: string | null = null) {
     TestBed.configureTestingModule({
-      imports: [ProfilePage, TranslateModule.forRoot()],
+      imports: [ProfilePage],
       providers: [
+        provideTranslateService(),
+        provideRouter([]),
         provideHttpClient(),
         provideHttpClientTesting(),
-        { provide: ActivatedRoute, useValue: { fragment: of(null) } },
+        { provide: ActivatedRoute, useValue: { fragment: of(fragment) } },
       ],
     });
+    vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
     vi.spyOn(TestBed.inject(ProfileStore), 'update').mockImplementation(update as never);
     const fixture = TestBed.createComponent(ProfilePage);
     fixture.detectChanges();
@@ -32,6 +35,11 @@ describe('ProfilePage', () => {
   const personal = { fullName: 'María Ñahui-Pérez', dni: '72345678', phoneNumber: '987 654 320', location: 'Miraflores, Lima' };
 
   beforeEach(() => update.mockClear());
+
+  it('redirects the legacy notification fragment before profile data finishes loading', () => {
+    create('notifications');
+    expect(TestBed.inject(Router).navigate).toHaveBeenCalledWith(['/alerts/notification-settings'], { replaceUrl: true });
+  });
 
   it('accepts valid personal data, with the DNI and the phone optional', () => {
     const { personalForm } = create();

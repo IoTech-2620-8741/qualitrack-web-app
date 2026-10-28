@@ -1,12 +1,11 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 
 import { CaStore } from '../../../application/ca.store';
-import { EnvironmentStore } from '../../../../laboratory/application/environment.store';
-import { EnvironmentSelector } from '../../../../laboratory/presentation/components/environment-selector/environment-selector';
+import { EnvironmentSelector } from '../../../../shared/presentation/components/environment-selector/environment-selector';
 import { AlertTable } from '../../components/alert-table/alert-table';
 
 /**
@@ -16,15 +15,21 @@ import { AlertTable } from '../../components/alert-table/alert-table';
 @Component({
   selector: 'app-alert-dashboard',
   standalone: true,
-  imports: [RouterLink, TranslateModule, MatButtonModule, MatIconModule, EnvironmentSelector, AlertTable],
+  imports: [
+    RouterLink,
+    TranslatePipe,
+    MatButtonModule,
+    MatIconModule,
+    EnvironmentSelector,
+    AlertTable,
+  ],
   templateUrl: './alert-dashboard.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: '../../../../shared/presentation/styles/operations-page.css',
 })
 export class AlertDashboard implements OnInit {
   /** Store that holds the alerts shown by the table. */
   protected readonly store = inject(CaStore);
-  /** Store of the environments the person can choose from. */
-  protected readonly environments = inject(EnvironmentStore);
   /** Environment whose alerts are shown; `null` until one is chosen. */
   protected readonly environmentId = signal<number | null>(null);
 
@@ -39,9 +44,9 @@ export class AlertDashboard implements OnInit {
     this.store.clearError();
     this.store.clearAlerts();
     this.store.loadDevices();
-    if (!this.environments.loaded()) await this.environments.loadEnvironments();
-    const preferred = this.environments.preferredEnvironment(undefined, 'tracking');
-    if (preferred) this.changeEnvironment(preferred.id);
+    if (!this.store.environmentsLoaded()) await this.store.loadEnvironments();
+    const preferred = this.store.preferredEnvironmentId();
+    if (preferred !== null) this.changeEnvironment(preferred);
   }
 
   /**
@@ -50,7 +55,7 @@ export class AlertDashboard implements OnInit {
    * @param environmentId - The environment chosen
    */
   protected changeEnvironment(environmentId: number): void {
-    this.environments.rememberEnvironment(environmentId, 'tracking');
+    this.store.rememberEnvironment(environmentId);
     this.environmentId.set(environmentId);
     this.refresh();
   }

@@ -1,4 +1,12 @@
-import { Component, DestroyRef, OnInit, Signal, computed, inject } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  OnInit,
+  Signal,
+  computed,
+  inject,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -7,11 +15,10 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 import { CaStore } from '../../../application/ca.store';
 import { DeviationAlert } from '../../../domain/model/deviation-alert.entity';
-import { EnvironmentStore } from '../../../../laboratory/application/environment.store';
 
 /**
  * Detail of a deviation alert (US86): where it originated, which condition produced it, how the incident evolved and
@@ -29,9 +36,10 @@ import { EnvironmentStore } from '../../../../laboratory/application/environment
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,
-    TranslateModule,
+    TranslatePipe,
   ],
   templateUrl: './deviation-detail.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: '../../../../shared/presentation/styles/operations-page.css',
 })
 export class DeviationDetail implements OnInit {
@@ -40,7 +48,6 @@ export class DeviationDetail implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly translate = inject(TranslateService);
   protected readonly store = inject(CaStore);
-  protected readonly environments = inject(EnvironmentStore);
 
   /** Numeric id of the alert in the route; 0 when the route has none or it is not a number. */
   protected alertId = 0;
@@ -54,13 +61,16 @@ export class DeviationDetail implements OnInit {
    * The resolution notes are required and must have between 10 and 500 characters.
    */
   protected readonly resolutionForm = this.fb.nonNullable.group({
-    resolutionNotes: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(500)]],
+    resolutionNotes: [
+      '',
+      [Validators.required, Validators.minLength(10), Validators.maxLength(500)],
+    ],
   });
 
   /** Environment of the alert, shown with its code and name. */
   protected readonly environmentName = computed(() => {
     const environmentId = this.alert?.()?.environmentId;
-    const environment = this.environments.environments().find((item) => item.id === environmentId);
+    const environment = this.store.environments().find((item) => item.id === environmentId);
     return environment ? `${environment.code} · ${environment.name}` : null;
   });
 
@@ -72,7 +82,7 @@ export class DeviationDetail implements OnInit {
    * cleared and the alert is loaded again.
    */
   ngOnInit(): void {
-    if (!this.environments.loaded()) void this.environments.loadEnvironments();
+    if (!this.store.environmentsLoaded()) void this.store.loadEnvironments();
     this.store.loadDevices();
     this.route.paramMap.pipe(takeUntilDestroyed(this.destroy)).subscribe((params) => {
       this.alertId = Number(params.get('id')) || 0;
@@ -114,6 +124,8 @@ export class DeviationDetail implements OnInit {
   protected resolve(): void {
     this.resolutionForm.markAllAsTouched();
     if (this.resolutionForm.invalid) return;
-    this.store.resolveAlert(this.alertId, { resolutionNotes: this.resolutionForm.getRawValue().resolutionNotes.trim() });
+    this.store.resolveAlert(this.alertId, {
+      resolutionNotes: this.resolutionForm.getRawValue().resolutionNotes.trim(),
+    });
   }
 }

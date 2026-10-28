@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AbstractControl, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -6,7 +6,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { InventoryStore } from '../../../application/inventory.store';
 import { InventoryUnit } from '../../../domain/model/raw-material.entity';
 import { MAX_STOCK } from '../../../domain/model/stock-limits';
@@ -17,7 +17,6 @@ import { stockQuantityValidator } from '../../../../shared/presentation/validato
 @Component({
   selector: 'app-register-material',
   standalone: true,
-  providers: [InventoryStore],
   imports: [
     ReactiveFormsModule,
     RouterLink,
@@ -25,9 +24,10 @@ import { stockQuantityValidator } from '../../../../shared/presentation/validato
     MatIconModule,
     MatInputModule,
     MatSelectModule,
-    TranslateModule,
+    TranslatePipe,
   ],
   templateUrl: './register-material.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './register-material.css',
 })
 /** Registers a raw material in the environment taken from the route (US35). */
@@ -57,7 +57,9 @@ export class RegisterMaterial implements OnInit {
   });
 
   constructor() {
-    this.unit.valueChanges.pipe(takeUntilDestroyed()).subscribe(() => this.form.controls.minimumStock.updateValueAndValidity());
+    this.unit.valueChanges
+      .pipe(takeUntilDestroyed())
+      .subscribe(() => this.form.controls.minimumStock.updateValueAndValidity());
   }
 
   ngOnInit() {

@@ -1,13 +1,12 @@
-import { Component, OnInit, computed, inject } from '@angular/core';
+import { Component, OnInit, computed, inject, ChangeDetectionStrategy } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { TrackingStore } from '../../../application/tracking.store';
-import { EnvironmentStore } from '../../../../laboratory/application/environment.store';
-import { EnvironmentSelector } from '../../../../laboratory/presentation/components/environment-selector/environment-selector';
+import { EnvironmentSelector } from '../../../../shared/presentation/components/environment-selector/environment-selector';
 import { ThresholdEditor } from '../../components/threshold-editor/threshold-editor';
 import { ActuationRulesEditor } from '../../components/actuation-rules-editor/actuation-rules-editor';
 import { configurableMetricsOf, MonitoredMetric } from '../../../domain/model/monitored-metric';
@@ -54,7 +53,7 @@ const NO_METRICS: MonitoredMetric[] = [];
   imports: [
     DatePipe,
     RouterLink,
-    TranslateModule,
+    TranslatePipe,
     MatIconModule,
     MatProgressSpinnerModule,
     EnvironmentSelector,
@@ -62,6 +61,7 @@ const NO_METRICS: MonitoredMetric[] = [];
     ActuationRulesEditor,
   ],
   templateUrl: './environmental-profiles.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: [
     '../../../../shared/presentation/styles/operations-page.css',
     '../tracking-views.css',
@@ -73,11 +73,6 @@ export class EnvironmentalProfiles implements OnInit {
    * thresholds and actuation rule state management.
    */
   protected readonly store = inject(TrackingStore);
-
-  /**
-   * Store responsible for environment selection and user preferences.
-   */
-  protected readonly environments = inject(EnvironmentStore);
 
   /**
    * Metrics configurable for environmental devices.
@@ -121,10 +116,10 @@ export class EnvironmentalProfiles implements OnInit {
    * its active environmental profiles.
    */
   async ngOnInit(): Promise<void> {
-    if (!this.environments.loaded()) await this.environments.loadEnvironments();
+    if (!this.store.environmentsLoaded()) await this.store.loadEnvironments();
     const current =
       this.store.environmentId() ??
-      this.environments.preferredEnvironment(undefined, 'tracking')?.id ??
+      this.store.preferredEnvironmentId() ??
       null;
     if (current !== null) await this.changeEnvironment(current);
   }
@@ -141,7 +136,7 @@ export class EnvironmentalProfiles implements OnInit {
    * @param environmentId Identifier of the selected environment.
    */
   protected async changeEnvironment(environmentId: number): Promise<void> {
-    this.environments.rememberEnvironment(environmentId, 'tracking');
+    this.store.rememberEnvironment(environmentId);
     if (this.store.environmentId() !== environmentId || !this.store.devices().length) {
       await this.store.selectEnvironment(environmentId);
     }

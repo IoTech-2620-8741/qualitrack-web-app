@@ -1,20 +1,8 @@
-import {
-  Component,
-  OnInit,
-  inject,
-  signal
-} from '@angular/core';
-import {
-  ActivatedRoute,
-  Router,
-  RouterLink
-} from '@angular/router';
-import { firstValueFrom } from 'rxjs';
+import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
-import { TranslateModule } from '@ngx-translate/core';
-import { BatchApi } from '../../../infrastructure/batch-api';
-import { batchError } from '../../../application/batch.store';
-import { IamStore } from '../../../../iam/application/iam.store';
+import { TranslatePipe } from '@ngx-translate/core';
+import { BatchStore, batchError } from '../../../application/batch.store';
 
 /**
  * Opens a batch from links that only know its identifier (dashboard, inventory traceability, reports).
@@ -28,7 +16,7 @@ import { IamStore } from '../../../../iam/application/iam.store';
 @Component({
   selector: 'app-batch-redirect',
   standalone: true,
-  imports: [RouterLink, MatIconModule, TranslateModule],
+  imports: [RouterLink, MatIconModule, TranslatePipe],
   template: `
     <main class="operations-page">
       @if (message(); as key) {
@@ -39,11 +27,11 @@ import { IamStore } from '../../../../iam/application/iam.store';
       }
     </main>
   `,
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: '../../../../shared/presentation/styles/operations-page.css',
 })
 export class BatchRedirect implements OnInit {
-  private readonly api = inject(BatchApi);
-  private readonly iam = inject(IamStore);
+  private readonly store = inject(BatchStore);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
 
@@ -58,9 +46,7 @@ export class BatchRedirect implements OnInit {
   async ngOnInit(): Promise<void> {
     const batchId = Number(this.route.snapshot.paramMap.get('id'));
     try {
-      const batch = (
-        await firstValueFrom(this.api.getBatches(this.iam.requireLaboratoryId()))
-      ).find((item) => item.id === batchId);
+      const batch = await this.store.findBatch(batchId);
       if (!batch) this.message.set('batches.errors.not-found');
       else if (!batch.detailLink) this.message.set('batches.no-environment');
       else await this.router.navigate(batch.detailLink, { replaceUrl: true });

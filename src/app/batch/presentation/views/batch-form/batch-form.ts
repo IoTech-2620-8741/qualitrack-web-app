@@ -1,35 +1,25 @@
-import {
-  Component,
-  DestroyRef,
-  OnInit,
-  inject
-} from '@angular/core';
+import { Component, DestroyRef, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import {
-  AbstractControl,
-  FormBuilder,
-  ReactiveFormsModule,
-  Validators
-} from '@angular/forms';
-import {
-  ActivatedRoute,
-  Router,
-  RouterLink
-} from '@angular/router';
+import { AbstractControl, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { todayInLima } from '../../../../shared/presentation/utils/local-date';
 import { codeValidator } from '../../../../shared/presentation/validators/code.validator';
-import { addYears, maxDateValidator, MIN_DATE, minDateValidator } from '../../../../shared/presentation/validators/date.validators';
+import {
+  addYears,
+  maxDateValidator,
+  MIN_DATE,
+  minDateValidator,
+} from '../../../../shared/presentation/validators/date.validators';
 import { notBlankValidator } from '../../../../shared/presentation/validators/not-blank.validator';
 import { stockQuantityValidator } from '../../../../shared/presentation/validators/stock-quantity.validator';
 import { BatchStore } from '../../../application/batch.store';
-import { ProductStore } from '../../../application/product.store';
 import { IamStore } from '../../../../iam/application/iam.store';
-import { BatchPath } from '../../../infrastructure/batch-api-endpoint';
+import { BatchPath } from '../../../domain/model/batch-path';
 
 /**
  * Registers a manufacturing batch of the product taken from the route.
@@ -43,7 +33,6 @@ import { BatchPath } from '../../../infrastructure/batch-api-endpoint';
 @Component({
   selector: 'app-batch-form',
   standalone: true,
-  providers: [ProductStore],
   imports: [
     ReactiveFormsModule,
     RouterLink,
@@ -51,14 +40,14 @@ import { BatchPath } from '../../../infrastructure/batch-api-endpoint';
     MatIconModule,
     MatInputModule,
     MatSelectModule,
-    TranslateModule,
+    TranslatePipe,
   ],
   templateUrl: './batch-form.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: '../../../../shared/presentation/styles/operations-page.css',
 })
 export class BatchForm implements OnInit {
   protected readonly store = inject(BatchStore);
-  protected readonly products = inject(ProductStore);
   private readonly iam = inject(IamStore);
   private readonly fb = inject(FormBuilder);
   private readonly route = inject(ActivatedRoute);
@@ -105,7 +94,10 @@ export class BatchForm implements OnInit {
    * optional notes (up to 500 characters).
    */
   protected readonly form = this.fb.nonNullable.group({
-    batchNumber: ['', [Validators.required, notBlankValidator, codeValidator, Validators.maxLength(50)]],
+    batchNumber: [
+      '',
+      [Validators.required, notBlankValidator, codeValidator, Validators.maxLength(50)],
+    ],
     quantity: [
       1,
       [
@@ -140,7 +132,7 @@ export class BatchForm implements OnInit {
       productId: Number(params.get('productId')),
     };
     this.store.clearMessages();
-    void this.products.loadProduct(this.path.environmentId, this.path.productId);
+    void this.store.loadProduct(this.path.environmentId, this.path.productId);
   }
 
   /**

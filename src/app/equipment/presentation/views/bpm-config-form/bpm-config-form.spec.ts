@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ActivatedRoute, Router, provideRouter } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { provideTranslateService } from '@ngx-translate/core';
 import { EquipmentStore } from '../../../application/equipment.store';
 import { BpmConfigForm } from './bpm-config-form';
 
@@ -11,8 +11,9 @@ describe('BpmConfigForm', () => {
 
   function create() {
     TestBed.configureTestingModule({
-      imports: [BpmConfigForm, TranslateModule.forRoot()],
+      imports: [BpmConfigForm],
       providers: [
+        provideTranslateService(),
         provideHttpClient(),
         provideHttpClientTesting(),
         provideRouter([]),

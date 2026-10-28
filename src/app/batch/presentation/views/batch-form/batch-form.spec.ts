@@ -2,12 +2,11 @@ import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ActivatedRoute, provideRouter } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { provideTranslateService } from '@ngx-translate/core';
 import { IamStore } from '../../../../iam/application/iam.store';
 import { addYears } from '../../../../shared/presentation/validators/date.validators';
 import { todayInLima } from '../../../../shared/presentation/utils/local-date';
 import { BatchStore } from '../../../application/batch.store';
-import { ProductStore } from '../../../application/product.store';
 import { BatchForm } from './batch-form';
 
 describe('BatchForm', () => {
@@ -15,17 +14,17 @@ describe('BatchForm', () => {
 
   function create() {
     TestBed.configureTestingModule({
-      imports: [BatchForm, TranslateModule.forRoot()],
+      imports: [BatchForm],
       providers: [
+        provideTranslateService(),
         provideHttpClient(),
         provideHttpClientTesting(),
         provideRouter([]),
-        ProductStore,
         { provide: IamStore, useValue: { requireLaboratoryId: () => 1, canManageQuality: () => true, canOperate: () => true } },
         { provide: ActivatedRoute, useValue: { snapshot: { paramMap: { get: () => '3' } } } },
       ],
     });
-    vi.spyOn(TestBed.inject(ProductStore), 'loadProduct').mockResolvedValue(undefined as never);
+    vi.spyOn(TestBed.inject(BatchStore), 'loadProduct').mockResolvedValue(undefined as never);
     vi.spyOn(TestBed.inject(BatchStore), 'createBatch').mockImplementation(createBatch);
     const fixture = TestBed.createComponent(BatchForm);
     fixture.detectChanges();

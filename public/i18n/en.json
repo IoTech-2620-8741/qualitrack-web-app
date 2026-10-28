@@ -1635,6 +1635,9 @@
     },
     "no-account": "No account",
     "detail": {
+      "view-profile": "View profile",
+      "view-activity": "View activity",
+      "back": "Back to staff detail",
       "load-error": "The staff member could not be loaded.",
       "activities": "Registered activities",
       "last-activity": "Last activity",

@@ -21,13 +21,6 @@ package "iam.application" {
   }
 }
 
-package "laboratory" {
-  class EnvironmentStore {
-    +environments: Signal<Environment[]>
-    +loadEnvironments()
-  }
-}
-
 package "equipment.domain.model" {
   class Equipment {
     +id: number
@@ -69,6 +62,17 @@ package "equipment.domain.model" {
   interface ChangeEquipmentStatusCommand
   interface RegisterMaintenanceCommand
   interface ConfigureBpmCommand
+  class InstallationEnvironment {
+    +id / code / name
+    +usage: string | null
+  }
+  class MaintenanceTechnician {
+    +id / fullName / role
+    +active: boolean
+    +accessRole: string | null
+    +userId: number | null
+    +assignable: boolean
+  }
 }
 
 Equipment ..|> BaseEntity
@@ -93,6 +97,8 @@ package "equipment.infrastructure" {
     +registerMaintenance(lab, environmentId, equipmentId, request)
     +getBpmConfig(lab, equipmentId)
     +configureBpm(lab, request)
+    +getEnvironments(lab)
+    +getTechnicians(lab)
   }
   class EquipmentApiEndpoint
   class MaintenanceApiEndpoint
@@ -100,6 +106,10 @@ package "equipment.infrastructure" {
   class EquipmentAssembler
   class MaintenanceAssembler
   class BpmConfigAssembler
+  class InstallationEnvironmentApiEndpoint
+  class InstallationEnvironmentAssembler
+  class MaintenanceTechnicianApiEndpoint
+  class MaintenanceTechnicianAssembler
 }
 
 EquipmentApi --|> BaseApi
@@ -113,6 +123,16 @@ EquipmentApiEndpoint --> EquipmentAssembler
 MaintenanceApiEndpoint --> MaintenanceAssembler
 BpmConfigApiEndpoint --> BpmConfigAssembler
 EquipmentAssembler ..|> BaseAssembler
+EquipmentApi --> InstallationEnvironmentApiEndpoint
+EquipmentApi --> MaintenanceTechnicianApiEndpoint
+InstallationEnvironmentApiEndpoint --> InstallationEnvironmentAssembler
+InstallationEnvironmentAssembler ..> InstallationEnvironment
+MaintenanceTechnicianApiEndpoint --> MaintenanceTechnicianAssembler
+MaintenanceTechnicianAssembler ..> MaintenanceTechnician
+note bottom of InstallationEnvironmentApiEndpoint
+  Laboratory -> Equipment (Customer/Supplier):
+  GET /laboratories/{id}/environments and /staff in Equipment's own models.
+end note
 MaintenanceAssembler ..|> BaseAssembler
 BpmConfigAssembler ..|> BaseAssembler
 note right of EquipmentApiEndpoint
@@ -148,6 +168,9 @@ package "equipment.application" {
     +changeStatus(equipment, command)
     +loadMaintenanceHistory(equipment)
     +registerMaintenance(equipment, command)
+    +environments: Signal<InstallationEnvironment[]>
+    +loadEnvironments(): Promise<void>
+    +loadTechnicians(): Promise<MaintenanceTechnician[]>
   }
   class equipmentError <<function>>
 }
@@ -168,14 +191,10 @@ package "equipment.presentation" {
 }
 
 EquipmentList --> EquipmentStore
-EquipmentList --> EnvironmentStore
 EquipmentForm --> EquipmentStore
 DeviceForm --> EquipmentStore
-DeviceForm --> EnvironmentStore
 EquipmentDetail --> EquipmentStore
-EquipmentDetail --> EnvironmentStore
 MaintenanceForm --> EquipmentStore
-MaintenanceForm --> LaboratoryApi
 MaintenanceForm --> IamStore
 note right of MaintenanceForm
   The technician is chosen from the active operators of the laboratory;
@@ -191,6 +210,11 @@ note bottom of EquipmentRoutes
   /equipments/equipment-detail/:id (location, status change, BPM, maintenance)
   /equipments/maintenance-form/:id, /equipments/bpm-config-form/:id
   /equipments/maintenance-history/:id redirects to the detail
+end note
+
+note left of EquipmentRoutes
+  Source: equipment/presentation/equipment.routes.ts
+  Public paths and guards remain unchanged.
 end note
 
 @enduml

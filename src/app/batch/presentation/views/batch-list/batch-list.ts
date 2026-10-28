@@ -3,19 +3,17 @@ import {
   OnInit,
   computed,
   inject,
-  signal
+  signal,
+  ChangeDetectionStrategy,
 } from '@angular/core';
-import {
-  DatePipe,
-  DecimalPipe
-} from '@angular/common';
+import { DatePipe, DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { BatchStore } from '../../../application/batch.store';
 import { BatchStatus } from '../../../domain/model/batch.entity';
 import { IamStore } from '../../../../iam/application/iam.store';
@@ -41,9 +39,10 @@ import { IamStore } from '../../../../iam/application/iam.store';
     MatIconModule,
     MatInputModule,
     MatSelectModule,
-    TranslateModule,
+    TranslatePipe,
   ],
   templateUrl: './batch-list.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: '../../../../shared/presentation/styles/operations-page.css',
 })
 export class BatchList implements OnInit {

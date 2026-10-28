@@ -1,4 +1,11 @@
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  computed,
+  inject,
+  signal,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -15,8 +22,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 
 import { EquipmentStore } from '../../../application/equipment.store';
 import { IamStore } from '../../../../iam/application/iam.store';
-import { LaboratoryApi } from '../../../../laboratory/infrastructure/laboratory-api';
-import { StaffMember } from '../../../../laboratory/domain/model/staff-member.entity';
+import { MaintenanceTechnician } from '../../../domain/model/maintenance-technician.entity';
 import { localIsoDate, todayInLima } from '../../../../shared/presentation/utils/local-date';
 import { MIN_DATE } from '../../../../shared/presentation/validators/date.validators';
 import { notBlankValidator } from '../../../../shared/presentation/validators/not-blank.validator';
@@ -54,6 +60,7 @@ function dateOf(isoDate: string): Date {
     TranslatePipe,
   ],
   templateUrl: './maintenance-form.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './maintenance-form.css',
 })
 export class MaintenanceForm implements OnInit {
@@ -63,10 +70,9 @@ export class MaintenanceForm implements OnInit {
 
   protected readonly store = inject(EquipmentStore);
   private readonly iam = inject(IamStore);
-  private readonly laboratoryApi = inject(LaboratoryApi);
 
   /** Staff of the laboratory that can perform maintenance: active operators with an account. */
-  private readonly staff = signal<StaffMember[]>([]);
+  private readonly staff = signal<MaintenanceTechnician[]>([]);
   protected readonly staffLoaded = signal(false);
 
   /**
@@ -90,7 +96,13 @@ export class MaintenanceForm implements OnInit {
   /** Earliest date accepted. */
   protected readonly minDate = dateOf(MIN_DATE);
 
-  protected readonly maintenanceTypes = ['PREVENTIVE', 'CORRECTIVE', 'CALIBRATION', 'INSPECTION', 'OTHER'];
+  protected readonly maintenanceTypes = [
+    'PREVENTIVE',
+    'CORRECTIVE',
+    'CALIBRATION',
+    'INSPECTION',
+    'OTHER',
+  ];
 
   protected readonly form = this.fb.nonNullable.group({
     maintenanceDate: [dateOf(todayInLima()), Validators.required],
@@ -108,8 +120,8 @@ export class MaintenanceForm implements OnInit {
     if (!Number.isSafeInteger(id) || id <= 0) return;
     this.equipmentId.set(id);
     if (!this.equipment()) void this.store.loadEquipmentById(id);
-    this.laboratoryApi.getStaff(this.iam.requireLaboratoryId()).subscribe({
-      next: (staff) => {
+    this.store.loadTechnicians().then(
+      (staff) => {
         this.staff.set(staff);
         this.staffLoaded.set(true);
         const technicians = this.technicians();
@@ -117,8 +129,8 @@ export class MaintenanceForm implements OnInit {
           this.form.controls.technicianStaffId.setValue(technicians[0].id);
         }
       },
-      error: () => this.staffLoaded.set(true),
-    });
+      () => this.staffLoaded.set(true),
+    );
   }
 
   protected async onSave(): Promise<void> {
