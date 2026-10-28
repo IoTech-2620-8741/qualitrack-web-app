@@ -179,6 +179,17 @@ export class LaboratoryStore {
   }
 
   /**
+   * Reads one staff member of a laboratory.
+   *
+   * @param laboratoryId - Numeric identifier of the laboratory
+   * @param staffId - Numeric identifier of the staff member
+   * @returns Observable emitting the staff member
+   */
+  staffMember(laboratoryId: number, staffId: number): Observable<StaffMember> {
+    return this.api.getStaffMember(laboratoryId, staffId);
+  }
+
+  /**
    * Registers a new staff member under a laboratory; the platform creates their account.
    *
    * @remarks
