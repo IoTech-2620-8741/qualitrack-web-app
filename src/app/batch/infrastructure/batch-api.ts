@@ -17,6 +17,8 @@ import { BatchApiEndpoint } from './batch-api-endpoint';
 import { BatchPath } from '../domain/model/batch-path';
 import { ProductApiEndpoint } from './product-api-endpoint';
 import { RawMaterialUsageApiEndpoint } from './raw-material-usage-api-endpoint';
+import { ProductionEquipmentApiEndpoint } from './production-equipment-api-endpoint';
+import { ProductionEquipment } from '../domain/model/production-equipment.entity';
 import {
   CreateBatchRequest,
   RejectBatchRequest,
@@ -48,6 +50,7 @@ export class BatchApi extends BaseApi {
   private readonly batchEndpoint: BatchApiEndpoint;
   private readonly productEndpoint: ProductApiEndpoint;
   private readonly usageEndpoint: RawMaterialUsageApiEndpoint;
+  private readonly equipmentEndpoint: ProductionEquipmentApiEndpoint;
 
   /**
    * Creates a new BatchApi instance.
@@ -59,6 +62,17 @@ export class BatchApi extends BaseApi {
     this.batchEndpoint = new BatchApiEndpoint(http);
     this.productEndpoint = new ProductApiEndpoint(http);
     this.usageEndpoint = new RawMaterialUsageApiEndpoint(http);
+    this.equipmentEndpoint = new ProductionEquipmentApiEndpoint(http);
+  }
+
+  /**
+   * Retrieves the equipment and IoT devices of a laboratory, as Product Batch Management uses them.
+   *
+   * @param laboratoryId - The ID of the laboratory.
+   * @returns An Observable of the equipment.
+   */
+  getProductionEquipment(laboratoryId: number): Observable<ProductionEquipment[]> {
+    return this.equipmentEndpoint.getEquipment(laboratoryId);
   }
 
   /**

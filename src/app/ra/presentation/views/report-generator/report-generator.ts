@@ -17,7 +17,6 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { RaStore } from '../../../application/ra.store';
 import { IamStore } from '../../../../iam/application/iam.store';
 import { BatchStore } from '../../../../batch/application/batch.store';
-import { EquipmentStore } from '../../../../equipment/application/equipment.store';
 import { EnvironmentStore } from '../../../../laboratory/application/environment.store';
 import { localIsoDate, todayInLima } from '../../../../shared/presentation/utils/local-date';
 import { MIN_DATE } from '../../../../shared/presentation/validators/date.validators';
@@ -69,14 +68,19 @@ import { ALL_ENVIRONMENTS } from '../../../domain/model/indicator-period';
 })
 export class ReportGeneratorComponent implements OnInit {
   protected readonly batchStore = inject(BatchStore);
-  protected readonly equipmentStore = inject(EquipmentStore);
   protected readonly environments = inject(EnvironmentStore);
   protected readonly ALL_ENVIRONMENTS = ALL_ENVIRONMENTS;
 
   /** Equipment located in an environment: its log report belongs to that environment (TS86). */
   protected readonly locatedEquipment = computed(() =>
-    this.equipmentStore.equipmentList().filter((equipment) => equipment.environmentId !== null),
+    (this.store.overviewEquipment().data ?? []).filter((equipment) => equipment.environmentId !== null),
   );
+
+  /** Whether the equipment of the laboratory is being read. */
+  protected readonly equipmentLoading = computed(() => this.store.overviewEquipment().status === 'loading');
+
+  /** Whether the equipment of the laboratory could not be read. */
+  protected readonly equipmentFailed = computed(() => this.store.overviewEquipment().status === 'error');
 
   ngOnInit(): void {
     this.store.clearMessages();
@@ -92,7 +96,7 @@ export class ReportGeneratorComponent implements OnInit {
 
   protected reloadEquipment(): void {
     this.equipmentForm.equipmentId = null;
-    this.equipmentStore.loadEquipment(this.currentLaboratoryId);
+    this.store.loadEquipment();
   }
 
   protected get hasSelectedBatch(): boolean {
@@ -110,12 +114,12 @@ export class ReportGeneratorComponent implements OnInit {
 
   protected get hasSelectedEquipment(): boolean {
     return (
-      !this.equipmentStore.isLoading() &&
-      !this.equipmentStore.error() &&
+      !this.equipmentLoading() &&
+      !this.equipmentFailed() &&
       this.locatedEquipment().some(
         (equipment) =>
           equipment.id === this.equipmentForm.equipmentId &&
-          equipment.labId === this.currentLaboratoryId,
+          equipment.laboratoryId === this.currentLaboratoryId,
       )
     );
   }

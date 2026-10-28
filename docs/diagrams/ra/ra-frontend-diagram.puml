@@ -26,16 +26,6 @@ package "iam.application" {
   }
 }
 
-package "equipment" {
-  class EquipmentStore {
-    +equipmentList
-    +loadEquipment(labId: number): void
-  }
-  class EquipmentApi {
-    +getEquipment(laboratoryId: number)
-  }
-}
-
 package "batch.application" {
   class BatchStore {
     +batches
@@ -369,7 +359,6 @@ package "ra.infrastructure" {
 package "ra.application" {
   class RaStore {
     -api: RaApi
-    -equipmentApi: EquipmentApi
     -_dashboard
     -_deviationTrends
     -_devices
@@ -505,7 +494,7 @@ AuditLogEntryResource ..|> BaseResource
 AuditLogEntriesResponse ..|> BaseResponse
 
 RaStore --> RaApi
-RaStore --> EquipmentApi : device names
+RaStore ..> OverviewEquipment : device names and equipment report
 RaStore --> IamStore
 
 RaStore ..> KpiDashboard
@@ -569,7 +558,7 @@ DeviationTrendChartComponent ..> LastDays
 ReportGeneratorComponent --> RaStore
 ReportGeneratorComponent --> IamStore
 ReportGeneratorComponent --> BatchStore
-ReportGeneratorComponent --> EquipmentStore
+ReportGeneratorComponent --> RaStore : loadEquipment()
 ReportGeneratorComponent --> EnvironmentStore
 ReportGeneratorComponent ..> LocalIsoDate : report days
 

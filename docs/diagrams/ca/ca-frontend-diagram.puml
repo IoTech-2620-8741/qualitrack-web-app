@@ -38,13 +38,11 @@ package "laboratory" {
   }
 }
 
-package "equipment.infrastructure" {
-  class EquipmentApi {
-    +getEquipment(labId)
-  }
-}
-
 package "ca.domain.model" {
+  class AlertDevice {
+    +id: number
+    +name: string
+  }
   class DeviationAlert {
     +id: number
     +laboratoryId: number | null
@@ -175,6 +173,10 @@ package "ca.application" {
 }
 
 package "ca.infrastructure" {
+  class AlertDeviceApiEndpoint {
+    +getDevices(laboratoryId)
+  }
+  class AlertDeviceAssembler
   class CaApi {
     -_alertEndpoint: AlertApiEndpoint
     -_complianceEventEndpoint: ComplianceEventApiEndpoint
@@ -381,7 +383,7 @@ NotificationPreferenceResource ..|> BaseResource
 NotificationPreferencesResponse ..|> BaseResponse
 
 CaStore --> CaApi
-CaStore --> EquipmentApi : device names
+CaStore ..> AlertDevice : device names
 CaStore --> IamStore
 CaStore ..> alertError
 alertError ..> ApiError
@@ -485,4 +487,7 @@ note bottom of CaRoutes
   /alerts/notification-settings redirects to /profile.
 end note
 
+CaApi --> AlertDeviceApiEndpoint
+AlertDeviceApiEndpoint --> AlertDeviceAssembler
+AlertDeviceAssembler ..> AlertDevice
 @enduml

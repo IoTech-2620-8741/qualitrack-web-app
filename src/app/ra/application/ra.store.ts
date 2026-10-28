@@ -3,8 +3,6 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Observable, Subject, Subscription as Request, from, map, mergeMap, takeUntil, toArray } from 'rxjs';
 import { RaApi } from '../infrastructure/ra-api';
 import { IamStore } from '../../iam/application/iam.store';
-import { EquipmentApi } from '../../equipment/infrastructure/equipment-api';
-import { Equipment } from '../../equipment/domain/model/equipment.entity';
 
 import { KpiDashboard } from '../domain/model/kpi-dashboard.entity';
 import { DeviationTrend } from '../domain/model/deviation-trend.entity';
@@ -57,7 +55,6 @@ export class RaStore {
    * Infrastructure API facade for Reporting and Analysis operations.
    */
   private readonly api = inject(RaApi);
-  private readonly equipmentApi = inject(EquipmentApi);
   private readonly iam = inject(IamStore);
   private readonly destroyRef = inject(DestroyRef);
   private readonly reloadDashboard = new Subject<void>();
@@ -73,11 +70,6 @@ export class RaStore {
    * Deviation indicators loaded for the selected environment and period.
    */
   private readonly _deviationTrends = signal<DeviationTrend[]>([]);
-
-  /**
-   * Equipment of the laboratory, used to show the name of the device of each indicator.
-   */
-  private readonly _devices = signal<Equipment[]>([]);
 
   /**
    * Current audit log entries loaded from the backend.
@@ -344,16 +336,25 @@ export class RaStore {
    * @param deviceId - Identifier of the environmental device or container monitor
    */
   deviceName(deviceId: number): string | null {
-    return this._devices().find((device) => device.id === deviceId)?.name ?? null;
+    return this._overviewEquipment().data?.find((device) => device.id === deviceId)?.name ?? null;
   }
 
   /** Loads the equipment of the laboratory once, to show the name of the device of each indicator. */
   loadDevices(): void {
-    if (this._devices().length) return;
-    this.equipmentApi
-      .getEquipment(this.iam.requireLaboratoryId())
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({ next: (devices) => this._devices.set(devices), error: () => this._devices.set([]) });
+    const status = this._overviewEquipment().status;
+    if (status === 'idle' || status === 'error') this.loadEquipment();
+  }
+
+  /**
+   * Reads the equipment of the laboratory again: the names of the devices and the equipment of the equipment log
+   * report (Equipment → Reporting & Audit, through {@link RaApi}).
+   */
+  loadEquipment(): void {
+    const laboratoryId = this.iam.requireLaboratoryId();
+    this.loadOverview(
+      this._overviewEquipment,
+      this.api.getOverviewEquipment(laboratoryId).pipe(map((items) => items.filter((item) => item.laboratoryId === laboratoryId))),
+    );
   }
 
   /**

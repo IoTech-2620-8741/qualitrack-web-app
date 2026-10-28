@@ -32,17 +32,6 @@ package "laboratory" {
   }
 }
 
-package "equipment" {
-  class EquipmentApi {
-    +getEquipment(labId)
-  }
-  class Equipment {
-    +deviceType: IotDeviceType | null
-    +environmentId: number | null
-    +status: EquipmentStatus
-  }
-}
-
 package "batch.infrastructure" {
   class BatchApi {
     +getRawMaterialUsages(lab, environmentId, rawMaterialId)
@@ -51,6 +40,10 @@ package "batch.infrastructure" {
 }
 
 package "inventory.domain.model" {
+  class StorageContainer {
+    +id / name / serialNumber / status
+    +environmentId: number | null
+  }
   class RawMaterial {
     +id: number
     +laboratoryId: number
@@ -91,6 +84,10 @@ RawMaterialBatch ..|> BaseEntity
 InventoryMovement ..|> BaseEntity
 
 package "inventory.infrastructure" {
+  class StorageContainerApiEndpoint {
+    +getContainers(laboratoryId, environmentId)
+  }
+  class StorageContainerAssembler
   class InventoryApi {
     +materials(lab, environmentId, stockStatus?)
     +material(lab, environmentId, id)
@@ -146,9 +143,9 @@ package "inventory.application" {
     +affectedBatches: Signal<number[]>
     +canReview: Signal<boolean>
     +canOperate: Signal<boolean>
-    +containers: Signal<Equipment[]>
+    +containers: Signal<StorageContainer[]>
     +environmentUsage: Signal<EnvironmentUsage | null>
-    +availableContainers: Signal<Equipment[]>
+    +availableContainers: Signal<StorageContainer[]>
     +storesInContainers: Signal<boolean>
     +load(environmentId, id?): Promise<boolean>
     +loadLowStock()
@@ -167,9 +164,8 @@ package "inventory.application" {
 InventoryStore --> InventoryApi
 InventoryStore --> BatchApi
 InventoryStore --> IamStore
-InventoryStore --> EquipmentApi : container monitors
 InventoryStore --> LaboratoryApi : environment usage
-InventoryStore ..> Equipment
+InventoryStore ..> StorageContainer
 
 package "inventory.presentation" {
   class InventoryHome
@@ -203,4 +199,7 @@ note bottom of RawMaterial
   Laboratory legacy material and Inventory material have separate IDs.
 end note
 
+InventoryApi --> StorageContainerApiEndpoint
+StorageContainerApiEndpoint --> StorageContainerAssembler
+StorageContainerAssembler ..> StorageContainer
 @enduml
