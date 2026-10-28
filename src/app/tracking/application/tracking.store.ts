@@ -11,6 +11,7 @@ import { MonitoredDevice } from '../domain/model/monitored-device.entity';
 import { MonitoredEnvironment } from '../domain/model/monitored-environment.entity';
 import { IamStore } from '../../iam/application/iam.store';
 import { ApiError } from '../../shared/infrastructure/api-error';
+import { EnvironmentPreference } from '../../shared/infrastructure/environment-preference';
 
 /**
  * Represents the current state snapshot of an IoT device within an environment.
@@ -76,6 +77,8 @@ const RECENT_PERIOD_HOURS = 24;
 export class TrackingStore {
   private readonly api = inject(TrackingApi);
   private readonly iam = inject(IamStore);
+  /** Environment opened last time in the monitoring views of this browser. */
+  private readonly environmentPreference = new EnvironmentPreference('tracking');
 
   private readonly _environments = signal<MonitoredEnvironment[]>([]);
   private readonly _environmentsLoaded = signal(false);
@@ -143,12 +146,7 @@ export class TrackingStore {
    * @returns The environment identifier, or null when the laboratory has none
    */
   preferredEnvironmentId(): number | null {
-    const remembered = this.rememberedEnvironmentId();
-    return (
-      this._environments().find((environment) => environment.id === remembered)?.id ??
-      this._environments()[0]?.id ??
-      null
-    );
+    return this.environmentPreference.choose(this.iam.requireLaboratoryId(), this._environments())?.id ?? null;
   }
 
   /**
@@ -157,11 +155,7 @@ export class TrackingStore {
    * @param environmentId - The environment identifier
    */
   rememberEnvironment(environmentId: number): void {
-    try {
-      localStorage.setItem(this.environmentPreferenceKey(), String(environmentId));
-    } catch {
-      // Storage can be unavailable (private mode); the preference is optional.
-    }
+    this.environmentPreference.remember(this.iam.requireLaboratoryId(), environmentId);
   }
 
   /**
@@ -460,21 +454,6 @@ export class TrackingStore {
       environmentId,
       deviceId: device.deviceType === 'CONTAINER_MONITOR' ? device.id : null,
     };
-  }
-
-  /** Environment the user chose last time in Tracking, or null. */
-  private rememberedEnvironmentId(): number | null {
-    try {
-      const value = Number(localStorage.getItem(this.environmentPreferenceKey()));
-      return Number.isInteger(value) && value > 0 ? value : null;
-    } catch {
-      return null;
-    }
-  }
-
-  /** Storage key of the environment preference of Tracking in the laboratory of the session. */
-  private environmentPreferenceKey(): string {
-    return `qualitrack.environment.${this.iam.requireLaboratoryId()}.tracking`;
   }
 }
 
