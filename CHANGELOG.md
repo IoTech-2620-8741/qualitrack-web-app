@@ -7,7 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.0] - 2026-10-28
+
 ### Changed
+
+- Release: package and lockfile versions are now 2.0.0.
 
 - Tracking (tracking): monitoring, telemetry history, environmental profiles and both configuration editors now own their stylesheets, preserving responsive layouts and reading-state colors (#54).
 
