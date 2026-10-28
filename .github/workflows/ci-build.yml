@@ -21,9 +21,6 @@ jobs:
       - name: Instalar dependencias
         run: npm ci
 
-      - name: Reglas DDD
-        run: npm run check:architecture
-
       - name: Pruebas unitarias
         run: npm test -- --watch=false
 

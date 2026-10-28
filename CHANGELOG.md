@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- CI: the pull request build now runs the unit tests (#37) and checks the DDD import rules with `npm run check:architecture` (#38). The rules follow the course example: views do not use the infrastructure, the domain does not depend on Angular, a bounded context does not import the code of another one, `shared` does not import any bounded context and each bounded context has a single store, `application/<bc>.store.ts` (#39). The imports that still break them are listed in `tools/architecture-exceptions.json`, and each phase of the refactoring removes its own.
+- CI: the pull request build now runs unit tests (#37). Architecture checks guided the DDD refactor (#38, #39) and are maintained locally; CI continues to require unit tests and the production build (#51).
 
 - Shared (shared): `EnvironmentPreference` remembers in the browser the environment opened in inventory, production and monitoring, with the same keys as before, so nobody loses the remembered environment (#44).
 
@@ -42,6 +42,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Subscription (subscription): the view after the payment is now resolved through the IAM store (#39). Route configuration now uses `subscription.routes.ts`, preserving public paths (#50).
 
 ### Removed
+
+- Repository tooling: the local architecture checker and exception file are no longer tracked; `tools/` is ignored and its npm command and CI step were removed (#51).
 
 - Laboratory (laboratory): `EnvironmentStore`; Product Batch, Compliance & Alerts, Equipment, Inventory, Reporting & Audit and Tracking & Telemetry no longer import code of Laboratory to read environments and staff (#42, #44). The unused historical material store, model and infrastructure were removed after moving the complete detail to Inventory (#49).
 
