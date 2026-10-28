@@ -7,6 +7,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Tracking (tracking): monitoring, telemetry history, environmental profiles and both configuration editors now own their stylesheets, preserving responsive layouts and reading-state colors (#54).
+
+- Product Batch (batch): each product and batch view keeps its page, form and table styles in its own folder (#54).
+
+- Inventory (inventory): material catalogue, detail, registration and entry views own their stylesheets (#54).
+
+- Compliance & Alerts (ca): alert views, notification settings and the alert table keep their own styles (#54).
+
+- Reporting & Audit (ra): KPI, deviation trend and staff activity views have independent stylesheets (#54).
+
+- Profile (profile): personal and staff profile styles are self-contained (#54).
+
+- Laboratory (laboratory): staff detail owns its page styles (#54).
+
+- Equipment (equipment): the list and device registration view own their stylesheets (#54).
+
+- IAM (iam): password recovery and password change no longer use the sign-in stylesheet; onboarding styles live beside the view (#54).
+
+- Shared (shared): the environment selector has its own CSS file, and README documents stylesheet ownership for views and components (#54).
+
+### Removed
+
+- Presentation: the shared operations, Tracking and Reporting page stylesheets were retired after moving the applicable rules into their consuming views and components (#54).
+
 ## [1.3.0] - 2026-10-28
 
 ### Added
