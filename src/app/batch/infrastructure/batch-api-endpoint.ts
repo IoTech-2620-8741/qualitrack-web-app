@@ -197,7 +197,7 @@ export class BatchApiEndpoint extends BaseApiEndpoint<
         `${this.collection(path)}/${batchId}${environment.batchEquipmentUsagesEndpointPath}`,
         request,
       )
-      .pipe(catchError(this.handleError('Failed to register equipment usage')));
+      .pipe(map((resource) => new EquipmentUsage(resource)), catchError(this.handleError('Failed to register equipment usage')));
   }
 
   /**
@@ -218,7 +218,7 @@ export class BatchApiEndpoint extends BaseApiEndpoint<
         `${this.collection(path)}/${batchId}${environment.batchStaffParticipationsEndpointPath}`,
         request,
       )
-      .pipe(catchError(this.handleError('Failed to register staff participation')));
+      .pipe(map((resource) => new StaffParticipation(resource)), catchError(this.handleError('Failed to register staff participation')));
   }
 
   /**
@@ -260,7 +260,7 @@ export class BatchApiEndpoint extends BaseApiEndpoint<
         `${this.collection(path)}/${batchId}${environment.batchContainerAssignmentEndpointPath}`,
         request,
       )
-      .pipe(catchError(this.handleError(`Failed to store batch ${batchId} in the container`)));
+      .pipe(map((resource) => new BatchContainer(resource)), catchError(this.handleError(`Failed to store batch ${batchId} in the container`)));
   }
 
   /**
