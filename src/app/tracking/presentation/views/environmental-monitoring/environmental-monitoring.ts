@@ -7,7 +7,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { TrackingStore, DeviceSnapshot } from '../../../application/tracking.store';
-import { EnvironmentStore } from '../../../../laboratory/application/environment.store';
 import { EnvironmentSelector } from '../../../../shared/presentation/components/environment-selector/environment-selector';
 import { MonitoredMetric } from '../../../domain/model/monitored-metric';
 import { Measurement } from '../../../domain/model/measurement.entity';
@@ -69,12 +68,6 @@ export class EnvironmentalMonitoring implements OnInit {
   protected readonly store = inject(TrackingStore);
 
   /**
-   * Store responsible for managing laboratory environments
-   * and user environment preferences.
-   */
-  protected readonly environments = inject(EnvironmentStore);
-
-  /**
    * Metrics displayed for container monitoring devices.
    *
    * These metrics represent the main environmental conditions
@@ -96,10 +89,10 @@ export class EnvironmentalMonitoring implements OnInit {
    * the latest device snapshots for monitoring purposes.
    */
   async ngOnInit(): Promise<void> {
-    if (!this.environments.loaded()) await this.environments.loadEnvironments();
+    if (!this.store.environmentsLoaded()) await this.store.loadEnvironments();
     const current =
       this.store.environmentId() ??
-      this.environments.preferredEnvironment(undefined, 'tracking')?.id ??
+      this.store.preferredEnvironmentId() ??
       null;
     if (current !== null) await this.changeEnvironment(current);
   }
@@ -115,7 +108,7 @@ export class EnvironmentalMonitoring implements OnInit {
    * @param environmentId Identifier of the selected environment.
    */
   protected async changeEnvironment(environmentId: number): Promise<void> {
-    this.environments.rememberEnvironment(environmentId, 'tracking');
+    this.store.rememberEnvironment(environmentId);
     await this.store.selectEnvironment(environmentId);
     await this.store.loadSnapshots();
   }

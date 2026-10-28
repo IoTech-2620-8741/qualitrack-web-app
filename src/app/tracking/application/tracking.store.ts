@@ -7,8 +7,8 @@ import { ActuationEvent } from '../domain/model/actuation-event.entity';
 import { DeviceConnection } from '../domain/model/device-connection.entity';
 import { ActuationRule, EnvironmentalProfile, ThresholdInput } from '../domain/model/environmental-profile.entity';
 import { MonitoredMetric } from '../domain/model/monitored-metric';
-import { EquipmentApi } from '../../equipment/infrastructure/equipment-api';
-import { Equipment } from '../../equipment/domain/model/equipment.entity';
+import { MonitoredDevice } from '../domain/model/monitored-device.entity';
+import { MonitoredEnvironment } from '../domain/model/monitored-environment.entity';
 import { IamStore } from '../../iam/application/iam.store';
 import { ApiError } from '../../shared/infrastructure/api-error';
 
@@ -26,7 +26,7 @@ import { ApiError } from '../../shared/infrastructure/api-error';
  */
 
 export interface DeviceSnapshot {
-  device: Equipment;
+  device: MonitoredDevice;
   readings: Map<MonitoredMetric, Measurement>;
   /** Latest reading of MOTION with a detection (value 1) in the period. */
   lastMotion: Measurement | null;
@@ -47,7 +47,7 @@ export interface DeviceSnapshot {
  * This structure is used to provide historical analysis and monitoring capabilities.
  */
 export interface DeviceHistory {
-  device: Equipment;
+  device: MonitoredDevice;
   period: TelemetryPeriod;
   measurements: Measurement[];
   actuationEvents: ActuationEvent[];
@@ -75,11 +75,12 @@ const RECENT_PERIOD_HOURS = 24;
 @Injectable({ providedIn: 'root' })
 export class TrackingStore {
   private readonly api = inject(TrackingApi);
-  private readonly equipmentApi = inject(EquipmentApi);
   private readonly iam = inject(IamStore);
 
+  private readonly _environments = signal<MonitoredEnvironment[]>([]);
+  private readonly _environmentsLoaded = signal(false);
   private readonly _environmentId = signal<number | null>(null);
-  private readonly _devices = signal<Equipment[]>([]);
+  private readonly _devices = signal<MonitoredDevice[]>([]);
   private readonly _snapshots = signal<DeviceSnapshot[]>([]);
   private readonly _history = signal<DeviceHistory | null>(null);
   private readonly _environmentProfile = signal<EnvironmentalProfile | null>(null);
@@ -90,6 +91,12 @@ export class TrackingStore {
   private readonly _notice = signal<string | null>(null);
   private generation = 0;
 
+  /** Environments of the laboratory, to choose where the readings are shown. */
+  readonly environments = this._environments.asReadonly();
+  /** Whether the environments have been read at least once. */
+  readonly environmentsLoaded = this._environmentsLoaded.asReadonly();
+  /** Whether the laboratory has no environment yet. */
+  readonly environmentsEmpty = computed(() => this._environmentsLoaded() && this._environments().length === 0);
   readonly environmentId = this._environmentId.asReadonly();
   readonly devices = this._devices.asReadonly();
   readonly snapshots = this._snapshots.asReadonly();
@@ -119,6 +126,45 @@ export class TrackingStore {
   );
 
   /**
+   * Reads the environments of the laboratory (Customer/Supplier relation Laboratory → Tracking).
+   */
+  async loadEnvironments(): Promise<void> {
+    try {
+      this._environments.set(await firstValueFrom(this.api.getEnvironments(this.iam.requireLaboratoryId())));
+      this._environmentsLoaded.set(true);
+    } catch {
+      this._error.set('tracking.errors.load');
+    }
+  }
+
+  /**
+   * The environment to open: the last one the user chose in Tracking, or the first one of the laboratory.
+   *
+   * @returns The environment identifier, or null when the laboratory has none
+   */
+  preferredEnvironmentId(): number | null {
+    const remembered = this.rememberedEnvironmentId();
+    return (
+      this._environments().find((environment) => environment.id === remembered)?.id ??
+      this._environments()[0]?.id ??
+      null
+    );
+  }
+
+  /**
+   * Remembers the environment the user chose, for the next visit to Tracking.
+   *
+   * @param environmentId - The environment identifier
+   */
+  rememberEnvironment(environmentId: number): void {
+    try {
+      localStorage.setItem(this.environmentPreferenceKey(), String(environmentId));
+    } catch {
+      // Storage can be unavailable (private mode); the preference is optional.
+    }
+  }
+
+  /**
    * Selects an environment and retrieves its associated IoT devices.
    *
    * Execution flow:
@@ -141,15 +187,9 @@ export class TrackingStore {
     this.clearMessages();
     this._loading.set(true);
     try {
-      const laboratoryId = this.iam.requireLaboratoryId();
-      const equipment = await firstValueFrom(this.equipmentApi.getEquipment(laboratoryId));
+      const devices = await firstValueFrom(this.api.getDevices(this.iam.requireLaboratoryId(), environmentId));
       if (generation !== this.generation) return;
-      this._devices.set(
-        equipment.filter(
-          (item) =>
-            item.isIotDevice && item.labId === laboratoryId && item.environmentId === environmentId,
-        ),
-      );
+      this._devices.set(devices);
     } catch {
       if (generation === this.generation) this._error.set('tracking.errors.load');
     } finally {
@@ -196,7 +236,7 @@ export class TrackingStore {
    * This information supports historical analysis and device monitoring.
    */
   async loadHistory(
-    device: Equipment,
+    device: MonitoredDevice,
     period: TelemetryPeriod,
     metric: MonitoredMetric | null,
   ): Promise<void> {
@@ -361,7 +401,7 @@ export class TrackingStore {
    * without breaking the monitoring process.
    */
   private async snapshot(
-    device: Equipment,
+    device: MonitoredDevice,
     environmentId: number,
     period: TelemetryPeriod,
   ): Promise<DeviceSnapshot> {
@@ -414,12 +454,27 @@ export class TrackingStore {
    * The target contains the laboratory, environment,
    * and optional device identifier depending on the device type.
    */
-  private target(device: Equipment, environmentId: number): DeviceTarget {
+  private target(device: MonitoredDevice, environmentId: number): DeviceTarget {
     return {
       laboratoryId: this.iam.requireLaboratoryId(),
       environmentId,
       deviceId: device.deviceType === 'CONTAINER_MONITOR' ? device.id : null,
     };
+  }
+
+  /** Environment the user chose last time in Tracking, or null. */
+  private rememberedEnvironmentId(): number | null {
+    try {
+      const value = Number(localStorage.getItem(this.environmentPreferenceKey()));
+      return Number.isInteger(value) && value > 0 ? value : null;
+    } catch {
+      return null;
+    }
+  }
+
+  /** Storage key of the environment preference of Tracking in the laboratory of the session. */
+  private environmentPreferenceKey(): string {
+    return `qualitrack.environment.${this.iam.requireLaboratoryId()}.tracking`;
   }
 }
 

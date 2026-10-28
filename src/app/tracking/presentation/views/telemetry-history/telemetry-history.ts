@@ -22,7 +22,6 @@ import { BaseChartDirective } from 'ng2-charts';
 import { ChartData, ChartOptions } from 'chart.js';
 
 import { TrackingStore, recentPeriod } from '../../../application/tracking.store';
-import { EnvironmentStore } from '../../../../laboratory/application/environment.store';
 import { EnvironmentSelector } from '../../../../shared/presentation/components/environment-selector/environment-selector';
 import {
   MonitoredMetric,
@@ -77,7 +76,6 @@ export const MIN_HISTORY_START = '2020-01-01T00:00';
 })
 export class TelemetryHistory implements OnInit {
   protected readonly store = inject(TrackingStore);
-  protected readonly environments = inject(EnvironmentStore);
   private readonly translate = inject(TranslateService);
   private readonly route = inject(ActivatedRoute);
   private readonly language = toSignal(this.translate.onLangChange, { initialValue: null });
@@ -233,11 +231,11 @@ export class TelemetryHistory implements OnInit {
    * when available, otherwise uses the preferred environment.
    */
   async ngOnInit(): Promise<void> {
-    if (!this.environments.loaded()) await this.environments.loadEnvironments();
+    if (!this.store.environmentsLoaded()) await this.store.loadEnvironments();
     const query = this.route.snapshot.queryParamMap;
     const requested = Number(query.get('environmentId'));
     const requestedDevice = Number(query.get('deviceId'));
-    const linked = this.environments
+    const linked = this.store
       .environments()
       .some((environment) => environment.id === requested)
       ? requested
@@ -245,7 +243,7 @@ export class TelemetryHistory implements OnInit {
     const current =
       linked ??
       this.store.environmentId() ??
-      this.environments.preferredEnvironment(undefined, 'tracking')?.id ??
+      this.store.preferredEnvironmentId() ??
       null;
     if (current !== null)
       await this.changeEnvironment(
@@ -264,7 +262,7 @@ export class TelemetryHistory implements OnInit {
     environmentId: number,
     preferredDeviceId: number | null = null,
   ): Promise<void> {
-    this.environments.rememberEnvironment(environmentId, 'tracking');
+    this.store.rememberEnvironment(environmentId);
     if (this.store.environmentId() !== environmentId || !this.store.devices().length) {
       await this.store.selectEnvironment(environmentId);
     }

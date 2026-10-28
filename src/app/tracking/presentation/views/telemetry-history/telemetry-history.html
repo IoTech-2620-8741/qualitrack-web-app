@@ -2,12 +2,12 @@
   <header class="page-heading">
     <h1><mat-icon aria-hidden="true">timeline</mat-icon>{{ 'tracking.history.title' | translate }}</h1>
     <div class="actions">
-      <app-environment-selector [environments]="environments.environments()" [selectedId]="store.environmentId()" (selectedChange)="changeEnvironment($event)" />
+      <app-environment-selector [environments]="store.environments()" [selectedId]="store.environmentId()" (selectedChange)="changeEnvironment($event)" />
     </div>
   </header>
   <p class="muted">{{ 'tracking.history.subtitle' | translate }}</p>
 
-  @if (environments.isEmpty()) {
+  @if (store.environmentsEmpty()) {
     <p class="notice">{{ 'tracking.no-environments' | translate }}</p>
   } @else if (store.environmentId() !== null && !store.isLoading() && !store.devices().length) {
     <p class="notice">{{ 'tracking.no-devices' | translate }}</p>
