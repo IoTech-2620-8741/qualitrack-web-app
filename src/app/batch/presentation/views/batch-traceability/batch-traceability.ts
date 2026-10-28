@@ -19,7 +19,7 @@ import { BatchStore } from '../../../application/batch.store';
   imports: [DatePipe, DecimalPipe, MatIconModule, TranslatePipe],
   templateUrl: './batch-traceability.html',
   changeDetection: ChangeDetectionStrategy.Eager,
-  styleUrl: '../../../../shared/presentation/styles/operations-page.css',
+  styleUrl: './batch-traceability.css',
 })
 export class BatchTraceabilityView {
   protected readonly store = inject(BatchStore);

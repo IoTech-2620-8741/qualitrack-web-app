@@ -34,7 +34,7 @@ type PasswordField = 'currentPassword' | 'newPassword' | 'confirmPassword';
   imports: [ReactiveFormsModule, TranslatePipe, MatIconModule, MatProgressSpinnerModule, Toolbar],
   templateUrl: './change-password-form.html',
   changeDetection: ChangeDetectionStrategy.Eager,
-  styleUrls: ['../sign-in-form/sign-in-form.css'],
+  styleUrl: './change-password-form.css',
 })
 export class ChangePasswordForm {
   /** Session store that changes the password. */

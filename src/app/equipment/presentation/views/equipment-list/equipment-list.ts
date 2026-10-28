@@ -46,7 +46,7 @@ type EquipmentFilter = 'all' | 'equipment' | 'devices';
   ],
   templateUrl: './equipment-list.html',
   changeDetection: ChangeDetectionStrategy.Eager,
-  styleUrls: ['../../../../shared/presentation/styles/operations-page.css', './equipment-list.css'],
+  styleUrl: './equipment-list.css',
 })
 export class EquipmentList implements OnInit {
   protected readonly store = inject(EquipmentStore);

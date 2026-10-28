@@ -48,20 +48,7 @@ export interface EnvironmentOption {
     </mat-form-field>
   `,
   changeDetection: ChangeDetectionStrategy.Eager,
-  styles: `
-    .environment-selector {
-      min-width: 280px;
-    }
-    .usage {
-      color: #5f6368;
-    }
-    @media (max-width: 600px) {
-      .environment-selector {
-        width: 100%;
-        min-width: 0;
-      }
-    }
-  `,
+  styleUrl: './environment-selector.css',
 })
 export class EnvironmentSelector {
   /** Environments to choose from. */

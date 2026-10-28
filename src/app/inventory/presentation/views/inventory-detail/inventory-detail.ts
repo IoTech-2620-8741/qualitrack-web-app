@@ -51,7 +51,7 @@ import { stockQuantityValidator } from '../../../../shared/presentation/validato
   ],
   templateUrl: './inventory-detail.html',
   changeDetection: ChangeDetectionStrategy.Eager,
-  styleUrl: '../../../../shared/presentation/styles/operations-page.css',
+  styleUrl: './inventory-detail.css',
 })
 export class InventoryDetail implements OnInit {
   readonly store = inject(InventoryStore);

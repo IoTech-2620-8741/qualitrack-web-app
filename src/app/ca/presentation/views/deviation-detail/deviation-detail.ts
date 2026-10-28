@@ -40,7 +40,7 @@ import { DeviationAlert } from '../../../domain/model/deviation-alert.entity';
   ],
   templateUrl: './deviation-detail.html',
   changeDetection: ChangeDetectionStrategy.Eager,
-  styleUrl: '../../../../shared/presentation/styles/operations-page.css',
+  styleUrl: './deviation-detail.css',
 })
 export class DeviationDetail implements OnInit {
   private readonly route = inject(ActivatedRoute);

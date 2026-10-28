@@ -40,7 +40,7 @@ import { EnvironmentSelector } from '../../../../shared/presentation/components/
   ],
   templateUrl: './product-catalog.html',
   changeDetection: ChangeDetectionStrategy.Eager,
-  styleUrl: '../../../../shared/presentation/styles/operations-page.css',
+  styleUrl: './product-catalog.css',
 })
 export class ProductCatalog implements OnInit {
   protected readonly store = inject(BatchStore);

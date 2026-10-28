@@ -79,7 +79,7 @@ function lettersAndDigits(control: AbstractControl): ValidationErrors | null {
   ],
   templateUrl: './profile-page.html',
   changeDetection: ChangeDetectionStrategy.Eager,
-  styleUrls: ['../../../../shared/presentation/styles/operations-page.css', './profile-page.css'],
+  styleUrl: './profile-page.css',
 })
 export class ProfilePage implements AfterViewInit {
   /** Store of the profile and photo of the signed-in user. */

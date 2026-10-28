@@ -43,7 +43,7 @@ import { BatchStorage } from '../batch-storage/batch-storage';
   ],
   templateUrl: './batch-detail.html',
   changeDetection: ChangeDetectionStrategy.Eager,
-  styleUrl: '../../../../shared/presentation/styles/operations-page.css',
+  styleUrl: './batch-detail.css',
 })
 export class BatchDetail implements OnInit {
   protected readonly store = inject(BatchStore);

@@ -31,7 +31,7 @@ import { notBlankValidator } from '../../../../shared/presentation/validators/no
   ],
   templateUrl: './product-form.html',
   changeDetection: ChangeDetectionStrategy.Eager,
-  styleUrl: '../../../../shared/presentation/styles/operations-page.css',
+  styleUrl: './product-form.css',
 })
 export class ProductForm implements OnInit {
   protected readonly store = inject(BatchStore);

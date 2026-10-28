@@ -44,7 +44,7 @@ import { BatchPath } from '../../../domain/model/batch-path';
   ],
   templateUrl: './batch-form.html',
   changeDetection: ChangeDetectionStrategy.Eager,
-  styleUrl: '../../../../shared/presentation/styles/operations-page.css',
+  styleUrl: './batch-form.css',
 })
 export class BatchForm implements OnInit {
   protected readonly store = inject(BatchStore);

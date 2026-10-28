@@ -18,7 +18,7 @@ import { DeviationAlert } from '../../../domain/model/deviation-alert.entity';
   imports: [DatePipe, DecimalPipe, RouterLink, MatIconModule, TranslatePipe],
   templateUrl: './alert-table.html',
   changeDetection: ChangeDetectionStrategy.Eager,
-  styleUrl: '../../../../shared/presentation/styles/operations-page.css',
+  styleUrl: './alert-table.css',
 })
 export class AlertTable {
   /** Alerts to show, one per row. */

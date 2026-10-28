@@ -69,10 +69,7 @@ export const MIN_HISTORY_START = '2020-01-01T00:00';
   ],
   templateUrl: './telemetry-history.html',
   changeDetection: ChangeDetectionStrategy.Eager,
-  styleUrls: [
-    '../../../../shared/presentation/styles/operations-page.css',
-    '../tracking-views.css',
-  ],
+  styleUrl: './telemetry-history.css',
 })
 export class TelemetryHistory implements OnInit {
   protected readonly store = inject(TrackingStore);

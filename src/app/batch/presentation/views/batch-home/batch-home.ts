@@ -47,7 +47,7 @@ import { BatchStore } from '../../../application/batch.store';
     </main>
   `,
   changeDetection: ChangeDetectionStrategy.Eager,
-  styleUrl: '../../../../shared/presentation/styles/operations-page.css',
+  styleUrl: './batch-home.css',
 })
 export class BatchHome implements OnInit {
   protected readonly store = inject(BatchStore);

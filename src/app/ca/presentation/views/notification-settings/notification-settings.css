@@ -1,3 +1,65 @@
+:host {
+  display: block;
+  min-width: 0;
+  color: #20343c;
+}
+.operations-page {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 24px;
+}
+.page-heading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.page-heading {
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+h1 {
+  font-size: 24px;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+h2 {
+  font-size: 19px;
+  margin: 12px 0 18px;
+}
+h3 {
+  font-size: 16px;
+}
+h1,
+h2,
+h3,
+p,
+a {
+  overflow-wrap: anywhere;
+  letter-spacing: 0;
+}
+mat-form-field {
+  width: 100%;
+  min-width: 0;
+}
+a {
+  color: #006e76;
+  font-weight: 600;
+}
+.muted {
+  color: #5c7079;
+}
+@media (max-width: 760px) {
+  .operations-page {
+    padding: 16px 10px;
+  }
+  h1 {
+    font-size: 21px;
+  }
+}
+
 .settings-card {
   max-width: 720px;
   padding: 24px;

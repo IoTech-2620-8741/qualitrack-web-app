@@ -42,10 +42,7 @@ const PERIOD_DAYS = [1, 7, 31] as const;
   ],
   templateUrl: './kpi-dashboard.html',
   changeDetection: ChangeDetectionStrategy.Eager,
-  styleUrls: [
-    '../../../../shared/presentation/styles/operations-page.css',
-    '../reporting-views.css',
-  ],
+  styleUrl: './kpi-dashboard.css',
 })
 export class KpiDashboardComponent implements OnInit {
   protected readonly store = inject(RaStore);

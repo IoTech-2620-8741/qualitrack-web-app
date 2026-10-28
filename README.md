@@ -40,6 +40,8 @@ src/app/<context>/
 └── presentation/    # views, components and <bc>.routes.ts
 ```
 
+Each view and visual component keeps its own CSS file beside its TypeScript file and references it with a local `styleUrl`. Page styles are not imported from another view or from a shared page stylesheet; application-wide themes remain in `src/styles.css` and `src/material-theme.scss`.
+
 | Folder | Bounded context |
 |---|---|
 | `iam` | Identity & Access Management |

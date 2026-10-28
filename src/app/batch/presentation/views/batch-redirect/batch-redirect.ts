@@ -28,7 +28,7 @@ import { BatchStore, batchError } from '../../../application/batch.store';
     </main>
   `,
   changeDetection: ChangeDetectionStrategy.Eager,
-  styleUrl: '../../../../shared/presentation/styles/operations-page.css',
+  styleUrl: './batch-redirect.css',
 })
 export class BatchRedirect implements OnInit {
   private readonly store = inject(BatchStore);

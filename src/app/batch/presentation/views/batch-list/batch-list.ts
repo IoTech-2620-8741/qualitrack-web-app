@@ -43,7 +43,7 @@ import { IamStore } from '../../../../iam/application/iam.store';
   ],
   templateUrl: './batch-list.html',
   changeDetection: ChangeDetectionStrategy.Eager,
-  styleUrl: '../../../../shared/presentation/styles/operations-page.css',
+  styleUrl: './batch-list.css',
 })
 export class BatchList implements OnInit {
   protected readonly store = inject(BatchStore);

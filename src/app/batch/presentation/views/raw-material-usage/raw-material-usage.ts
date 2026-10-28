@@ -41,7 +41,7 @@ import { stockQuantityValidator } from '../../../../shared/presentation/validato
   ],
   templateUrl: './raw-material-usage.html',
   changeDetection: ChangeDetectionStrategy.Eager,
-  styleUrl: '../../../../shared/presentation/styles/operations-page.css',
+  styleUrl: './raw-material-usage.css',
 })
 export class RawMaterialUsageComponent implements OnInit {
   /** Laboratory, environment and product of the batch. */

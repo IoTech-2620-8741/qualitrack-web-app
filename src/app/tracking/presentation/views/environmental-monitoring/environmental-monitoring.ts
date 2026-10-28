@@ -55,10 +55,7 @@ import { Measurement } from '../../../domain/model/measurement.entity';
   ],
   templateUrl: './environmental-monitoring.html',
   changeDetection: ChangeDetectionStrategy.Eager,
-  styleUrls: [
-    '../../../../shared/presentation/styles/operations-page.css',
-    '../tracking-views.css',
-  ],
+  styleUrl: './environmental-monitoring.css',
 })
 export class EnvironmentalMonitoring implements OnInit {
   /**
