@@ -31,7 +31,7 @@ import { AlertTable } from '../../components/alert-table/alert-table';
   ],
   templateUrl: './alert-history.html',
   changeDetection: ChangeDetectionStrategy.Eager,
-  styleUrl: '../../../../shared/presentation/styles/operations-page.css',
+  styleUrl: './alert-history.css',
 })
 export class AlertHistory implements OnInit {
   /** Store that holds the alerts shown by the table. */

@@ -25,7 +25,7 @@ import { AlertTable } from '../../components/alert-table/alert-table';
   ],
   templateUrl: './alert-dashboard.html',
   changeDetection: ChangeDetectionStrategy.Eager,
-  styleUrl: '../../../../shared/presentation/styles/operations-page.css',
+  styleUrl: './alert-dashboard.css',
 })
 export class AlertDashboard implements OnInit {
   /** Store that holds the alerts shown by the table. */
