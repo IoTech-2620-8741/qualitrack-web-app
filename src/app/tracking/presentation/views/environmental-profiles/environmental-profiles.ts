@@ -6,7 +6,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { TrackingStore } from '../../../application/tracking.store';
-import { EnvironmentStore } from '../../../../laboratory/application/environment.store';
 import { EnvironmentSelector } from '../../../../shared/presentation/components/environment-selector/environment-selector';
 import { ThresholdEditor } from '../../components/threshold-editor/threshold-editor';
 import { ActuationRulesEditor } from '../../components/actuation-rules-editor/actuation-rules-editor';
@@ -76,11 +75,6 @@ export class EnvironmentalProfiles implements OnInit {
   protected readonly store = inject(TrackingStore);
 
   /**
-   * Store responsible for environment selection and user preferences.
-   */
-  protected readonly environments = inject(EnvironmentStore);
-
-  /**
    * Metrics configurable for environmental devices.
    *
    * These metrics allow quality managers to define
@@ -122,10 +116,10 @@ export class EnvironmentalProfiles implements OnInit {
    * its active environmental profiles.
    */
   async ngOnInit(): Promise<void> {
-    if (!this.environments.loaded()) await this.environments.loadEnvironments();
+    if (!this.store.environmentsLoaded()) await this.store.loadEnvironments();
     const current =
       this.store.environmentId() ??
-      this.environments.preferredEnvironment(undefined, 'tracking')?.id ??
+      this.store.preferredEnvironmentId() ??
       null;
     if (current !== null) await this.changeEnvironment(current);
   }
@@ -142,7 +136,7 @@ export class EnvironmentalProfiles implements OnInit {
    * @param environmentId Identifier of the selected environment.
    */
   protected async changeEnvironment(environmentId: number): Promise<void> {
-    this.environments.rememberEnvironment(environmentId, 'tracking');
+    this.store.rememberEnvironment(environmentId);
     if (this.store.environmentId() !== environmentId || !this.store.devices().length) {
       await this.store.selectEnvironment(environmentId);
     }

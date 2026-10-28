@@ -49,12 +49,6 @@
     "ra/presentation/views/kpi-dashboard/kpi-dashboard.ts -> laboratory/application/environment.store": "phase 5: ra ACL to laboratory",
     "ra/presentation/views/report-generator/report-generator.ts -> batch/application/batch.store": "phase 5: ra ACL to batch",
     "ra/presentation/views/report-generator/report-generator.ts -> equipment/application/equipment.store": "phase 4: ra ACL to equipment",
-    "ra/presentation/views/report-generator/report-generator.ts -> laboratory/application/environment.store": "phase 5: ra ACL to laboratory",
-    "tracking/application/tracking.store.ts -> equipment/domain/model/equipment.entity": "phase 3: Tracking ACL to equipment",
-    "tracking/application/tracking.store.ts -> equipment/infrastructure/equipment-api": "phase 3: Tracking ACL to equipment",
-    "tracking/domain/model/monitored-metric.ts -> equipment/domain/model/iot-device-type": "phase 3: Tracking ACL to equipment",
-    "tracking/presentation/views/environmental-monitoring/environmental-monitoring.ts -> laboratory/application/environment.store": "phase 3: Tracking ACL to laboratory",
-    "tracking/presentation/views/environmental-profiles/environmental-profiles.ts -> laboratory/application/environment.store": "phase 3: Tracking ACL to laboratory",
-    "tracking/presentation/views/telemetry-history/telemetry-history.ts -> laboratory/application/environment.store": "phase 3: Tracking ACL to laboratory"
+    "ra/presentation/views/report-generator/report-generator.ts -> laboratory/application/environment.store": "phase 5: ra ACL to laboratory"
   }
 }
