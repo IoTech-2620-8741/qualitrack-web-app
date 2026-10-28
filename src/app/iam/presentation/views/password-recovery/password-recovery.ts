@@ -1,5 +1,4 @@
 import { Component, DestroyRef, inject, signal, ChangeDetectionStrategy } from '@angular/core';
-import { HttpErrorResponse } from '@angular/common/http';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   AbstractControl,
@@ -17,6 +16,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { IamStore } from '../../../application/iam.store';
 import { Toolbar } from '../../../../shared/presentation/components/toolbar/toolbar';
 import { notBlankValidator } from '../../../../shared/presentation/validators/not-blank.validator';
+import { errorStatus } from '../../../../shared/application/error-status';
 
 /** Password fields of the reset form whose visibility can be toggled. */
 type PasswordField = 'newPassword' | 'confirmPassword';
@@ -131,10 +131,10 @@ export class PasswordRecovery {
           if (this.step() === 'reset') this.notice.set('iam.password-recovery.code-resent');
           this.step.set('reset');
         },
-        error: (error: HttpErrorResponse) => {
+        error: (error: unknown) => {
           this.sending.set(false);
           this.error.set(
-            error.status === 0
+            errorStatus(error) === 0
               ? 'onboarding.connection-error'
               : 'iam.password-recovery.errors.request',
           );
@@ -163,12 +163,12 @@ export class PasswordRecovery {
             replaceUrl: true,
             state: { passwordReset: true, username },
           }),
-        error: (error: HttpErrorResponse) => {
+        error: (error: unknown) => {
           this.sending.set(false);
           this.error.set(
-            error.status === 400
+            errorStatus(error) === 400
               ? 'iam.password-recovery.errors.invalid-code'
-              : error.status === 0
+              : errorStatus(error) === 0
                 ? 'onboarding.connection-error'
                 : 'iam.password-recovery.errors.reset',
           );

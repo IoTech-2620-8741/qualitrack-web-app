@@ -1,5 +1,4 @@
 import { Component, DestroyRef, inject, signal, ChangeDetectionStrategy } from '@angular/core';
-import { HttpErrorResponse } from '@angular/common/http';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   AbstractControl,
@@ -16,6 +15,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { IamStore } from '../../../application/iam.store';
 import { Toolbar } from '../../../../shared/presentation/components/toolbar/toolbar';
+import { errorStatus } from '../../../../shared/application/error-status';
 
 /** Password fields of the form whose visibility can be toggled. */
 type PasswordField = 'currentPassword' | 'newPassword' | 'confirmPassword';
@@ -118,10 +118,10 @@ export class ChangePasswordForm {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => void this.router.navigateByUrl('/iam/onboarding', { replaceUrl: true }),
-        error: (error: HttpErrorResponse) => {
+        error: (error: unknown) => {
           this.saving.set(false);
           this.error.set(
-            error.status === 400
+            errorStatus(error) === 400
               ? 'iam.change-password.errors.current-password'
               : 'iam.change-password.errors.unavailable',
           );
