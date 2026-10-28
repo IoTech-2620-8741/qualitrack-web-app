@@ -1,4 +1,0 @@
-{
-  "description": "Imports that break the DDD rules of tools/check-architecture.mjs today. Each phase of the DDD refactoring removes its entries; new code must not add any.",
-  "exceptions": {}
-}

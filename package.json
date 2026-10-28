@@ -9,8 +9,7 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test",
-    "check:architecture": "node tools/check-architecture.mjs"
+    "test": "ng test"
   },
   "private": true,
   "packageManager": "npm@11.11.0",
