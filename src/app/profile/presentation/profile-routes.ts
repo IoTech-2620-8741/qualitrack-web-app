@@ -11,7 +11,7 @@ const profilePage = () =>
  *
  * @remarks
  * The page is a child of the shared {@link Layout} and loads lazily at the empty path (`/profile`). A fragment such
- * as `/profile#notifications` scrolls to that section.
+ * as `/profile#notifications` opens the corresponding preferences page in CA.
  */
 const profileRoutes: Routes = [
   {
