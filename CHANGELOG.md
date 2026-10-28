@@ -15,7 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Profile (profile): the toolbar photo or initials, name and role are now displayed by a Profile component composed by the layout, preserving the profile link and mobile appearance (#45).
+- Profile (profile): the toolbar photo or initials, name and role are now displayed by a Profile component composed by the layout, preserving the profile link and mobile appearance (#45). Quality managers can now open staff photos and personal data on a separate page linked from the staff detail (#46).
 
 - IAM (iam): the toolbar session section now only signs out and no longer reads profile data (#45).
 
@@ -33,9 +33,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Inventory (inventory): the storage containers (#43) and the environments (#44) are now read through the models of Inventory.
 
-- Laboratory (laboratory): the environments are now managed by `LaboratoryStore`, the single store of the context (#44), and the staff member detail is read through it (#39).
+- Laboratory (laboratory): the environments are now managed by `LaboratoryStore`, the single store of the context (#44), and the staff member detail is read through it (#39). Staff detail now links to separate profile and activity pages while retaining employment data and deactivation (#46).
 
-- Reporting & Audit (ra): the operational overview shows its data through the models of Reporting & Audit (#41); the equipment of the reports (#43) and the environments and batches of the indicators, trends and reports are read through them too (#44).
+- Reporting & Audit (ra): the operational overview shows its data through the models of Reporting & Audit (#41); the equipment of the reports (#43) and the environments and batches of the indicators, trends and reports are read through them too (#44). Staff activity now has its own page with record-type filtering and a staff identity read through an independent Laboratory ACL (#46).
 
 - Tracking & Telemetry (tracking): devices and environments are now read through its own anti-corruption layer (#42).
 
