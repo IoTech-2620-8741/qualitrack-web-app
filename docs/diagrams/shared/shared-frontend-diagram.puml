@@ -160,12 +160,17 @@ package "iam.presentation.components" <<External>> {
   class UserSessionSection
 }
 
+package "profile.presentation.components" <<External>> {
+  class UserProfileBadge
+}
+
 package "ca.presentation.components" <<External>> {
   class NotificationBell
 }
 
 Toolbar --> LanguageSwitcher
 Layout --> LanguageSwitcher
+Layout --> UserProfileBadge
 Layout --> UserSessionSection
 Layout --> NotificationBell : with operational access
 Layout *-- NavigationOption
@@ -177,8 +182,9 @@ end note
 note bottom of Layout
   The logo and the name lead to /dashboard. Menu labels only use nav.* keys:
   English Title Case, Spanish sentence case, "Catalog" spelling.
-  The toolbar shows the notification bell (ca) and the user section (iam),
-  whose photo and name open the profile. Up to 720px wide the brand is hidden
+  The toolbar composes the notification bell (ca), profile badge (profile)
+  and sign-out action (iam). The badge photo and name open the profile.
+  The layout keeps both user widgets inside one capsule. Up to 720px the brand is hidden
   so the user section stays complete; up to 480px the language switcher is
   compact (no check mark).
 end note
