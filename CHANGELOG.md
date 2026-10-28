@@ -31,7 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Equipment (equipment): the environments where equipment is installed and the technicians of a maintenance are now read through the models of Equipment (#44).
 
-- Inventory (inventory): the storage containers (#43) and the environments (#44) are now read through the models of Inventory.
+- Inventory (inventory): the storage containers (#43) and the environments (#44) are now read through the models of Inventory. Current and historical material consumption also use an Inventory model and endpoint, preserving the warning for production batches affected by observed or rejected receipts (#48).
 
 - Laboratory (laboratory): the environments are now managed by `LaboratoryStore`, the single store of the context (#44), and the staff member detail is read through it (#39). Staff detail now links to separate profile and activity pages while retaining employment data and deactivation (#46).
 
