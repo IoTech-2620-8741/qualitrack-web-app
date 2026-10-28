@@ -5,6 +5,42 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- CI: the pull request build now runs the unit tests (#37) and checks the DDD import rules with `npm run check:architecture` (#38). The rules follow the course example: views do not use the infrastructure, the domain does not depend on Angular, a bounded context does not import the code of another one, `shared` does not import any bounded context and each bounded context has a single store, `application/<bc>.store.ts` (#39). The imports that still break them are listed in `tools/architecture-exceptions.json`, and each phase of the refactoring removes its own.
+
+- Shared (shared): `EnvironmentPreference` remembers in the browser the environment opened in inventory, production and monitoring, with the same keys as before, so nobody loses the remembered environment (#44).
+
+### Changed
+
+- Dependencies: Angular 22.2, Angular Material and CDK 22.2.4, ngx-translate 18.1 and TypeScript 6.0; the component tests now provide the translation service (#36).
+
+- Stores: every store is provided in root, as in the course example, and signing out reloads the application so the next user never sees data of the previous one (#40).
+
+- Shared (shared): the environment selector is now a visual component without a store, and the operational overview (dashboard) moved to Reporting & Audit (#41).
+
+- Product Batch (batch): products and raw material consumption are now kept in `BatchStore` (#40) and the batch path moved to the domain (#39); the equipment (#43), environments, staff and raw material lots a batch uses are now read through the models of Product Batch (#44).
+
+- Compliance & Alerts (ca): the notifications of the bell are now kept in `CaStore` (#40); the devices (#43) and environments (#44) of the alerts are now read through the models of Compliance & Alerts.
+
+- Equipment (equipment): the environments where equipment is installed and the technicians of a maintenance are now read through the models of Equipment (#44).
+
+- Inventory (inventory): the storage containers (#43) and the environments (#44) are now read through the models of Inventory.
+
+- Laboratory (laboratory): the environments are now managed by `LaboratoryStore`, the single store of the context (#44), and the staff member detail is read through it (#39).
+
+- Reporting & Audit (ra): the operational overview shows its data through the models of Reporting & Audit (#41); the equipment of the reports (#43) and the environments and batches of the indicators, trends and reports are read through them too (#44).
+
+- Tracking & Telemetry (tracking): devices and environments are now read through its own anti-corruption layer (#42).
+
+- Subscription (subscription): the view after the payment is now resolved through the IAM store (#39).
+
+### Removed
+
+- Laboratory (laboratory): `EnvironmentStore`; Product Batch, Compliance & Alerts, Equipment, Inventory, Reporting & Audit and Tracking & Telemetry no longer import code of Laboratory to read environments and staff (#42, #44).
+
 ## [1.2.0] - 2026-10-19
 
 ### Added
