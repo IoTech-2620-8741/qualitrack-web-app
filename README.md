@@ -37,7 +37,7 @@ src/app/<context>/
 ├── domain/          # entities, value objects and commands
 ├── application/     # stores (state and use cases)
 ├── infrastructure/  # API endpoints, assemblers, requests and responses
-└── presentation/    # views, components and routes
+└── presentation/    # views, components and <bc>.routes.ts
 ```
 
 | Folder | Bounded context |
