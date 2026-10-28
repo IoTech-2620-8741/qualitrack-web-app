@@ -1,9 +1,9 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { IamStore } from '../../../../iam/application/iam.store';
 import { Toolbar } from '../../../../shared/presentation/components/toolbar/toolbar';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -18,7 +18,10 @@ import { CreateLaboratoryCommand } from '../../../domain/model/create-laboratory
 import { DigitsOnly } from '../../../../shared/presentation/directives/digits-only.directive';
 import { PhoneInput } from '../../../../shared/presentation/directives/phone-input.directive';
 import { notBlankValidator } from '../../../../shared/presentation/validators/not-blank.validator';
-import { normalizePhone, phoneValidator } from '../../../../shared/presentation/validators/phone.validator';
+import {
+  normalizePhone,
+  phoneValidator,
+} from '../../../../shared/presentation/validators/phone.validator';
 import { rucValidator } from '../../../../shared/presentation/validators/ruc.validator';
 
 /**
@@ -34,7 +37,7 @@ import { rucValidator } from '../../../../shared/presentation/validators/ruc.val
   providers: [LaboratoryStore],
   imports: [
     ReactiveFormsModule,
-    TranslateModule,
+    TranslatePipe,
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
@@ -47,6 +50,7 @@ import { rucValidator } from '../../../../shared/presentation/validators/ruc.val
     PhoneInput,
   ],
   templateUrl: './lab-form.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './lab-form.css',
 })
 export class LabForm {

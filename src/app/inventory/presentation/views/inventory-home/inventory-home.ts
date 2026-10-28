@@ -1,8 +1,8 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { EnvironmentStore } from '../../../../laboratory/application/environment.store';
 
 /**
@@ -15,11 +15,13 @@ import { EnvironmentStore } from '../../../../laboratory/application/environment
 @Component({
   selector: 'app-inventory-home',
   standalone: true,
-  imports: [RouterLink, MatButtonModule, MatIconModule, TranslateModule],
+  imports: [RouterLink, MatButtonModule, MatIconModule, TranslatePipe],
   template: `
     <main class="operations-page">
       <header class="page-heading">
-        <h1><mat-icon aria-hidden="true">inventory_2</mat-icon>{{ 'inventory.title' | translate }}</h1>
+        <h1>
+          <mat-icon aria-hidden="true">inventory_2</mat-icon>{{ 'inventory.title' | translate }}
+        </h1>
       </header>
       @if (environments.isLoading()) {
         <p role="status">{{ 'inventory.loading' | translate }}</p>
@@ -38,6 +40,7 @@ import { EnvironmentStore } from '../../../../laboratory/application/environment
       }
     </main>
   `,
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: '../../../../shared/presentation/styles/operations-page.css',
 })
 export class InventoryHome implements OnInit {
@@ -48,7 +51,9 @@ export class InventoryHome implements OnInit {
     await this.environments.loadEnvironments();
     const environment = this.environments.preferredEnvironment('RAW_MATERIAL_STORAGE');
     if (environment) {
-      await this.router.navigate(['/inventory/environments', environment.id, 'raw-materials'], { replaceUrl: true });
+      await this.router.navigate(['/inventory/environments', environment.id, 'raw-materials'], {
+        replaceUrl: true,
+      });
     }
   }
 }

@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { map } from 'rxjs';
@@ -18,6 +18,7 @@ const NARROW_SCREEN = '(max-width: 480px)';
   selector: 'app-language-switcher',
   imports: [MatButtonToggleGroup, MatButtonToggle, TranslatePipe],
   templateUrl: './language-switcher.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './language-switcher.css',
 })
 export class LanguageSwitcher {
@@ -33,12 +34,14 @@ export class LanguageSwitcher {
    * On narrow screens the check mark of the selected language is hidden so the toolbar keeps room for the user;
    * the selected language is still shown by its highlighted button.
    */
-  protected readonly compact = toSignal(this.breakpoints.observe(NARROW_SCREEN).pipe(map((state) => state.matches)),
-    { initialValue: this.breakpoints.isMatched(NARROW_SCREEN) });
+  protected readonly compact = toSignal(
+    this.breakpoints.observe(NARROW_SCREEN).pipe(map((state) => state.matches)),
+    { initialValue: this.breakpoints.isMatched(NARROW_SCREEN) },
+  );
 
   constructor() {
     this.translate = inject(TranslateService);
-    this.currentLang = this.translate.getCurrentLang();
+    this.currentLang = this.translate.getCurrentLang() ?? 'en';
   }
 
   useLanguage(language: string): void {

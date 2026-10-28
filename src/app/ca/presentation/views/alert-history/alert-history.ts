@@ -1,7 +1,7 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -19,9 +19,19 @@ import { AlertTable } from '../../components/alert-table/alert-table';
 @Component({
   selector: 'app-alert-history',
   standalone: true,
-  imports: [FormsModule, RouterLink, TranslateModule, MatButtonModule, MatFormFieldModule, MatIconModule,
-    MatSelectModule, EnvironmentSelector, AlertTable],
+  imports: [
+    FormsModule,
+    RouterLink,
+    TranslatePipe,
+    MatButtonModule,
+    MatFormFieldModule,
+    MatIconModule,
+    MatSelectModule,
+    EnvironmentSelector,
+    AlertTable,
+  ],
   templateUrl: './alert-history.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: '../../../../shared/presentation/styles/operations-page.css',
 })
 export class AlertHistory implements OnInit {

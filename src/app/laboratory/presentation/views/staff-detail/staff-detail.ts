@@ -1,8 +1,15 @@
-import { Component, DestroyRef, computed, inject, signal } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  computed,
+  inject,
+  signal,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { catchError, forkJoin, of, switchMap } from 'rxjs';
 
 import { MatButtonModule } from '@angular/material/button';
@@ -23,9 +30,23 @@ import { ProfileStore, StaffProfile } from '../../../../profile/application/prof
  * Records whose type has a translated name; any other type is shown as the platform sends it.
  */
 const KNOWN_ENTITIES = new Set([
-  'BATCH', 'BPM_PARAMETER_CONFIG', 'DEVIATION_ALERT', 'ENVIRONMENT', 'EQUIPMENT', 'EQUIPMENT_TELEMETRY_STATUS',
-  'ENVIRONMENTAL_PROFILE', 'LABORATORY', 'MAINTENANCE_RECORD', 'NOTIFICATION_PREFERENCE', 'PHARMACEUTICAL_PRODUCT', 'RAW_MATERIAL',
-  'RAW_MATERIAL_BATCH', 'RAW_MATERIAL_USAGE', 'STAFF_MEMBER', 'TELEMETRY_ANOMALY', 'TELEMETRY_HISTORY_POINT',
+  'BATCH',
+  'BPM_PARAMETER_CONFIG',
+  'DEVIATION_ALERT',
+  'ENVIRONMENT',
+  'EQUIPMENT',
+  'EQUIPMENT_TELEMETRY_STATUS',
+  'ENVIRONMENTAL_PROFILE',
+  'LABORATORY',
+  'MAINTENANCE_RECORD',
+  'NOTIFICATION_PREFERENCE',
+  'PHARMACEUTICAL_PRODUCT',
+  'RAW_MATERIAL',
+  'RAW_MATERIAL_BATCH',
+  'RAW_MATERIAL_USAGE',
+  'STAFF_MEMBER',
+  'TELEMETRY_ANOMALY',
+  'TELEMETRY_HISTORY_POINT',
   'TELEMETRY_MEASUREMENT',
 ]);
 
@@ -33,7 +54,16 @@ const KNOWN_ENTITIES = new Set([
  * Actions with a translated name; any other action is shown as the platform sends it.
  */
 const KNOWN_ACTIONS = new Set([
-  'CREATE', 'UPDATE', 'DELETE', 'RELEASE', 'REJECT', 'APPROVE', 'REGISTER', 'REMOVE', 'EXPORT', 'GENERATE',
+  'CREATE',
+  'UPDATE',
+  'DELETE',
+  'RELEASE',
+  'REJECT',
+  'APPROVE',
+  'REGISTER',
+  'REMOVE',
+  'EXPORT',
+  'GENERATE',
 ]);
 
 /**
@@ -50,7 +80,7 @@ const KNOWN_ACTIONS = new Set([
   imports: [
     DatePipe,
     RouterLink,
-    TranslateModule,
+    TranslatePipe,
     MatButtonModule,
     MatIconModule,
     MatFormFieldModule,
@@ -58,6 +88,7 @@ const KNOWN_ACTIONS = new Set([
     MatProgressSpinnerModule,
   ],
   templateUrl: './staff-detail.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['../../../../shared/presentation/styles/operations-page.css', './staff-detail.css'],
 })
 export class StaffDetail {
@@ -145,14 +176,17 @@ export class StaffDetail {
    * Record types present in the activity, in alphabetical order.
    */
   protected readonly entityTypes = computed(() =>
-    [...new Set(this.activity().map((entry) => entry.entityType))].sort());
+    [...new Set(this.activity().map((entry) => entry.entityType))].sort(),
+  );
 
   /**
    * Activity that matches the selected record type.
    */
   protected readonly visibleActivity = computed(() => {
     const filter = this.entityFilter();
-    return filter === 'ALL' ? this.activity() : this.activity().filter((entry) => entry.entityType === filter);
+    return filter === 'ALL'
+      ? this.activity()
+      : this.activity().filter((entry) => entry.entityType === filter);
   });
 
   /**
@@ -166,32 +200,36 @@ export class StaffDetail {
    */
   constructor() {
     this.destroyRef.onDestroy(() => this.showProfile(null));
-    this.route.paramMap.pipe(
-      switchMap((params) => {
-        this.loading.set(true);
-        this.error.set(null);
-        const staffId = Number(params.get('staffId'));
-        if (!Number.isSafeInteger(staffId) || staffId <= 0) return of(null);
-        const laboratoryId = this.iam.requireLaboratoryId();
-        return forkJoin({
-          member: this.laboratoryApi.getStaffMember(laboratoryId, staffId),
-          activity: this.raApi.getStaffActivity(laboratoryId, staffId),
-        }).pipe(catchError(() => of(null)));
-      }),
-      takeUntilDestroyed(this.destroyRef),
-    ).subscribe((result) => {
-      this.loading.set(false);
-      this.entityFilter.set('ALL');
-      if (!result) {
-        this.member.set(null);
-        this.activity.set([]);
-        this.error.set('staff.detail.load-error');
-        return;
-      }
-      this.member.set(result.member);
-      this.activity.set([...result.activity].sort((a, b) => b.timestamp.localeCompare(a.timestamp)));
-      this.loadProfile(result.member);
-    });
+    this.route.paramMap
+      .pipe(
+        switchMap((params) => {
+          this.loading.set(true);
+          this.error.set(null);
+          const staffId = Number(params.get('staffId'));
+          if (!Number.isSafeInteger(staffId) || staffId <= 0) return of(null);
+          const laboratoryId = this.iam.requireLaboratoryId();
+          return forkJoin({
+            member: this.laboratoryApi.getStaffMember(laboratoryId, staffId),
+            activity: this.raApi.getStaffActivity(laboratoryId, staffId),
+          }).pipe(catchError(() => of(null)));
+        }),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe((result) => {
+        this.loading.set(false);
+        this.entityFilter.set('ALL');
+        if (!result) {
+          this.member.set(null);
+          this.activity.set([]);
+          this.error.set('staff.detail.load-error');
+          return;
+        }
+        this.member.set(result.member);
+        this.activity.set(
+          [...result.activity].sort((a, b) => b.timestamp.localeCompare(a.timestamp)),
+        );
+        this.loadProfile(result.member);
+      });
   }
 
   /**
@@ -206,7 +244,8 @@ export class StaffDetail {
     this.showProfile(null);
     this.profileUnavailable.set(false);
     if (!this.iam.canManageQuality() || member.userId === null) return;
-    this.profiles.staffProfile(member.laboratoryId, member.id)
+    this.profiles
+      .staffProfile(member.laboratoryId, member.id)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (profile) => this.showProfile(profile),
@@ -232,7 +271,9 @@ export class StaffDetail {
    * @returns Translation key, or `null` when the type has no translated name
    */
   protected entityKey(entityType: string): string | null {
-    return KNOWN_ENTITIES.has(entityType) ? `staff.activity.entities.${entityType.toLowerCase()}` : null;
+    return KNOWN_ENTITIES.has(entityType)
+      ? `staff.activity.entities.${entityType.toLowerCase()}`
+      : null;
   }
 
   /**
@@ -251,10 +292,14 @@ export class StaffDetail {
    * @param member - Staff member to deactivate
    */
   protected deactivate(member: StaffMember): void {
-    if (!confirm(this.translate.instant('staff-list.deactivate-confirm', { name: member.fullName }))) return;
+    if (
+      !confirm(this.translate.instant('staff-list.deactivate-confirm', { name: member.fullName }))
+    )
+      return;
     this.deactivating.set(true);
     this.error.set(null);
-    this.laboratoryStore.deactivateStaff(member.laboratoryId, member.id)
+    this.laboratoryStore
+      .deactivateStaff(member.laboratoryId, member.id)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (deactivated) => {

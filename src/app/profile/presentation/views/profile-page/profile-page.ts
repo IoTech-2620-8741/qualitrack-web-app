@@ -1,10 +1,27 @@
-import { AfterViewInit, Component, DestroyRef, ElementRef, computed, effect, inject, signal, viewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  DestroyRef,
+  ElementRef,
+  computed,
+  effect,
+  inject,
+  signal,
+  viewChild,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
-import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import {
+  AbstractControl,
+  FormBuilder,
+  ReactiveFormsModule,
+  ValidationErrors,
+  Validators,
+} from '@angular/forms';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -21,7 +38,10 @@ import { PhoneInput } from '../../../../shared/presentation/directives/phone-inp
 import { dniValidator } from '../../../../shared/presentation/validators/dni.validator';
 import { emailValidator } from '../../../../shared/presentation/validators/email.validator';
 import { notBlankValidator } from '../../../../shared/presentation/validators/not-blank.validator';
-import { normalizePhone, phoneValidator } from '../../../../shared/presentation/validators/phone.validator';
+import {
+  normalizePhone,
+  phoneValidator,
+} from '../../../../shared/presentation/validators/phone.validator';
 import { personNameValidator } from '../../../../shared/presentation/validators/person-name.validator';
 
 /**
@@ -50,7 +70,7 @@ function lettersAndDigits(control: AbstractControl): ValidationErrors | null {
   imports: [
     DatePipe,
     ReactiveFormsModule,
-    TranslateModule,
+    TranslatePipe,
     MatButtonModule,
     MatFormFieldModule,
     MatIconModule,
@@ -61,6 +81,7 @@ function lettersAndDigits(control: AbstractControl): ValidationErrors | null {
     PhoneInput,
   ],
   templateUrl: './profile-page.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['../../../../shared/presentation/styles/operations-page.css', './profile-page.css'],
 })
 export class ProfilePage implements AfterViewInit {
@@ -96,14 +117,21 @@ export class ProfilePage implements AfterViewInit {
   protected readonly passwordMessage = signal<{ ok: boolean; key: string } | null>(null);
 
   /** Translation keys of the roles of the signed-in user. */
-  protected readonly roleKeys = computed(() => (this.store.profile()?.roles ?? this.iam.currentRoles())
-    .map((role) => `profile.roles.${role}`));
+  protected readonly roleKeys = computed(() =>
+    (this.store.profile()?.roles ?? this.iam.currentRoles()).map((role) => `profile.roles.${role}`),
+  );
 
   /** Form of the personal data: full name, DNI (8 digits), phone number and location. */
   protected readonly personalForm = this.fb.nonNullable.group({
     fullName: [
       '',
-      [Validators.required, notBlankValidator, personNameValidator, Validators.minLength(2), Validators.maxLength(120)],
+      [
+        Validators.required,
+        notBlankValidator,
+        personNameValidator,
+        Validators.minLength(2),
+        Validators.maxLength(120),
+      ],
     ],
     dni: ['', [dniValidator]],
     phoneNumber: ['', [phoneValidator]],
@@ -112,7 +140,10 @@ export class ProfilePage implements AfterViewInit {
 
   /** Form of the account: username and e-mail, confirmed with the current password. */
   protected readonly accountForm = this.fb.nonNullable.group({
-    username: ['', [Validators.required, notBlankValidator, Validators.minLength(3), Validators.maxLength(80)]],
+    username: [
+      '',
+      [Validators.required, notBlankValidator, Validators.minLength(3), Validators.maxLength(80)],
+    ],
     email: ['', [Validators.required, emailValidator, Validators.maxLength(120)]],
     currentPassword: ['', Validators.required],
   });
@@ -120,7 +151,10 @@ export class ProfilePage implements AfterViewInit {
   /** Form of the password change: current password, new password (8 to 72, letters and digits) and confirmation. */
   protected readonly passwordForm = this.fb.nonNullable.group({
     currentPassword: ['', Validators.required],
-    newPassword: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(72), lettersAndDigits]],
+    newPassword: [
+      '',
+      [Validators.required, Validators.minLength(8), Validators.maxLength(72), lettersAndDigits],
+    ],
     confirmPassword: ['', Validators.required],
   });
 
@@ -144,7 +178,11 @@ export class ProfilePage implements AfterViewInit {
         });
       }
       if (!this.accountForm.dirty) {
-        this.accountForm.reset({ username: profile.username, email: profile.email ?? '', currentPassword: '' });
+        this.accountForm.reset({
+          username: profile.username,
+          email: profile.email ?? '',
+          currentPassword: '',
+        });
       }
     });
   }
@@ -153,8 +191,11 @@ export class ProfilePage implements AfterViewInit {
   ngAfterViewInit(): void {
     this.route.fragment.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((fragment) => {
       if (!fragment) return;
-      setTimeout(() => this.host.nativeElement.querySelector(`#${CSS.escape(fragment)}`)
-        ?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
+      setTimeout(() =>
+        this.host.nativeElement
+          .querySelector(`#${CSS.escape(fragment)}`)
+          ?.scrollIntoView({ behavior: 'smooth', block: 'start' }),
+      );
     });
   }
 
@@ -183,14 +224,22 @@ export class ProfilePage implements AfterViewInit {
       return;
     }
     this.photoBusy.set(true);
-    this.store.replacePhoto(image).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: () => this.photoBusy.set(false),
-      error: (error) => {
-        this.photoBusy.set(false);
-        this.photoError.set(statusOf(error) === 413 ? 'profile.photo.errors.size'
-          : statusOf(error) === 400 || statusOf(error) === 415 ? 'profile.photo.errors.type' : 'profile.photo.errors.failed');
-      },
-    });
+    this.store
+      .replacePhoto(image)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => this.photoBusy.set(false),
+        error: (error) => {
+          this.photoBusy.set(false);
+          this.photoError.set(
+            statusOf(error) === 413
+              ? 'profile.photo.errors.size'
+              : statusOf(error) === 400 || statusOf(error) === 415
+                ? 'profile.photo.errors.type'
+                : 'profile.photo.errors.failed',
+          );
+        },
+      });
   }
 
   /** Removes the photo after the user confirms it. */
@@ -198,13 +247,16 @@ export class ProfilePage implements AfterViewInit {
     if (!confirm(this.translate.instant('profile.photo.remove-confirm'))) return;
     this.photoBusy.set(true);
     this.photoError.set(null);
-    this.store.removePhoto().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: () => this.photoBusy.set(false),
-      error: () => {
-        this.photoBusy.set(false);
-        this.photoError.set('profile.photo.errors.failed');
-      },
-    });
+    this.store
+      .removePhoto()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => this.photoBusy.set(false),
+        error: () => {
+          this.photoBusy.set(false);
+          this.photoError.set('profile.photo.errors.failed');
+        },
+      });
   }
 
   /** Saves the personal data if the form is valid. */
@@ -214,20 +266,27 @@ export class ProfilePage implements AfterViewInit {
     this.personalSaving.set(true);
     this.personalMessage.set(null);
     const personal = this.personalForm.getRawValue();
-    this.store.update({ ...personal, phoneNumber: normalizePhone(personal.phoneNumber) ?? personal.phoneNumber }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: () => {
-        this.personalSaving.set(false);
-        this.personalForm.markAsPristine();
-        this.personalMessage.set({ ok: true, key: 'profile.personal.saved' });
-      },
-      error: (error) => {
-        this.personalSaving.set(false);
-        this.personalMessage.set({
-          ok: false,
-          key: statusOf(error) === 400 ? 'profile.personal.errors.invalid' : 'profile.errors.failed',
-        });
-      },
-    });
+    this.store
+      .update({
+        ...personal,
+        phoneNumber: normalizePhone(personal.phoneNumber) ?? personal.phoneNumber,
+      })
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.personalSaving.set(false);
+          this.personalForm.markAsPristine();
+          this.personalMessage.set({ ok: true, key: 'profile.personal.saved' });
+        },
+        error: (error) => {
+          this.personalSaving.set(false);
+          this.personalMessage.set({
+            ok: false,
+            key:
+              statusOf(error) === 400 ? 'profile.personal.errors.invalid' : 'profile.errors.failed',
+          });
+        },
+      });
   }
 
   /**
@@ -241,24 +300,31 @@ export class ProfilePage implements AfterViewInit {
     if (this.accountForm.invalid || this.accountSaving()) return;
     this.accountSaving.set(true);
     this.accountMessage.set(null);
-    this.iam.updateAccount(this.accountForm.getRawValue()).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: () => {
-        this.accountSaving.set(false);
-        this.accountForm.markAsPristine();
-        this.accountForm.controls.currentPassword.reset('');
-        this.accountMessage.set({ ok: true, key: 'profile.account.saved' });
-        this.store.load();
-      },
-      error: (error) => {
-        this.accountSaving.set(false);
-        const status = statusOf(error);
-        this.accountMessage.set({
-          ok: false,
-          key: status === 409 ? 'profile.account.errors.taken'
-            : status === 400 ? 'profile.account.errors.invalid' : 'profile.errors.failed',
-        });
-      },
-    });
+    this.iam
+      .updateAccount(this.accountForm.getRawValue())
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.accountSaving.set(false);
+          this.accountForm.markAsPristine();
+          this.accountForm.controls.currentPassword.reset('');
+          this.accountMessage.set({ ok: true, key: 'profile.account.saved' });
+          this.store.load();
+        },
+        error: (error) => {
+          this.accountSaving.set(false);
+          const status = statusOf(error);
+          this.accountMessage.set({
+            ok: false,
+            key:
+              status === 409
+                ? 'profile.account.errors.taken'
+                : status === 400
+                  ? 'profile.account.errors.invalid'
+                  : 'profile.errors.failed',
+          });
+        },
+      });
   }
 
   /**
@@ -279,21 +345,26 @@ export class ProfilePage implements AfterViewInit {
     }
     this.passwordSaving.set(true);
     this.passwordMessage.set(null);
-    this.iam.changePassword(currentPassword, newPassword).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: () => {
-        this.passwordSaving.set(false);
-        this.passwordForm.reset();
-        this.passwordMessage.set({ ok: true, key: 'profile.password.saved' });
-      },
-      error: (error) => {
-        this.passwordSaving.set(false);
-        this.passwordMessage.set({
-          ok: false,
-          key: statusOf(error) === 400 ? 'iam.change-password.errors.current-password'
-            : 'iam.change-password.errors.unavailable',
-        });
-      },
-    });
+    this.iam
+      .changePassword(currentPassword, newPassword)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.passwordSaving.set(false);
+          this.passwordForm.reset();
+          this.passwordMessage.set({ ok: true, key: 'profile.password.saved' });
+        },
+        error: (error) => {
+          this.passwordSaving.set(false);
+          this.passwordMessage.set({
+            ok: false,
+            key:
+              statusOf(error) === 400
+                ? 'iam.change-password.errors.current-password'
+                : 'iam.change-password.errors.unavailable',
+          });
+        },
+      });
   }
 }
 

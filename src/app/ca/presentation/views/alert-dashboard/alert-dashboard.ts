@@ -1,6 +1,6 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 
@@ -16,8 +16,16 @@ import { AlertTable } from '../../components/alert-table/alert-table';
 @Component({
   selector: 'app-alert-dashboard',
   standalone: true,
-  imports: [RouterLink, TranslateModule, MatButtonModule, MatIconModule, EnvironmentSelector, AlertTable],
+  imports: [
+    RouterLink,
+    TranslatePipe,
+    MatButtonModule,
+    MatIconModule,
+    EnvironmentSelector,
+    AlertTable,
+  ],
   templateUrl: './alert-dashboard.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: '../../../../shared/presentation/styles/operations-page.css',
 })
 export class AlertDashboard implements OnInit {

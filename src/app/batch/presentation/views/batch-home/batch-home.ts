@@ -1,15 +1,8 @@
-import {
-  Component,
-  OnInit,
-  inject
-} from '@angular/core';
-import {
-  Router,
-  RouterLink
-} from '@angular/router';
+import { Component, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
+import { Router, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { EnvironmentStore } from '../../../../laboratory/application/environment.store';
 
 /**
@@ -25,12 +18,7 @@ import { EnvironmentStore } from '../../../../laboratory/application/environment
 @Component({
   selector: 'app-batch-home',
   standalone: true,
-  imports: [
-    RouterLink,
-    MatButtonModule,
-    MatIconModule,
-    TranslateModule
-  ],
+  imports: [RouterLink, MatButtonModule, MatIconModule, TranslatePipe],
   template: `
     <main class="operations-page">
       <header class="page-heading">
@@ -58,9 +46,9 @@ import { EnvironmentStore } from '../../../../laboratory/application/environment
       }
     </main>
   `,
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: '../../../../shared/presentation/styles/operations-page.css',
 })
-
 export class BatchHome implements OnInit {
   protected readonly environments = inject(EnvironmentStore);
   private readonly router = inject(Router);

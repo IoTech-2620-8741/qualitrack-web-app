@@ -1,7 +1,7 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -28,13 +28,14 @@ import { SubscriptionPlan } from '../../../domain/model/subscription-plan.entity
   imports: [
     CommonModule,
     Toolbar,
-    TranslateModule,
+    TranslatePipe,
     MatCardModule,
     MatButtonModule,
     MatIconModule,
     MatProgressSpinnerModule,
   ],
   templateUrl: './plan-list.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './plan-list.css',
 })
 export class PlanList implements OnInit {
@@ -93,7 +94,9 @@ export class PlanList implements OnInit {
       .then();
   }
 
-  protected signOut(): void { this.iamStore.signOut(this.router); }
+  protected signOut(): void {
+    this.iamStore.signOut(this.router);
+  }
 
   /**
    * Formats a plan price for display.

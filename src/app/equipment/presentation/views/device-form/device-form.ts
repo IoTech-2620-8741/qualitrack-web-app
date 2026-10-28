@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -41,6 +41,7 @@ export const FIRMWARE_VERSION = /^v?\d+(\.\d+){1,3}([-+][0-9A-Za-z.-]+)?$/;
     TranslatePipe,
   ],
   templateUrl: './device-form.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: '../equipment-form/equipment-form.css',
 })
 export class DeviceForm implements OnInit {
@@ -55,12 +56,37 @@ export class DeviceForm implements OnInit {
   protected readonly deviceTypes = IOT_DEVICE_TYPES;
 
   protected readonly form = this.fb.group({
-    deviceType: this.fb.nonNullable.control<IotDeviceType>('ENVIRONMENTAL_DEVICE', Validators.required),
-    name: this.fb.nonNullable.control('', [Validators.required, notBlankValidator, Validators.minLength(3), Validators.maxLength(150)]),
-    sensorExternalId: this.fb.nonNullable.control('', [Validators.required, notBlankValidator, codeValidator, Validators.maxLength(50)]),
-    serialNumber: this.fb.nonNullable.control('', [Validators.required, notBlankValidator, codeValidator, Validators.maxLength(50)]),
-    model: this.fb.nonNullable.control('ESP32', [Validators.required, notBlankValidator, Validators.maxLength(100)]),
-    firmwareVersion: this.fb.control<string | null>(null, [Validators.pattern(FIRMWARE_VERSION), Validators.maxLength(50)]),
+    deviceType: this.fb.nonNullable.control<IotDeviceType>(
+      'ENVIRONMENTAL_DEVICE',
+      Validators.required,
+    ),
+    name: this.fb.nonNullable.control('', [
+      Validators.required,
+      notBlankValidator,
+      Validators.minLength(3),
+      Validators.maxLength(150),
+    ]),
+    sensorExternalId: this.fb.nonNullable.control('', [
+      Validators.required,
+      notBlankValidator,
+      codeValidator,
+      Validators.maxLength(50),
+    ]),
+    serialNumber: this.fb.nonNullable.control('', [
+      Validators.required,
+      notBlankValidator,
+      codeValidator,
+      Validators.maxLength(50),
+    ]),
+    model: this.fb.nonNullable.control('ESP32', [
+      Validators.required,
+      notBlankValidator,
+      Validators.maxLength(100),
+    ]),
+    firmwareVersion: this.fb.control<string | null>(null, [
+      Validators.pattern(FIRMWARE_VERSION),
+      Validators.maxLength(50),
+    ]),
     environmentId: this.fb.control<number | null>(null),
   });
 
@@ -75,8 +101,15 @@ export class DeviceForm implements OnInit {
 
   /** An environment keeps a single environmental device (US52). */
   protected isOccupied(environmentId: number): boolean {
-    return this.form.controls.deviceType.value === 'ENVIRONMENTAL_DEVICE' && this.store.iotDevices().some((device) =>
-      device.deviceType === 'ENVIRONMENTAL_DEVICE' && device.environmentId === environmentId);
+    return (
+      this.form.controls.deviceType.value === 'ENVIRONMENTAL_DEVICE' &&
+      this.store
+        .iotDevices()
+        .some(
+          (device) =>
+            device.deviceType === 'ENVIRONMENTAL_DEVICE' && device.environmentId === environmentId,
+        )
+    );
   }
 
   protected async onSave(): Promise<void> {
@@ -85,7 +118,10 @@ export class DeviceForm implements OnInit {
     const device = await this.store.registerDevice(command, environmentId);
     if (!device) return;
     // A device whose association failed is still registered: its detail explains why and lets it be located again.
-    const locationError = environmentId !== null && device.environmentId === null ? this.store.error() : null;
-    await this.router.navigate(['/equipments/equipment-detail', device.id], { state: { locationError } });
+    const locationError =
+      environmentId !== null && device.environmentId === null ? this.store.error() : null;
+    await this.router.navigate(['/equipments/equipment-detail', device.id], {
+      state: { locationError },
+    });
   }
 }

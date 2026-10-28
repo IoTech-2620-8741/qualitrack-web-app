@@ -1,7 +1,7 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -26,7 +26,7 @@ import { ENVIRONMENT_USAGES, EnvironmentUsage } from '../../../domain/model/envi
   standalone: true,
   imports: [
     ReactiveFormsModule,
-    TranslateModule,
+    TranslatePipe,
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
@@ -36,6 +36,7 @@ import { ENVIRONMENT_USAGES, EnvironmentUsage } from '../../../domain/model/envi
     MatIconModule,
   ],
   templateUrl: './environment-form.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './environment-form.css',
 })
 export class EnvironmentForm implements OnInit {
@@ -129,9 +130,10 @@ export class EnvironmentForm implements OnInit {
       description: value.description.trim() || null,
     };
     const id = this.environmentId();
-    const saved = id === null
-      ? await this.store.register({ ...data, usage: value.usage })
-      : await this.store.update(id, data);
+    const saved =
+      id === null
+        ? await this.store.register({ ...data, usage: value.usage })
+        : await this.store.update(id, data);
     if (saved) await this.router.navigate(['/laboratories/environments']);
   }
 

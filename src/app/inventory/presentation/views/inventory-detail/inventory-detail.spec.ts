@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ActivatedRoute, convertToParamMap, provideRouter } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { provideTranslateService } from '@ngx-translate/core';
 import { of } from 'rxjs';
 import { addYears } from '../../../../shared/presentation/validators/date.validators';
 import { todayInLima } from '../../../../shared/presentation/utils/local-date';
@@ -14,8 +14,9 @@ describe('InventoryDetail', () => {
 
   function create(unit = 'kg') {
     TestBed.configureTestingModule({
-      imports: [InventoryDetail, TranslateModule.forRoot()],
+      imports: [InventoryDetail],
       providers: [
+        provideTranslateService(),
         provideHttpClient(),
         provideHttpClientTesting(),
         provideRouter([]),

@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   AbstractControl,
@@ -41,6 +41,7 @@ import { notBlankValidator } from '../../../../shared/presentation/validators/no
     Toolbar,
   ],
   templateUrl: './sign-up-form.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./sign-up-form.css'],
 })
 export class SignUpForm {
@@ -72,7 +73,12 @@ export class SignUpForm {
     {
       username: new FormControl<string>('', {
         nonNullable: true,
-        validators: [Validators.required, notBlankValidator, Validators.minLength(3), Validators.maxLength(80)],
+        validators: [
+          Validators.required,
+          notBlankValidator,
+          Validators.minLength(3),
+          Validators.maxLength(80),
+        ],
       }),
       email: new FormControl<string>('', {
         nonNullable: true,
@@ -80,7 +86,12 @@ export class SignUpForm {
       }),
       password: new FormControl<string>('', {
         nonNullable: true,
-        validators: [Validators.required, Validators.minLength(8), Validators.maxLength(72), this.passwordStrengthValidator],
+        validators: [
+          Validators.required,
+          Validators.minLength(8),
+          Validators.maxLength(72),
+          this.passwordStrengthValidator,
+        ],
       }),
       confirmPassword: new FormControl<string>('', {
         nonNullable: true,
@@ -144,7 +155,8 @@ export class SignUpForm {
   protected getUsernameErrorKey(): string {
     const control = this.form.controls.username;
 
-    if (control.hasError('required') || control.hasError('notBlank')) return 'iam.sign-up.errors.username-required';
+    if (control.hasError('required') || control.hasError('notBlank'))
+      return 'iam.sign-up.errors.username-required';
     if (control.hasError('minlength')) return 'iam.sign-up.errors.username-minlength';
     if (control.hasError('maxlength')) return 'iam.sign-up.errors.username-maxlength';
 
@@ -160,7 +172,8 @@ export class SignUpForm {
     const control = this.form.controls.email;
 
     if (control.hasError('required')) return 'iam.sign-up.errors.email-required';
-    if (control.hasError('email') || control.hasError('maxlength')) return 'iam.sign-up.errors.email-invalid';
+    if (control.hasError('email') || control.hasError('maxlength'))
+      return 'iam.sign-up.errors.email-invalid';
 
     return '';
   }
@@ -174,7 +187,8 @@ export class SignUpForm {
     const control = this.form.controls.password;
 
     if (control.hasError('required')) return 'iam.sign-up.errors.password-required';
-    if (control.hasError('minlength') || control.hasError('maxlength')) return 'iam.sign-up.errors.password-minlength';
+    if (control.hasError('minlength') || control.hasError('maxlength'))
+      return 'iam.sign-up.errors.password-minlength';
     if (control.hasError('passwordStrength')) return 'iam.sign-up.errors.password-strength';
 
     return '';

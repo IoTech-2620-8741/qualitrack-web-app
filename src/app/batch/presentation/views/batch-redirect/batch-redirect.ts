@@ -1,17 +1,8 @@
-import {
-  Component,
-  OnInit,
-  inject,
-  signal
-} from '@angular/core';
-import {
-  ActivatedRoute,
-  Router,
-  RouterLink
-} from '@angular/router';
+import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { MatIconModule } from '@angular/material/icon';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { BatchApi } from '../../../infrastructure/batch-api';
 import { batchError } from '../../../application/batch.store';
 import { IamStore } from '../../../../iam/application/iam.store';
@@ -28,7 +19,7 @@ import { IamStore } from '../../../../iam/application/iam.store';
 @Component({
   selector: 'app-batch-redirect',
   standalone: true,
-  imports: [RouterLink, MatIconModule, TranslateModule],
+  imports: [RouterLink, MatIconModule, TranslatePipe],
   template: `
     <main class="operations-page">
       @if (message(); as key) {
@@ -39,6 +30,7 @@ import { IamStore } from '../../../../iam/application/iam.store';
       }
     </main>
   `,
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: '../../../../shared/presentation/styles/operations-page.css',
 })
 export class BatchRedirect implements OnInit {

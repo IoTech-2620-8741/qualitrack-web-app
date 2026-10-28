@@ -4,7 +4,8 @@ import {
   computed,
   inject,
   input,
-  signal
+  signal,
+  ChangeDetectionStrategy,
 } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -12,7 +13,7 @@ import { firstValueFrom } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { BatchStore, batchError } from '../../../application/batch.store';
 import { BatchPath } from '../../../infrastructure/batch-api-endpoint';
 import { EquipmentApi } from '../../../../equipment/infrastructure/equipment-api';
@@ -40,9 +41,10 @@ import { IamStore } from '../../../../iam/application/iam.store';
     MatButtonModule,
     MatIconModule,
     MatSelectModule,
-    TranslateModule,
+    TranslatePipe,
   ],
   templateUrl: './batch-participants.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: '../../../../shared/presentation/styles/operations-page.css',
 })
 export class BatchParticipants implements OnInit {
@@ -126,11 +128,7 @@ export class BatchParticipants implements OnInit {
    */
   protected async addEquipment(): Promise<void> {
     if (this.equipmentId === null) return;
-    if (await this.store.registerEquipment(
-      this.path(),
-      this.batchId(),
-      this.equipmentId
-    ))
+    if (await this.store.registerEquipment(this.path(), this.batchId(), this.equipmentId))
       this.equipmentId = null;
   }
 

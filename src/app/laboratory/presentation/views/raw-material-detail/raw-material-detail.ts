@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -6,7 +6,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { RawMaterialHistoryStore } from '../../../application/raw-material-history.store';
 import { IamStore } from '../../../../iam/application/iam.store';
 
@@ -18,11 +18,21 @@ import { IamStore } from '../../../../iam/application/iam.store';
  * that parameter changes.
  */
 @Component({
-  selector: 'app-raw-material-detail', standalone: true,
-  imports: [CommonModule, RouterLink, TranslateModule, MatButtonModule, MatIconModule,
-    MatProgressSpinnerModule, MatTooltipModule],
+  selector: 'app-raw-material-detail',
+  standalone: true,
+  imports: [
+    CommonModule,
+    RouterLink,
+    TranslatePipe,
+    MatButtonModule,
+    MatIconModule,
+    MatProgressSpinnerModule,
+    MatTooltipModule,
+  ],
   providers: [RawMaterialHistoryStore],
-  templateUrl: './raw-material-detail.html', styleUrl: './raw-material-detail.css',
+  templateUrl: './raw-material-detail.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  styleUrl: './raw-material-detail.css',
 })
 export class RawMaterialDetail implements OnInit {
   /**
@@ -54,7 +64,10 @@ export class RawMaterialDetail implements OnInit {
    * Lifecycle hook that loads the history for every raw material identifier in the route.
    */
   ngOnInit(): void {
-    this.params.subscribe(params => { this.materialId = Number(params.get('id')); this.reload(); });
+    this.params.subscribe((params) => {
+      this.materialId = Number(params.get('id'));
+      this.reload();
+    });
   }
 
   /**

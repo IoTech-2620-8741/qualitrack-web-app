@@ -4,19 +4,16 @@ import {
   OnInit,
   computed,
   inject,
-  signal
+  signal,
+  ChangeDetectionStrategy,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import {
-  ActivatedRoute,
-  Router,
-  RouterLink
-} from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { ProductStore } from '../../../application/product.store';
 import { EnvironmentStore } from '../../../../laboratory/application/environment.store';
 import { EnvironmentSelector } from '../../../../laboratory/presentation/components/environment-selector/environment-selector';
@@ -40,10 +37,11 @@ import { EnvironmentSelector } from '../../../../laboratory/presentation/compone
     MatButtonModule,
     MatIconModule,
     MatInputModule,
-    TranslateModule,
+    TranslatePipe,
     EnvironmentSelector,
   ],
   templateUrl: './product-catalog.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: '../../../../shared/presentation/styles/operations-page.css',
 })
 export class ProductCatalog implements OnInit {

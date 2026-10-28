@@ -1,4 +1,4 @@
-import { Component, DestroyRef, inject, signal } from '@angular/core';
+import { Component, DestroyRef, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
@@ -32,8 +32,16 @@ type PasswordField = 'newPassword' | 'confirmPassword';
 @Component({
   selector: 'app-password-recovery',
   standalone: true,
-  imports: [ReactiveFormsModule, TranslatePipe, MatIconModule, MatProgressSpinnerModule, RouterLink, Toolbar],
+  imports: [
+    ReactiveFormsModule,
+    TranslatePipe,
+    MatIconModule,
+    MatProgressSpinnerModule,
+    RouterLink,
+    Toolbar,
+  ],
   templateUrl: './password-recovery.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['../sign-in-form/sign-in-form.css'],
 })
 export class PasswordRecovery {
@@ -53,26 +61,44 @@ export class PasswordRecovery {
   /** Minutes during which the code can be used, as the platform answered. */
   protected readonly validityMinutes = signal(15);
   /** Whether each password field hides its value. */
-  protected readonly hidden = signal<Record<PasswordField, boolean>>({ newPassword: true, confirmPassword: true });
+  protected readonly hidden = signal<Record<PasswordField, boolean>>({
+    newPassword: true,
+    confirmPassword: true,
+  });
 
   /** Form of the first step: username or e-mail of the account. */
   protected readonly accountForm = new FormGroup({
     account: new FormControl('', {
       nonNullable: true,
-      validators: [Validators.required, notBlankValidator, Validators.minLength(3), Validators.maxLength(120)],
+      validators: [
+        Validators.required,
+        notBlankValidator,
+        Validators.minLength(3),
+        Validators.maxLength(120),
+      ],
     }),
   });
 
   /** Form of the second step: 6-digit code, new password (8 to 72, letters and digits) and confirmation. */
   protected readonly resetForm = new FormGroup(
     {
-      code: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.pattern(/^\d{6}$/)] }),
+      code: new FormControl('', {
+        nonNullable: true,
+        validators: [Validators.required, Validators.pattern(/^\d{6}$/)],
+      }),
       newPassword: new FormControl('', {
         nonNullable: true,
-        validators: [Validators.required, Validators.minLength(8), Validators.maxLength(72),
-          Validators.pattern(/^(?=.*[A-Za-z])(?=.*\d).+$/)],
+        validators: [
+          Validators.required,
+          Validators.minLength(8),
+          Validators.maxLength(72),
+          Validators.pattern(/^(?=.*[A-Za-z])(?=.*\d).+$/),
+        ],
       }),
-      confirmPassword: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
+      confirmPassword: new FormControl('', {
+        nonNullable: true,
+        validators: [Validators.required],
+      }),
     },
     { validators: PasswordRecovery.matches },
   );
@@ -95,7 +121,8 @@ export class PasswordRecovery {
       return;
     }
     this.sending.set(true);
-    this.store.requestPasswordRecovery(this.accountForm.controls.account.value.trim())
+    this.store
+      .requestPasswordRecovery(this.accountForm.controls.account.value.trim())
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (minutes) => {
@@ -106,7 +133,11 @@ export class PasswordRecovery {
         },
         error: (error: HttpErrorResponse) => {
           this.sending.set(false);
-          this.error.set(error.status === 0 ? 'onboarding.connection-error' : 'iam.password-recovery.errors.request');
+          this.error.set(
+            error.status === 0
+              ? 'onboarding.connection-error'
+              : 'iam.password-recovery.errors.request',
+          );
         },
       });
   }
@@ -123,16 +154,24 @@ export class PasswordRecovery {
     }
     const { code, newPassword } = this.resetForm.getRawValue();
     this.sending.set(true);
-    this.store.resetPassword({ account: this.accountForm.controls.account.value.trim(), code, newPassword })
+    this.store
+      .resetPassword({ account: this.accountForm.controls.account.value.trim(), code, newPassword })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: (username) => void this.router.navigate(['/iam/sign-in'], {
-          replaceUrl: true, state: { passwordReset: true, username },
-        }),
+        next: (username) =>
+          void this.router.navigate(['/iam/sign-in'], {
+            replaceUrl: true,
+            state: { passwordReset: true, username },
+          }),
         error: (error: HttpErrorResponse) => {
           this.sending.set(false);
-          this.error.set(error.status === 400 ? 'iam.password-recovery.errors.invalid-code'
-            : error.status === 0 ? 'onboarding.connection-error' : 'iam.password-recovery.errors.reset');
+          this.error.set(
+            error.status === 400
+              ? 'iam.password-recovery.errors.invalid-code'
+              : error.status === 0
+                ? 'onboarding.connection-error'
+                : 'iam.password-recovery.errors.reset',
+          );
         },
       });
   }
@@ -152,7 +191,9 @@ export class PasswordRecovery {
    */
   protected codeError(): string {
     const control = this.resetForm.controls.code;
-    return control.hasError('required') ? 'iam.change-password.errors.required' : 'iam.password-recovery.errors.code-format';
+    return control.hasError('required')
+      ? 'iam.change-password.errors.required'
+      : 'iam.password-recovery.errors.code-format';
   }
 
   /**
@@ -163,7 +204,8 @@ export class PasswordRecovery {
   protected newPasswordError(): string {
     const control = this.resetForm.controls.newPassword;
     if (control.hasError('required')) return 'iam.change-password.errors.required';
-    if (control.hasError('minlength') || control.hasError('maxlength')) return 'iam.change-password.errors.length';
+    if (control.hasError('minlength') || control.hasError('maxlength'))
+      return 'iam.change-password.errors.length';
     return 'iam.change-password.errors.strength';
   }
 
@@ -174,6 +216,8 @@ export class PasswordRecovery {
    * @returns `{ passwordMismatch: true }` if they differ, null otherwise
    */
   private static matches(group: AbstractControl): ValidationErrors | null {
-    return group.get('newPassword')?.value === group.get('confirmPassword')?.value ? null : { passwordMismatch: true };
+    return group.get('newPassword')?.value === group.get('confirmPassword')?.value
+      ? null
+      : { passwordMismatch: true };
   }
 }

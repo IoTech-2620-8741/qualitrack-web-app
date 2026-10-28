@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ActivatedRoute, provideRouter } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { provideTranslateService } from '@ngx-translate/core';
 import { EnvironmentStore } from '../../../../laboratory/application/environment.store';
 import { EquipmentStore } from '../../../application/equipment.store';
 import { DeviceForm } from './device-form';
@@ -10,8 +10,8 @@ import { DeviceForm } from './device-form';
 describe('DeviceForm', () => {
   function create() {
     TestBed.configureTestingModule({
-      imports: [DeviceForm, TranslateModule.forRoot()],
-      providers: [provideHttpClient(), provideHttpClientTesting(), provideRouter([])],
+      imports: [DeviceForm],
+      providers: [provideTranslateService(), provideHttpClient(), provideHttpClientTesting(), provideRouter([])],
     });
     vi.spyOn(TestBed.inject(EquipmentStore), 'loadEquipment').mockImplementation(() => undefined as never);
     vi.spyOn(TestBed.inject(EnvironmentStore), 'loadEnvironments').mockResolvedValue(undefined as never);

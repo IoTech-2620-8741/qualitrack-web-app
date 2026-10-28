@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ActivatedRoute, provideRouter } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { provideTranslateService } from '@ngx-translate/core';
 import { TrackingStore } from '../../../application/tracking.store';
 import { TelemetryHistory } from './telemetry-history';
 
@@ -11,8 +11,9 @@ describe('TelemetryHistory', () => {
 
   function create() {
     TestBed.configureTestingModule({
-      imports: [TelemetryHistory, TranslateModule.forRoot()],
+      imports: [TelemetryHistory],
       providers: [
+        provideTranslateService(),
         provideHttpClient(),
         provideHttpClientTesting(),
         provideRouter([]),

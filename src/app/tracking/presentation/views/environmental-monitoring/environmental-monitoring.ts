@@ -1,7 +1,7 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -48,20 +48,20 @@ import { Measurement } from '../../../domain/model/measurement.entity';
     DatePipe,
     DecimalPipe,
     RouterLink,
-    TranslateModule,
+    TranslatePipe,
     MatButtonModule,
     MatIconModule,
     MatProgressSpinnerModule,
     EnvironmentSelector,
   ],
   templateUrl: './environmental-monitoring.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: [
     '../../../../shared/presentation/styles/operations-page.css',
     '../tracking-views.css',
   ],
 })
 export class EnvironmentalMonitoring implements OnInit {
-
   /**
    * Central application store responsible for IoT telemetry state,
    * device snapshots and environmental monitoring information.

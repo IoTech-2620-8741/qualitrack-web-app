@@ -1,7 +1,15 @@
-import { Component, DestroyRef, OnInit, computed, inject, signal } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  OnInit,
+  computed,
+  inject,
+  signal,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router, RouterLink } from '@angular/router';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
@@ -26,7 +34,7 @@ import { StaffMember } from '../../../domain/model/staff-member.entity';
   standalone: true,
   imports: [
     RouterLink,
-    TranslateModule,
+    TranslatePipe,
     MatTableModule,
     MatButtonModule,
     MatIconModule,
@@ -35,6 +43,7 @@ import { StaffMember } from '../../../domain/model/staff-member.entity';
     MatChipsModule,
   ],
   templateUrl: './staff-list.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './staff-list.css',
 })
 export class StaffList implements OnInit {
@@ -71,7 +80,9 @@ export class StaffList implements OnInit {
   /**
    * Quality managers and auditors can open the activity history of a staff member.
    */
-  protected readonly canSeeActivity = computed(() => this.iamStore.canManageQuality() || this.iamStore.isAuditor());
+  protected readonly canSeeActivity = computed(
+    () => this.iamStore.canManageQuality() || this.iamStore.isAuditor(),
+  );
 
   /**
    * Columns displayed in the staff table; the actions are only shown to quality managers.
@@ -101,9 +112,13 @@ export class StaffList implements OnInit {
    * @param member - Staff member to deactivate
    */
   protected onDeactivate(member: StaffMember): void {
-    if (!confirm(this.translate.instant('staff-list.deactivate-confirm', { name: member.fullName }))) return;
+    if (
+      !confirm(this.translate.instant('staff-list.deactivate-confirm', { name: member.fullName }))
+    )
+      return;
     this.error.set(null);
-    this.store.deactivateStaff(this.iamStore.requireLaboratoryId(), member.id)
+    this.store
+      .deactivateStaff(this.iamStore.requireLaboratoryId(), member.id)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({ error: () => this.error.set('staff-list.deactivate-error') });
   }

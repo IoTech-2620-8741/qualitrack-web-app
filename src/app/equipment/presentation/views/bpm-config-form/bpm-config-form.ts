@@ -1,6 +1,13 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
+import {
+  AbstractControl,
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  ValidationErrors,
+  Validators,
+} from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -25,7 +32,15 @@ export const MAX_BPM_LIMIT = 1_000_000;
 export function bpmRangeValidator(group: AbstractControl): ValidationErrors | null {
   const min = group.get('minValue')?.value;
   const max = group.get('maxValue')?.value;
-  if (min === null || min === undefined || min === '' || max === null || max === undefined || max === '') return null;
+  if (
+    min === null ||
+    min === undefined ||
+    min === '' ||
+    max === null ||
+    max === undefined ||
+    max === ''
+  )
+    return null;
   return Number(min) < Number(max) ? null : { bpmRange: true };
 }
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -64,6 +79,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     TranslatePipe,
   ],
   templateUrl: './bpm-config-form.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './bpm-config-form.css',
 })
 export class BpmConfigForm implements OnInit {
@@ -111,11 +127,21 @@ export class BpmConfigForm implements OnInit {
       parameterName: ['', [Validators.required, notBlankValidator, Validators.maxLength(100)]],
       minValue: [
         null,
-        [Validators.required, Validators.pattern(/^-?\d*\.?\d+$/), Validators.min(-MAX_BPM_LIMIT), Validators.max(MAX_BPM_LIMIT)],
+        [
+          Validators.required,
+          Validators.pattern(/^-?\d*\.?\d+$/),
+          Validators.min(-MAX_BPM_LIMIT),
+          Validators.max(MAX_BPM_LIMIT),
+        ],
       ],
       maxValue: [
         null,
-        [Validators.required, Validators.pattern(/^-?\d*\.?\d+$/), Validators.min(-MAX_BPM_LIMIT), Validators.max(MAX_BPM_LIMIT)],
+        [
+          Validators.required,
+          Validators.pattern(/^-?\d*\.?\d+$/),
+          Validators.min(-MAX_BPM_LIMIT),
+          Validators.max(MAX_BPM_LIMIT),
+        ],
       ],
       unit: ['', [Validators.required, notBlankValidator, Validators.maxLength(20)]],
     },

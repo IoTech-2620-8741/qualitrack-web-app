@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ActivatedRoute, provideRouter } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { provideTranslateService } from '@ngx-translate/core';
 import { IamStore } from '../../../../iam/application/iam.store';
 import { addYears } from '../../../../shared/presentation/validators/date.validators';
 import { todayInLima } from '../../../../shared/presentation/utils/local-date';
@@ -15,8 +15,9 @@ describe('BatchForm', () => {
 
   function create() {
     TestBed.configureTestingModule({
-      imports: [BatchForm, TranslateModule.forRoot()],
+      imports: [BatchForm],
       providers: [
+        provideTranslateService(),
         provideHttpClient(),
         provideHttpClientTesting(),
         provideRouter([]),

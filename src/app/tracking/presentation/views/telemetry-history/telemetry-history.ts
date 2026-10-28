@@ -1,7 +1,14 @@
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  computed,
+  inject,
+  signal,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
@@ -17,7 +24,11 @@ import { ChartData, ChartOptions } from 'chart.js';
 import { TrackingStore, recentPeriod } from '../../../application/tracking.store';
 import { EnvironmentStore } from '../../../../laboratory/application/environment.store';
 import { EnvironmentSelector } from '../../../../laboratory/presentation/components/environment-selector/environment-selector';
-import { MonitoredMetric, metricDefinition, metricsOf } from '../../../domain/model/monitored-metric';
+import {
+  MonitoredMetric,
+  metricDefinition,
+  metricsOf,
+} from '../../../domain/model/monitored-metric';
 
 /** Earliest moment the history can be asked for, as a datetime-local value. */
 export const MIN_HISTORY_START = '2020-01-01T00:00';
@@ -46,7 +57,7 @@ export const MIN_HISTORY_START = '2020-01-01T00:00';
     DatePipe,
     DecimalPipe,
     FormsModule,
-    TranslateModule,
+    TranslatePipe,
     MatButtonModule,
     MatButtonToggleModule,
     MatFormFieldModule,
@@ -58,6 +69,7 @@ export const MIN_HISTORY_START = '2020-01-01T00:00';
     EnvironmentSelector,
   ],
   templateUrl: './telemetry-history.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: [
     '../../../../shared/presentation/styles/operations-page.css',
     '../tracking-views.css',
@@ -309,7 +321,7 @@ export class TelemetryHistory implements OnInit {
    * Formats timestamps according to the current application language.
    */
   private formatDate(value: number): string {
-    return new Intl.DateTimeFormat(this.translate.currentLang || 'en', {
+    return new Intl.DateTimeFormat(this.translate.currentLang() || 'en', {
       dateStyle: 'short',
       timeStyle: 'short',
     }).format(new Date(value));

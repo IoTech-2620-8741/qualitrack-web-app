@@ -1,7 +1,7 @@
-import { Component, OnInit, computed, inject } from '@angular/core';
+import { Component, OnInit, computed, inject, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -51,7 +51,7 @@ import { ALL_ENVIRONMENTS } from '../../../domain/model/indicator-period';
   imports: [
     CommonModule,
     FormsModule,
-    TranslateModule,
+    TranslatePipe,
     MatCardModule,
     MatButtonModule,
     MatIconModule,
@@ -65,6 +65,7 @@ import { ALL_ENVIRONMENTS } from '../../../domain/model/indicator-period';
   ],
   providers: [BatchStore, EquipmentStore],
   templateUrl: './report-generator.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './report-generator.css',
 })
 export class ReportGeneratorComponent implements OnInit {
@@ -75,7 +76,8 @@ export class ReportGeneratorComponent implements OnInit {
 
   /** Equipment located in an environment: its log report belongs to that environment (TS86). */
   protected readonly locatedEquipment = computed(() =>
-    this.equipmentStore.equipmentList().filter(equipment => equipment.environmentId !== null));
+    this.equipmentStore.equipmentList().filter((equipment) => equipment.environmentId !== null),
+  );
 
   ngOnInit(): void {
     this.store.clearMessages();
@@ -95,13 +97,28 @@ export class ReportGeneratorComponent implements OnInit {
   }
 
   protected get hasSelectedBatch(): boolean {
-    return !this.batchStore.isLoading() && !this.batchStore.error() &&
-      this.batchStore.batches().some(batch => batch.id === this.batchForm.batchId && batch.labId === this.currentLaboratoryId);
+    return (
+      !this.batchStore.isLoading() &&
+      !this.batchStore.error() &&
+      this.batchStore
+        .batches()
+        .some(
+          (batch) =>
+            batch.id === this.batchForm.batchId && batch.labId === this.currentLaboratoryId,
+        )
+    );
   }
 
   protected get hasSelectedEquipment(): boolean {
-    return !this.equipmentStore.isLoading() && !this.equipmentStore.error() &&
-      this.locatedEquipment().some(equipment => equipment.id === this.equipmentForm.equipmentId && equipment.labId === this.currentLaboratoryId);
+    return (
+      !this.equipmentStore.isLoading() &&
+      !this.equipmentStore.error() &&
+      this.locatedEquipment().some(
+        (equipment) =>
+          equipment.id === this.equipmentForm.equipmentId &&
+          equipment.labId === this.currentLaboratoryId,
+      )
+    );
   }
   /**
    * The application store managing the state for the Reporting and Analysis bounded context.
@@ -147,7 +164,10 @@ export class ReportGeneratorComponent implements OnInit {
   /**
    * Form state for the inventory report: every environment ({@link ALL_ENVIRONMENTS}) or one.
    */
-  protected inventoryForm: { environmentId: number; format: 'PDF' | 'CSV' } = { environmentId: ALL_ENVIRONMENTS, format: 'PDF' };
+  protected inventoryForm: { environmentId: number; format: 'PDF' | 'CSV' } = {
+    environmentId: ALL_ENVIRONMENTS,
+    format: 'PDF',
+  };
 
   /**
    * Form state for exporting equipment maintenance and operational logs.
@@ -245,7 +265,13 @@ export class ReportGeneratorComponent implements OnInit {
    * The days are sent in the browser time zone; {@link Date.toISOString} would move evening dates to the next day.
    */
   protected onGenerateComplianceReport(): void {
-    if (!this.complianceForm.startDate || !this.complianceForm.endDate || this.complianceError || this.store.isLoading()) return;
+    if (
+      !this.complianceForm.startDate ||
+      !this.complianceForm.endDate ||
+      this.complianceError ||
+      this.store.isLoading()
+    )
+      return;
 
     this.store.generateComplianceReport({
       laboratoryId: this.currentLaboratoryId,
@@ -277,7 +303,9 @@ export class ReportGeneratorComponent implements OnInit {
    */
   protected onExportEquipmentLog(): void {
     if (
-      !this.equipmentForm.equipmentId || !this.hasSelectedEquipment || this.store.isLoading() ||
+      !this.equipmentForm.equipmentId ||
+      !this.hasSelectedEquipment ||
+      this.store.isLoading() ||
       !this.equipmentForm.startDate ||
       !this.equipmentForm.endDate ||
       this.equipmentError
@@ -285,7 +313,9 @@ export class ReportGeneratorComponent implements OnInit {
       return;
     }
 
-    const equipment = this.locatedEquipment().find(item => item.id === this.equipmentForm.equipmentId);
+    const equipment = this.locatedEquipment().find(
+      (item) => item.id === this.equipmentForm.equipmentId,
+    );
     if (!equipment?.environmentId) return;
 
     this.store.exportEquipmentLog({

@@ -1,26 +1,13 @@
-import {
-  Component,
-  OnInit,
-  effect,
-  inject,
-  input
-} from '@angular/core';
-import {
-  DatePipe,
-  DecimalPipe
-} from '@angular/common';
-import {
-  FormBuilder,
-  ReactiveFormsModule,
-  Validators
-} from '@angular/forms';
+import { Component, OnInit, effect, inject, input, ChangeDetectionStrategy } from '@angular/core';
+import { DatePipe, DecimalPipe } from '@angular/common';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { BatchStore } from '../../../application/batch.store';
 import { RawMaterialConsumptionStore } from '../../../application/raw-material-consumption.store';
 import { BatchPath } from '../../../infrastructure/batch-api-endpoint';
@@ -52,10 +39,11 @@ import { stockQuantityValidator } from '../../../../shared/presentation/validato
     MatIconModule,
     MatInputModule,
     MatSelectModule,
-    TranslateModule,
+    TranslatePipe,
     EnvironmentSelector,
   ],
   templateUrl: './raw-material-usage.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: '../../../../shared/presentation/styles/operations-page.css',
 })
 export class RawMaterialUsageComponent implements OnInit {

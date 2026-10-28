@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
@@ -21,8 +21,17 @@ import { Toolbar } from '../../../../shared/presentation/components/toolbar/tool
 @Component({
   selector: 'app-sign-in',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, TranslatePipe, MatProgressSpinnerModule, MatIconModule, RouterLink, Toolbar],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    TranslatePipe,
+    MatProgressSpinnerModule,
+    MatIconModule,
+    RouterLink,
+    Toolbar,
+  ],
   templateUrl: './sign-in-form.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./sign-in-form.css'],
 })
 export class SignInForm {
@@ -66,7 +75,8 @@ export class SignInForm {
    * and the username, which is filled in.
    */
   constructor() {
-    const state = this.router.currentNavigation()?.extras.state as { passwordReset?: boolean; username?: string } | undefined;
+    const state = this.router.currentNavigation()?.extras.state as
+      { passwordReset?: boolean; username?: string } | undefined;
     this.passwordReset = !!state?.passwordReset;
     if (state?.username) this.form.controls.username.setValue(state.username);
   }

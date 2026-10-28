@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -34,6 +34,7 @@ import { notBlankValidator } from '../../../../shared/presentation/validators/no
     TranslatePipe,
   ],
   templateUrl: './equipment-form.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './equipment-form.css',
 })
 export class EquipmentForm {
@@ -54,10 +55,16 @@ export class EquipmentForm {
   ];
 
   protected readonly form = this.fb.nonNullable.group({
-    name: ['', [Validators.required, notBlankValidator, Validators.minLength(3), Validators.maxLength(150)]],
+    name: [
+      '',
+      [Validators.required, notBlankValidator, Validators.minLength(3), Validators.maxLength(150)],
+    ],
     type: ['', [Validators.required, Validators.maxLength(100)]],
     model: ['', [Validators.required, notBlankValidator, Validators.maxLength(100)]],
-    serialNumber: ['', [Validators.required, Validators.maxLength(50), Validators.pattern(/^[a-zA-Z0-9-]+$/)]],
+    serialNumber: [
+      '',
+      [Validators.required, Validators.maxLength(50), Validators.pattern(/^[a-zA-Z0-9-]+$/)],
+    ],
   });
 
   constructor() {

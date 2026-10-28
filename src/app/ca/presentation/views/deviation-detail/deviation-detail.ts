@@ -1,4 +1,12 @@
-import { Component, DestroyRef, OnInit, Signal, computed, inject } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  OnInit,
+  Signal,
+  computed,
+  inject,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -7,7 +15,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 import { CaStore } from '../../../application/ca.store';
 import { DeviationAlert } from '../../../domain/model/deviation-alert.entity';
@@ -29,9 +37,10 @@ import { EnvironmentStore } from '../../../../laboratory/application/environment
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,
-    TranslateModule,
+    TranslatePipe,
   ],
   templateUrl: './deviation-detail.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: '../../../../shared/presentation/styles/operations-page.css',
 })
 export class DeviationDetail implements OnInit {
@@ -54,7 +63,10 @@ export class DeviationDetail implements OnInit {
    * The resolution notes are required and must have between 10 and 500 characters.
    */
   protected readonly resolutionForm = this.fb.nonNullable.group({
-    resolutionNotes: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(500)]],
+    resolutionNotes: [
+      '',
+      [Validators.required, Validators.minLength(10), Validators.maxLength(500)],
+    ],
   });
 
   /** Environment of the alert, shown with its code and name. */
@@ -114,6 +126,8 @@ export class DeviationDetail implements OnInit {
   protected resolve(): void {
     this.resolutionForm.markAllAsTouched();
     if (this.resolutionForm.invalid) return;
-    this.store.resolveAlert(this.alertId, { resolutionNotes: this.resolutionForm.getRawValue().resolutionNotes.trim() });
+    this.store.resolveAlert(this.alertId, {
+      resolutionNotes: this.resolutionForm.getRawValue().resolutionNotes.trim(),
+    });
   }
 }

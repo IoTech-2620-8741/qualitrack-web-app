@@ -1,23 +1,10 @@
-import {
-  Component,
-  OnInit,
-  effect,
-  inject
-} from '@angular/core';
-import {
-  FormBuilder,
-  ReactiveFormsModule,
-  Validators
-} from '@angular/forms';
-import {
-  ActivatedRoute,
-  Router,
-  RouterLink
-} from '@angular/router';
+import { Component, OnInit, effect, inject, ChangeDetectionStrategy } from '@angular/core';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { todayInLima } from '../../../../shared/presentation/utils/local-date';
 import {
   afterDateValidator,
@@ -48,9 +35,10 @@ import { BatchPath } from '../../../infrastructure/batch-api-endpoint';
     MatButtonModule,
     MatIconModule,
     MatInputModule,
-    TranslateModule,
+    TranslatePipe,
   ],
   templateUrl: './batch-reject-form.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: '../../../../shared/presentation/styles/operations-page.css',
 })
 export class BatchRejectForm implements OnInit {
@@ -83,7 +71,10 @@ export class BatchRejectForm implements OnInit {
         afterDateValidator(() => this.store.selectedBatch()?.startDate),
       ],
     ],
-    reason: ['', [Validators.required, notBlankValidator, Validators.minLength(15), Validators.maxLength(500)]],
+    reason: [
+      '',
+      [Validators.required, notBlankValidator, Validators.minLength(15), Validators.maxLength(500)],
+    ],
   });
 
   /**
@@ -127,7 +118,8 @@ export class BatchRejectForm implements OnInit {
     };
     this.batchId = Number(params.get('batchId'));
     this.store.clearMessages();
-    if (this.store.selectedBatch()?.id !== this.batchId) void this.store.loadBatch(this.path, this.batchId);
+    if (this.store.selectedBatch()?.id !== this.batchId)
+      void this.store.loadBatch(this.path, this.batchId);
   }
 
   /**

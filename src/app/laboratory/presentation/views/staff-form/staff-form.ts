@@ -1,9 +1,9 @@
-import { Component, DestroyRef, inject, signal } from '@angular/core';
+import { Component, DestroyRef, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Clipboard } from '@angular/cdk/clipboard';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -36,7 +36,7 @@ import { personNameValidator } from '../../../../shared/presentation/validators/
   standalone: true,
   imports: [
     ReactiveFormsModule,
-    TranslateModule,
+    TranslatePipe,
     MatFormFieldModule,
     MatCardModule,
     MatIconModule,
@@ -47,6 +47,7 @@ import { personNameValidator } from '../../../../shared/presentation/validators/
     MatProgressSpinnerModule,
   ],
   templateUrl: './staff-form.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './staff-form.css',
 })
 export class StaffForm {
@@ -101,7 +102,13 @@ export class StaffForm {
   protected readonly form = new FormGroup({
     fullName: new FormControl('', {
       nonNullable: true,
-      validators: [Validators.required, notBlankValidator, personNameValidator, Validators.minLength(2), Validators.maxLength(150)],
+      validators: [
+        Validators.required,
+        notBlankValidator,
+        personNameValidator,
+        Validators.minLength(2),
+        Validators.maxLength(150),
+      ],
     }),
     role: new FormControl('', {
       nonNullable: true,
@@ -111,7 +118,10 @@ export class StaffForm {
       nonNullable: true,
       validators: [Validators.required, emailValidator, Validators.maxLength(150)],
     }),
-    accessRole: new FormControl<StaffAccessRole>('OPERATOR', { nonNullable: true, validators: [Validators.required] }),
+    accessRole: new FormControl<StaffAccessRole>('OPERATOR', {
+      nonNullable: true,
+      validators: [Validators.required],
+    }),
   });
 
   /**
@@ -124,15 +134,18 @@ export class StaffForm {
       return;
     }
     const value = this.form.getRawValue();
-    this.store.registerStaff(this.iamStore.requireLaboratoryId(), {
-      fullName: value.fullName.trim(),
-      role: value.role.trim(),
-      email: value.email.trim(),
-      accessRole: value.accessRole,
-    }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (registered) => this.registered.set(registered),
-      error: (error: unknown) => this.error.set(this.errorKey(error)),
-    });
+    this.store
+      .registerStaff(this.iamStore.requireLaboratoryId(), {
+        fullName: value.fullName.trim(),
+        role: value.role.trim(),
+        email: value.email.trim(),
+        accessRole: value.accessRole,
+      })
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (registered) => this.registered.set(registered),
+        error: (error: unknown) => this.error.set(this.errorKey(error)),
+      });
   }
 
   /**

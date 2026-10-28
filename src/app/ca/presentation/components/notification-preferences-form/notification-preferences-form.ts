@@ -1,7 +1,15 @@
-import { Component, DestroyRef, OnInit, effect, inject, signal } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  OnInit,
+  effect,
+  inject,
+  signal,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -21,7 +29,7 @@ import { AlertSeverity } from '../../../domain/model/deviation-alert.entity';
   standalone: true,
   imports: [
     ReactiveFormsModule,
-    TranslateModule,
+    TranslatePipe,
     MatButtonModule,
     MatIconModule,
     MatSlideToggleModule,
@@ -29,6 +37,7 @@ import { AlertSeverity } from '../../../domain/model/deviation-alert.entity';
     MatFormFieldModule,
   ],
   templateUrl: './notification-preferences-form.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './notification-preferences-form.css',
 })
 export class NotificationPreferencesForm implements OnInit {
@@ -68,11 +77,14 @@ export class NotificationPreferencesForm implements OnInit {
     effect(() => {
       const preference = this.store.preference();
       if (!preference) return;
-      this.form.reset({
-        inAppEnabled: preference.inAppEnabled,
-        emailEnabled: preference.emailEnabled,
-        minimumSeverity: preference.minimumSeverity === 'CRITICAL' ? 'CRITICAL' : 'WARNING',
-      }, { emitEvent: false });
+      this.form.reset(
+        {
+          inAppEnabled: preference.inAppEnabled,
+          emailEnabled: preference.emailEnabled,
+          minimumSeverity: preference.minimumSeverity === 'CRITICAL' ? 'CRITICAL' : 'WARNING',
+        },
+        { emitEvent: false },
+      );
     });
     this.form.valueChanges.pipe(takeUntilDestroyed()).subscribe(() => this.saved.set(false));
   }
@@ -93,7 +105,8 @@ export class NotificationPreferencesForm implements OnInit {
     if (this.saving()) return;
     this.saving.set(true);
     this.error.set(null);
-    this.store.updateNotificationPreferences(this.form.getRawValue())
+    this.store
+      .updateNotificationPreferences(this.form.getRawValue())
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
