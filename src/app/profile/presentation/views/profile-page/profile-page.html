@@ -195,7 +195,9 @@
         <section class="card" id="notifications" aria-labelledby="notifications-title">
           <h2 id="notifications-title">{{ 'profile.notifications.title' | translate }}</h2>
           <p class="muted">{{ 'profile.notifications.subtitle' | translate }}</p>
-          <app-notification-preferences-form />
+          <a mat-stroked-button routerLink="/alerts/notification-settings">
+            <mat-icon>tune</mat-icon>{{ 'notifications.preferences' | translate }}
+          </a>
         </section>
       </div>
     </div>

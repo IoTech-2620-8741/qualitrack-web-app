@@ -1,0 +1,11 @@
+.settings-card {
+  max-width: 720px;
+  padding: 24px;
+  border: 1px solid #d4dfe3;
+  border-radius: 10px;
+  background: #ffffff;
+}
+
+@media (max-width: 560px) {
+  .settings-card { padding: 16px; }
+}

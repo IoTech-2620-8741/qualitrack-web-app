@@ -12,7 +12,7 @@ import {
 } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import {
   AbstractControl,
   FormBuilder,
@@ -30,7 +30,6 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { MAX_PHOTO_BYTES, PHOTO_TYPES, ProfileStore, errorStatus } from '../../../application/profile.store';
 import { IamStore } from '../../../../iam/application/iam.store';
-import { NotificationPreferencesForm } from '../../../../ca/presentation/components/notification-preferences-form/notification-preferences-form';
 import { DigitsOnly } from '../../../../shared/presentation/directives/digits-only.directive';
 import { PhoneInput } from '../../../../shared/presentation/directives/phone-input.directive';
 import { dniValidator } from '../../../../shared/presentation/validators/dni.validator';
@@ -60,7 +59,7 @@ function lettersAndDigits(control: AbstractControl): ValidationErrors | null {
  * @remarks
  * Each section has its own form, saving flag and message, so saving one does not block the others. The personal data
  * and photo go through the {@link ProfileStore}; the account and password through the {@link IamStore}. A URL fragment
- * (e.g. `/profile#notifications`) scrolls to that section.
+ * scrolls to its section; the legacy `/profile#notifications` link opens the CA preferences page.
  */
 @Component({
   selector: 'app-profile-page',
@@ -74,7 +73,7 @@ function lettersAndDigits(control: AbstractControl): ValidationErrors | null {
     MatIconModule,
     MatInputModule,
     MatProgressSpinnerModule,
-    NotificationPreferencesForm,
+    RouterLink,
     DigitsOnly,
     PhoneInput,
   ],
@@ -89,6 +88,7 @@ export class ProfilePage implements AfterViewInit {
   protected readonly iam = inject(IamStore);
   private readonly fb = inject(FormBuilder);
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
   private readonly host = inject(ElementRef<HTMLElement>);
   private readonly translate = inject(TranslateService);
   private readonly destroyRef = inject(DestroyRef);
@@ -185,10 +185,14 @@ export class ProfilePage implements AfterViewInit {
     });
   }
 
-  /** Scrolls to the section named by the URL fragment, if any. */
+  /** Redirects the legacy notifications fragment; scrolls to other named profile sections. */
   ngAfterViewInit(): void {
     this.route.fragment.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((fragment) => {
       if (!fragment) return;
+      if (fragment === 'notifications') {
+        void this.router.navigate(['/alerts/notification-settings'], { replaceUrl: true });
+        return;
+      }
       setTimeout(() =>
         this.host.nativeElement
           .querySelector(`#${CSS.escape(fragment)}`)

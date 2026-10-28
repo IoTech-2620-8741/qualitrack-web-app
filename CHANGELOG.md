@@ -15,7 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Profile (profile): the toolbar photo or initials, name and role are now displayed by a Profile component composed by the layout, preserving the profile link and mobile appearance (#45). Quality managers can now open staff photos and personal data on a separate page linked from the staff detail (#46).
+- Profile (profile): the toolbar photo or initials, name and role are now displayed by a Profile component composed by the layout, preserving the profile link and mobile appearance (#45). Quality managers can now open staff photos and personal data on a separate page linked from the staff detail (#46). Notification preferences open from a profile card in Compliance & Alerts; the legacy /profile#notifications link redirects to that page (#47).
 
 - IAM (iam): the toolbar session section now only signs out and no longer reads profile data (#45).
 
@@ -27,7 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Product Batch (batch): products and raw material consumption are now kept in `BatchStore` (#40) and the batch path moved to the domain (#39); the equipment (#43), environments, staff and raw material lots a batch uses are now read through the models of Product Batch (#44).
 
-- Compliance & Alerts (ca): the notifications of the bell are now kept in `CaStore` (#40); the devices (#43) and environments (#44) of the alerts are now read through the models of Compliance & Alerts.
+- Compliance & Alerts (ca): the notifications of the bell are now kept in `CaStore` (#40); the devices (#43) and environments (#44) of the alerts are now read through the models of Compliance & Alerts. Notification preferences now have their own page, reachable from the profile and toolbar bell (#47).
 
 - Equipment (equipment): the environments where equipment is installed and the technicians of a maintenance are now read through the models of Equipment (#44).
 

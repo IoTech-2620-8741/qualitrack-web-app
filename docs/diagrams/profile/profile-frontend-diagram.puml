@@ -25,10 +25,6 @@ package "iam.application" <<External>> {
   }
 }
 
-package "ca.presentation.components" <<External>> {
-  class NotificationPreferencesForm <<component>>
-}
-
 package "profile.domain.model" {
   class Profile {
     +id: number
@@ -157,13 +153,14 @@ ProfileRoutes ..> Layout
 ProfileRoutes --> ProfilePage
 ProfilePage --> ProfileStore
 ProfilePage --> IamStore : account and password
-ProfilePage *-- NotificationPreferencesForm : #notifications
 ProfilePage ..> errorStatus
 ProfilePage ..> OperationsPage
 note bottom of ProfilePage
   /profile, opened from the name in the toolbar: photo (JPG, PNG or WebP
   up to 2 MB), personal data, account (username and e-mail confirmed with
-  the current password), password and notification preferences.
+  the current password), password and a #notifications card linking to
+  /alerts/notification-settings. The legacy #notifications URL redirects there.
+  No CA component is imported.
 end note
 
 package "profile.presentation.components.user-profile-badge" {

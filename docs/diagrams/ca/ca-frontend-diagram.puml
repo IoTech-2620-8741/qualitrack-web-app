@@ -360,6 +360,8 @@ package "ca.presentation" {
     #timeAgo(isoDate): string
   }
 
+  class NotificationSettings
+
   class NotificationPreferencesForm <<component>> {
     #form
     #saved / saving / error
@@ -485,7 +487,7 @@ note bottom of NotificationBell
 end note
 NotificationPreferencesForm --> CaStore
 note bottom of NotificationPreferencesForm
-  Shown in the profile: bell, e-mail of critical alerts and the
+  Shown on the notification settings page: bell, e-mail of critical alerts and the
   lowest alert severity notified (/users/me/notification-preferences).
 end note
 
@@ -493,7 +495,7 @@ CaRoutes ..> AlertDashboard
 CaRoutes ..> AlertHistory
 CaRoutes ..> DeviationDetail
 note bottom of CaRoutes
-  /alerts/notification-settings redirects to /profile.
+  /alerts/notification-settings loads NotificationSettings.
 end note
 
 CaApi --> AlertDeviceApiEndpoint
@@ -508,4 +510,8 @@ note bottom of AlertEnvironmentApiEndpoint
   in the model of CA; the chosen environment is remembered with the
   monitoring views ("tracking").
 end note
+CaRoutes --> NotificationSettings
+NotificationSettings *-- NotificationPreferencesForm
+NotificationBell ..> NotificationSettings : navigation link
+
 @enduml
