@@ -18,6 +18,7 @@ import { BatchTraceability } from '../domain/model/batch-traceability.entity';
 import { CreateBatchCommand } from '../domain/model/create-batch.command';
 import { CreateProductCommand } from '../domain/model/create-product.command';
 import { PharmaceuticalProduct } from '../domain/model/pharmaceutical-product.entity';
+import { ProductionEquipment } from '../domain/model/production-equipment.entity';
 import { ReleaseBatchCommand } from '../domain/model/release-batch.command';
 import { RejectBatchCommand } from '../domain/model/reject-batch.command';
 
@@ -180,6 +181,16 @@ export class BatchStore {
       },
       error: (error) => this.fail(error),
     });
+  }
+
+  /**
+   * Reads the equipment of the laboratory: the process equipment a batch uses and the container monitors where it is
+   * stored (Equipment → Product Batch).
+   *
+   * @returns The equipment of the laboratory of the session.
+   */
+  async loadProductionEquipment(): Promise<ProductionEquipment[]> {
+    return firstValueFrom(this.api.getProductionEquipment(this.laboratoryId));
   }
 
   /**
