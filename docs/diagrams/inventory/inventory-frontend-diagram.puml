@@ -22,13 +22,10 @@ package "iam.application" {
   }
 }
 
-package "laboratory" {
-  class LaboratoryApi {
-    +getEnvironment(laboratoryId, environmentId)
-  }
-  class EnvironmentStore {
-    +preferredEnvironment(usage?, scope?): Environment
-    +rememberEnvironment(id, scope?): void
+package "shared.infrastructure" {
+  class EnvironmentPreference {
+    +choose(laboratoryId, environments, preferredUsage?)
+    +remember(laboratoryId, environmentId): void
   }
 }
 
@@ -40,6 +37,10 @@ package "batch.infrastructure" {
 }
 
 package "inventory.domain.model" {
+  class StorageEnvironment {
+    +id / code / name
+    +usage: string | null
+  }
   class StorageContainer {
     +id / name / serialNumber / status
     +environmentId: number | null
@@ -88,6 +89,11 @@ package "inventory.infrastructure" {
     +getContainers(laboratoryId, environmentId)
   }
   class StorageContainerAssembler
+  class StorageEnvironmentApiEndpoint {
+    +getEnvironments(laboratoryId)
+    +getEnvironment(laboratoryId, environmentId)
+  }
+  class StorageEnvironmentAssembler
   class InventoryApi {
     +materials(lab, environmentId, stockStatus?)
     +material(lab, environmentId, id)
@@ -100,6 +106,8 @@ package "inventory.infrastructure" {
     +movements(lab, environmentId, material)
     +legacy(lab)
     +import(lab, environmentId, legacyId)
+    +environments(lab)
+    +environment(lab, environmentId)
   }
   class RawMaterialApiEndpoint
   class RawMaterialBatchApiEndpoint
@@ -132,7 +140,12 @@ note right of RawMaterialBatchApiEndpoint
 end note
 
 package "inventory.application" {
-  class InventoryStore <<component scoped>> {
+  class InventoryStore <<root>> {
+    +environments: Signal<StorageEnvironment[]>
+    +environmentsLoaded / environmentsLoading / environmentsError / environmentsEmpty
+    +loadEnvironments(): Promise<void>
+    +preferredEnvironment(): StorageEnvironment | null
+    +rememberEnvironment(environmentId): void
     +environmentId: Signal<number>
     +materials: Signal<RawMaterial[]>
     +lowStockMaterials: Signal<RawMaterial[]>
@@ -144,7 +157,7 @@ package "inventory.application" {
     +canReview: Signal<boolean>
     +canOperate: Signal<boolean>
     +containers: Signal<StorageContainer[]>
-    +environmentUsage: Signal<EnvironmentUsage | null>
+    +environmentUsage: Signal<string | null>
     +availableContainers: Signal<StorageContainer[]>
     +storesInContainers: Signal<boolean>
     +load(environmentId, id?): Promise<boolean>
@@ -164,7 +177,7 @@ package "inventory.application" {
 InventoryStore --> InventoryApi
 InventoryStore --> BatchApi
 InventoryStore --> IamStore
-InventoryStore --> LaboratoryApi : environment usage
+InventoryStore --> EnvironmentPreference
 InventoryStore ..> StorageContainer
 
 package "inventory.presentation" {
@@ -175,10 +188,10 @@ package "inventory.presentation" {
   class InventoryRoutes
 }
 
-InventoryHome --> EnvironmentStore
+InventoryHome --> InventoryStore
+InventoryHome --> IamStore
 InventoryCatalogue --> InventoryStore
 InventoryCatalogue --> EnvironmentSelector
-InventoryCatalogue --> EnvironmentStore
 InventoryDetail --> InventoryStore
 RegisterMaterial --> InventoryStore
 InventoryCatalogue ..> OperationsPage
@@ -202,4 +215,11 @@ end note
 InventoryApi --> StorageContainerApiEndpoint
 StorageContainerApiEndpoint --> StorageContainerAssembler
 StorageContainerAssembler ..> StorageContainer
+InventoryApi --> StorageEnvironmentApiEndpoint
+StorageEnvironmentApiEndpoint --> StorageEnvironmentAssembler
+StorageEnvironmentAssembler ..> StorageEnvironment
+note bottom of StorageEnvironmentApiEndpoint
+  Laboratory -> Inventory (Customer/Supplier):
+  GET /laboratories/{id}/environments[/{environmentId}] in Inventory's own model.
+end note
 @enduml

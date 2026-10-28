@@ -154,16 +154,14 @@ package "laboratory.application" {
     +staffMember(laboratoryId, staffId): Observable<StaffMember>
     +registerStaff(laboratoryId, command): Observable<RegisteredStaff>
     +deactivateStaff(laboratoryId, staffId): Observable<StaffMember>
-  }
-  class EnvironmentStore <<root>> {
     +environments: Signal<Environment[]>
-    +canManage: Signal<boolean>
+    +environmentsLoading / environmentError / environmentsEmpty
+    +canManageEnvironments: Signal<boolean>
     +loadEnvironments()
-    +register(command)
-    +update(environmentId, command)
-    +assignUsage(environmentId, usage)
-    +preferredEnvironment(usage?, scope?)
-    +rememberEnvironment(environmentId, scope?)
+    +loadEnvironment(environmentId)
+    +registerEnvironment(command)
+    +updateEnvironment(environmentId, command)
+    +assignEnvironmentUsage(environmentId, usage)
   }
   class RawMaterialHistoryStore <<component scoped>> {
     +material
@@ -173,13 +171,13 @@ package "laboratory.application" {
 }
 
 LaboratoryStore --> LaboratoryApi
-EnvironmentStore --> LaboratoryApi
-EnvironmentStore --> IamStore
+LaboratoryStore --> IamStore
 RawMaterialHistoryStore --> LaboratoryApi
 RawMaterialHistoryStore --> BatchApi
-note right of EnvironmentStore
-  Remembers the environment per feature
-  (inventory, production) in this browser only.
+note right of LaboratoryStore
+  Single store of the context (application/laboratory.store.ts).
+  The other contexts read environments and staff through their
+  own models; each one remembers its environment in this browser.
 end note
 
 package "laboratory.presentation" {
@@ -196,8 +194,8 @@ package "laboratory.presentation" {
 
 LabForm --> LaboratoryStore
 LabProfile --> LaboratoryStore
-EnvironmentList --> EnvironmentStore
-EnvironmentForm --> EnvironmentStore
+EnvironmentList --> LaboratoryStore
+EnvironmentForm --> LaboratoryStore
 StaffList --> LaboratoryStore
 StaffForm --> LaboratoryStore
 StaffForm ..> errorStatus
