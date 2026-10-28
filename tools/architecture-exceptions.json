@@ -7,9 +7,6 @@
     "laboratory/application/raw-material-history.store.ts -> batch/domain/model/raw-material-usage.entity": "phase 6: inverted relation laboratory -> batch",
     "laboratory/application/raw-material-history.store.ts -> batch/infrastructure/batch-api": "phase 6: inverted relation laboratory -> batch",
     "laboratory/application/raw-material-history.store.ts -> laboratory/application/laboratory.store": "phase 6: raw materials kept before Inventory",
-    "laboratory/presentation/views/staff-detail/staff-detail.ts -> profile/application/profile.store": "phase 6: inverted relation laboratory -> profile",
-    "laboratory/presentation/views/staff-detail/staff-detail.ts -> ra/domain/model/audit-log-entry.entity": "phase 6: inverted relation laboratory -> ra",
-    "laboratory/presentation/views/staff-detail/staff-detail.ts -> ra/infrastructure/ra-api": "phase 6: inverted relation laboratory -> ra",
     "profile/presentation/views/profile-page/profile-page.ts -> ca/presentation/components/notification-preferences-form/notification-preferences-form": "phase 6: inverted relation profile -> ca"
   }
 }
