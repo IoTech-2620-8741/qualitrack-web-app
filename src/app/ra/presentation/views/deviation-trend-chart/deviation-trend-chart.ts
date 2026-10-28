@@ -24,7 +24,7 @@ import {
 } from '../../../domain/model/deviation-trend.entity';
 import { lastDays } from '../../../domain/model/indicator-period';
 import { EnvironmentStore } from '../../../../laboratory/application/environment.store';
-import { EnvironmentSelector } from '../../../../laboratory/presentation/components/environment-selector/environment-selector';
+import { EnvironmentSelector } from '../../../../shared/presentation/components/environment-selector/environment-selector';
 
 /** Lengths of the period offered, in days; the platform accepts up to 31. */
 const PERIOD_DAYS = [1, 7, 31] as const;

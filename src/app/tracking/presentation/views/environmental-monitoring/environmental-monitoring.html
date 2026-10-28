@@ -2,7 +2,7 @@
   <header class="page-heading">
     <h1><mat-icon aria-hidden="true">sensors</mat-icon>{{ 'tracking.monitoring.title' | translate }}</h1>
     <div class="actions">
-      <app-environment-selector [selectedId]="store.environmentId()" (selectedChange)="changeEnvironment($event)" />
+      <app-environment-selector [environments]="environments.environments()" [selectedId]="store.environmentId()" (selectedChange)="changeEnvironment($event)" />
       <button mat-stroked-button type="button" (click)="refresh()" [disabled]="store.isLoading() || store.environmentId() === null">
         <mat-icon>refresh</mat-icon>{{ 'tracking.refresh' | translate }}
       </button>

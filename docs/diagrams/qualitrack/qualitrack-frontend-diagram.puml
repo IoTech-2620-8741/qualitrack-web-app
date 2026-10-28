@@ -47,12 +47,12 @@ package "qualitrack-frontend" {
       class Layout
       class Toolbar
       class LanguageSwitcher
+      class EnvironmentSelector
     }
 
     package "presentation.views" {
       class Home
       class About
-      class Dashboard
       class PageNotFound
     }
   }
@@ -302,6 +302,7 @@ package "qualitrack-frontend" {
 
     package "presentation" {
       class RaRoutes <<Routes>>
+      class Dashboard
       class KpiDashboardComponent
       class DeviationTrendChartComponent
       class ReportGenerator
@@ -415,14 +416,7 @@ Toolbar --> LanguageSwitcher
 Home --> Toolbar
 Home --> AuthenticationSection
 
-Dashboard --> IamStore
-Dashboard --> LaboratoryStore
-Dashboard --> EquipmentStore
-Dashboard --> BatchStore
-Dashboard --> CaStore
-Dashboard --> RaStore
-Dashboard --> TrackingStore
-Dashboard --> SubscriptionStore
+Dashboard --> RaStore : operational overview with its own models (ACL)
 
 authenticationInterceptor --> IamStore
 

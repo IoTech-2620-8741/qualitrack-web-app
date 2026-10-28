@@ -8,7 +8,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { TrackingStore, DeviceSnapshot } from '../../../application/tracking.store';
 import { EnvironmentStore } from '../../../../laboratory/application/environment.store';
-import { EnvironmentSelector } from '../../../../laboratory/presentation/components/environment-selector/environment-selector';
+import { EnvironmentSelector } from '../../../../shared/presentation/components/environment-selector/environment-selector';
 import { MonitoredMetric } from '../../../domain/model/monitored-metric';
 import { Measurement } from '../../../domain/model/measurement.entity';
 

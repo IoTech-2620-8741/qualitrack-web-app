@@ -5,6 +5,7 @@ skinparam packageStyle rectangle
 skinparam classAttributeIconSize 0
 
 package "shared" <<External>> {
+  class EnvironmentSelector <<component>>
   interface BaseEntity
   interface BaseResource
   interface BaseResponse
@@ -34,7 +35,6 @@ package "laboratory" <<External>> {
     +preferredEnvironment(usage?, scope): Environment | null
     +rememberEnvironment(environmentId, scope): void
   }
-  class EnvironmentSelector <<component>>
 }
 
 package "tracking" {

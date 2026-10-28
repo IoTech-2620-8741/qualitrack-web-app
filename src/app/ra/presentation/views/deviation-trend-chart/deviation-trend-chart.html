@@ -11,7 +11,7 @@
           <mat-button-toggle [value]="option">{{ 'reporting.period.days-' + option | translate }}</mat-button-toggle>
         }
       </mat-button-toggle-group>
-      <app-environment-selector [selectedId]="environmentId()" (selectedChange)="changeEnvironment($event)" />
+      <app-environment-selector [environments]="environments.environments()" [selectedId]="environmentId()" (selectedChange)="changeEnvironment($event)" />
     </div>
   </header>
 

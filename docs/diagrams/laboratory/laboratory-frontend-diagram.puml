@@ -187,7 +187,6 @@ package "laboratory.presentation" {
   class LabProfile
   class EnvironmentList
   class EnvironmentForm
-  class EnvironmentSelector <<component>>
   class StaffList
   class StaffForm
   class StaffDetail
@@ -199,7 +198,6 @@ LabForm --> LaboratoryStore
 LabProfile --> LaboratoryStore
 EnvironmentList --> EnvironmentStore
 EnvironmentForm --> EnvironmentStore
-EnvironmentSelector --> EnvironmentStore
 StaffList --> LaboratoryStore
 StaffForm --> LaboratoryStore
 StaffForm ..> errorStatus

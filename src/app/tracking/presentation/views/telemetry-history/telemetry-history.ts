@@ -23,7 +23,7 @@ import { ChartData, ChartOptions } from 'chart.js';
 
 import { TrackingStore, recentPeriod } from '../../../application/tracking.store';
 import { EnvironmentStore } from '../../../../laboratory/application/environment.store';
-import { EnvironmentSelector } from '../../../../laboratory/presentation/components/environment-selector/environment-selector';
+import { EnvironmentSelector } from '../../../../shared/presentation/components/environment-selector/environment-selector';
 import {
   MonitoredMetric,
   metricDefinition,

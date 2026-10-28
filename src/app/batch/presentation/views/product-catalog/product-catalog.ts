@@ -16,7 +16,7 @@ import { MatInputModule } from '@angular/material/input';
 import { TranslatePipe } from '@ngx-translate/core';
 import { BatchStore } from '../../../application/batch.store';
 import { EnvironmentStore } from '../../../../laboratory/application/environment.store';
-import { EnvironmentSelector } from '../../../../laboratory/presentation/components/environment-selector/environment-selector';
+import { EnvironmentSelector } from '../../../../shared/presentation/components/environment-selector/environment-selector';
 
 /**
  * Pharmaceutical products of an environment, with registration for quality roles.
@@ -45,7 +45,7 @@ import { EnvironmentSelector } from '../../../../laboratory/presentation/compone
 })
 export class ProductCatalog implements OnInit {
   protected readonly store = inject(BatchStore);
-  private readonly environments = inject(EnvironmentStore);
+  protected readonly environments = inject(EnvironmentStore);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly destroy = inject(DestroyRef);
@@ -69,6 +69,7 @@ export class ProductCatalog implements OnInit {
    * Lifecycle hook that loads the products of the environment of the route every time it changes.
    */
   ngOnInit(): void {
+    if (!this.environments.loaded()) void this.environments.loadEnvironments();
     this.route.paramMap.pipe(takeUntilDestroyed(this.destroy)).subscribe(async (params) => {
       const environmentId = Number(params.get('environmentId'));
       this.search.set('');

@@ -13,6 +13,7 @@
       <!-- Environment where the raw material is kept -->
       <div class="full-width">
         <app-environment-selector
+          [environments]="environments.environments()"
           [selectedId]="store.consumptionEnvironmentId()"
           (selectedChange)="changeEnvironment($event)"
         />

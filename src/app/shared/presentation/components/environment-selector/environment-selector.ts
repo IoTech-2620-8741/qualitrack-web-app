@@ -1,17 +1,25 @@
-import { Component, OnInit, inject, input, output, ChangeDetectionStrategy } from '@angular/core';
+import { Component, input, output, ChangeDetectionStrategy } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
 
-import { EnvironmentStore } from '../../../application/environment.store';
+/**
+ * Environment that the selector offers: what a view shows of the environments it works with.
+ */
+export interface EnvironmentOption {
+  id: number;
+  code: string;
+  name: string;
+  usage?: string | null;
+}
 
 /**
- * Selector of the environment in which other bounded contexts work (inventory, equipment, telemetry).
+ * Selector of the environment in which a view works (inventory, products, alerts, telemetry, reports).
  *
  * @remarks
- * Belongs to Laboratory Management, the owner of environments. It only emits the selected
- * environment identifier; the hosting feature decides how to navigate.
+ * A visual component without domain logic: the hosting view passes the environments of its own context and
+ * decides what to do with the selected one.
  */
 @Component({
   selector: 'app-environment-selector',
@@ -26,7 +34,7 @@ import { EnvironmentStore } from '../../../application/environment.store';
         (selectionChange)="selectedChange.emit($event.value)"
         [attr.aria-label]="'environments.selector' | translate"
       >
-        @for (environment of store.environments(); track environment.id) {
+        @for (environment of environments(); track environment.id) {
           <mat-option [value]="environment.id">
             {{ environment.code }} · {{ environment.name }}
             @if (environment.usage) {
@@ -55,26 +63,13 @@ import { EnvironmentStore } from '../../../application/environment.store';
     }
   `,
 })
-export class EnvironmentSelector implements OnInit {
-  /**
-   * Store that provides the environments of the current laboratory.
-   */
-  protected readonly store = inject(EnvironmentStore);
+export class EnvironmentSelector {
+  /** Environments to choose from. */
+  readonly environments = input.required<readonly EnvironmentOption[]>();
 
-  /**
-   * Identifier of the environment currently shown by the hosting feature.
-   */
+  /** Identifier of the selected environment, or null when none is selected. */
   readonly selectedId = input<number | null>(null);
 
-  /**
-   * Emits the identifier of the environment chosen by the user.
-   */
+  /** Emits the identifier of the environment the user selects. */
   readonly selectedChange = output<number>();
-
-  /**
-   * Lifecycle hook that loads the environments unless another view already loaded them.
-   */
-  ngOnInit(): void {
-    if (!this.store.loaded()) void this.store.loadEnvironments();
-  }
 }

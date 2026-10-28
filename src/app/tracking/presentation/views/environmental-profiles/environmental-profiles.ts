@@ -7,7 +7,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { TrackingStore } from '../../../application/tracking.store';
 import { EnvironmentStore } from '../../../../laboratory/application/environment.store';
-import { EnvironmentSelector } from '../../../../laboratory/presentation/components/environment-selector/environment-selector';
+import { EnvironmentSelector } from '../../../../shared/presentation/components/environment-selector/environment-selector';
 import { ThresholdEditor } from '../../components/threshold-editor/threshold-editor';
 import { ActuationRulesEditor } from '../../components/actuation-rules-editor/actuation-rules-editor';
 import { configurableMetricsOf, MonitoredMetric } from '../../../domain/model/monitored-metric';

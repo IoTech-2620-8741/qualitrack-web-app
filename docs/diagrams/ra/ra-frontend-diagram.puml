@@ -7,9 +7,11 @@ skinparam classAttributeIconSize 0
 hide empty members
 
 package "shared" {
+  class EnvironmentSelector <<component>>
   interface BaseEntity
   class BaseApi
   class BaseApiEndpoint
+  class ErrorHandlingEnabledBaseType
   interface BaseAssembler
   interface BaseResource
   interface BaseResponse
@@ -48,10 +50,6 @@ package "laboratory" {
     +loadEnvironments(): Promise<void>
     +preferredEnvironment(usage?, scope): Environment
     +rememberEnvironment(environmentId, scope): void
-  }
-  class EnvironmentSelector {
-    +selectedId
-    +selectedChange
   }
 }
 
@@ -156,6 +154,45 @@ package "ra.domain.model" {
     +startDate: string
     +endDate: string
     +format: "PDF | CSV"
+  }
+
+  class OverviewLaboratory {
+    +id: number
+    +name: string
+  }
+  class OverviewEquipment {
+    +id / laboratoryId / environmentId
+    +name: string
+    +deviceType: string | null
+    +isIotDevice: boolean
+    +isContainerMonitor: boolean
+  }
+  class OverviewBatch {
+    +id / batchNumber / productName / status
+    +environmentId / productId
+    +detailLink
+  }
+  class OverviewRawMaterial {
+    +id / name / stockStatus
+    +isLowStock: boolean
+  }
+  class OverviewAlert {
+    +id / equipmentId / parameterName
+    +recordedValue / unit / severity / status / timestamp
+    +isOpen: boolean
+  }
+  class OverviewReading {
+    +deviceId / metric / value / unit / measuredAt
+    +isChartable: boolean
+  }
+  class OverviewSubscription {
+    +laboratoryId / planCode / billingCycle / status
+    +currentPeriodEnd: string | null
+  }
+  class OverviewPlan {
+    +code / name / billingPeriod
+    +priceAmount / currency
+    +maxEquipment: number | null
   }
 }
 
@@ -309,6 +346,24 @@ package "ra.infrastructure" {
     +endDate: string
     +format: "PDF | CSV"
   }
+
+  class OperationalOverviewApiEndpoint {
+    +getLaboratory(laboratoryId)
+    +getEnvironmentIds(laboratoryId)
+    +getLowStockMaterials(laboratoryId, environmentId)
+    +getBatches(laboratoryId)
+    +getEquipment(laboratoryId)
+    +getOpenAlerts(laboratoryId, environmentId)
+    +getReadings(laboratoryId, environmentId, containerMonitorId, period)
+    +getActiveSubscription(laboratoryId)
+    +getPlans()
+  }
+  class OperationalOverviewAssembler
+  note bottom of OperationalOverviewApiEndpoint
+    Anti-Corruption Layer: reads the REST resources of Laboratory, Inventory,
+    Product Batch, Equipment, Compliance & Alerting, Tracking & Telemetry and
+    Payments & Subscriptions and translates them into the Overview* models.
+  end note
 }
 
 package "ra.application" {
@@ -340,11 +395,30 @@ package "ra.application" {
     +generateInventoryReport(command: GenerateInventoryReportCommand): void
     +exportEquipmentLog(command: ExportEquipmentLogCommand): void
     +clearMessages(): void
+
+    +overviewLaboratory / overviewEquipment / overviewBatches
+    +overviewMaterials / overviewAlerts / overviewMeasurements
+    +overviewSubscription / overviewPlans: Signal<OverviewState>
+    +overviewDevices / overviewOpenAlerts / overviewLowStock
+    +overviewSeries / overviewReadings / overviewReadingRange
+    +reloadOverview(): void
+    +loadOverviewSubscription(): void
+    +loadOverviewPlans(): void
+    +loadOverviewAlerts(): void
+    +selectOverviewDevice(deviceId: number | null): void
+    +selectOverviewSeries(key: string): void
   }
 }
 
 package "ra.presentation" {
   class RaRoutes
+
+  class Dashboard {
+    #store: RaStore
+    #summaryCards / batchDistribution / recentBatches
+    #chartData / chartOptions
+    #reloadAll(): void
+  }
 
   class KpiDashboardComponent {
     +periods
@@ -447,6 +521,18 @@ RaApi --> KpiApiEndpoint
 RaApi --> DeviationTrendApiEndpoint
 RaApi --> AuditLogApiEndpoint
 RaApi --> ReportApiEndpoint
+RaApi --> OperationalOverviewApiEndpoint
+OperationalOverviewApiEndpoint --|> ErrorHandlingEnabledBaseType
+OperationalOverviewApiEndpoint --> OperationalOverviewAssembler
+OperationalOverviewAssembler ..> OverviewLaboratory
+OperationalOverviewAssembler ..> OverviewEquipment
+OperationalOverviewAssembler ..> OverviewBatch
+OperationalOverviewAssembler ..> OverviewRawMaterial
+OperationalOverviewAssembler ..> OverviewAlert
+OperationalOverviewAssembler ..> OverviewReading
+OperationalOverviewAssembler ..> OverviewSubscription
+OperationalOverviewAssembler ..> OverviewPlan
+Dashboard --> RaStore
 
 KpiApiEndpoint --> KpiAssembler
 DeviationTrendApiEndpoint --> DeviationTrendAssembler
