@@ -15,9 +15,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Profile (profile): the toolbar photo or initials, name and role are now displayed by a Profile component composed by the layout, preserving the profile link and mobile appearance (#45). Quality managers can now open staff photos and personal data on a separate page linked from the staff detail (#46). Notification preferences open from a profile card in Compliance & Alerts; the legacy /profile#notifications link redirects to that page (#47).
+- Profile (profile): the toolbar photo or initials, name and role are now displayed by a Profile component composed by the layout, preserving the profile link and mobile appearance (#45). Quality managers can now open staff photos and personal data on a separate page linked from the staff detail (#46). Notification preferences open from a profile card in Compliance & Alerts; the legacy /profile#notifications link redirects to that page (#47). Route configuration now uses `profile.routes.ts`, preserving public paths (#50).
 
-- IAM (iam): the toolbar session section now only signs out and no longer reads profile data (#45).
+- IAM (iam): the toolbar session section now only signs out and no longer reads profile data (#45). Password recovery uses the shared HTTP error handler while retaining the same visible failure messages (#50).
 
 - Dependencies: Angular 22.2, Angular Material and CDK 22.2.4, ngx-translate 18.1 and TypeScript 6.0; the component tests now provide the translation service (#36).
 
@@ -25,21 +25,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Shared (shared): the environment selector is now a visual component without a store, and the operational overview (dashboard) moved to Reporting & Audit (#41).
 
-- Product Batch (batch): products and raw material consumption are now kept in `BatchStore` (#40) and the batch path moved to the domain (#39); the equipment (#43), environments, staff and raw material lots a batch uses are now read through the models of Product Batch (#44). Historical consumption links open the preserved material detail in Inventory (#49).
+- Product Batch (batch): products and raw material consumption are now kept in `BatchStore` (#40) and the batch path moved to the domain (#39); the equipment (#43), environments, staff and raw material lots a batch uses are now read through the models of Product Batch (#44). Historical consumption links open the preserved material detail in Inventory (#49). Participation and traceability use constructor-based domain classes; route configuration uses `batch.routes.ts` with the same URLs (#50).
 
-- Compliance & Alerts (ca): the notifications of the bell are now kept in `CaStore` (#40); the devices (#43) and environments (#44) of the alerts are now read through the models of Compliance & Alerts. Notification preferences now have their own page, reachable from the profile and toolbar bell (#47).
+- Compliance & Alerts (ca): the notifications of the bell are now kept in `CaStore` (#40); the devices (#43) and environments (#44) of the alerts are now read through the models of Compliance & Alerts. Notification preferences now have their own page, reachable from the profile and toolbar bell (#47). Route configuration now uses `ca.routes.ts`, preserving public paths (#50).
 
-- Equipment (equipment): the environments where equipment is installed and the technicians of a maintenance are now read through the models of Equipment (#44).
+- Equipment (equipment): the environments where equipment is installed and the technicians of a maintenance are now read through the models of Equipment (#44). Route configuration now uses `equipment.routes.ts`, preserving public paths (#50).
 
-- Inventory (inventory): the storage containers (#43) and the environments (#44) are now read through the models of Inventory. Current and historical material consumption also use an Inventory model and endpoint, preserving the warning for production batches affected by observed or rejected receipts (#48). Historical material details now belong to Inventory with its own material snapshot and batch-label models; previous-balance imports remain available (#49).
+- Inventory (inventory): the storage containers (#43) and the environments (#44) are now read through the models of Inventory. Current and historical material consumption also use an Inventory model and endpoint, preserving the warning for production batches affected by observed or rejected receipts (#48). Historical material details now belong to Inventory with its own material snapshot and batch-label models; previous-balance imports remain available (#49). Previous balances use constructor-based domain entities; route configuration uses `inventory.routes.ts` with the same URLs (#50).
 
-- Laboratory (laboratory): the environments are now managed by `LaboratoryStore`, the single store of the context (#44), and the staff member detail is read through it (#39). Staff detail now links to separate profile and activity pages while retaining employment data and deactivation (#46). Historical material URLs redirect to Inventory (#49).
+- Laboratory (laboratory): the environments are now managed by `LaboratoryStore`, the single store of the context (#44), and the staff member detail is read through it (#39). Staff detail now links to separate profile and activity pages while retaining employment data and deactivation (#46). Historical material URLs redirect to Inventory (#49). Route configuration now uses `laboratory.routes.ts`, preserving public paths and legacy redirects (#50).
 
-- Reporting & Audit (ra): the operational overview shows its data through the models of Reporting & Audit (#41); the equipment of the reports (#43) and the environments and batches of the indicators, trends and reports are read through them too (#44). Staff activity now has its own page with record-type filtering and a staff identity read through an independent Laboratory ACL (#46).
+- Reporting & Audit (ra): the operational overview shows its data through the models of Reporting & Audit (#41); the equipment of the reports (#43) and the environments and batches of the indicators, trends and reports are read through them too (#44). Staff activity now has its own page with record-type filtering and a staff identity read through an independent Laboratory ACL (#46). Report failures use the shared HTTP error handler while preserving translated messages for JSON and Blob responses; route configuration uses `ra.routes.ts` (#50).
 
-- Tracking & Telemetry (tracking): devices and environments are now read through its own anti-corruption layer (#42).
+- Tracking & Telemetry (tracking): devices and environments are now read through its own anti-corruption layer (#42). Each telemetry endpoint and assembler has its own file, with separate request types and shared URL/query helpers; route configuration uses `tracking.routes.ts` (#50).
 
-- Subscription (subscription): the view after the payment is now resolved through the IAM store (#39).
+- Subscription (subscription): the view after the payment is now resolved through the IAM store (#39). Route configuration now uses `subscription.routes.ts`, preserving public paths (#50).
 
 ### Removed
 
