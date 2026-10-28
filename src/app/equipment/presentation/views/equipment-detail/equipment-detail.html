@@ -105,7 +105,7 @@
                   <mat-form-field appearance="outline">
                     <mat-label>{{ 'equipment-list.fields.environment' | translate }}</mat-label>
                     <mat-select formControlName="environmentId">
-                      @for (environment of environments.environments(); track environment.id) {
+                      @for (environment of store.environments(); track environment.id) {
                         <mat-option
                           [value]="environment.id"
                           [disabled]="environment.id === current.environmentId || isOccupied(current, environment.id)">

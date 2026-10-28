@@ -3,7 +3,6 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ActivatedRoute, provideRouter } from '@angular/router';
 import { provideTranslateService } from '@ngx-translate/core';
-import { EnvironmentStore } from '../../../../laboratory/application/environment.store';
 import { EquipmentStore } from '../../../application/equipment.store';
 import { DeviceForm } from './device-form';
 
@@ -14,7 +13,7 @@ describe('DeviceForm', () => {
       providers: [provideTranslateService(), provideHttpClient(), provideHttpClientTesting(), provideRouter([])],
     });
     vi.spyOn(TestBed.inject(EquipmentStore), 'loadEquipment').mockImplementation(() => undefined as never);
-    vi.spyOn(TestBed.inject(EnvironmentStore), 'loadEnvironments').mockResolvedValue(undefined as never);
+    vi.spyOn(TestBed.inject(EquipmentStore), 'loadEnvironments').mockResolvedValue(undefined as never);
     const fixture = TestBed.createComponent(DeviceForm);
     fixture.detectChanges();
     return (fixture.componentInstance as unknown as { form: import('@angular/forms').FormGroup }).form;

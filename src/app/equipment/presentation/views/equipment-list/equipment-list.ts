@@ -19,7 +19,6 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { EquipmentStore } from '../../../application/equipment.store';
 import { Equipment } from '../../../domain/model/equipment.entity';
 import { ATTENTION_STATUSES } from '../../../domain/model/equipment-status';
-import { EnvironmentStore } from '../../../../laboratory/application/environment.store';
 
 /** Which equipment the list shows: everything, process equipment or IoT devices. */
 type EquipmentFilter = 'all' | 'equipment' | 'devices';
@@ -52,8 +51,6 @@ type EquipmentFilter = 'all' | 'equipment' | 'devices';
 export class EquipmentList implements OnInit {
   protected readonly store = inject(EquipmentStore);
 
-  private readonly environments = inject(EnvironmentStore);
-
   protected readonly filter = signal<EquipmentFilter>('all');
 
   protected readonly search = signal('');
@@ -84,7 +81,7 @@ export class EquipmentList implements OnInit {
 
   ngOnInit(): void {
     this.store.loadEquipment();
-    void this.environments.loadEnvironments();
+    void this.store.loadEnvironments();
   }
 
   protected reload(): void {
@@ -98,9 +95,7 @@ export class EquipmentList implements OnInit {
   /** Name of the environment where the equipment is located, if it is known. */
   protected environmentName(equipment: Equipment): string | null {
     if (equipment.environmentId === null) return null;
-    const environment = this.environments
-      .environments()
-      .find((item) => item.id === equipment.environmentId);
+    const environment = this.store.environments().find((item) => item.id === equipment.environmentId);
     return environment
       ? `${environment.code} · ${environment.name}`
       : `#${equipment.environmentId}`;

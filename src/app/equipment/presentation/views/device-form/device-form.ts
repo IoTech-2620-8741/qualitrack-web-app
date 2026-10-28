@@ -13,7 +13,6 @@ import { TranslatePipe } from '@ngx-translate/core';
 
 import { EquipmentStore } from '../../../application/equipment.store';
 import { IOT_DEVICE_TYPES, IotDeviceType } from '../../../domain/model/iot-device-type';
-import { EnvironmentStore } from '../../../../laboratory/application/environment.store';
 import { codeValidator } from '../../../../shared/presentation/validators/code.validator';
 import { notBlankValidator } from '../../../../shared/presentation/validators/not-blank.validator';
 
@@ -50,8 +49,6 @@ export class DeviceForm implements OnInit {
   private readonly router = inject(Router);
 
   protected readonly store = inject(EquipmentStore);
-
-  protected readonly environments = inject(EnvironmentStore);
 
   protected readonly deviceTypes = IOT_DEVICE_TYPES;
 
@@ -95,7 +92,7 @@ export class DeviceForm implements OnInit {
   }
 
   ngOnInit(): void {
-    void this.environments.loadEnvironments();
+    void this.store.loadEnvironments();
     this.store.loadEquipment();
   }
 
