@@ -6,7 +6,7 @@
       <p class="muted">{{ 'ca-alerts.history.subtitle' | translate }}</p>
     </div>
     <div class="actions">
-      <app-environment-selector [environments]="environments.environments()" [selectedId]="environmentId()" (selectedChange)="changeEnvironment($event)" />
+      <app-environment-selector [environments]="store.environments()" [selectedId]="environmentId()" (selectedChange)="changeEnvironment($event)" />
     </div>
   </header>
 
@@ -14,7 +14,7 @@
     <p class="error" role="alert">{{ store.error()! | translate }}</p>
   }
 
-  @if (environments.isEmpty()) {
+  @if (store.environmentsEmpty()) {
     <p class="notice">{{ 'ca-alerts.no-environments' | translate }}</p>
   } @else if (environmentId() !== null) {
     <div class="filters">

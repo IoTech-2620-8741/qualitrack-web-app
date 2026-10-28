@@ -9,7 +9,6 @@ import { MatSelectModule } from '@angular/material/select';
 
 import { CaStore } from '../../../application/ca.store';
 import { AlertSeverity, AlertStatus } from '../../../domain/model/deviation-alert.entity';
-import { EnvironmentStore } from '../../../../laboratory/application/environment.store';
 import { EnvironmentSelector } from '../../../../shared/presentation/components/environment-selector/environment-selector';
 import { AlertTable } from '../../components/alert-table/alert-table';
 
@@ -37,8 +36,6 @@ import { AlertTable } from '../../components/alert-table/alert-table';
 export class AlertHistory implements OnInit {
   /** Store that holds the alerts shown by the table. */
   protected readonly store = inject(CaStore);
-  /** Store of the environments the person can choose from. */
-  protected readonly environments = inject(EnvironmentStore);
   /** Environment whose alerts are shown; `null` until one is chosen. */
   protected readonly environmentId = signal<number | null>(null);
   /** Statuses the person can filter by. */
@@ -61,9 +58,9 @@ export class AlertHistory implements OnInit {
     this.store.clearError();
     this.store.clearAlerts();
     this.store.loadDevices();
-    if (!this.environments.loaded()) await this.environments.loadEnvironments();
-    const preferred = this.environments.preferredEnvironment(undefined, 'tracking');
-    if (preferred) this.changeEnvironment(preferred.id);
+    if (!this.store.environmentsLoaded()) await this.store.loadEnvironments();
+    const preferred = this.store.preferredEnvironmentId();
+    if (preferred !== null) this.changeEnvironment(preferred);
   }
 
   /**
@@ -72,7 +69,7 @@ export class AlertHistory implements OnInit {
    * @param environmentId - The environment chosen
    */
   protected changeEnvironment(environmentId: number): void {
-    this.environments.rememberEnvironment(environmentId, 'tracking');
+    this.store.rememberEnvironment(environmentId);
     this.environmentId.set(environmentId);
     this.search();
   }
