@@ -12,7 +12,7 @@ import { BatchStore } from '../../../application/batch.store';
 import { BatchPath } from '../../../domain/model/batch-path';
 import { TracedRawMaterialUsage } from '../../../domain/model/batch-traceability.entity';
 import { EnvironmentStore } from '../../../../laboratory/application/environment.store';
-import { EnvironmentSelector } from '../../../../laboratory/presentation/components/environment-selector/environment-selector';
+import { EnvironmentSelector } from '../../../../shared/presentation/components/environment-selector/environment-selector';
 import { stockQuantityValidator } from '../../../../shared/presentation/validators/stock-quantity.validator';
 
 /**
@@ -52,7 +52,7 @@ export class RawMaterialUsageComponent implements OnInit {
   /** Whether the consumption form is available (the batch is open and the user operates). */
   readonly open = input(false);
   protected readonly store = inject(BatchStore);
-  private readonly environments = inject(EnvironmentStore);
+  protected readonly environments = inject(EnvironmentStore);
   private readonly fb = inject(FormBuilder);
 
   /**

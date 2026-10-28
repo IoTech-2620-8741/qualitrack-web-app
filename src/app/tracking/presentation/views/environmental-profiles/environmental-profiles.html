@@ -2,7 +2,7 @@
   <header class="page-heading">
     <h1><mat-icon aria-hidden="true">tune</mat-icon>{{ 'tracking.profiles.title' | translate }}</h1>
     <div class="actions">
-      <app-environment-selector [selectedId]="store.environmentId()" (selectedChange)="changeEnvironment($event)" />
+      <app-environment-selector [environments]="environments.environments()" [selectedId]="store.environmentId()" (selectedChange)="changeEnvironment($event)" />
     </div>
   </header>
   <p class="muted">{{ 'tracking.profiles.subtitle' | translate }}</p>

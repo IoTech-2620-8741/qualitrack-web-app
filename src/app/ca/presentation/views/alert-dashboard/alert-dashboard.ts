@@ -6,7 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 
 import { CaStore } from '../../../application/ca.store';
 import { EnvironmentStore } from '../../../../laboratory/application/environment.store';
-import { EnvironmentSelector } from '../../../../laboratory/presentation/components/environment-selector/environment-selector';
+import { EnvironmentSelector } from '../../../../shared/presentation/components/environment-selector/environment-selector';
 import { AlertTable } from '../../components/alert-table/alert-table';
 
 /**

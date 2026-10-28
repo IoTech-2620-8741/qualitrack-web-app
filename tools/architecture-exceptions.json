@@ -14,15 +14,11 @@
     "batch/presentation/views/batch-storage/batch-storage.ts -> laboratory/application/environment.store": "phase 5: batch ACL to laboratory",
     "batch/presentation/views/batch-storage/batch-storage.ts -> laboratory/domain/model/environment.entity": "phase 5: batch ACL to laboratory",
     "batch/presentation/views/product-catalog/product-catalog.ts -> laboratory/application/environment.store": "phase 5: batch ACL to laboratory",
-    "batch/presentation/views/product-catalog/product-catalog.ts -> laboratory/presentation/components/environment-selector/environment-selector": "phase 2: environment selector in shared",
     "batch/presentation/views/raw-material-usage/raw-material-usage.ts -> laboratory/application/environment.store": "phase 5: batch ACL to laboratory",
-    "batch/presentation/views/raw-material-usage/raw-material-usage.ts -> laboratory/presentation/components/environment-selector/environment-selector": "phase 2: environment selector in shared",
     "ca/application/ca.store.ts -> equipment/domain/model/equipment.entity": "phase 4: ca ACL to equipment",
     "ca/application/ca.store.ts -> equipment/infrastructure/equipment-api": "phase 4: ca ACL to equipment",
     "ca/presentation/views/alert-dashboard/alert-dashboard.ts -> laboratory/application/environment.store": "phase 5: ca ACL to laboratory",
-    "ca/presentation/views/alert-dashboard/alert-dashboard.ts -> laboratory/presentation/components/environment-selector/environment-selector": "phase 2: environment selector in shared",
     "ca/presentation/views/alert-history/alert-history.ts -> laboratory/application/environment.store": "phase 5: ca ACL to laboratory",
-    "ca/presentation/views/alert-history/alert-history.ts -> laboratory/presentation/components/environment-selector/environment-selector": "phase 2: environment selector in shared",
     "ca/presentation/views/deviation-detail/deviation-detail.ts -> laboratory/application/environment.store": "phase 5: ca ACL to laboratory",
     "equipment/presentation/views/device-form/device-form.ts -> laboratory/application/environment.store": "phase 5: equipment ACL to laboratory",
     "equipment/presentation/views/equipment-detail/equipment-detail.ts -> laboratory/application/environment.store": "phase 5: equipment ACL to laboratory",
@@ -37,7 +33,6 @@
     "inventory/application/inventory.store.ts -> laboratory/domain/model/environment-usage": "phase 5: inventory ACL to laboratory",
     "inventory/application/inventory.store.ts -> laboratory/infrastructure/laboratory-api": "phase 5: inventory ACL to laboratory",
     "inventory/presentation/views/inventory-catalogue/inventory-catalogue.ts -> laboratory/application/environment.store": "phase 5: inventory ACL to laboratory",
-    "inventory/presentation/views/inventory-catalogue/inventory-catalogue.ts -> laboratory/presentation/components/environment-selector/environment-selector": "phase 2: environment selector in shared",
     "inventory/presentation/views/inventory-home/inventory-home.ts -> laboratory/application/environment.store": "phase 5: inventory ACL to laboratory",
     "laboratory/application/environment.store.ts -> laboratory/application/laboratory.store": "phase 5: one store per context, once the other contexts stop using it",
     "laboratory/application/raw-material-history.store.ts -> batch/domain/model/batch.entity": "phase 6: inverted relation laboratory -> batch",
@@ -51,7 +46,6 @@
     "ra/application/ra.store.ts -> equipment/domain/model/equipment.entity": "phase 4: ra ACL to equipment",
     "ra/application/ra.store.ts -> equipment/infrastructure/equipment-api": "phase 4: ra ACL to equipment",
     "ra/presentation/views/deviation-trend-chart/deviation-trend-chart.ts -> laboratory/application/environment.store": "phase 5: ra ACL to laboratory",
-    "ra/presentation/views/deviation-trend-chart/deviation-trend-chart.ts -> laboratory/presentation/components/environment-selector/environment-selector": "phase 2: environment selector in shared",
     "ra/presentation/views/kpi-dashboard/kpi-dashboard.ts -> laboratory/application/environment.store": "phase 5: ra ACL to laboratory",
     "ra/presentation/views/report-generator/report-generator.ts -> batch/application/batch.store": "phase 5: ra ACL to batch",
     "ra/presentation/views/report-generator/report-generator.ts -> equipment/application/equipment.store": "phase 4: ra ACL to equipment",
@@ -77,10 +71,7 @@
     "tracking/application/tracking.store.ts -> equipment/infrastructure/equipment-api": "phase 3: Tracking ACL to equipment",
     "tracking/domain/model/monitored-metric.ts -> equipment/domain/model/iot-device-type": "phase 3: Tracking ACL to equipment",
     "tracking/presentation/views/environmental-monitoring/environmental-monitoring.ts -> laboratory/application/environment.store": "phase 3: Tracking ACL to laboratory",
-    "tracking/presentation/views/environmental-monitoring/environmental-monitoring.ts -> laboratory/presentation/components/environment-selector/environment-selector": "phase 2: environment selector in shared",
     "tracking/presentation/views/environmental-profiles/environmental-profiles.ts -> laboratory/application/environment.store": "phase 3: Tracking ACL to laboratory",
-    "tracking/presentation/views/environmental-profiles/environmental-profiles.ts -> laboratory/presentation/components/environment-selector/environment-selector": "phase 2: environment selector in shared",
-    "tracking/presentation/views/telemetry-history/telemetry-history.ts -> laboratory/application/environment.store": "phase 3: Tracking ACL to laboratory",
-    "tracking/presentation/views/telemetry-history/telemetry-history.ts -> laboratory/presentation/components/environment-selector/environment-selector": "phase 2: environment selector in shared"
+    "tracking/presentation/views/telemetry-history/telemetry-history.ts -> laboratory/application/environment.store": "phase 3: Tracking ACL to laboratory"
   }
 }

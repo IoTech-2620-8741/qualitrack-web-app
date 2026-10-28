@@ -6,7 +6,7 @@
       <p class="muted">{{ 'ca-alerts.history.subtitle' | translate }}</p>
     </div>
     <div class="actions">
-      <app-environment-selector [selectedId]="environmentId()" (selectedChange)="changeEnvironment($event)" />
+      <app-environment-selector [environments]="environments.environments()" [selectedId]="environmentId()" (selectedChange)="changeEnvironment($event)" />
     </div>
   </header>
 

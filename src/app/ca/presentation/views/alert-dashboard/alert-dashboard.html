@@ -5,7 +5,7 @@
       <p class="muted">{{ 'ca-alerts.active.subtitle' | translate }}</p>
     </div>
     <div class="actions">
-      <app-environment-selector [selectedId]="environmentId()" (selectedChange)="changeEnvironment($event)" />
+      <app-environment-selector [environments]="environments.environments()" [selectedId]="environmentId()" (selectedChange)="changeEnvironment($event)" />
       <button mat-stroked-button type="button" (click)="refresh()" [disabled]="store.loading() || environmentId() === null">
         <mat-icon>refresh</mat-icon>{{ 'common.refresh' | translate }}
       </button>

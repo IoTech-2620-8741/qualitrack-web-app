@@ -18,7 +18,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { TranslatePipe } from '@ngx-translate/core';
 import { InventoryStore } from '../../../application/inventory.store';
 import { EnvironmentStore } from '../../../../laboratory/application/environment.store';
-import { EnvironmentSelector } from '../../../../laboratory/presentation/components/environment-selector/environment-selector';
+import { EnvironmentSelector } from '../../../../shared/presentation/components/environment-selector/environment-selector';
 
 /**
  * Raw material catalogue of an environment (US36), with low stock (US41) and near expiry (US42) views.
@@ -43,7 +43,7 @@ import { EnvironmentSelector } from '../../../../laboratory/presentation/compone
 })
 export class InventoryCatalogue implements OnInit {
   readonly store = inject(InventoryStore);
-  private readonly environments = inject(EnvironmentStore);
+  protected readonly environments = inject(EnvironmentStore);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly destroy = inject(DestroyRef);
@@ -60,6 +60,7 @@ export class InventoryCatalogue implements OnInit {
     () => new Map(this.store.materials().map((material) => [material.id, material.name])),
   );
   ngOnInit() {
+    if (!this.environments.loaded()) void this.environments.loadEnvironments();
     this.route.paramMap.pipe(takeUntilDestroyed(this.destroy)).subscribe(async (params) => {
       const environmentId = Number(params.get('environmentId'));
       this.lowOnly.set(false);
