@@ -13,8 +13,7 @@ import { UpdateNotificationPreferenceRequest } from '../infrastructure/notificat
 import { ResolveAlertRequest } from '../infrastructure/resolve-alert.request';
 import { IamStore } from '../../iam/application/iam.store';
 import { ApiError } from '../../shared/infrastructure/api-error';
-import { EquipmentApi } from '../../equipment/infrastructure/equipment-api';
-import { Equipment } from '../../equipment/domain/model/equipment.entity';
+import { AlertDevice } from '../domain/model/alert-device.entity';
 
 /**
  * Translates failures of the alert views into translation keys, or the server details when they explain a rule.
@@ -71,7 +70,7 @@ export class CaStore {
   private readonly _selectedAlertSignal = signal<DeviationAlert | null>(null);
   private readonly _eventsSignal = signal<ComplianceEvent[]>([]);
   private readonly _preferenceSignal = signal<NotificationPreference | null>(null);
-  private readonly _devicesSignal = signal<Equipment[]>([]);
+  private readonly _devicesSignal = signal<AlertDevice[]>([]);
 
   private readonly _loadingSignal = signal<boolean>(false);
   private readonly _savingSignal = signal<boolean>(false);
@@ -95,7 +94,7 @@ export class CaStore {
   /** Notification preferences of the user. */
   readonly preference = this._preferenceSignal.asReadonly();
 
-  /** Equipment and IoT devices of the laboratory, to name the device of each alert. */
+  /** Devices of the laboratory, to name the device of each alert. */
   readonly devices = this._devicesSignal.asReadonly();
 
   /** Indicates whether alerts, events, preferences or an alert detail are being loaded. */
@@ -146,7 +145,6 @@ export class CaStore {
 
   private readonly destroyRef = inject(DestroyRef);
   private readonly iam = inject(IamStore);
-  private readonly equipmentApi = inject(EquipmentApi);
   private readonly reloadAlerts = new Subject<void>();
   private readonly reloadAlert = new Subject<void>();
 
@@ -263,8 +261,8 @@ export class CaStore {
    */
   loadDevices(): void {
     if (this._devicesSignal().length) return;
-    this.equipmentApi
-      .getEquipment(this.iam.requireLaboratoryId())
+    this.caApi
+      .getAlertDevices(this.iam.requireLaboratoryId())
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({ next: (devices) => this._devicesSignal.set(devices), error: () => this._devicesSignal.set([]) });
   }
