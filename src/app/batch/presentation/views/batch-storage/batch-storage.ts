@@ -17,8 +17,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { BatchStore, batchError } from '../../../application/batch.store';
 import { BatchPath } from '../../../domain/model/batch-path';
 import { ProductionEquipment } from '../../../domain/model/production-equipment.entity';
-import { EnvironmentStore } from '../../../../laboratory/application/environment.store';
-import { Environment } from '../../../../laboratory/domain/model/environment.entity';
+import { ProductionEnvironment } from '../../../domain/model/production-environment.entity';
 import { IamStore } from '../../../../iam/application/iam.store';
 
 /**
@@ -30,7 +29,7 @@ interface StorageArea {
   /**
    * The product storage environment.
    */
-  environment: Environment;
+  environment: ProductionEnvironment;
 
   /**
    * The operational container monitors located in the environment.
@@ -71,7 +70,6 @@ export class BatchStorage implements OnInit {
   /** Identifier of the batch. */
   readonly batchId = input.required<number>();
   protected readonly store = inject(BatchStore);
-  private readonly environments = inject(EnvironmentStore);
   protected readonly iam = inject(IamStore);
 
   /** Equipment and devices of the laboratory. */
@@ -85,7 +83,7 @@ export class BatchStorage implements OnInit {
 
   /** Product storage environments with their operational container monitors. */
   protected readonly storageAreas = computed<StorageArea[]>(() =>
-    this.environments
+    this.store
       .environments()
       .filter((environment) => environment.usage === 'PRODUCT_STORAGE')
       .map((environment) => ({
@@ -110,7 +108,7 @@ export class BatchStorage implements OnInit {
    */
   async ngOnInit(): Promise<void> {
     try {
-      if (!this.environments.loaded()) await this.environments.loadEnvironments();
+      if (!this.store.environmentsLoaded()) await this.store.loadEnvironments();
       if (this.editable()) this.equipment.set(await this.store.loadProductionEquipment());
     } catch (error) {
       this.loadError.set(batchError(error));
@@ -124,7 +122,7 @@ export class BatchStorage implements OnInit {
    * @returns The code and name of the environment, or `#id` when it is not loaded yet.
    */
   protected environmentName(environmentId: number): string {
-    const environment = this.environments.environments().find((item) => item.id === environmentId);
+    const environment = this.store.environments().find((item) => item.id === environmentId);
     return environment ? `${environment.code} · ${environment.name}` : `#${environmentId}`;
   }
 

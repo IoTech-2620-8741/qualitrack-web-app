@@ -3,7 +3,7 @@
   <header class="page-heading">
     <h1><mat-icon aria-hidden="true">factory</mat-icon>{{ 'product-catalog.title' | translate }}</h1>
     <div class="actions">
-      <app-environment-selector [environments]="environments.environments()" [selectedId]="store.productEnvironmentId()" (selectedChange)="changeEnvironment($event)" />
+      <app-environment-selector [environments]="store.environments()" [selectedId]="store.productEnvironmentId()" (selectedChange)="changeEnvironment($event)" />
       <a mat-stroked-button routerLink="/batches/batch-list">
         <mat-icon>list_alt</mat-icon>{{ 'batches.title' | translate }}
       </a>

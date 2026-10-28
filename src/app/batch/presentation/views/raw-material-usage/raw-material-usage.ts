@@ -11,7 +11,6 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { BatchStore } from '../../../application/batch.store';
 import { BatchPath } from '../../../domain/model/batch-path';
 import { TracedRawMaterialUsage } from '../../../domain/model/batch-traceability.entity';
-import { EnvironmentStore } from '../../../../laboratory/application/environment.store';
 import { EnvironmentSelector } from '../../../../shared/presentation/components/environment-selector/environment-selector';
 import { stockQuantityValidator } from '../../../../shared/presentation/validators/stock-quantity.validator';
 
@@ -52,7 +51,6 @@ export class RawMaterialUsageComponent implements OnInit {
   /** Whether the consumption form is available (the batch is open and the user operates). */
   readonly open = input(false);
   protected readonly store = inject(BatchStore);
-  protected readonly environments = inject(EnvironmentStore);
   private readonly fb = inject(FormBuilder);
 
   /**
@@ -95,8 +93,8 @@ export class RawMaterialUsageComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     this.store.clearConsumption();
     if (!this.open()) return;
-    if (!this.environments.loaded()) await this.environments.loadEnvironments();
-    const storage = this.environments.preferredEnvironment('RAW_MATERIAL_STORAGE');
+    if (!this.store.environmentsLoaded()) await this.store.loadEnvironments();
+    const storage = this.store.preferredStorageEnvironment();
     if (storage) await this.changeEnvironment(storage.id);
   }
 

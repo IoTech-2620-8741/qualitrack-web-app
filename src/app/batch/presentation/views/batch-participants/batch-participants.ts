@@ -9,7 +9,6 @@ import {
 } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { firstValueFrom } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
@@ -17,8 +16,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { BatchStore, batchError } from '../../../application/batch.store';
 import { BatchPath } from '../../../domain/model/batch-path';
 import { ProductionEquipment } from '../../../domain/model/production-equipment.entity';
-import { LaboratoryApi } from '../../../../laboratory/infrastructure/laboratory-api';
-import { StaffMember } from '../../../../laboratory/domain/model/staff-member.entity';
+import { ProductionStaffMember } from '../../../domain/model/production-staff-member.entity';
 import { IamStore } from '../../../../iam/application/iam.store';
 
 /**
@@ -54,13 +52,12 @@ export class BatchParticipants implements OnInit {
   /** Whether the batch is still open to new participants. */
   readonly open = input(false);
   protected readonly store = inject(BatchStore);
-  private readonly laboratoryApi = inject(LaboratoryApi);
   protected readonly iam = inject(IamStore);
 
   /** Equipment of the laboratory. */
   protected readonly equipment = signal<ProductionEquipment[]>([]);
   /** Staff members of the laboratory. */
-  protected readonly staff = signal<StaffMember[]>([]);
+  protected readonly staff = signal<ProductionStaffMember[]>([]);
   /** Translation key or server message of the failure to load equipment and staff; null when there is none. */
   protected readonly loadError = signal<string | null>(null);
   /** Identifier of the equipment selected in the form; null while none is selected. */
@@ -108,11 +105,10 @@ export class BatchParticipants implements OnInit {
    */
   async ngOnInit(): Promise<void> {
     if (!this.editable()) return;
-    const laboratoryId = this.iam.requireLaboratoryId();
     try {
       const [equipment, staff] = await Promise.all([
         this.store.loadProductionEquipment(),
-        firstValueFrom(this.laboratoryApi.getStaff(laboratoryId)),
+        this.store.loadStaff(),
       ]);
       this.equipment.set(equipment);
       this.staff.set(staff);
@@ -144,7 +140,7 @@ export class BatchParticipants implements OnInit {
    *
    * @param member - The staff record of the signed-in operator.
    */
-  protected async assignMyself(member: StaffMember): Promise<void> {
+  protected async assignMyself(member: ProductionStaffMember): Promise<void> {
     await this.store.registerStaff(this.path(), this.batchId(), member.id);
   }
 }

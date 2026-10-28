@@ -7,18 +7,20 @@ import {
 } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { ApiError } from '../../shared/infrastructure/api-error';
+import { EnvironmentPreference } from '../../shared/infrastructure/environment-preference';
 import { IamStore } from '../../iam/application/iam.store';
-import { InventoryApi } from '../../inventory/infrastructure/inventory-api';
-import { RawMaterial } from '../../inventory/domain/model/raw-material.entity';
-import { RawMaterialBatch } from '../../inventory/domain/model/raw-material-batch.entity';
 import { BatchApi } from '../infrastructure/batch-api';
 import { BatchPath } from '../domain/model/batch-path';
 import { Batch } from '../domain/model/batch.entity';
 import { BatchTraceability } from '../domain/model/batch-traceability.entity';
 import { CreateBatchCommand } from '../domain/model/create-batch.command';
+import { ConsumableLot } from '../domain/model/consumable-lot.entity';
+import { ConsumableRawMaterial } from '../domain/model/consumable-raw-material.entity';
 import { CreateProductCommand } from '../domain/model/create-product.command';
 import { PharmaceuticalProduct } from '../domain/model/pharmaceutical-product.entity';
+import { ProductionEnvironment } from '../domain/model/production-environment.entity';
 import { ProductionEquipment } from '../domain/model/production-equipment.entity';
+import { ProductionStaffMember } from '../domain/model/production-staff-member.entity';
 import { ReleaseBatchCommand } from '../domain/model/release-batch.command';
 import { RejectBatchCommand } from '../domain/model/reject-batch.command';
 
@@ -61,8 +63,8 @@ export function batchError(error: unknown): string {
  * feeds the batch list, the dashboard and the report generator; the selected batch keeps its
  * traceability so the detail tabs show consumptions, equipment, staff and the final decision.
  *
- * The store also keeps the pharmaceutical products of an environment and the raw material lots that a batch
- * can consume. Generation counters discard the answers of outdated product and consumption requests, so a
+ * The store also keeps the environments of the laboratory, the pharmaceutical products of an environment and the
+ * raw material lots that a batch can consume, each through the models of Product Batch Management. Generation counters discard the answers of outdated product and consumption requests, so a
  * slow response never overwrites a newer one.
  *
  * @example
@@ -79,7 +81,10 @@ export function batchError(error: unknown): string {
 export class BatchStore {
   private readonly api = inject(BatchApi);
   private readonly iam = inject(IamStore);
-  private readonly inventory = inject(InventoryApi);
+  /** Production environment opened last time in this browser. */
+  private readonly productionPreference = new EnvironmentPreference('production');
+  /** Raw material storage opened last time in this browser, shared with the inventory views. */
+  private readonly storagePreference = new EnvironmentPreference('inventory');
   /** Identifies the latest product request; answers of older generations are ignored. */
   private productGeneration = 0;
   /** Identifies the latest consumption request; answers of older generations are ignored. */
@@ -96,6 +101,10 @@ export class BatchStore {
   private readonly _saving = signal(false);
   private readonly _error = signal<string | null>(null);
   private readonly _successMsg = signal<string | null>(null);
+  private readonly _environments = signal<ProductionEnvironment[]>([]);
+  private readonly _environmentsLoaded = signal(false);
+  private readonly _environmentsLoading = signal(false);
+  private readonly _environmentsError = signal<string | null>(null);
   private readonly _productEnvironmentId = signal<number | null>(null);
   private readonly _products = signal<PharmaceuticalProduct[]>([]);
   private readonly _product = signal<PharmaceuticalProduct | null>(null);
@@ -103,8 +112,8 @@ export class BatchStore {
   private readonly _productSaving = signal(false);
   private readonly _productError = signal<string | null>(null);
   private readonly _consumptionEnvironmentId = signal<number | null>(null);
-  private readonly _consumptionMaterials = signal<RawMaterial[]>([]);
-  private readonly _consumptionLots = signal<RawMaterialBatch[]>([]);
+  private readonly _consumptionMaterials = signal<ConsumableRawMaterial[]>([]);
+  private readonly _consumptionLots = signal<ConsumableLot[]>([]);
   private readonly _consumptionLotId = signal<number | null>(null);
   private readonly _consumptionLoading = signal(false);
   private readonly _consumptionSaving = signal(false);
@@ -132,6 +141,16 @@ export class BatchStore {
   readonly canDecide = this.iam.canManageQuality;
   /** Batches, usages and participations are registered by operators and quality managers, not auditors. */
   readonly canOperate = this.iam.canOperate;
+  /** Environments of the laboratory: production areas and raw material and product storage. */
+  readonly environments = this._environments.asReadonly();
+  /** Whether the environments have been read at least once. */
+  readonly environmentsLoaded = this._environmentsLoaded.asReadonly();
+  /** Whether the environments are being read. */
+  readonly environmentsLoading = this._environmentsLoading.asReadonly();
+  /** Translation key or server message of the failure to read the environments; null when there is none. */
+  readonly environmentsError = this._environmentsError.asReadonly();
+  /** Whether the laboratory has no environment yet. */
+  readonly environmentsEmpty = computed(() => this._environmentsLoaded() && this._environments().length === 0);
   /** The environment whose products are shown; null until one is loaded. */
   readonly productEnvironmentId = this._productEnvironmentId.asReadonly();
   /** Products of the environment. */
@@ -191,6 +210,63 @@ export class BatchStore {
    */
   async loadProductionEquipment(): Promise<ProductionEquipment[]> {
     return firstValueFrom(this.api.getProductionEquipment(this.laboratoryId));
+  }
+
+  /**
+   * Reads the staff of the laboratory, to assign them to a batch (Laboratory → Product Batch).
+   *
+   * @returns The staff members of the laboratory of the session.
+   */
+  async loadStaff(): Promise<ProductionStaffMember[]> {
+    return firstValueFrom(this.api.getStaff(this.laboratoryId));
+  }
+
+  /**
+   * Reads the environments of the laboratory (Laboratory → Product Batch).
+   *
+   * @remarks
+   * On failure the previous list is kept and the reason is exposed through {@link BatchStore.environmentsError}.
+   */
+  async loadEnvironments(): Promise<void> {
+    this._environmentsLoading.set(true);
+    this._environmentsError.set(null);
+    try {
+      this._environments.set(await firstValueFrom(this.api.getEnvironments(this.laboratoryId)));
+      this._environmentsLoaded.set(true);
+    } catch (error) {
+      this._environmentsError.set(batchError(error));
+    } finally {
+      this._environmentsLoading.set(false);
+    }
+  }
+
+  /**
+   * The environment whose products open by default: the last one used for production in this browser, otherwise the
+   * first production environment, otherwise the first environment.
+   *
+   * @returns The environment, or null when the laboratory has none.
+   */
+  preferredProductionEnvironment(): ProductionEnvironment | null {
+    return this.productionPreference.choose(this.laboratoryId, this._environments(), 'PRODUCTION');
+  }
+
+  /**
+   * Remembers the environment whose products the user opened.
+   *
+   * @param environmentId - The environment identifier.
+   */
+  rememberProductionEnvironment(environmentId: number): void {
+    this.productionPreference.remember(this.laboratoryId, environmentId);
+  }
+
+  /**
+   * The environment where a consumption looks for raw materials: the raw material storage opened last time in this
+   * browser, otherwise the first raw material storage, otherwise the first environment.
+   *
+   * @returns The environment, or null when the laboratory has none.
+   */
+  preferredStorageEnvironment(): ProductionEnvironment | null {
+    return this.storagePreference.choose(this.laboratoryId, this._environments(), 'RAW_MATERIAL_STORAGE');
   }
 
   /**
@@ -512,7 +588,7 @@ export class BatchStore {
     this._consumptionLoading.set(true);
     try {
       const materials = await firstValueFrom(
-        this.inventory.materials(this.laboratoryId, environmentId),
+        this.api.getConsumableRawMaterials(this.laboratoryId, environmentId),
       );
       if (generation === this.consumptionGeneration) this._consumptionMaterials.set(materials);
     } catch (error) {
@@ -540,7 +616,7 @@ export class BatchStore {
     this._consumptionLoading.set(true);
     try {
       const lots = await firstValueFrom(
-        this.inventory.receipts(this.laboratoryId, environmentId, materialId, true),
+        this.api.getConsumableLots(this.laboratoryId, environmentId, materialId),
       );
       if (generation === this.consumptionGeneration) this._consumptionLots.set(lots);
     } catch (error) {
@@ -672,8 +748,8 @@ export class BatchStore {
     if (environmentId === null) return;
     try {
       const [materials, lots] = await Promise.all([
-        firstValueFrom(this.inventory.materials(this.laboratoryId, environmentId)),
-        firstValueFrom(this.inventory.receipts(this.laboratoryId, environmentId, materialId, true)),
+        firstValueFrom(this.api.getConsumableRawMaterials(this.laboratoryId, environmentId)),
+        firstValueFrom(this.api.getConsumableLots(this.laboratoryId, environmentId, materialId)),
       ]);
       this._consumptionMaterials.set(materials);
       this._consumptionLots.set(lots);

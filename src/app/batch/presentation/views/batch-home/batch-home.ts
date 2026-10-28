@@ -3,7 +3,7 @@ import { Router, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { TranslatePipe } from '@ngx-translate/core';
-import { EnvironmentStore } from '../../../../laboratory/application/environment.store';
+import { BatchStore } from '../../../application/batch.store';
 
 /**
  * Entry point of Product Batch Management: opens the products of the environment the user works with.
@@ -29,15 +29,15 @@ import { EnvironmentStore } from '../../../../laboratory/application/environment
           <mat-icon>list_alt</mat-icon>{{ 'batches.title' | translate }}
         </a>
       </header>
-      @if (environments.isLoading()) {
+      @if (store.environmentsLoading()) {
         <p role="status">{{ 'common.status-loading' | translate }}</p>
-      } @else if (environments.error()) {
-        <p class="error" role="alert">{{ environments.error() }}</p>
-      } @else if (environments.isEmpty()) {
+      } @else if (store.environmentsError(); as error) {
+        <p class="error" role="alert">{{ error | translate }}</p>
+      } @else if (store.environmentsEmpty()) {
         <section class="editor" role="status">
           <h2>{{ 'product-catalog.no-environments' | translate }}</h2>
           <p class="notice">{{ 'product-catalog.no-environments-notice' | translate }}</p>
-          @if (environments.canManage()) {
+          @if (store.canManageProducts()) {
             <a mat-flat-button routerLink="/laboratories/environments/new">
               <mat-icon>add_location_alt</mat-icon>{{ 'environments.register' | translate }}
             </a>
@@ -50,15 +50,15 @@ import { EnvironmentStore } from '../../../../laboratory/application/environment
   styleUrl: '../../../../shared/presentation/styles/operations-page.css',
 })
 export class BatchHome implements OnInit {
-  protected readonly environments = inject(EnvironmentStore);
+  protected readonly store = inject(BatchStore);
   private readonly router = inject(Router);
 
   /**
    * Lifecycle hook that loads the environments and opens the products of the preferred one.
    */
   async ngOnInit(): Promise<void> {
-    await this.environments.loadEnvironments();
-    const environment = this.environments.preferredEnvironment('PRODUCTION', 'production');
+    await this.store.loadEnvironments();
+    const environment = this.store.preferredProductionEnvironment();
     if (environment) {
       await this.router.navigate(['/batches/environments', environment.id, 'products'], {
         replaceUrl: true,
