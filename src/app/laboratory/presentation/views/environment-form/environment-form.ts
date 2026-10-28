@@ -11,7 +11,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 
-import { EnvironmentStore } from '../../../application/environment.store';
+import { LaboratoryStore } from '../../../application/laboratory.store';
 import { ENVIRONMENT_USAGES, EnvironmentUsage } from '../../../domain/model/environment-usage';
 
 /**
@@ -43,7 +43,7 @@ export class EnvironmentForm implements OnInit {
   /**
    * Store that manages the environments of the current laboratory.
    */
-  protected readonly store = inject(EnvironmentStore);
+  protected readonly store = inject(LaboratoryStore);
 
   /**
    * Form builder used to create the environment form.
@@ -91,7 +91,7 @@ export class EnvironmentForm implements OnInit {
    * @returns A promise that resolves when the environment is loaded
    */
   async ngOnInit(): Promise<void> {
-    this.store.clearError();
+    this.store.clearEnvironmentError();
     const id = Number(this.route.snapshot.paramMap.get('environmentId'));
     if (!Number.isInteger(id) || id <= 0) return;
 
@@ -132,8 +132,8 @@ export class EnvironmentForm implements OnInit {
     const id = this.environmentId();
     const saved =
       id === null
-        ? await this.store.register({ ...data, usage: value.usage })
-        : await this.store.update(id, data);
+        ? await this.store.registerEnvironment({ ...data, usage: value.usage })
+        : await this.store.updateEnvironment(id, data);
     if (saved) await this.router.navigate(['/laboratories/environments']);
   }
 
