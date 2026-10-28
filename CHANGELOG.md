@@ -15,6 +15,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Profile (profile): the toolbar photo or initials, name and role are now displayed by a Profile component composed by the layout, preserving the profile link and mobile appearance (#45).
+
+- IAM (iam): the toolbar session section now only signs out and no longer reads profile data (#45).
+
 - Dependencies: Angular 22.2, Angular Material and CDK 22.2.4, ngx-translate 18.1 and TypeScript 6.0; the component tests now provide the translation service (#36).
 
 - Stores: every store is provided in root, as in the course example, and signing out reloads the application so the next user never sees data of the previous one (#40).
