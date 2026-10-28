@@ -54,6 +54,12 @@ src/app/<context>/
 | `profile` | Profile |
 | `shared` | Layout, dashboard, home, about and common components |
 
+The imports between layers and contexts are checked with:
+
+```bash
+npm run check:architecture
+```
+
 ## Documentation
 - **Class Diagrams**: The frontend class diagram of every bounded context is available in [docs/diagrams](docs/diagrams), one folder per context.
 - **Project Report**: Requirements, domain model, architecture and design decisions are documented in the [QualiTrack report](https://github.com/Experimentos-1ASI0732-2620-9104/report-).
