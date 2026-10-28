@@ -24,10 +24,7 @@ interface RuleRow {
   imports: [FormsModule, TranslatePipe, MatButtonModule, MatIconModule],
   templateUrl: './actuation-rules-editor.html',
   changeDetection: ChangeDetectionStrategy.Eager,
-  styleUrls: [
-    '../../../../shared/presentation/styles/operations-page.css',
-    '../../views/tracking-views.css',
-  ],
+  styleUrl: './actuation-rules-editor.css',
 })
 export class ActuationRulesEditor {
   /**

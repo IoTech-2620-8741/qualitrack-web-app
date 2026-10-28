@@ -62,10 +62,7 @@ const NO_METRICS: MonitoredMetric[] = [];
   ],
   templateUrl: './environmental-profiles.html',
   changeDetection: ChangeDetectionStrategy.Eager,
-  styleUrls: [
-    '../../../../shared/presentation/styles/operations-page.css',
-    '../tracking-views.css',
-  ],
+  styleUrl: './environmental-profiles.css',
 })
 export class EnvironmentalProfiles implements OnInit {
   /**
