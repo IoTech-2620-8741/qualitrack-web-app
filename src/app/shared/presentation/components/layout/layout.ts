@@ -13,13 +13,6 @@ import { BreakpointObserver } from '@angular/cdk/layout';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { filter, map } from 'rxjs';
 import { IamStore } from '../../../../iam/application/iam.store';
-import { LaboratoryStore } from '../../../../laboratory/application/laboratory.store';
-import { EquipmentStore } from '../../../../equipment/application/equipment.store';
-import { BatchStore } from '../../../../batch/application/batch.store';
-import { CaStore } from '../../../../ca/application/ca.store';
-import { RaStore } from '../../../../ra/application/ra.store';
-import { TrackingStore } from '../../../../tracking/application/tracking.store';
-import { SubscriptionStore } from '../../../../subscription/application/subscription.store';
 import { TranslatePipe } from '@ngx-translate/core';
 
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -54,15 +47,6 @@ interface NavigationOption {
 @Component({
   selector: 'app-layout',
   standalone: true,
-  providers: [
-    LaboratoryStore,
-    EquipmentStore,
-    BatchStore,
-    CaStore,
-    RaStore,
-    TrackingStore,
-    SubscriptionStore,
-  ],
   imports: [
     RouterOutlet,
     RouterLink,

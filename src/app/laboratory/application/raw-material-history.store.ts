@@ -15,7 +15,7 @@ import { RawMaterialUsage } from '../../batch/domain/model/raw-material-usage.en
  * It is provided per view, and the pending request is cancelled when the view is destroyed.
  * Errors are exposed as translation keys.
  */
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class RawMaterialHistoryStore {
   /**
    * Laboratory API facade used to read the raw materials.

@@ -38,7 +38,6 @@ import { stockQuantityValidator } from '../../../../shared/presentation/validato
 @Component({
   selector: 'app-inventory-detail',
   standalone: true,
-  providers: [InventoryStore],
   imports: [
     CommonModule,
     ReactiveFormsModule,

@@ -34,7 +34,6 @@ import { rucValidator } from '../../../../shared/presentation/validators/ruc.val
 @Component({
   selector: 'app-lab-form',
   standalone: true,
-  providers: [LaboratoryStore],
   imports: [
     ReactiveFormsModule,
     TranslatePipe,
