@@ -17,7 +17,7 @@ import { StaffMember } from '../../../domain/model/staff-member.entity';
   imports: [RouterLink, TranslatePipe, MatButtonModule, MatIconModule, MatProgressSpinnerModule],
   templateUrl: './staff-detail.html',
   changeDetection: ChangeDetectionStrategy.Eager,
-  styleUrls: ['../../../../shared/presentation/styles/operations-page.css', './staff-detail.css'],
+  styleUrl: './staff-detail.css',
 })
 export class StaffDetail {
   protected readonly iam = inject(IamStore);
