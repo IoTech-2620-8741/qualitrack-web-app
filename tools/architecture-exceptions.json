@@ -1,7 +1,6 @@
 {
   "description": "Imports that break the DDD rules of tools/check-architecture.mjs today. Each phase of the DDD refactoring removes its entries; new code must not add any.",
   "exceptions": {
-    "iam/presentation/components/user-session-section/user-session-section.ts -> profile/application/profile.store": "phase 6: inverted relation iam -> profile",
     "inventory/application/inventory.store.ts -> batch/domain/model/raw-material-usage.entity": "phase 6: inverted relation inventory -> batch",
     "inventory/application/inventory.store.ts -> batch/infrastructure/batch-api": "phase 6: inverted relation inventory -> batch",
     "laboratory/application/raw-material-history.store.ts -> batch/domain/model/batch.entity": "phase 6: inverted relation laboratory -> batch",
