@@ -10,7 +10,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
-import { NotificationStore } from '../../../application/notification.store';
+import { CaStore } from '../../../application/ca.store';
 import { Notification } from '../../../domain/model/notification.entity';
 
 /** How often the bell asks for the unread count. */
@@ -42,7 +42,7 @@ const KNOWN_METRICS = new Set(['AIR_QUALITY', 'TEMPERATURE', 'HUMIDITY', 'LUMINO
 })
 export class NotificationBell {
   /** Store with the unread count and the latest notifications. */
-  protected readonly store = inject(NotificationStore);
+  protected readonly store = inject(CaStore);
   private readonly router = inject(Router);
   private readonly translate = inject(TranslateService);
 
@@ -64,7 +64,7 @@ export class NotificationBell {
   constructor() {
     timer(0, REFRESH_INTERVAL_MS)
       .pipe(
-        switchMap(() => this.store.refreshUnreadCount()),
+        switchMap(() => this.store.refreshUnreadNotifications()),
         takeUntilDestroyed(),
       )
       .subscribe();
@@ -76,7 +76,7 @@ export class NotificationBell {
    * @returns The unread count, or `99+` when there are more than 99
    */
   protected badge(): string {
-    const count = this.store.unreadCount();
+    const count = this.store.unreadNotifications();
     return count > 99 ? '99+' : String(count);
   }
 
@@ -89,7 +89,7 @@ export class NotificationBell {
       return;
     }
     this.open.set(true);
-    this.store.loadLatest();
+    this.store.loadLatestNotifications();
   }
 
   /** Closes the panel. */
@@ -112,7 +112,7 @@ export class NotificationBell {
    * @param notification - The notification the person chose
    */
   protected openNotification(notification: Notification): void {
-    this.store.markAsRead(notification);
+    this.store.markNotificationAsRead(notification);
     this.close();
     void this.router.navigate(notification.link);
   }
