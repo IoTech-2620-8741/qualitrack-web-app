@@ -5,6 +5,7 @@ import { RawMaterialApiEndpoint } from './raw-material-api-endpoint';
 import { RawMaterialBatchApiEndpoint } from './raw-material-batch-api-endpoint';
 import { InventoryMovementApiEndpoint } from './inventory-movement-api-endpoint';
 import { LegacyInventoryApiEndpoint } from './legacy-inventory-api-endpoint';
+import { StorageContainerApiEndpoint } from './storage-container-api-endpoint';
 import { SaveRawMaterialRequest } from './raw-material.request';
 import { ReceiveRawMaterialBatchRequest } from './raw-material-batch.request';
 import { ExpirationStatus, RawMaterialBatchStatus } from '../domain/model/raw-material-batch.entity';
@@ -51,6 +52,9 @@ export class InventoryApi extends BaseApi {
    */
   private readonly legacyEndpoint: LegacyInventoryApiEndpoint;
 
+  /** Reads the container monitors of Equipment Management where lots are stored. */
+  private readonly containerEndpoint: StorageContainerApiEndpoint;
+
   /**
    * Creates an instance of InventoryApi.
    *
@@ -66,6 +70,7 @@ export class InventoryApi extends BaseApi {
     this.receiptEndpoint = new RawMaterialBatchApiEndpoint(http);
     this.movementEndpoint = new InventoryMovementApiEndpoint(http);
     this.legacyEndpoint = new LegacyInventoryApiEndpoint(http);
+    this.containerEndpoint = new StorageContainerApiEndpoint(http);
   }
 
   /**
@@ -245,6 +250,11 @@ export class InventoryApi extends BaseApi {
    */
   import(lab: number, environmentId: number, legacyId: number) {
     return this.legacyEndpoint.importMaterial(lab, environmentId, legacyId);
+  }
+
+  /** Containers of an environment where its lots can be stored. */
+  containers(lab: number, environmentId: number) {
+    return this.containerEndpoint.getContainers(lab, environmentId);
   }
 
   /** Laboratory-wide catalogue used by product batch consumption and the dashboard (deprecated backend read). */

@@ -10,8 +10,7 @@ import { RawMaterialBatch } from '../domain/model/raw-material-batch.entity';
 import { BatchApi } from '../../batch/infrastructure/batch-api';
 import { RawMaterialUsage } from '../../batch/domain/model/raw-material-usage.entity';
 import { IamStore } from '../../iam/application/iam.store';
-import { EquipmentApi } from '../../equipment/infrastructure/equipment-api';
-import { Equipment } from '../../equipment/domain/model/equipment.entity';
+import { StorageContainer } from '../domain/model/storage-container.entity';
 import { LaboratoryApi } from '../../laboratory/infrastructure/laboratory-api';
 import { EnvironmentUsage } from '../../laboratory/domain/model/environment-usage';
 import { SaveRawMaterialCommand } from '../domain/model/save-raw-material.command';
@@ -72,12 +71,6 @@ export class InventoryStore {
    * @private
    */
   private readonly batchApi = inject(BatchApi);
-
-  /**
-   * API service for equipment and container monitors.
-   * @private
-   */
-  private readonly equipmentApi = inject(EquipmentApi);
 
   /**
    * API service for laboratory environment information.
@@ -144,7 +137,7 @@ export class InventoryStore {
    * @remarks
    * Each monitor represents a monitored storage container.
    */
-  readonly containers = signal<Equipment[]>([]);
+  readonly containers = signal<StorageContainer[]>([]);
 
   /**
    * Signal containing the usage classification of the environment.
@@ -460,16 +453,12 @@ export class InventoryStore {
     try {
       const storage = await firstValueFrom(
         forkJoin({
-          equipment: this.equipmentApi.getEquipment(this.lab),
+          containers: this.api.containers(this.lab, environmentId),
           environment: this.laboratoryApi.getEnvironment(this.lab, environmentId),
         }),
       );
       if (generation !== this.generation) return;
-      this.containers.set(
-        storage.equipment.filter(
-          (item) => item.deviceType === 'CONTAINER_MONITOR' && item.environmentId === environmentId,
-        ),
-      );
+      this.containers.set(storage.containers);
       this.environmentUsage.set(storage.environment.usage);
     } catch (error) {
       if (generation !== this.generation) return;
