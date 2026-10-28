@@ -53,10 +53,7 @@ const STATE_COLORS: Record<ReadingState, string> = {
   ],
   templateUrl: './deviation-trend-chart.html',
   changeDetection: ChangeDetectionStrategy.Eager,
-  styleUrls: [
-    '../../../../shared/presentation/styles/operations-page.css',
-    '../reporting-views.css',
-  ],
+  styleUrl: './deviation-trend-chart.css',
 })
 export class DeviationTrendChartComponent implements OnInit {
   protected readonly store = inject(RaStore);
