@@ -16,7 +16,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
 import { TranslatePipe } from '@ngx-translate/core';
 import { BatchStore, batchError } from '../../../application/batch.store';
-import { BatchPath } from '../../../infrastructure/batch-api-endpoint';
+import { BatchPath } from '../../../domain/model/batch-path';
 import { EquipmentApi } from '../../../../equipment/infrastructure/equipment-api';
 import { Equipment } from '../../../../equipment/domain/model/equipment.entity';
 import { EnvironmentStore } from '../../../../laboratory/application/environment.store';

@@ -8,7 +8,7 @@ import { firstValueFrom } from 'rxjs';
 import { ApiError } from '../../shared/infrastructure/api-error';
 import { IamStore } from '../../iam/application/iam.store';
 import { BatchApi } from '../infrastructure/batch-api';
-import { BatchPath } from '../infrastructure/batch-api-endpoint';
+import { BatchPath } from '../domain/model/batch-path';
 import { Batch } from '../domain/model/batch.entity';
 import { BatchTraceability } from '../domain/model/batch-traceability.entity';
 import { CreateBatchCommand } from '../domain/model/create-batch.command';

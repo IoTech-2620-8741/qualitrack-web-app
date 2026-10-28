@@ -20,7 +20,7 @@ import { stockQuantityValidator } from '../../../../shared/presentation/validato
 import { BatchStore } from '../../../application/batch.store';
 import { ProductStore } from '../../../application/product.store';
 import { IamStore } from '../../../../iam/application/iam.store';
-import { BatchPath } from '../../../infrastructure/batch-api-endpoint';
+import { BatchPath } from '../../../domain/model/batch-path';
 
 /**
  * Registers a manufacturing batch of the product taken from the route.

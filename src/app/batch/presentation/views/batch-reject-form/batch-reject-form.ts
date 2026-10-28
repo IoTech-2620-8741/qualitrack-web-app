@@ -15,7 +15,7 @@ import {
 import { notBlankValidator } from '../../../../shared/presentation/validators/not-blank.validator';
 import { BatchStore } from '../../../application/batch.store';
 import { IamStore } from '../../../../iam/application/iam.store';
-import { BatchPath } from '../../../infrastructure/batch-api-endpoint';
+import { BatchPath } from '../../../domain/model/batch-path';
 
 /**
  * Rejects a batch and keeps the reason.

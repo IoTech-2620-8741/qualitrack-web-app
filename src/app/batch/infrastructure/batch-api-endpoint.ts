@@ -7,6 +7,7 @@ import {
 import { BaseApiEndpoint } from '../../shared/infrastructure/base-api-endpoint';
 import { environment } from '../../../environments/environment';
 import { Batch } from '../domain/model/batch.entity';
+import { BatchPath } from '../domain/model/batch-path';
 import {
   BatchContainer,
   BatchTraceability
@@ -37,28 +38,6 @@ import {
  * Base URL of the laboratories resource.
  */
 const laboratoriesEndpointUrl = `${environment.serverBasePath}${environment.laboratoryLabsEndpointPath}`;
-
-/**
- * Path of a batch inside its laboratory, environment and product.
- *
- * @author Qualitrack
- */
-export interface BatchPath {
-  /**
-   * The laboratory that owns the batch.
-   */
-  laboratoryId: number;
-
-  /**
-   * The environment where the product is manufactured.
-   */
-  environmentId: number;
-
-  /**
-   * The product the batch belongs to.
-   */
-  productId: number;
-}
 
 /**
  * HTTP client of the product batches of a laboratory.

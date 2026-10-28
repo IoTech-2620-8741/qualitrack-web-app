@@ -10,7 +10,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { TranslatePipe } from '@ngx-translate/core';
 import { BatchStore } from '../../../application/batch.store';
 import { RawMaterialConsumptionStore } from '../../../application/raw-material-consumption.store';
-import { BatchPath } from '../../../infrastructure/batch-api-endpoint';
+import { BatchPath } from '../../../domain/model/batch-path';
 import { TracedRawMaterialUsage } from '../../../domain/model/batch-traceability.entity';
 import { EnvironmentStore } from '../../../../laboratory/application/environment.store';
 import { EnvironmentSelector } from '../../../../laboratory/presentation/components/environment-selector/environment-selector';

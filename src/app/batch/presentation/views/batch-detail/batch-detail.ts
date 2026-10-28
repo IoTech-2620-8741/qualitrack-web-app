@@ -8,7 +8,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { TranslatePipe } from '@ngx-translate/core';
 import { BatchStore } from '../../../application/batch.store';
 import { IamStore } from '../../../../iam/application/iam.store';
-import { BatchPath } from '../../../infrastructure/batch-api-endpoint';
+import { BatchPath } from '../../../domain/model/batch-path';
 import { RawMaterialUsageComponent } from '../raw-material-usage/raw-material-usage';
 import { BatchParticipants } from '../batch-participants/batch-participants';
 import { BatchTraceabilityView } from '../batch-traceability/batch-traceability';
