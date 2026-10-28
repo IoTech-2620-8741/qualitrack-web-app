@@ -22,7 +22,12 @@
     @if (hasOperationalAccess()) {
       <app-notification-bell />
     }
-    <app-user-session-section />
+    @if (isSignedIn()) {
+      <div class="user-session">
+        <app-user-profile-badge />
+        <app-user-session-section />
+      </div>
+    }
     <app-language-switcher />
   </div>
 </mat-toolbar>

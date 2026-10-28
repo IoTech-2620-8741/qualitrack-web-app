@@ -24,6 +24,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { LanguageSwitcher } from '../language-switcher/language-switcher';
 import { UserSessionSection } from '../../../../iam/presentation/components/user-session-section/user-session-section';
+import { UserProfileBadge } from '../../../../profile/presentation/components/user-profile-badge/user-profile-badge';
 import { NotificationBell } from '../../../../ca/presentation/components/notification-bell/notification-bell';
 
 /** Entry of the side navigation menu. */
@@ -59,6 +60,7 @@ interface NavigationOption {
     MatTooltipModule,
     LanguageSwitcher,
     UserSessionSection,
+    UserProfileBadge,
     NotificationBell,
   ],
   templateUrl: './layout.html',
@@ -71,6 +73,8 @@ export class Layout {
    */
   private readonly breakpoints = inject(BreakpointObserver);
   private readonly iam = inject(IamStore);
+  /** Whether the toolbar composes the profile badge and the session action. */
+  protected readonly isSignedIn = this.iam.isSignedIn;
   private readonly drawer = viewChild(MatSidenav);
   protected readonly mobile = toSignal(
     this.breakpoints.observe('(max-width: 1023px)').pipe(map((state) => state.matches)),
