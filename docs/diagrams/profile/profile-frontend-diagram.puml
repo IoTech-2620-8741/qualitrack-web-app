@@ -134,6 +134,12 @@ end note
 
 package "profile.presentation" {
   class ProfileRoutes <<Routes>>
+  class StaffProfilePage {
+    #staffId
+    #loading
+    #profile: Signal<StaffProfile | null>
+    -showProfile(profile): void
+  }
 
   class ProfilePage {
     #personalForm
@@ -173,6 +179,15 @@ note bottom of UserProfileBadge
   Opens /profile and calls ensureLoaded only when onboarding is READY.
   The shared layout composes it beside the IAM sign-out action.
   At mobile widths it keeps the previous identity sizing and visibility.
+end note
+
+StaffProfilePage --> ProfileStore : staffProfile(lab, staffId)
+StaffProfilePage --> IamStore : laboratory session
+ProfileRoutes --> StaffProfilePage : qualityManagerGuard
+note bottom of StaffProfilePage
+  /profile/staff/:staffId: photo and personal data, with a link
+  back to Laboratory staff detail. Cancels stale requests and
+  revokes photo object URLs on route changes and destruction.
 end note
 
 @enduml

@@ -34,6 +34,11 @@ package "shared.infrastructure" {
 }
 
 package "ra.domain.model" {
+  class AuditedStaffMember {
+    +id: number
+    +fullName: string
+    +role: string
+  }
   class KpiDashboard {
     +id: number
     +laboratoryId: number
@@ -181,7 +186,13 @@ package "ra.domain.model" {
 }
 
 package "ra.infrastructure" {
+  interface AuditedStaffMemberResource
+  class AuditedStaffMemberAssembler
+  class AuditedStaffMemberApiEndpoint {
+    +getStaffMember(laboratoryId, staffId)
+  }
   class RaApi {
+    +getAuditedStaffMember(laboratoryId, staffId)
     -_kpiEndpoint: KpiApiEndpoint
     -_deviationTrendEndpoint: DeviationTrendApiEndpoint
     -_auditLogEndpoint: AuditLogApiEndpoint
@@ -352,6 +363,12 @@ package "ra.infrastructure" {
 
 package "ra.application" {
   class RaStore {
+    +staffActivity
+    +auditedStaffMember
+    +staffActivityLoading
+    +staffActivityError
+    +loadStaffActivity(staffId): void
+    +clearStaffActivity(): void
     -api: RaApi
     -_dashboard
     -_deviationTrends
@@ -402,6 +419,12 @@ package "ra.application" {
 }
 
 package "ra.presentation" {
+  class StaffActivity {
+    #entityFilter
+    #entityTypes
+    #visibleActivity
+    #lastActivity
+  }
   class RaRoutes
 
   class Dashboard {
@@ -573,5 +596,21 @@ RaRoutes ..> KpiDashboardComponent
 RaRoutes ..> DeviationTrendChartComponent
 RaRoutes ..> ReportGeneratorComponent
 RaRoutes ..> AuditLogViewerComponent
+
+AuditedStaffMember ..|> BaseEntity
+RaApi --> AuditedStaffMemberApiEndpoint
+AuditedStaffMemberApiEndpoint --|> ErrorHandlingEnabledBaseType
+AuditedStaffMemberApiEndpoint --> AuditedStaffMemberAssembler
+AuditedStaffMemberAssembler ..> AuditedStaffMemberResource
+AuditedStaffMemberAssembler ..> AuditedStaffMember
+RaStore ..> AuditedStaffMember
+StaffActivity --> RaStore
+RaRoutes ..> StaffActivity : staffActivityGuard
+note bottom of StaffActivity
+  /reports/staff-activity/:staffId: newest activity first, type filter,
+  latest activity and a link back to the Laboratory staff detail.
+  RA reads the staff identity through its own Laboratory ACL:
+  GET /laboratories/{lab}/staff/{staffId}.
+end note
 
 @enduml
