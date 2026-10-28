@@ -334,4 +334,10 @@ note bottom of ConsumableStockApiEndpoint
   GET .../environments/{id}/raw-materials and
   .../raw-materials/{id}/batches?usable=true in Batch's own models.
 end note
+note bottom of RawMaterialUsageApiEndpoint
+  Product Batch owns consumption writes and history resources.
+  Inventory reads the same resources through its own MaterialConsumption ACL;
+  it no longer imports BatchApi or RawMaterialUsage.
+end note
+
 @enduml
