@@ -514,4 +514,9 @@ CaRoutes --> NotificationSettings
 NotificationSettings *-- NotificationPreferencesForm
 NotificationBell ..> NotificationSettings : navigation link
 
+note left of CaRoutes
+  Source: ca/presentation/ca.routes.ts
+  Public paths and guards remain unchanged.
+end note
+
 @enduml

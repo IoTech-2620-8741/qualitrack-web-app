@@ -12,13 +12,11 @@ import { MonitoredEnvironment } from '../domain/model/monitored-environment.enti
 import { DeviceConnectionApiEndpoint } from './device-connection-api-endpoint';
 import { MonitoredDeviceApiEndpoint } from './monitored-device-api-endpoint';
 import { MonitoredEnvironmentApiEndpoint } from './monitored-environment-api-endpoint';
-import {
-  ActuationEventApiEndpoint,
-  DeviceTarget,
-  EnvironmentalProfileApiEndpoint,
-  MeasurementApiEndpoint,
-  TelemetryPeriod,
-} from './tracking-api-endpoints';
+import { ActuationEventApiEndpoint } from './actuation-event-api-endpoint';
+import { EnvironmentalProfileApiEndpoint } from './environmental-profile-api-endpoint';
+import { MeasurementApiEndpoint } from './measurement-api-endpoint';
+import { DeviceTarget } from './device-target';
+import { TelemetryPeriod } from './telemetry-period';
 
 /**
  * Facade responsible for providing access to Tracking & Telemetry API operations.

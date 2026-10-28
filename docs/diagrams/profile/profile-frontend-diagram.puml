@@ -187,4 +187,9 @@ note bottom of StaffProfilePage
   revokes photo object URLs on route changes and destruction.
 end note
 
+note left of ProfileRoutes
+  Source: profile/presentation/profile.routes.ts
+  Public paths and guards remain unchanged.
+end note
+
 @enduml

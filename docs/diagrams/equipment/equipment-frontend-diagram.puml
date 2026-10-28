@@ -212,4 +212,9 @@ note bottom of EquipmentRoutes
   /equipments/maintenance-history/:id redirects to the detail
 end note
 
+note left of EquipmentRoutes
+  Source: equipment/presentation/equipment.routes.ts
+  Public paths and guards remain unchanged.
+end note
+
 @enduml

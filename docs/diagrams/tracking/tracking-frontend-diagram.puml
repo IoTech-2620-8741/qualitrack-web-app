@@ -203,6 +203,11 @@ package "tracking" {
   }
 
   package "infrastructure" {
+    class TelemetryRequest <<functions>> {
+      +targetPath(base, target): string
+      +periodParams(period, metric): HttpParams
+    }
+
     class DeviceTarget <<interface>> {
       +laboratoryId: number
       +environmentId: number
@@ -422,6 +427,23 @@ end note
 note bottom of EnvironmentalMonitoring
   Current conditions of the last 24 hours per device: latest reading per
   metric with its state, last motion, RFID tag, last action and connection.
+end note
+
+note left of TrackingRoutes
+  Source: tracking/presentation/tracking.routes.ts
+  Public paths and guards remain unchanged.
+end note
+
+MeasurementApiEndpoint ..> TelemetryRequest
+ActuationEventApiEndpoint ..> TelemetryRequest
+EnvironmentalProfileApiEndpoint ..> TelemetryRequest
+note bottom of TelemetryRequest
+  telemetry-request.ts holds shared URL and query construction.
+  device-target.ts and telemetry-period.ts declare request types.
+  Each endpoint and assembler has its own file:
+  measurement-api-endpoint.ts / measurement-assembler.ts
+  actuation-event-api-endpoint.ts / actuation-event-assembler.ts
+  environmental-profile-api-endpoint.ts / environmental-profile-assembler.ts
 end note
 
 @enduml

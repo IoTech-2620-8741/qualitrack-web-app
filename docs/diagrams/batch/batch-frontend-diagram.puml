@@ -85,9 +85,23 @@ package "batch.domain.model" {
     +detailLink: route | null
   }
   class RawMaterialUsage
-  interface EquipmentUsage
-  interface StaffParticipation
-  interface BatchTraceability {
+  class TracedRawMaterialUsage {
+    +constructor(params)
+  }
+  class ReleaseEvidence {
+    +constructor(params)
+  }
+  class RejectionEvidence {
+    +constructor(params)
+  }
+  class EquipmentUsage {
+    +constructor(params)
+  }
+  class StaffParticipation {
+    +constructor(params)
+  }
+  class BatchTraceability {
+    +constructor(params)
     +batch: Batch
     +product
     +rawMaterials: TracedRawMaterialUsage[]
@@ -97,7 +111,8 @@ package "batch.domain.model" {
     +rejection: RejectionEvidence | null
     +container: BatchContainer | null
   }
-  interface BatchContainer {
+  class BatchContainer {
+    +constructor(params)
     +batchId: number
     +containerMonitorId: number
     +containerName: string | null
@@ -119,6 +134,12 @@ package "batch.domain.model" {
 
 PharmaceuticalProduct ..|> BaseEntity
 Batch ..|> BaseEntity
+EquipmentUsage ..|> BaseEntity
+StaffParticipation ..|> BaseEntity
+TracedRawMaterialUsage ..|> BaseEntity
+BatchTraceability --> TracedRawMaterialUsage
+BatchTraceability --> ReleaseEvidence
+BatchTraceability --> RejectionEvidence
 BatchTraceability --> Batch
 BatchTraceability --> EquipmentUsage
 BatchTraceability --> StaffParticipation
@@ -343,6 +364,11 @@ end note
 note bottom of RawMaterialUsageComponent
   Pre-Inventory usages link to /inventory/legacy-materials/:id.
   Current receipts retain their environment-scoped Inventory links.
+end note
+
+note left of BatchRoutes
+  Source: batch/presentation/batch.routes.ts
+  Public paths and guards remain unchanged.
 end note
 
 @enduml

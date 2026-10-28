@@ -1,7 +1,8 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { TrackingApi } from '../infrastructure/tracking-api';
-import { DeviceTarget, TelemetryPeriod } from '../infrastructure/tracking-api-endpoints';
+import { DeviceTarget } from '../infrastructure/device-target';
+import { TelemetryPeriod } from '../infrastructure/telemetry-period';
 import { Measurement, latestByMetric } from '../domain/model/measurement.entity';
 import { ActuationEvent } from '../domain/model/actuation-event.entity';
 import { DeviceConnection } from '../domain/model/device-connection.entity';

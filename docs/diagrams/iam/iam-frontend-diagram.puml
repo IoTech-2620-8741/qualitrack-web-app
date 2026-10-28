@@ -464,4 +464,6 @@ note bottom of SignUpForm
   required (recovery codes) and the password has 8 to 72 letters and numbers.
 end note
 
+PasswordRecoveryApiEndpoint --|> ErrorHandlingEnabledBaseType
+
 @enduml
