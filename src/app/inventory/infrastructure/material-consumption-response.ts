@@ -6,4 +6,6 @@ export interface MaterialConsumptionResource {
   quantityUsed: number;
   unit: string;
   usageDate: string;
+  stockBefore?: number | null;
+  stockAfter?: number | null;
 }

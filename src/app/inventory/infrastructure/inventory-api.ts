@@ -1,3 +1,5 @@
+import { LegacyMaterialSnapshotApiEndpoint } from './legacy-material-snapshot-api-endpoint';
+import { ConsumingBatchApiEndpoint } from './consuming-batch-api-endpoint';
 import { MaterialConsumptionApiEndpoint } from './material-consumption-api-endpoint';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
@@ -26,6 +28,19 @@ import { StockStatus } from '../domain/model/raw-material.entity';
  */
 @Injectable({ providedIn: 'root' })
 export class InventoryApi extends BaseApi {
+  private readonly legacySnapshotEndpoint: LegacyMaterialSnapshotApiEndpoint;
+  private readonly consumingBatchEndpoint: ConsumingBatchApiEndpoint;
+
+  /** All pre-Inventory materials, including those already imported. */
+  legacyMaterialSnapshots(laboratoryId: number) {
+    return this.legacySnapshotEndpoint.getByLaboratory(laboratoryId);
+  }
+
+  /** Production batch labels for historical consumption. */
+  consumingBatches(laboratoryId: number) {
+    return this.consumingBatchEndpoint.getByLaboratory(laboratoryId);
+  }
+
   private readonly consumptionEndpoint: MaterialConsumptionApiEndpoint;
 
   /** Production batches that consumed an Inventory material. */
@@ -83,6 +98,8 @@ export class InventoryApi extends BaseApi {
    */
   constructor(http: HttpClient) {
     super();
+    this.legacySnapshotEndpoint = new LegacyMaterialSnapshotApiEndpoint(http);
+    this.consumingBatchEndpoint = new ConsumingBatchApiEndpoint(http);
     this.consumptionEndpoint = new MaterialConsumptionApiEndpoint(http);
     this.materialEndpoint = new RawMaterialApiEndpoint(http);
     this.receiptEndpoint = new RawMaterialBatchApiEndpoint(http);

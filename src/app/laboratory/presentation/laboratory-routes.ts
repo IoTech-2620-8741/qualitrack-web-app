@@ -69,7 +69,7 @@ export const laboratoryRoutes: Routes = [
       { path: 'product-form', redirectTo: '/batches', pathMatch: 'full' },
       { path: 'raw-material-list', redirectTo: '/inventory', pathMatch: 'full' },
       { path: 'raw-material-form', redirectTo: '/inventory', pathMatch: 'full' },
-      { path: 'raw-materials/:id', loadComponent: () => import('./views/raw-material-detail/raw-material-detail').then(m => m.RawMaterialDetail) },
+      { path: 'raw-materials/:id', redirectTo: '/inventory/legacy-materials/:id', pathMatch: 'full' },
       { path: '', redirectTo: 'lab-profile', pathMatch: 'full' },
     ],
   },

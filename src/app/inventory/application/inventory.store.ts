@@ -1,7 +1,10 @@
-import { Injectable, computed, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { LegacyMaterialSnapshot } from '../domain/model/legacy-material-snapshot.entity';
+import { ConsumingBatch } from '../domain/model/consuming-batch.entity';
+import { DestroyRef, Injectable, computed, inject, signal } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ApiError } from '../../shared/infrastructure/api-error';
-import { firstValueFrom, forkJoin, Observable } from 'rxjs';
+import { firstValueFrom, forkJoin, Observable, Subject, takeUntil } from 'rxjs';
 import { InventoryApi } from '../infrastructure/inventory-api';
 import { RawMaterial } from '../domain/model/raw-material.entity';
 import { InventoryMovement } from '../domain/model/inventory-movement.entity';
@@ -53,6 +56,58 @@ export function inventoryError(error: unknown): string {
  */
 @Injectable({ providedIn: 'root' })
 export class InventoryStore {
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly reloadLegacyDetail = new Subject<void>();
+  readonly legacyDetailMaterial = signal<LegacyMaterialSnapshot | null>(null);
+  readonly legacyDetailConsumptions = signal<MaterialConsumption[]>([]);
+  readonly legacyDetailBatches = signal<ConsumingBatch[]>([]);
+  readonly legacyDetailLoading = signal(false);
+  readonly legacyDetailError = signal<string | null>(null);
+  /** Whether historical usages predate recorded stock balances. */
+  readonly legacyDetailHasUnrecordedStock = computed(() => this.legacyDetailConsumptions().some((usage) => usage.stockAfter === null));
+
+  /** Cancels stale history and clears the detail when its route changes or is left. */
+  clearLegacyDetail(): void {
+    this.reloadLegacyDetail.next();
+    this.legacyDetailMaterial.set(null);
+    this.legacyDetailConsumptions.set([]);
+    this.legacyDetailBatches.set([]);
+    this.legacyDetailLoading.set(false);
+    this.legacyDetailError.set(null);
+  }
+
+  /** Loads preserved pre-Inventory material data and consumption without changing previous-balance imports. */
+  loadLegacyDetail(materialId: number): void {
+    this.clearLegacyDetail();
+    if (!Number.isSafeInteger(materialId) || materialId <= 0) {
+      this.legacyDetailError.set('material-history.not-found');
+      return;
+    }
+    this.legacyDetailLoading.set(true);
+    forkJoin({
+      materials: this.api.legacyMaterialSnapshots(this.lab),
+      usages: this.api.legacyMaterialConsumptions(this.lab, materialId),
+      batches: this.api.consumingBatches(this.lab),
+    }).pipe(takeUntil(this.reloadLegacyDetail), takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: ({ materials, usages, batches }) => {
+        this.legacyDetailMaterial.set(materials.find((material) => material.id === materialId) ?? null);
+        this.legacyDetailConsumptions.set(usages);
+        this.legacyDetailBatches.set(batches);
+        if (!this.legacyDetailMaterial()) this.legacyDetailError.set('material-history.not-found');
+        this.legacyDetailLoading.set(false);
+      },
+      error: () => {
+        this.legacyDetailError.set('material-history.load-error');
+        this.legacyDetailLoading.set(false);
+      },
+    });
+  }
+
+  /** Batch number shown in history, with an identifier fallback when the batch is unavailable. */
+  legacyDetailBatchLabel(batchId: number): string {
+    return this.legacyDetailBatches().find((batch) => batch.id === batchId)?.batchNumber ?? '#' + batchId;
+  }
+
   /**
    * Infrastructure facade for inventory operations.
    * @private

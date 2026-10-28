@@ -22,6 +22,7 @@ const inventoryRoutes: Routes = [
     path: '',
     component: Layout,
     children: [
+      { path: 'legacy-materials/:id', loadComponent: () => import('./views/legacy-material-detail/legacy-material-detail').then((m) => m.LegacyMaterialDetail), title: 'Material history - QualiTrack' },
       { path: '', loadComponent: inventoryHome, pathMatch: 'full' },
       { path: 'environments/:environmentId/raw-materials', loadComponent: inventoryCatalogue },
       { path: 'environments/:environmentId/raw-materials/new', loadComponent: registerMaterial },

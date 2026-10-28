@@ -6,6 +6,7 @@ export class MaterialConsumptionAssembler {
   toEntityFromResource(resource: MaterialConsumptionResource): MaterialConsumption {
     return new MaterialConsumption({
       id: resource.id, batchId: resource.batchId, inventoryReceiptId: resource.inventoryReceiptId,
+      stockBefore: resource.stockBefore, stockAfter: resource.stockAfter,
       quantityUsed: resource.quantityUsed, unit: resource.unit, usageDate: resource.usageDate,
     });
   }
