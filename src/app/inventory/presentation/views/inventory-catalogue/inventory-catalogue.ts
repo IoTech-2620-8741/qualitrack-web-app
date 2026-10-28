@@ -26,7 +26,6 @@ import { EnvironmentSelector } from '../../../../laboratory/presentation/compone
 @Component({
   selector: 'app-inventory-catalogue',
   standalone: true,
-  providers: [InventoryStore],
   imports: [
     CommonModule,
     FormsModule,

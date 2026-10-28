@@ -18,7 +18,6 @@ import {
 import { notBlankValidator } from '../../../../shared/presentation/validators/not-blank.validator';
 import { stockQuantityValidator } from '../../../../shared/presentation/validators/stock-quantity.validator';
 import { BatchStore } from '../../../application/batch.store';
-import { ProductStore } from '../../../application/product.store';
 import { IamStore } from '../../../../iam/application/iam.store';
 import { BatchPath } from '../../../domain/model/batch-path';
 
@@ -34,7 +33,6 @@ import { BatchPath } from '../../../domain/model/batch-path';
 @Component({
   selector: 'app-batch-form',
   standalone: true,
-  providers: [ProductStore],
   imports: [
     ReactiveFormsModule,
     RouterLink,
@@ -50,7 +48,6 @@ import { BatchPath } from '../../../domain/model/batch-path';
 })
 export class BatchForm implements OnInit {
   protected readonly store = inject(BatchStore);
-  protected readonly products = inject(ProductStore);
   private readonly iam = inject(IamStore);
   private readonly fb = inject(FormBuilder);
   private readonly route = inject(ActivatedRoute);
@@ -135,7 +132,7 @@ export class BatchForm implements OnInit {
       productId: Number(params.get('productId')),
     };
     this.store.clearMessages();
-    void this.products.loadProduct(this.path.environmentId, this.path.productId);
+    void this.store.loadProduct(this.path.environmentId, this.path.productId);
   }
 
   /**

@@ -163,18 +163,15 @@ package "ca.application" {
     +loadBatchComplianceEvents(batchId: number): void
     +loadNotificationPreferences(): void
     +updateNotificationPreferences(request: UpdateNotificationPreferenceRequest): Observable<NotificationPreference>
+    +unreadNotifications: Signal<number>
+    +notifications: Signal<Notification[]>
+    +notificationsLoading / notificationsFailed / hasUnreadNotifications
+    +refreshUnreadNotifications(): Observable<number>
+    +loadLatestNotifications(): void
+    +markNotificationAsRead(notification: Notification): void
+    +markAllNotificationsAsRead(): void
   }
   class alertError <<function>>
-
-  class NotificationStore <<root>> {
-    +unreadCount: Signal<number>
-    +notifications: Signal<Notification[]>
-    +loading / failed / hasUnread
-    +refreshUnreadCount(): Observable<number>
-    +loadLatest(): void
-    +markAsRead(notification: Notification): void
-    +markAllAsRead(): void
-  }
 }
 
 package "ca.infrastructure" {
@@ -405,9 +402,8 @@ NotificationApiEndpoint ..> UnreadNotificationsResource
 NotificationApiEndpoint ..> NotificationsReadResource
 NotificationAssembler ..> Notification
 AlertApiEndpoint ..> AlertEmailNotificationResource
-NotificationStore --> CaApi
-NotificationStore --> IamStore : clears on another sign-in
-NotificationStore ..> Notification
+CaStore --> IamStore : clears the notifications on another sign-in
+CaStore ..> Notification
 note bottom of NotificationApiEndpoint
   GET  /users/me/notifications?unread&limit (US83)
   GET  /users/me/notifications/unread-count
@@ -470,7 +466,7 @@ AlertDashboard ..> OperationsPage
 AlertHistory ..> OperationsPage
 DeviationDetail ..> OperationsPage
 
-NotificationBell --> NotificationStore
+NotificationBell --> CaStore
 NotificationBell ..> CdkConnectedOverlay : panel over the current view
 note bottom of NotificationBell
   In the toolbar: counts the unread notifications every 30 s and opens

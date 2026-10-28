@@ -260,11 +260,15 @@ export class IamStore {
   /**
    * Ends the session and goes to the home page.
    *
+   * @remarks
+   * The stores of every context live in root, so the page is loaded again: nothing of this person stays in memory
+   * for the next one.
+   *
    * @param router - Router used to go to `/home`
    */
   signOut(router: Router): void {
     this.clearSession();
-    router.navigate(['/home']).then();
+    router.navigate(['/home']).then(() => window.location.reload());
   }
 
   /** Clears the latest sign-in or sign-up error. */

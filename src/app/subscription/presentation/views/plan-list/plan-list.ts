@@ -24,7 +24,6 @@ import { SubscriptionPlan } from '../../../domain/model/subscription-plan.entity
 @Component({
   selector: 'app-plan-list',
   standalone: true,
-  providers: [SubscriptionStore],
   imports: [
     CommonModule,
     Toolbar,

@@ -53,7 +53,7 @@ export function inventoryError(error: unknown): string {
  * Each inventory view maintains its own instance scoped to
  * the selected laboratory environment.
  */
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class InventoryStore {
   /**
    * Infrastructure facade for inventory operations.
@@ -395,6 +395,7 @@ export class InventoryStore {
     this.selectedId.set(id);
     this.loading.set(true);
     this.error.set('');
+    this.notice.set('');
     this.receipts.set([]);
     this.movements.set([]);
     this.usages.set([]);

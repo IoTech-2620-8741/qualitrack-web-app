@@ -3,17 +3,17 @@
   @if (open()) {
     <h2 id="usage-title">{{ 'batch-usage.title' | translate }}</h2>
     <p class="muted">{{ 'batch-usage.notice' | translate }}</p>
-    @if (consumption.error()) {
-      <p class="error" role="alert">{{ consumption.error()! | translate }}</p>
+    @if (store.consumptionError()) {
+      <p class="error" role="alert">{{ store.consumptionError()! | translate }}</p>
     }
-    @if (consumption.saved()) {
+    @if (store.consumptionSaved()) {
       <p class="success" role="status">{{ 'batch-usage.saved' | translate }}</p>
     }
     <form class="editor form-grid" [formGroup]="form">
       <!-- Environment where the raw material is kept -->
       <div class="full-width">
         <app-environment-selector
-          [selectedId]="consumption.environmentId()"
+          [selectedId]="store.consumptionEnvironmentId()"
           (selectedChange)="changeEnvironment($event)"
         />
       </div>
@@ -21,7 +21,7 @@
       <mat-form-field appearance="outline">
         <mat-label>{{ 'batch-usage.fields.raw-material' | translate }}</mat-label>
         <mat-select formControlName="rawMaterialId">
-          @for (material of consumption.materials(); track material.id) {
+          @for (material of store.consumptionMaterials(); track material.id) {
             <mat-option [value]="material.id">
               {{ material.name }} · {{ material.usableStock | number: '1.0-3' }} {{ material.unit }}
             </mat-option>
@@ -33,7 +33,7 @@
       <mat-form-field appearance="outline">
         <mat-label>{{ 'batch-usage.fields.lot' | translate }}</mat-label>
         <mat-select formControlName="lotId">
-          @for (lot of consumption.lots(); track lot.id) {
+          @for (lot of store.consumptionLots(); track lot.id) {
             <mat-option [value]="lot.id">
               {{ lot.batchNumber }} · {{ lot.availableAmount | number: '1.0-3' }} {{ lot.unit }} ·
               {{ lot.expiresOn }}
@@ -51,10 +51,10 @@
           formControlName="amount"
           min="0.001"
           step="0.001"
-          [max]="consumption.selectedLot()?.availableAmount ?? 0"
+          [max]="store.consumptionLot()?.availableAmount ?? 0"
         />
-        <span matTextSuffix>{{ consumption.selectedLot()?.unit }}</span>
-        @if (consumption.selectedLot(); as lot) {
+        <span matTextSuffix>{{ store.consumptionLot()?.unit }}</span>
+        @if (store.consumptionLot(); as lot) {
           <mat-hint>{{
             'batch-usage.available' | translate: { stock: lot.availableAmount, unit: lot.unit }
           }}</mat-hint>
@@ -64,8 +64,8 @@
             'batch-usage.errors.insufficient'
               | translate
                 : {
-                    stock: $safeNavigationMigration(consumption.selectedLot()?.availableAmount),
-                    unit: $safeNavigationMigration(consumption.selectedLot()?.unit),
+                    stock: $safeNavigationMigration(store.consumptionLot()?.availableAmount),
+                    unit: $safeNavigationMigration(store.consumptionLot()?.unit),
                   }
           }}</mat-error>
         } @else if (form.controls.amount.hasError('wholeUnits')) {
@@ -78,7 +78,7 @@
       </mat-form-field>
       <!-- Notice when the selected material has no usable lots -->
       @if (
-        form.controls.rawMaterialId.value && !consumption.loading() && !consumption.lots().length
+        form.controls.rawMaterialId.value && !store.consumptionLoading() && !store.consumptionLots().length
       ) {
         <p class="notice full-width">
           {{ 'batch-usage.no-usable' | translate }}
@@ -92,9 +92,9 @@
           (click)="consume()"
           [disabled]="
             form.invalid ||
-            !consumption.selectedLot() ||
-            consumption.loading() ||
-            consumption.saving()
+            !store.consumptionLot() ||
+            store.consumptionLoading() ||
+            store.consumptionSaving()
           "
         >
           <mat-icon>add_circle</mat-icon>{{ 'batch-usage.actions.add' | translate }}

@@ -29,7 +29,6 @@ import { IamStore } from '../../../../iam/application/iam.store';
     MatProgressSpinnerModule,
     MatTooltipModule,
   ],
-  providers: [RawMaterialHistoryStore],
   templateUrl: './raw-material-detail.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './raw-material-detail.css',

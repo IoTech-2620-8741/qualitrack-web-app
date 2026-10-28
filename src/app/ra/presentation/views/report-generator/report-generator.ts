@@ -63,7 +63,6 @@ import { ALL_ENVIRONMENTS } from '../../../domain/model/indicator-period';
     MatProgressSpinnerModule,
     MatTooltipModule,
   ],
-  providers: [BatchStore, EquipmentStore],
   templateUrl: './report-generator.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './report-generator.css',

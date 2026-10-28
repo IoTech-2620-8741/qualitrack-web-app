@@ -254,7 +254,6 @@ package "qualitrack-frontend" {
 
     package "application" {
       class CaStore
-      class NotificationStore
     }
 
     package "infrastructure" {
@@ -399,8 +398,7 @@ Layout --> LanguageSwitcher
 Layout --> NotificationBell
 Layout --> UserSessionSection
 UserSessionSection --> ProfileStore
-NotificationBell --> NotificationStore
-NotificationStore --> CaApi
+NotificationBell --> CaStore
 CaApi --> NotificationApiEndpoint
 NotificationApiEndpoint --|> BaseApiEndpoint
 ProfileRoutes ..> Layout

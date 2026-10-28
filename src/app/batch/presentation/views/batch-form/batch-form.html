@@ -1,6 +1,6 @@
 <main class="operations-page">
   <!-- Back link to the product -->
-  <a [routerLink]="productLink">{{ products.product()?.name || ('product-catalog.title' | translate) }}</a>
+  <a [routerLink]="productLink">{{ store.product()?.name || ('product-catalog.title' | translate) }}</a>
   <header class="page-heading">
     <h1><mat-icon aria-hidden="true">add_box</mat-icon>{{ 'batch-form.title' | translate }}</h1>
   </header>

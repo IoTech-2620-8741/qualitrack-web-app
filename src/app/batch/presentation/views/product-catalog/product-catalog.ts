@@ -14,7 +14,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { TranslatePipe } from '@ngx-translate/core';
-import { ProductStore } from '../../../application/product.store';
+import { BatchStore } from '../../../application/batch.store';
 import { EnvironmentStore } from '../../../../laboratory/application/environment.store';
 import { EnvironmentSelector } from '../../../../laboratory/presentation/components/environment-selector/environment-selector';
 
@@ -30,7 +30,6 @@ import { EnvironmentSelector } from '../../../../laboratory/presentation/compone
 @Component({
   selector: 'app-product-catalog',
   standalone: true,
-  providers: [ProductStore],
   imports: [
     FormsModule,
     RouterLink,
@@ -45,7 +44,7 @@ import { EnvironmentSelector } from '../../../../laboratory/presentation/compone
   styleUrl: '../../../../shared/presentation/styles/operations-page.css',
 })
 export class ProductCatalog implements OnInit {
-  protected readonly store = inject(ProductStore);
+  protected readonly store = inject(BatchStore);
   private readonly environments = inject(EnvironmentStore);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
@@ -74,7 +73,7 @@ export class ProductCatalog implements OnInit {
       const environmentId = Number(params.get('environmentId'));
       this.search.set('');
       // Only environments the account can open become the default one.
-      if (await this.store.load(environmentId))
+      if (await this.store.loadProducts(environmentId))
         this.environments.rememberEnvironment(environmentId, 'production');
     });
   }

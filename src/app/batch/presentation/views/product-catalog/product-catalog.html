@@ -3,20 +3,20 @@
   <header class="page-heading">
     <h1><mat-icon aria-hidden="true">factory</mat-icon>{{ 'product-catalog.title' | translate }}</h1>
     <div class="actions">
-      <app-environment-selector [selectedId]="store.environmentId()" (selectedChange)="changeEnvironment($event)" />
+      <app-environment-selector [selectedId]="store.productEnvironmentId()" (selectedChange)="changeEnvironment($event)" />
       <a mat-stroked-button routerLink="/batches/batch-list">
         <mat-icon>list_alt</mat-icon>{{ 'batches.title' | translate }}
       </a>
       <!-- Registering products is reserved to quality roles -->
-      @if (store.canManage()) {
-        <a mat-flat-button [routerLink]="['/batches/environments', store.environmentId(), 'products', 'new']">
+      @if (store.canManageProducts()) {
+        <a mat-flat-button [routerLink]="['/batches/environments', store.productEnvironmentId(), 'products', 'new']">
           <mat-icon>add</mat-icon>{{ 'product-catalog.add' | translate }}
         </a>
       }
     </div>
   </header>
-  @if (store.error()) {
-    <p class="error" role="alert">{{ store.error()! | translate }}</p>
+  @if (store.productError()) {
+    <p class="error" role="alert">{{ store.productError()! | translate }}</p>
   }
   <!-- Text search by code or name -->
   <div class="filters">
@@ -26,7 +26,7 @@
       <input matInput [ngModel]="search()" (ngModelChange)="search.set($event)" />
     </mat-form-field>
   </div>
-  @if (store.loading()) {
+  @if (store.productsLoading()) {
     <p role="status">{{ 'common.status-loading' | translate }}</p>
   } @else {
     <!-- Table of products -->
@@ -42,7 +42,7 @@
         @for (product of filtered(); track product.id) {
           <tr>
             <td>
-              <a [routerLink]="['/batches/environments', store.environmentId(), 'products', product.id]">{{ product.name }}</a>
+              <a [routerLink]="['/batches/environments', store.productEnvironmentId(), 'products', product.id]">{{ product.name }}</a>
               <small>{{ product.code }}</small>
             </td>
             <td [attr.data-label]="'product-catalog.specifications' | translate">{{ product.specifications }}</td>

@@ -17,7 +17,6 @@ import { stockQuantityValidator } from '../../../../shared/presentation/validato
 @Component({
   selector: 'app-register-material',
   standalone: true,
-  providers: [InventoryStore],
   imports: [
     ReactiveFormsModule,
     RouterLink,
