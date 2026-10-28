@@ -41,22 +41,7 @@ import { Toolbar } from '../../../../shared/presentation/components/toolbar/tool
     </main>
   `,
   changeDetection: ChangeDetectionStrategy.Eager,
-  styles: [
-    `
-      .onboarding-status {
-        max-width: 560px;
-        margin: 96px auto 24px;
-        padding: 24px;
-        text-align: center;
-      }
-      mat-spinner {
-        margin: auto;
-      }
-      h1 {
-        font-size: 24px;
-      }
-    `,
-  ],
+  styleUrl: './onboarding.css',
 })
 export class Onboarding {
   private readonly iam = inject(IamStore);
