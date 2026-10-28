@@ -179,33 +179,26 @@ package "batch.application" {
     +registerEquipment(path, batchId, equipmentId)
     +registerStaff(path, batchId, staffId)
     +assignContainer(path, batchId, containerMonitorId)
-  }
-  class ProductStore <<component scoped>> {
     +products: Signal<PharmaceuticalProduct[]>
     +product: Signal<PharmaceuticalProduct>
-    +canManage: Signal<boolean>
-    +load(environmentId)
+    +canManageProducts: Signal<boolean>
+    +loadProducts(environmentId)
     +loadProduct(environmentId, productId)
-    +create(environmentId, command)
-  }
-  class RawMaterialConsumptionStore <<component scoped>> {
-    +materials
-    +lots
-    +selectedLot
-    +selectEnvironment(environmentId)
-    +selectMaterial(materialId)
-    +consume(path, batchId, amount): Promise<boolean>
+    +createProduct(environmentId, command)
+    +consumptionMaterials / consumptionLots / consumptionLot
+    +clearConsumption()
+    +selectConsumptionEnvironment(environmentId)
+    +selectConsumptionMaterial(materialId)
+    +selectConsumptionLot(lotId)
+    +consumeRawMaterial(path, batchId, amount): Promise<boolean>
   }
   class batchError <<function>>
 }
 
 BatchStore --> BatchApi
 BatchStore --> IamStore
-ProductStore --> BatchApi
-ProductStore --> IamStore
-RawMaterialConsumptionStore --> InventoryApi
-RawMaterialConsumptionStore --> BatchApi
-note bottom of RawMaterialConsumptionStore
+BatchStore --> InventoryApi
+note bottom of BatchStore
   Reuses the operationId while retrying the same consumption;
   Inventory decides lot eligibility and available stock.
 end note
@@ -233,10 +226,9 @@ package "batch.presentation" {
 }
 
 BatchHome --> EnvironmentStore
-ProductCatalog --> ProductStore
+ProductCatalog --> BatchStore
 ProductCatalog --> EnvironmentSelector
-ProductForm --> ProductStore
-ProductDetail --> ProductStore
+ProductForm --> BatchStore
 ProductDetail --> BatchStore
 BatchList --> BatchStore
 BatchForm --> BatchStore
@@ -247,7 +239,7 @@ BatchDetail *-- BatchTraceabilityView
 BatchDetail *-- BatchStorage
 BatchReleaseForm --> BatchStore
 BatchRejectForm --> BatchStore
-RawMaterialUsageComponent --> RawMaterialConsumptionStore
+RawMaterialUsageComponent --> BatchStore
 RawMaterialUsageComponent --> EnvironmentSelector
 BatchParticipants --> BatchStore
 BatchParticipants --> EquipmentApi
