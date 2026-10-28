@@ -28,9 +28,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
-import { MAX_PHOTO_BYTES, PHOTO_TYPES, ProfileStore } from '../../../application/profile.store';
+import { MAX_PHOTO_BYTES, PHOTO_TYPES, ProfileStore, errorStatus } from '../../../application/profile.store';
 import { IamStore } from '../../../../iam/application/iam.store';
-import { errorStatus } from '../../../../shared/application/error-status';
 import { NotificationPreferencesForm } from '../../../../ca/presentation/components/notification-preferences-form/notification-preferences-form';
 import { DigitsOnly } from '../../../../shared/presentation/directives/digits-only.directive';
 import { PhoneInput } from '../../../../shared/presentation/directives/phone-input.directive';

@@ -1,6 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { ApiError } from '../infrastructure/api-error';
-import { errorStatus } from './error-status';
+import { ApiError, errorStatus } from './api-error';
 
 describe('errorStatus', () => {
   it('reads the status of the errors of the API endpoints', () => {

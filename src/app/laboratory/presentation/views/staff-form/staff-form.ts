@@ -14,11 +14,10 @@ import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
-import { LaboratoryStore } from '../../../application/laboratory.store';
+import { LaboratoryStore, errorStatus } from '../../../application/laboratory.store';
 import { IamStore } from '../../../../iam/application/iam.store';
 import { RegisteredStaff } from '../../../domain/model/register-staff.command';
 import { StaffAccessRole } from '../../../domain/model/staff-member.entity';
-import { errorStatus } from '../../../../shared/application/error-status';
 import { emailValidator } from '../../../../shared/presentation/validators/email.validator';
 import { notBlankValidator } from '../../../../shared/presentation/validators/not-blank.validator';
 import { personNameValidator } from '../../../../shared/presentation/validators/person-name.validator';

@@ -47,6 +47,10 @@ package "shared" {
       +details?: string
     }
 
+    class errorStatus <<function>> {
+      +errorStatus(error: unknown): number | null
+    }
+
     abstract class ErrorHandlingEnabledBaseType {
       #handleError(operation: string): Function
     }
@@ -64,9 +68,6 @@ package "shared" {
   }
 
   package "application" {
-    class errorStatus <<function>> {
-      +errorStatus(error: unknown): number | null
-    }
     class DashboardStore <<view-scoped>> {
       -iam: IamStore
       -trackingApi: TrackingApi

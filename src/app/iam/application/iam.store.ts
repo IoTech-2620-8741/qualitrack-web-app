@@ -15,6 +15,8 @@ import { SignInRequest } from '../infrastructure/sign-in.request';
 import { SignUpRequest } from '../infrastructure/sign-up.request';
 import { SignInResource } from '../infrastructure/sign-in-response';
 
+export { errorStatus } from '../../shared/infrastructure/api-error';
+
 /**
  * Signal-based application store for Identity and Access Management.
  *
