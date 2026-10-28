@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ActivatedRoute, provideRouter } from '@angular/router';
-import { TranslatePipe } from '@ngx-translate/core';
+import { provideTranslateService } from '@ngx-translate/core';
 import { IamStore } from '../../../../iam/application/iam.store';
 import { todayInLima } from '../../../../shared/presentation/utils/local-date';
 import { BatchStore } from '../../../application/batch.store';
@@ -11,8 +11,9 @@ import { BatchRejectForm } from './batch-reject-form';
 describe('BatchRejectForm', () => {
   function create(startDate: string | null = '2026-09-01') {
     TestBed.configureTestingModule({
-      imports: [BatchRejectForm, TranslatePipe.forRoot()],
+      imports: [BatchRejectForm],
       providers: [
+        provideTranslateService(),
         provideHttpClient(),
         provideHttpClientTesting(),
         provideRouter([]),

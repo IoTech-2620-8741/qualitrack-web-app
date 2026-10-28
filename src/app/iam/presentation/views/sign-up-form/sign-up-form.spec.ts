@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideRouter } from '@angular/router';
-import { TranslatePipe } from '@ngx-translate/core';
+import { provideTranslateService } from '@ngx-translate/core';
 import { IamStore } from '../../../application/iam.store';
 import { SignUpForm } from './sign-up-form';
 
@@ -11,8 +11,8 @@ describe('SignUpForm', () => {
 
   function create() {
     TestBed.configureTestingModule({
-      imports: [SignUpForm, TranslatePipe.forRoot()],
-      providers: [provideHttpClient(), provideHttpClientTesting(), provideRouter([])],
+      imports: [SignUpForm],
+      providers: [provideTranslateService(), provideHttpClient(), provideHttpClientTesting(), provideRouter([])],
     });
     vi.spyOn(TestBed.inject(IamStore), 'signUp').mockImplementation(signUp as never);
     const fixture = TestBed.createComponent(SignUpForm);
