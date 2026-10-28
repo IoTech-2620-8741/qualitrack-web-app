@@ -21,7 +21,7 @@ import { CaStore, alertError } from '../../../application/ca.store';
 import { AlertSeverity } from '../../../domain/model/deviation-alert.entity';
 
 /**
- * Notification preferences of the signed-in user, shown in the profile: whether notices reach the bell and the
+ * Notification preferences of the signed-in user, shown on the notification settings page: whether notices reach the bell and the
  * e-mail, and from which alert severity (US83, US84).
  */
 @Component({
