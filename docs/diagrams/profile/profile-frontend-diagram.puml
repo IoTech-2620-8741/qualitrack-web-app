@@ -160,4 +160,19 @@ note bottom of ProfilePage
   the current password), password and notification preferences.
 end note
 
+package "profile.presentation.components.user-profile-badge" {
+  class UserProfileBadge {
+    #canOpenProfile: Signal<boolean>
+    #roleKey: Signal<string | null>
+  }
+}
+UserProfileBadge --> ProfileStore : name, initials and photo
+UserProfileBadge --> IamStore : session, roles and onboarding
+Layout --> UserProfileBadge
+note bottom of UserProfileBadge
+  Opens /profile and calls ensureLoaded only when onboarding is READY.
+  The shared layout composes it beside the IAM sign-out action.
+  At mobile widths it keeps the previous identity sizing and visibility.
+end note
+
 @enduml
