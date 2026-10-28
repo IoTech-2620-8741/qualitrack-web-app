@@ -7,7 +7,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Subject, catchError, exhaustMap, of, switchMap, take, takeWhile, timer } from 'rxjs';
 import { IamStore } from '../../../../iam/application/iam.store';
-import { onboardingDestination } from '../../../../iam/domain/model/onboarding-state';
 
 @Component({
   selector: 'app-payment-success',
@@ -40,7 +39,7 @@ export class PaymentSuccess {
           this.status.set('error');
         } else if (state.subscriptionStatus === 'ACTIVE') {
           this.status.set('confirmed');
-          void this.router.navigateByUrl(onboardingDestination(state), { replaceUrl: true });
+          void this.router.navigateByUrl(this.iam.nextViewOf(state), { replaceUrl: true });
         } else {
           this.status.set('pending');
         }

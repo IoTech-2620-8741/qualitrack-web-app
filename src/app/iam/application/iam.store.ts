@@ -2,7 +2,7 @@ import { computed, Injectable, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Observable, catchError, finalize, map, of, shareReplay, tap, throwError } from 'rxjs';
-import { OnboardingState } from '../domain/model/onboarding-state';
+import { OnboardingState, onboardingDestination } from '../domain/model/onboarding-state';
 
 import { User } from '../domain/model/user.entity';
 import { SignInCommand } from '../domain/model/sign-in.command';
@@ -268,6 +268,16 @@ export class IamStore {
   /** Clears the latest sign-in or sign-up error. */
   clearError(): void {
     this._errorSignal.set(null);
+  }
+
+  /**
+   * Resolves the view that the signed-in user must see next.
+   *
+   * @param state - Onboarding state returned by {@link loadOnboarding}
+   * @returns The URL of the next view, for the roles of the session
+   */
+  nextViewOf(state: OnboardingState): string {
+    return onboardingDestination(state, this.canManageQuality());
   }
 
   /**
