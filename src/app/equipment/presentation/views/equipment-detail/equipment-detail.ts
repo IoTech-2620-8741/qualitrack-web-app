@@ -23,7 +23,6 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { EquipmentStore } from '../../../application/equipment.store';
 import { Equipment } from '../../../domain/model/equipment.entity';
 import { EQUIPMENT_STATUSES, EquipmentStatus } from '../../../domain/model/equipment-status';
-import { EnvironmentStore } from '../../../../laboratory/application/environment.store';
 import { notBlankValidator } from '../../../../shared/presentation/validators/not-blank.validator';
 
 /**
@@ -59,8 +58,6 @@ export class EquipmentDetail implements OnInit {
 
   protected readonly store = inject(EquipmentStore);
 
-  protected readonly environments = inject(EnvironmentStore);
-
   protected readonly equipmentId = signal<number | null>(null);
 
   /** Why the environment chosen when registering a device could not be recorded. */
@@ -84,7 +81,7 @@ export class EquipmentDetail implements OnInit {
     const id = Number(this.route.snapshot.paramMap.get('id'));
     if (!Number.isSafeInteger(id) || id <= 0) return;
     this.equipmentId.set(id);
-    void this.environments.loadEnvironments();
+    void this.store.loadEnvironments();
     this.store.loadEquipment();
     this.store.loadBpmConfig(id);
     void this.load(id);
@@ -97,7 +94,7 @@ export class EquipmentDetail implements OnInit {
 
   protected environmentName(environmentId: number | null): string | null {
     if (environmentId === null) return null;
-    const environment = this.environments.environments().find((item) => item.id === environmentId);
+    const environment = this.store.environments().find((item) => item.id === environmentId);
     return environment ? `${environment.code} - ${environment.name}` : `#${environmentId}`;
   }
 

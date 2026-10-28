@@ -26,20 +26,10 @@ package "iam.application" {
   }
 }
 
-package "batch.application" {
-  class BatchStore {
-    +batches
-    +loadBatches(labId: number): void
-  }
-}
-
-package "laboratory" {
-  class EnvironmentStore {
-    +environments
-    +isEmpty
-    +loadEnvironments(): Promise<void>
-    +preferredEnvironment(usage?, scope): Environment
-    +rememberEnvironment(environmentId, scope): void
+package "shared.infrastructure" {
+  class EnvironmentPreference {
+    +choose(laboratoryId, environments, preferredUsage?)
+    +remember(laboratoryId, environmentId): void
   }
 }
 
@@ -149,6 +139,10 @@ package "ra.domain.model" {
   class OverviewLaboratory {
     +id: number
     +name: string
+  }
+  class OverviewEnvironment {
+    +id / code / name
+    +usage: string | null
   }
   class OverviewEquipment {
     +id / laboratoryId / environmentId
@@ -339,7 +333,7 @@ package "ra.infrastructure" {
 
   class OperationalOverviewApiEndpoint {
     +getLaboratory(laboratoryId)
-    +getEnvironmentIds(laboratoryId)
+    +getEnvironments(laboratoryId)
     +getLowStockMaterials(laboratoryId, environmentId)
     +getBatches(laboratoryId)
     +getEquipment(laboratoryId)
@@ -384,6 +378,14 @@ package "ra.application" {
     +generateInventoryReport(command: GenerateInventoryReportCommand): void
     +exportEquipmentLog(command: ExportEquipmentLogCommand): void
     +clearMessages(): void
+
+    +environments: Signal<OverviewEnvironment[]>
+    +environmentsLoaded / environmentsEmpty
+    +loadEnvironments(): Promise<void>
+    +preferredEnvironmentId(): number | null
+    +rememberEnvironment(environmentId): void
+    +loadEquipment(): void
+    +loadBatches(): void
 
     +overviewLaboratory / overviewEquipment / overviewBatches
     +overviewMaterials / overviewAlerts / overviewMeasurements
@@ -514,6 +516,13 @@ RaApi --> OperationalOverviewApiEndpoint
 OperationalOverviewApiEndpoint --|> ErrorHandlingEnabledBaseType
 OperationalOverviewApiEndpoint --> OperationalOverviewAssembler
 OperationalOverviewAssembler ..> OverviewLaboratory
+OperationalOverviewAssembler ..> OverviewEnvironment
+RaStore --> EnvironmentPreference
+note bottom of OverviewEnvironment
+  Laboratory -> Reporting & Audit: the environments of the indicators,
+  trends and reports; the trend chart remembers the environment with the
+  monitoring views ("tracking").
+end note
 OperationalOverviewAssembler ..> OverviewEquipment
 OperationalOverviewAssembler ..> OverviewBatch
 OperationalOverviewAssembler ..> OverviewRawMaterial
@@ -547,19 +556,15 @@ AuditLogAssembler ..> AuditLogEntry
 AuditLogAssembler ..> AuditLogEntryResource
 
 KpiDashboardComponent --> RaStore
-KpiDashboardComponent --> EnvironmentStore
 KpiDashboardComponent ..> LastDays
 
 DeviationTrendChartComponent --> RaStore
-DeviationTrendChartComponent --> EnvironmentStore
 DeviationTrendChartComponent --> EnvironmentSelector
 DeviationTrendChartComponent ..> LastDays
 
 ReportGeneratorComponent --> RaStore
 ReportGeneratorComponent --> IamStore
-ReportGeneratorComponent --> BatchStore
-ReportGeneratorComponent --> RaStore : loadEquipment()
-ReportGeneratorComponent --> EnvironmentStore
+ReportGeneratorComponent --> RaStore : loadEquipment(), loadBatches()
 ReportGeneratorComponent ..> LocalIsoDate : report days
 
 AuditLogViewerComponent --> RaStore

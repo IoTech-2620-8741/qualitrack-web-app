@@ -7,6 +7,7 @@ skinparam classAttributeIconSize 0
 package "shared" <<External>> {
   class ErrorHandlingEnabledBaseType
   class EnvironmentSelector <<component>>
+  class EnvironmentPreference
   interface BaseEntity
   interface BaseResource
   interface BaseResponse
@@ -379,6 +380,7 @@ end note
 
 TrackingStore --> TrackingApi
 TrackingStore --> IamStore
+TrackingStore --> EnvironmentPreference : "tracking"
 TrackingStore *-- DeviceSnapshot
 TrackingStore *-- DeviceHistory
 

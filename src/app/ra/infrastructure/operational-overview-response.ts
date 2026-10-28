@@ -15,6 +15,9 @@ export interface OverviewLaboratoryResource {
 /** Environment returned by `GET /laboratories/{laboratoryId}/environments`. */
 export interface OverviewEnvironmentResource {
   id: number;
+  code: string;
+  name: string;
+  usage: string | null;
 }
 
 /** Raw material returned by `GET /laboratories/{laboratoryId}/environments/{environmentId}/raw-materials`. */

@@ -19,7 +19,6 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 import { CaStore } from '../../../application/ca.store';
 import { DeviationAlert } from '../../../domain/model/deviation-alert.entity';
-import { EnvironmentStore } from '../../../../laboratory/application/environment.store';
 
 /**
  * Detail of a deviation alert (US86): where it originated, which condition produced it, how the incident evolved and
@@ -49,7 +48,6 @@ export class DeviationDetail implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly translate = inject(TranslateService);
   protected readonly store = inject(CaStore);
-  protected readonly environments = inject(EnvironmentStore);
 
   /** Numeric id of the alert in the route; 0 when the route has none or it is not a number. */
   protected alertId = 0;
@@ -72,7 +70,7 @@ export class DeviationDetail implements OnInit {
   /** Environment of the alert, shown with its code and name. */
   protected readonly environmentName = computed(() => {
     const environmentId = this.alert?.()?.environmentId;
-    const environment = this.environments.environments().find((item) => item.id === environmentId);
+    const environment = this.store.environments().find((item) => item.id === environmentId);
     return environment ? `${environment.code} · ${environment.name}` : null;
   });
 
@@ -84,7 +82,7 @@ export class DeviationDetail implements OnInit {
    * cleared and the alert is loaded again.
    */
   ngOnInit(): void {
-    if (!this.environments.loaded()) void this.environments.loadEnvironments();
+    if (!this.store.environmentsLoaded()) void this.store.loadEnvironments();
     this.store.loadDevices();
     this.route.paramMap.pipe(takeUntilDestroyed(this.destroy)).subscribe((params) => {
       this.alertId = Number(params.get('id')) || 0;

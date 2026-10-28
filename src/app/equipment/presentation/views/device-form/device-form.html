@@ -88,7 +88,7 @@
             <mat-label>{{ 'device-form.fields.environment' | translate }}</mat-label>
             <mat-select formControlName="environmentId">
               <mat-option [value]="null">{{ 'device-form.no-environment' | translate }}</mat-option>
-              @for (environment of environments.environments(); track environment.id) {
+              @for (environment of store.environments(); track environment.id) {
                 <mat-option [value]="environment.id" [disabled]="isOccupied(environment.id)">
                   {{ environment.code }} - {{ environment.name }}
                   @if (isOccupied(environment.id)) { ({{ 'device-form.occupied' | translate }}) }

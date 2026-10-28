@@ -1,14 +1,16 @@
 import { DestroyRef, Injectable, WritableSignal, computed, signal, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Observable, Subject, Subscription as Request, from, map, mergeMap, takeUntil, toArray } from 'rxjs';
+import { Observable, Subject, Subscription as Request, firstValueFrom, from, map, mergeMap, takeUntil, toArray } from 'rxjs';
 import { RaApi } from '../infrastructure/ra-api';
 import { IamStore } from '../../iam/application/iam.store';
+import { EnvironmentPreference } from '../../shared/infrastructure/environment-preference';
 
 import { KpiDashboard } from '../domain/model/kpi-dashboard.entity';
 import { DeviationTrend } from '../domain/model/deviation-trend.entity';
 import { AuditLogEntry } from '../domain/model/audit-log-entry.entity';
 import { IndicatorPeriod, lastDays } from '../domain/model/indicator-period';
 import { OverviewLaboratory } from '../domain/model/overview-laboratory.entity';
+import { OverviewEnvironment } from '../domain/model/overview-environment.entity';
 import { OverviewEquipment } from '../domain/model/overview-equipment.entity';
 import { OverviewBatch } from '../domain/model/overview-batch.entity';
 import { OverviewRawMaterial } from '../domain/model/overview-raw-material.entity';
@@ -121,6 +123,18 @@ export class RaStore {
    */
   readonly successMsg = this._successMsg.asReadonly();
 
+  private readonly _environments = signal<OverviewEnvironment[]>([]);
+  private readonly _environmentsLoaded = signal(false);
+  /** Environment opened last time in the monitoring views of this browser, shared with Tracking and the alerts. */
+  private readonly environmentPreference = new EnvironmentPreference('tracking');
+
+  /** Environments of the laboratory that indicators, trends and reports cover. */
+  readonly environments = this._environments.asReadonly();
+  /** Whether the environments have been read at least once. */
+  readonly environmentsLoaded = this._environmentsLoaded.asReadonly();
+  /** Whether the laboratory has no environment yet. */
+  readonly environmentsEmpty = computed(() => this._environmentsLoaded() && this._environments().length === 0);
+
   /** Requests of the operational overview in progress, by the part they load. */
   private readonly overviewRequests = new Map<unknown, Request>();
   private readonly _overviewLaboratory = overviewState<OverviewLaboratory>();
@@ -224,6 +238,52 @@ export class RaStore {
     const values = this.overviewReadings().map((reading) => reading.value ?? 0);
     return values.length ? { min: Math.min(...values), max: Math.max(...values) } : null;
   });
+
+  /**
+   * Reads the environments of the laboratory (Laboratory → Reporting & Audit).
+   *
+   * @remarks
+   * On failure the previous list is kept and {@link RaStore.error} explains that the data could not be loaded.
+   */
+  async loadEnvironments(): Promise<void> {
+    try {
+      this._environments.set(await firstValueFrom(this.api.getOverviewEnvironments(this.iam.requireLaboratoryId())));
+      this._environmentsLoaded.set(true);
+    } catch {
+      this._error.set('reporting.errors.load');
+    }
+  }
+
+  /**
+   * The environment to open: the last one chosen in the monitoring views of this browser, or the first one.
+   *
+   * @returns The environment identifier, or null when the laboratory has none
+   */
+  preferredEnvironmentId(): number | null {
+    return this.environmentPreference.choose(this.iam.requireLaboratoryId(), this._environments())?.id ?? null;
+  }
+
+  /**
+   * Remembers the environment the person chose, for the next visit to the monitoring views.
+   *
+   * @param environmentId - The environment identifier
+   */
+  rememberEnvironment(environmentId: number): void {
+    this.environmentPreference.remember(this.iam.requireLaboratoryId(), environmentId);
+  }
+
+  /**
+   * Reads the batches of the laboratory again, newest first, for the batch report (Product Batch → Reporting &
+   * Audit, through {@link RaApi}).
+   */
+  loadBatches(): void {
+    this.loadOverview(
+      this._overviewBatches,
+      this.api
+        .getOverviewBatches(this.iam.requireLaboratoryId())
+        .pipe(map((batches) => [...batches].sort((a, b) => b.id - a.id))),
+    );
+  }
 
   /**
    * Loads every part of the operational overview of the laboratory of the session.
@@ -567,9 +627,9 @@ export class RaStore {
    * @returns Observable emitting the joined answers once every environment answered
    */
   private eachEnvironment<T>(laboratoryId: number, read: (environmentId: number) => Observable<T[]>): Observable<T[]> {
-    return this.api.getOverviewEnvironmentIds(laboratoryId).pipe(
-      mergeMap((environmentIds) =>
-        from(environmentIds).pipe(
+    return this.api.getOverviewEnvironments(laboratoryId).pipe(
+      mergeMap((environments) =>
+        from(environments.map((environment) => environment.id)).pipe(
           mergeMap((environmentId) => read(environmentId), ENVIRONMENT_REQUESTS),
           toArray(),
           map((groups) => groups.flat()),

@@ -13,6 +13,7 @@ import { AuditLogApiEndpoint } from './audit-log-api-endpoint';
 import { ReportApiEndpoint } from './report-api-endpoint';
 import { OperationalOverviewApiEndpoint } from './operational-overview-api-endpoint';
 import { OverviewLaboratory } from '../domain/model/overview-laboratory.entity';
+import { OverviewEnvironment } from '../domain/model/overview-environment.entity';
 import { OverviewRawMaterial } from '../domain/model/overview-raw-material.entity';
 import { OverviewBatch } from '../domain/model/overview-batch.entity';
 import { OverviewEquipment } from '../domain/model/overview-equipment.entity';
@@ -201,9 +202,9 @@ export class RaApi extends BaseApi {
     return this._overviewEndpoint.getLaboratory(laboratoryId);
   }
 
-  /** Identifiers of the environments of the laboratory, to read their alerts and stock. */
-  getOverviewEnvironmentIds(laboratoryId: number): Observable<number[]> {
-    return this._overviewEndpoint.getEnvironmentIds(laboratoryId);
+  /** Environments of the laboratory: what indicators and reports cover, and where alerts and stock are read. */
+  getOverviewEnvironments(laboratoryId: number): Observable<OverviewEnvironment[]> {
+    return this._overviewEndpoint.getEnvironments(laboratoryId);
   }
 
   /** Raw materials of an environment whose usable stock is low. */

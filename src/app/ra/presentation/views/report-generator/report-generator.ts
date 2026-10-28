@@ -16,8 +16,6 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { RaStore } from '../../../application/ra.store';
 import { IamStore } from '../../../../iam/application/iam.store';
-import { BatchStore } from '../../../../batch/application/batch.store';
-import { EnvironmentStore } from '../../../../laboratory/application/environment.store';
 import { localIsoDate, todayInLima } from '../../../../shared/presentation/utils/local-date';
 import { MIN_DATE } from '../../../../shared/presentation/validators/date.validators';
 import {
@@ -67,9 +65,16 @@ import { ALL_ENVIRONMENTS } from '../../../domain/model/indicator-period';
   styleUrl: './report-generator.css',
 })
 export class ReportGeneratorComponent implements OnInit {
-  protected readonly batchStore = inject(BatchStore);
-  protected readonly environments = inject(EnvironmentStore);
   protected readonly ALL_ENVIRONMENTS = ALL_ENVIRONMENTS;
+
+  /** Batches of the laboratory, newest first, whose report can be generated. */
+  protected readonly batches = computed(() => this.store.overviewBatches().data ?? []);
+
+  /** Whether the batches of the laboratory are being read. */
+  protected readonly batchesLoading = computed(() => this.store.overviewBatches().status === 'loading');
+
+  /** Whether the batches of the laboratory could not be read. */
+  protected readonly batchesFailed = computed(() => this.store.overviewBatches().status === 'error');
 
   /** Equipment located in an environment: its log report belongs to that environment (TS86). */
   protected readonly locatedEquipment = computed(() =>
@@ -86,12 +91,12 @@ export class ReportGeneratorComponent implements OnInit {
     this.store.clearMessages();
     this.reloadBatches();
     this.reloadEquipment();
-    if (!this.environments.loaded()) void this.environments.loadEnvironments();
+    if (!this.store.environmentsLoaded()) void this.store.loadEnvironments();
   }
 
   protected reloadBatches(): void {
     this.batchForm.batchId = null;
-    this.batchStore.loadBatches(this.currentLaboratoryId);
+    this.store.loadBatches();
   }
 
   protected reloadEquipment(): void {
@@ -101,14 +106,9 @@ export class ReportGeneratorComponent implements OnInit {
 
   protected get hasSelectedBatch(): boolean {
     return (
-      !this.batchStore.isLoading() &&
-      !this.batchStore.error() &&
-      this.batchStore
-        .batches()
-        .some(
-          (batch) =>
-            batch.id === this.batchForm.batchId && batch.labId === this.currentLaboratoryId,
-        )
+      !this.batchesLoading() &&
+      !this.batchesFailed() &&
+      this.batches().some((batch) => batch.id === this.batchForm.batchId)
     );
   }
 

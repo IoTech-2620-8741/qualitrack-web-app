@@ -9,7 +9,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
-import { EnvironmentStore } from '../../../application/environment.store';
+import { LaboratoryStore } from '../../../application/laboratory.store';
 import { Environment } from '../../../domain/model/environment.entity';
 import { ENVIRONMENT_USAGES, EnvironmentUsage } from '../../../domain/model/environment-usage';
 
@@ -40,7 +40,7 @@ export class EnvironmentList implements OnInit {
   /**
    * Store that manages the environments of the current laboratory.
    */
-  protected readonly store = inject(EnvironmentStore);
+  protected readonly store = inject(LaboratoryStore);
 
   /**
    * Router used to navigate after user actions.
@@ -56,7 +56,7 @@ export class EnvironmentList implements OnInit {
    * Columns displayed in the environment table; the actions are only shown to quality managers.
    */
   protected get displayedColumns(): string[] {
-    return this.store.canManage()
+    return this.store.canManageEnvironments()
       ? ['code', 'name', 'usage', 'description', 'actions']
       : ['code', 'name', 'usage', 'description'];
   }
@@ -91,7 +91,7 @@ export class EnvironmentList implements OnInit {
    * @param usage - Usage to assign
    */
   protected onAssignUsage(environment: Environment, usage: EnvironmentUsage): void {
-    void this.store.assignUsage(environment.id, usage);
+    void this.store.assignEnvironmentUsage(environment.id, usage);
   }
 
   /**

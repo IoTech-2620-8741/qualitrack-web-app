@@ -3,6 +3,7 @@ import { Observable, catchError, map } from 'rxjs';
 import { ErrorHandlingEnabledBaseType } from '../../shared/infrastructure/error-handling-enabled-base-type';
 import { environment } from '../../../environments/environment';
 import { OverviewLaboratory } from '../domain/model/overview-laboratory.entity';
+import { OverviewEnvironment } from '../domain/model/overview-environment.entity';
 import { OverviewRawMaterial } from '../domain/model/overview-raw-material.entity';
 import { OverviewBatch } from '../domain/model/overview-batch.entity';
 import { OverviewEquipment } from '../domain/model/overview-equipment.entity';
@@ -55,11 +56,11 @@ export class OperationalOverviewApiEndpoint extends ErrorHandlingEnabledBaseType
     );
   }
 
-  getEnvironmentIds(laboratoryId: number): Observable<number[]> {
+  getEnvironments(laboratoryId: number): Observable<OverviewEnvironment[]> {
     return this.http
       .get<OverviewEnvironmentResource[]>(`${this.laboratory(laboratoryId)}${environment.laboratoryEnvironmentsEndpointPath}`)
       .pipe(
-        map((resources) => resources.map((resource) => resource.id)),
+        map((resources) => resources.map((resource) => this.assembler.toEnvironment(resource))),
         catchError(this.handleError(`Failed to fetch environments of laboratory ${laboratoryId}`)),
       );
   }

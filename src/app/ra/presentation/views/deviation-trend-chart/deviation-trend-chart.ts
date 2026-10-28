@@ -23,7 +23,6 @@ import {
   TrendDirection,
 } from '../../../domain/model/deviation-trend.entity';
 import { lastDays } from '../../../domain/model/indicator-period';
-import { EnvironmentStore } from '../../../../laboratory/application/environment.store';
 import { EnvironmentSelector } from '../../../../shared/presentation/components/environment-selector/environment-selector';
 
 /** Lengths of the period offered, in days; the platform accepts up to 31. */
@@ -61,7 +60,6 @@ const STATE_COLORS: Record<ReadingState, string> = {
 })
 export class DeviationTrendChartComponent implements OnInit {
   protected readonly store = inject(RaStore);
-  protected readonly environments = inject(EnvironmentStore);
   private readonly translate = inject(TranslateService);
   private readonly language = toSignal(this.translate.onLangChange, { initialValue: null });
 
@@ -144,13 +142,13 @@ export class DeviationTrendChartComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     this.store.loadDevices();
-    if (!this.environments.loaded()) await this.environments.loadEnvironments();
-    const preferred = this.environments.preferredEnvironment(undefined, 'tracking');
-    if (preferred) this.changeEnvironment(preferred.id);
+    if (!this.store.environmentsLoaded()) await this.store.loadEnvironments();
+    const preferred = this.store.preferredEnvironmentId();
+    if (preferred !== null) this.changeEnvironment(preferred);
   }
 
   protected changeEnvironment(environmentId: number): void {
-    this.environments.rememberEnvironment(environmentId, 'tracking');
+    this.store.rememberEnvironment(environmentId);
     this.environmentId.set(environmentId);
     this.reload();
   }

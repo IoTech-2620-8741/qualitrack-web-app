@@ -39,6 +39,12 @@ package "shared" {
       +details?: string
     }
 
+    class EnvironmentPreference {
+      +choose(laboratoryId, environments, preferredUsage?)
+      +remember(laboratoryId, environmentId): void
+      +read(laboratoryId): number | null
+    }
+
     class errorStatus <<function>> {
       +errorStatus(error: unknown): number | null
     }
@@ -136,6 +142,11 @@ package "shared" {
 BaseResource --|> BaseEntity
 BaseApiEndpoint --|> ErrorHandlingEnabledBaseType
 errorStatus ..> ApiError
+note bottom of EnvironmentPreference
+  Environment remembered in this browser per area (inventory, production,
+  tracking) under qualitrack.environment.{laboratoryId}.{scope}; each
+  bounded context passes its own environments.
+end note
 BaseApiEndpoint ..> BaseEntity
 BaseApiEndpoint ..> BaseResource
 BaseApiEndpoint ..> BaseResponse

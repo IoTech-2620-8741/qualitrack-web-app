@@ -4,7 +4,6 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideRouter } from '@angular/router';
 import { provideTranslateService } from '@ngx-translate/core';
 import { IamStore } from '../../../../iam/application/iam.store';
-import { EnvironmentStore } from '../../../../laboratory/application/environment.store';
 import { RaStore } from '../../../application/ra.store';
 import { calendarDate } from '../../utils/report-period';
 import { ReportGeneratorComponent } from './report-generator';
@@ -30,7 +29,7 @@ describe('ReportGeneratorComponent', () => {
         { provide: IamStore, useValue: { requireLaboratoryId: () => 1 } },
       ],
     });
-    vi.spyOn(TestBed.inject(EnvironmentStore), 'loadEnvironments').mockResolvedValue(undefined as never);
+    vi.spyOn(TestBed.inject(RaStore), 'loadEnvironments').mockResolvedValue(undefined as never);
     vi.spyOn(TestBed.inject(RaStore), 'generateComplianceReport').mockImplementation(generateComplianceReport);
     const fixture = TestBed.createComponent(ReportGeneratorComponent);
     fixture.detectChanges();

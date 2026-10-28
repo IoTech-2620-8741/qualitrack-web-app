@@ -15,6 +15,12 @@ describe('OperationalOverviewAssembler', () => {
     expect(legacy.detailLink).toBeNull();
   });
 
+  it('keeps the code, name and usage of an environment', () => {
+    const environment = assembler.toEnvironment({ id: 3, code: 'PROD-SOL-01', name: 'Sólidos', usage: null });
+
+    expect(environment).toMatchObject({ id: 3, code: 'PROD-SOL-01', name: 'Sólidos', usage: null });
+  });
+
   it('tells IoT devices and container monitors from process equipment', () => {
     const monitor = assembler.toEquipment({ id: 1, laboratoryId: 1, environmentId: 1, name: 'MP-A1', deviceType: 'CONTAINER_MONITOR' });
     const mixer = assembler.toEquipment({ id: 2, laboratoryId: 1, environmentId: 3, name: 'Mixer', deviceType: null });

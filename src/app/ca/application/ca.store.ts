@@ -1,7 +1,7 @@
 import { computed, DestroyRef, effect, inject, Injectable, Signal, signal } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Observable, Subject, catchError, finalize, of, takeUntil, tap } from 'rxjs';
+import { Observable, Subject, catchError, finalize, firstValueFrom, of, takeUntil, tap } from 'rxjs';
 
 import { DeviationAlert } from '../domain/model/deviation-alert.entity';
 import { ComplianceEvent } from '../domain/model/compliance-event.entity';
@@ -13,7 +13,9 @@ import { UpdateNotificationPreferenceRequest } from '../infrastructure/notificat
 import { ResolveAlertRequest } from '../infrastructure/resolve-alert.request';
 import { IamStore } from '../../iam/application/iam.store';
 import { ApiError } from '../../shared/infrastructure/api-error';
+import { EnvironmentPreference } from '../../shared/infrastructure/environment-preference';
 import { AlertDevice } from '../domain/model/alert-device.entity';
+import { AlertEnvironment } from '../domain/model/alert-environment.entity';
 
 /**
  * Translates failures of the alert views into translation keys, or the server details when they explain a rule.
@@ -71,6 +73,8 @@ export class CaStore {
   private readonly _eventsSignal = signal<ComplianceEvent[]>([]);
   private readonly _preferenceSignal = signal<NotificationPreference | null>(null);
   private readonly _devicesSignal = signal<AlertDevice[]>([]);
+  private readonly _environmentsSignal = signal<AlertEnvironment[]>([]);
+  private readonly _environmentsLoadedSignal = signal(false);
 
   private readonly _loadingSignal = signal<boolean>(false);
   private readonly _savingSignal = signal<boolean>(false);
@@ -96,6 +100,15 @@ export class CaStore {
 
   /** Devices of the laboratory, to name the device of each alert. */
   readonly devices = this._devicesSignal.asReadonly();
+
+  /** Environments of the laboratory, to choose whose alerts are shown. */
+  readonly environments = this._environmentsSignal.asReadonly();
+
+  /** Whether the environments have been read at least once. */
+  readonly environmentsLoaded = this._environmentsLoadedSignal.asReadonly();
+
+  /** Whether the laboratory has no environment yet. */
+  readonly environmentsEmpty = computed(() => this._environmentsLoadedSignal() && this._environmentsSignal().length === 0);
 
   /** Indicates whether alerts, events, preferences or an alert detail are being loaded. */
   readonly loading = this._loadingSignal.asReadonly();
@@ -147,6 +160,8 @@ export class CaStore {
   private readonly iam = inject(IamStore);
   private readonly reloadAlerts = new Subject<void>();
   private readonly reloadAlert = new Subject<void>();
+  /** Environment opened last time in the monitoring views of this browser, shared with Tracking. */
+  private readonly environmentPreference = new EnvironmentPreference('tracking');
 
   /**
    * Creates the store.
@@ -265,6 +280,39 @@ export class CaStore {
       .getAlertDevices(this.iam.requireLaboratoryId())
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({ next: (devices) => this._devicesSignal.set(devices), error: () => this._devicesSignal.set([]) });
+  }
+
+  /**
+   * Reads the environments of the laboratory (Laboratory → Compliance & Alerts).
+   *
+   * @remarks
+   * On failure the previous list is kept and the reason is exposed through {@link CaStore.error}.
+   */
+  async loadEnvironments(): Promise<void> {
+    try {
+      this._environmentsSignal.set(await firstValueFrom(this.caApi.getAlertEnvironments(this.iam.requireLaboratoryId())));
+      this._environmentsLoadedSignal.set(true);
+    } catch (error) {
+      this._errorSignal.set(alertError(error));
+    }
+  }
+
+  /**
+   * The environment to open: the last one chosen in the monitoring views of this browser, or the first one.
+   *
+   * @returns The environment identifier, or null when the laboratory has none
+   */
+  preferredEnvironmentId(): number | null {
+    return this.environmentPreference.choose(this.iam.requireLaboratoryId(), this._environmentsSignal())?.id ?? null;
+  }
+
+  /**
+   * Remembers the environment the person chose, for the next visit to the monitoring views.
+   *
+   * @param environmentId - The environment identifier
+   */
+  rememberEnvironment(environmentId: number): void {
+    this.environmentPreference.remember(this.iam.requireLaboratoryId(), environmentId);
   }
 
   /**

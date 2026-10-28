@@ -30,11 +30,10 @@ package "@angular/cdk" {
   class CdkConnectedOverlay
 }
 
-package "laboratory" {
-  class EnvironmentStore {
-    +environments: Signal<Environment[]>
-    +preferredEnvironment(usage?, scope?): Environment
-    +rememberEnvironment(id, scope?): void
+package "shared.infrastructure" {
+  class EnvironmentPreference {
+    +choose(laboratoryId, environments, preferredUsage?)
+    +remember(laboratoryId, environmentId): void
   }
 }
 
@@ -42,6 +41,10 @@ package "ca.domain.model" {
   class AlertDevice {
     +id: number
     +name: string
+  }
+  class AlertEnvironment {
+    +id / code / name
+    +usage: string | null
   }
   class DeviationAlert {
     +id: number
@@ -152,6 +155,11 @@ package "ca.application" {
     +getAlertById(id: number)
     +deviceName(equipmentId: number): string | null
     +loadDevices(): void
+    +environments: Signal<AlertEnvironment[]>
+    +environmentsLoaded / environmentsEmpty
+    +loadEnvironments(): Promise<void>
+    +preferredEnvironmentId(): number | null
+    +rememberEnvironment(environmentId): void
     +loadEnvironmentAlerts(environmentId: number, filters?: AlertFilters): void
     +loadAlertById(alertId: number): void
     +acknowledgeAlert(alertId: number): void
@@ -177,6 +185,10 @@ package "ca.infrastructure" {
     +getDevices(laboratoryId)
   }
   class AlertDeviceAssembler
+  class AlertEnvironmentApiEndpoint {
+    +getEnvironments(laboratoryId)
+  }
+  class AlertEnvironmentAssembler
   class CaApi {
     -_alertEndpoint: AlertApiEndpoint
     -_complianceEventEndpoint: ComplianceEventApiEndpoint
@@ -442,17 +454,14 @@ NotificationPreferenceAssembler ..> NotificationPreference
 NotificationPreferenceAssembler ..> NotificationPreferenceResource
 
 AlertDashboard --> CaStore
-AlertDashboard --> EnvironmentStore
 AlertDashboard ..> EnvironmentSelector
 AlertDashboard *-- AlertTable
 AlertHistory --> CaStore
-AlertHistory --> EnvironmentStore
 AlertHistory ..> EnvironmentSelector
 AlertHistory *-- AlertTable
 AlertTable --> CaStore
 
 DeviationDetail --> CaStore
-DeviationDetail --> EnvironmentStore
 note bottom of DeviationDetail
   Origin, variable, value and limit, follow-up (detected, last deviation,
   normalized, attended, resolved) and related actions; operators and
@@ -490,4 +499,13 @@ end note
 CaApi --> AlertDeviceApiEndpoint
 AlertDeviceApiEndpoint --> AlertDeviceAssembler
 AlertDeviceAssembler ..> AlertDevice
+CaApi --> AlertEnvironmentApiEndpoint
+AlertEnvironmentApiEndpoint --> AlertEnvironmentAssembler
+AlertEnvironmentAssembler ..> AlertEnvironment
+CaStore --> EnvironmentPreference
+note bottom of AlertEnvironmentApiEndpoint
+  Laboratory -> Compliance & Alerts: GET /laboratories/{id}/environments
+  in the model of CA; the chosen environment is remembered with the
+  monitoring views ("tracking").
+end note
 @enduml
