@@ -340,4 +340,9 @@ note bottom of RawMaterialUsageApiEndpoint
   it no longer imports BatchApi or RawMaterialUsage.
 end note
 
+note bottom of RawMaterialUsageComponent
+  Pre-Inventory usages link to /inventory/legacy-materials/:id.
+  Current receipts retain their environment-scoped Inventory links.
+end note
+
 @enduml
