@@ -170,7 +170,7 @@ export class StaffForm {
    * Returns to the staff list.
    */
   protected onCancel(): void {
-    void this.router.navigate(['/laboratories/staff-list']);
+    void this.router.navigate(['/laboratories/staff']);
   }
 
   /**

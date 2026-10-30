@@ -23,7 +23,7 @@ describe('StaffDetail navigation', () => {
     const fixture = TestBed.createComponent(StaffDetail); fixture.detectChanges();
     const element = fixture.nativeElement as HTMLElement;
     expect(!!element.querySelector('a[href="/profile/staff/2"]')).toBe(showProfile);
-    expect(element.querySelector('a[href="/reports/staff-activity/2"]')).not.toBeNull();
+    expect(element.querySelector('a[href="/reports/staff/2/activity"]')).not.toBeNull();
     expect(!!element.querySelector('button')).toBe(manager);
   });
 });
