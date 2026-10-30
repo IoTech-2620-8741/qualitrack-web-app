@@ -56,7 +56,7 @@ try {
   await app.waitForTimeout(2300);
   assert.equal(new URL(app.url()).pathname, '/subscriptions/success');
   state = { ...state, subscriptionId: 73, subscriptionStatus: 'ACTIVE', nextStep: 'LABORATORY' };
-  await app.waitForURL('**/laboratories/create', { timeout: 10000 });
+  await app.waitForURL('**/laboratories/new', { timeout: 10000 });
   await app.locator('[formcontrolname=name]').fill('Browser fixture laboratory');
   await app.locator('[formcontrolname=ruc]').fill('20123456789');
   await app.locator('[formcontrolname=address]').fill('Test address');

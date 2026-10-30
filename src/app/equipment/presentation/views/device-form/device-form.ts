@@ -117,7 +117,7 @@ export class DeviceForm implements OnInit {
     // A device whose association failed is still registered: its detail explains why and lets it be located again.
     const locationError =
       environmentId !== null && device.environmentId === null ? this.store.error() : null;
-    await this.router.navigate(['/equipments/equipment-detail', device.id], {
+    await this.router.navigate(['/equipments', device.id], {
       state: { locationError },
     });
   }

@@ -81,7 +81,7 @@
                 @for (child of option.children; track child.link) {
                   <button type="button"
                     class="sub-nav-item"
-                    [class.sub-active]="isActive(child.link)"
+                    [class.sub-active]="child.link === activeChildLink(option)"
                     (click)="navigateTo(child.link)"
                   >
                     <span class="sub-nav-label">{{ child.label | translate }}</span>

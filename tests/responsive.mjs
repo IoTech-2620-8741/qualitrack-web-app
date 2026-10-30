@@ -8,13 +8,13 @@ const directory = process.env.OUTPUT_DIR ?? (populated ? 'test-results/visual-re
 const widths = (process.env.WIDTHS ?? '320,360,375,390,412,768,1024,1280,1440').split(',').map(Number);
 const paths = process.env.ROUTES?.split(',') ?? ['/home', '/about', '/iam/sign-in', '/iam/sign-up', '/not-found',
   '/subscriptions/plans', '/subscriptions/checkout?plan=TEST&billingCycle=MONTHLY',
-  '/subscriptions/success', '/subscriptions/cancel', '/laboratories/create', '/dashboard',
-  '/laboratories/lab-profile', '/laboratories/staff-list', '/laboratories/staff-form',
+  '/subscriptions/success', '/subscriptions/cancel', '/laboratories/new', '/dashboard',
+  '/laboratories/profile', '/laboratories/staff', '/laboratories/staff/new',
   '/laboratories/product-catalog', '/laboratories/product-form', '/laboratories/raw-material-list',
-  '/laboratories/raw-material-form', '/equipments/equipment-list', '/equipments/register-equipment',
-  '/batches/batch-list', '/batches/batch-form', '/alerts/alert-dashboard', '/alerts/alert-history',
-  '/alerts/notification-settings', '/tracking/dashboard', '/tracking/analysis', '/tracking/history',
-  '/reports/kpi-dashboard', '/reports/deviation-trends', '/reports/report-generator', '/reports/audit-log'];
+  '/laboratories/raw-material-form', '/equipments', '/equipments/new',
+  '/batches', '/batches/environments', '/alerts', '/alerts/history',
+  '/alerts/notification-settings', '/tracking/monitoring', '/tracking/analysis', '/tracking/history',
+  '/reports/kpis', '/reports/deviation-trends', '/reports/new', '/reports/audit-log'];
 const plan = { id: 91, code: 'TEST', name: 'Browser test plan', description: 'Isolated test fixture',
   amount: 9, currency: 'USD', billingCycle: 'MONTHLY', stripePriceId: 'price_test_only',
   maxUsers: 5, maxEquipment: 10, active: true };
@@ -47,8 +47,8 @@ try {
       const path = new URL(route.request().url()).pathname;
       let body = [];
       if (path.endsWith('/users/me/onboarding')) {
-        const subscription = currentPath.startsWith('/subscriptions/') && currentPath !== '/subscriptions/billing-summary';
-        const setup = currentPath === '/laboratories/create';
+        const subscription = currentPath.startsWith('/subscriptions/') && currentPath !== '/subscriptions/billing';
+        const setup = currentPath === '/laboratories/new';
         body = { userId: 27, laboratoryId: subscription || setup ? null : 42,
           subscriptionId: subscription ? null : 73, subscriptionStatus: subscription ? null : 'ACTIVE',
           nextStep: subscription ? 'SUBSCRIPTION' : setup ? 'LABORATORY' : 'READY' };

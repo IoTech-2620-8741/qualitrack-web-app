@@ -6,7 +6,7 @@
   <header class="detail-header">
     <a
       mat-icon-button
-      routerLink="../../equipment-list"
+      routerLink="/equipments"
       [attr.aria-label]="'common.back' | translate">
       <mat-icon>arrow_back</mat-icon>
     </a>
@@ -173,7 +173,7 @@
             <h3>{{ 'bpm-config.title' | translate }}</h3>
 
             @if (store.canOperate()) {
-              <a mat-flat-button color="primary" [routerLink]="['../../bpm-config-form', current.id]">
+              <a mat-flat-button color="primary" [routerLink]="['/equipments', current.id, 'bpm-configuration']">
                 <mat-icon>add</mat-icon>
                 {{ 'bpm-config.fields.parameter' | translate }}
               </a>
@@ -206,7 +206,7 @@
             <h3>{{ 'maintenance-history.title' | translate }}</h3>
 
             @if (current.isLocated && store.canOperate()) {
-              <a mat-flat-button color="accent" [routerLink]="['../../maintenance-form', current.id]">
+              <a mat-flat-button color="accent" [routerLink]="['/equipments', current.id, 'maintenances', 'new']">
                 <mat-icon>build</mat-icon>
                 {{ 'maintenance-history.add-button' | translate }}
               </a>

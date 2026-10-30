@@ -103,7 +103,7 @@ export class StaffList implements OnInit {
    * Navigates to the staff registration form.
    */
   protected onRegister(): void {
-    void this.router.navigate(['/laboratories/staff-form']);
+    void this.router.navigate(['/laboratories/staff/new']);
   }
 
   /**

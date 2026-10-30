@@ -105,8 +105,8 @@ export class Layout {
       icon: 'inventory',
       link: '/batches',
       children: [
-        { label: 'nav.products', link: '/batches' },
-        { label: 'nav.batch-list', link: '/batches/batch-list' },
+        { label: 'nav.products', link: '/batches/environments' },
+        { label: 'nav.batch-list', link: '/batches' },
       ],
     },
     {
@@ -114,13 +114,13 @@ export class Layout {
       icon: 'precision_manufacturing',
       link: '/equipments',
       children: [
-        { label: 'nav.equipment-list', link: '/equipments/equipment-list' },
+        { label: 'nav.equipment-list', link: '/equipments' },
         {
           label: 'nav.register-equipment',
-          link: '/equipments/register-equipment',
+          link: '/equipments/new',
           qualityOnly: true,
         },
-        { label: 'nav.register-device', link: '/equipments/register-device', qualityOnly: true },
+        { label: 'nav.register-device', link: '/equipments/devices/new', qualityOnly: true },
       ],
     },
     {
@@ -128,8 +128,8 @@ export class Layout {
       icon: 'warning',
       link: '/alerts',
       children: [
-        { label: 'nav.alert-dashboard', link: '/alerts/alert-dashboard' },
-        { label: 'nav.alert-history', link: '/alerts/alert-history' },
+        { label: 'nav.alert-dashboard', link: '/alerts' },
+        { label: 'nav.alert-history', link: '/alerts/history' },
       ],
     },
     {
@@ -137,9 +137,9 @@ export class Layout {
       icon: 'description',
       link: '/reports',
       children: [
-        { label: 'nav.kpi-dashboard', link: '/reports/kpi-dashboard' },
+        { label: 'nav.kpi-dashboard', link: '/reports/kpis' },
         { label: 'nav.deviation-trends', link: '/reports/deviation-trends' },
-        { label: 'nav.report-generator', link: '/reports/report-generator' },
+        { label: 'nav.report-generator', link: '/reports/new' },
         { label: 'nav.audit-log', link: '/reports/audit-log' },
       ],
     },
@@ -148,10 +148,10 @@ export class Layout {
       icon: 'science',
       link: '/laboratories',
       children: [
-        { label: 'nav.lab-profile', link: '/laboratories/lab-profile' },
+        { label: 'nav.lab-profile', link: '/laboratories/profile' },
         { label: 'nav.environments', link: '/laboratories/environments' },
-        { label: 'nav.staff-list', link: '/laboratories/staff-list' },
-        { label: 'nav.register-staff', link: '/laboratories/staff-form', qualityOnly: true },
+        { label: 'nav.staff-list', link: '/laboratories/staff' },
+        { label: 'nav.register-staff', link: '/laboratories/staff/new', qualityOnly: true },
       ],
     },
     {
@@ -165,7 +165,7 @@ export class Layout {
       icon: 'sensors',
       link: '/tracking',
       children: [
-        { label: 'nav.tracking-monitoring', link: '/tracking/dashboard' },
+        { label: 'nav.tracking-monitoring', link: '/tracking/monitoring' },
         { label: 'nav.tracking-history', link: '/tracking/history' },
         { label: 'nav.tracking-profiles', link: '/tracking/profiles' },
       ],
@@ -176,7 +176,7 @@ export class Layout {
       link: '/subscriptions',
       qualityOnly: true,
       children: [
-        { label: 'nav.billing-summary', link: '/subscriptions/billing-summary' },
+        { label: 'nav.billing-summary', link: '/subscriptions/billing' },
         { label: 'nav.subscription-plans', link: '/subscriptions/plans' },
       ],
     },
@@ -229,5 +229,21 @@ export class Layout {
    */
   protected isActive(link: string): boolean {
     return this.router.url === link || this.router.url.startsWith(`${link}/`);
+  }
+
+  /**
+   * Finds the sub-option that owns the current URL.
+   *
+   * @remarks
+   * Semantic routes nest resources (`/alerts` and `/alerts/history`), so several sub-options can match the URL;
+   * the most specific one is the active one.
+   *
+   * @param option - Option whose sub-options are compared
+   * @returns The link of the most specific active sub-option, or undefined when none is active
+   */
+  protected activeChildLink(option: NavigationOption): string | undefined {
+    return option.children
+      ?.filter((child) => this.isActive(child.link))
+      .reduce<string | undefined>((best, child) => (child.link.length > (best?.length ?? -1) ? child.link : best), undefined);
   }
 }

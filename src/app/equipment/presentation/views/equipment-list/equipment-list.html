@@ -6,10 +6,10 @@
         <mat-icon>refresh</mat-icon>{{ 'common.refresh' | translate }}
       </button>
       @if (store.canManage()) {
-        <a mat-stroked-button routerLink="../register-device">
+        <a mat-stroked-button routerLink="/equipments/devices/new">
           <mat-icon>sensors</mat-icon>{{ 'device-form.add-button' | translate }}
         </a>
-        <a mat-flat-button routerLink="../register-equipment">
+        <a mat-flat-button routerLink="/equipments/new">
           <mat-icon>add</mat-icon>{{ 'equipment-list.add-button' | translate }}
         </a>
       }
@@ -68,7 +68,7 @@
         @for (equipment of visibleEquipment(); track equipment.id) {
           <tr>
             <td>
-              <a [routerLink]="['../equipment-detail', equipment.id]">{{ equipment.name }}</a>
+              <a [routerLink]="['/equipments', equipment.id]">{{ equipment.name }}</a>
               <small>{{ equipment.model }} · {{ equipment.serialNumber }}</small>
             </td>
             <td [attr.data-label]="'equipment-list.fields.type' | translate">
