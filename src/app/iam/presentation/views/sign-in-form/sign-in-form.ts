@@ -8,7 +8,6 @@ import { MatIconModule } from '@angular/material/icon';
 
 import { SignInCommand } from '../../../domain/model/sign-in.command';
 import { IamStore } from '../../../application/iam.store';
-import { Toolbar } from '../../../../shared/presentation/components/toolbar/toolbar';
 
 /**
  * Component responsible for rendering and processing the sign-in form.
@@ -28,7 +27,6 @@ import { Toolbar } from '../../../../shared/presentation/components/toolbar/tool
     MatProgressSpinnerModule,
     MatIconModule,
     RouterLink,
-    Toolbar,
   ],
   templateUrl: './sign-in-form.html',
   changeDetection: ChangeDetectionStrategy.Eager,
