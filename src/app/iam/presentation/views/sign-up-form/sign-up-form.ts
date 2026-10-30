@@ -15,7 +15,6 @@ import { MatIconModule } from '@angular/material/icon';
 
 import { IamStore } from '../../../application/iam.store';
 import { SignUpCommand } from '../../../domain/model/sign-up.command';
-import { Toolbar } from '../../../../shared/presentation/components/toolbar/toolbar';
 import { emailValidator } from '../../../../shared/presentation/validators/email.validator';
 import { notBlankValidator } from '../../../../shared/presentation/validators/not-blank.validator';
 
@@ -38,7 +37,6 @@ import { notBlankValidator } from '../../../../shared/presentation/validators/no
     MatProgressSpinnerModule,
     MatIconModule,
     RouterLink,
-    Toolbar,
   ],
   templateUrl: './sign-up-form.html',
   changeDetection: ChangeDetectionStrategy.Eager,

@@ -6,7 +6,6 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TranslatePipe } from '@ngx-translate/core';
 import { IamStore } from '../../../application/iam.store';
 import { onboardingDestination, SUBSCRIPTION_PAUSED } from '../../../domain/model/onboarding-state';
-import { Toolbar } from '../../../../shared/presentation/components/toolbar/toolbar';
 
 /**
  * Entry view after signing in (`/iam/onboarding`): it reads the onboarding state and sends the user to the step they
@@ -20,9 +19,8 @@ import { Toolbar } from '../../../../shared/presentation/components/toolbar/tool
 @Component({
   selector: 'app-onboarding',
   standalone: true,
-  imports: [Toolbar, TranslatePipe, MatButtonModule, MatProgressSpinnerModule],
+  imports: [TranslatePipe, MatButtonModule, MatProgressSpinnerModule],
   template: `
-    <app-toolbar />
     <main class="onboarding-status" aria-live="polite">
       @if (loading()) {
         <mat-spinner diameter="40" [attr.aria-label]="'onboarding.loading' | translate" />

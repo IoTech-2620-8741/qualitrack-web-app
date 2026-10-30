@@ -1,9 +1,9 @@
 import { Routes } from '@angular/router';
 import { Home } from './shared/presentation/views/home/home';
-import { Layout } from './shared/presentation/components/layout/layout';
 import { iamGuard } from './iam/infrastructure/iam-guard';
 import { onboardingGuard } from './iam/infrastructure/onboarding-guard';
 import { qualityManagerGuard } from './iam/infrastructure/role-guards';
+import { AuthenticationSection } from './iam/presentation/components/authentication-section/authentication-section'; // Importación del contexto IAM
 
 const about = () => import('./shared/presentation/views/about/about').then((m) => m.About);
 
@@ -39,11 +39,16 @@ const subscriptionRoutes = () =>
 const baseTitle = 'QualiTrack';
 
 export const routes: Routes = [
-  { path: 'home', component: Home, title: `Home - ${baseTitle}` },
+  // DOCUMENTACIÓN: Le pasamos el componente de `iam` al `Home` (que es de `shared`)
+  // mediante el objeto `data`, logrando inyección dinámica sin acoplar los contextos.
+  { path: 'home', component: Home, data: { authComponent: AuthenticationSection }, title: `Home - ${baseTitle}` },
   { path: 'about', loadComponent: about, title: `About - ${baseTitle}` },
+
+  // DOCUMENTACIÓN: Las rutas privadas ya no usan `component: Layout` porque
+  // el Layout envuelve toda la app desde el `app.html`.
   {
     path: 'dashboard',
-    component: Layout,
+    loadComponent: dashboard,
     canActivate: [onboardingGuard],
     children: [{ path: '', loadComponent: dashboard, title: `Dashboard - ${baseTitle}` }],
   },

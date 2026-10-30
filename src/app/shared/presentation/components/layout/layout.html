@@ -19,13 +19,17 @@
   <span class="spacer"></span>
 
   <div class="toolbar-actions">
+    <!--  CONTENT PROJECTION:
+     These slots are filled by the parent component (App.ts).
+     This prevents the `shared` context from importing `ca`, `profile`, or `iam`.
+      -->
     @if (hasOperationalAccess()) {
-      <app-notification-bell />
+      <ng-content select="[notificationBell]" />
     }
     @if (isSignedIn()) {
       <div class="user-session">
-        <app-user-profile-badge />
-        <app-user-session-section />
+        <ng-content select="[profileBadge]" />
+        <ng-content select="[userSession]" />
       </div>
     }
     <app-language-switcher />
