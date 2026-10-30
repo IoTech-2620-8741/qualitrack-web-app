@@ -320,11 +320,12 @@ ProductCatalog ..> OperationsPage
 BatchDetail ..> OperationsPage
 
 note bottom of BatchRoutes
-  /batches -> preferred production environment
+  /batches: every batch of the laboratory
+  /batches/environments -> preferred production environment
   /batches/environments/:environmentId/products[/new|/:productId]
   .../products/:productId/batches/new
   .../batches/:batchId[/release|/reject]
-  /batches/batch-list and /batches/batch-detail/:id (resolves the full path)
+  /batches/:batchId (resolves the full path)
 end note
 
 BatchApi --> ProductionEquipmentApiEndpoint
