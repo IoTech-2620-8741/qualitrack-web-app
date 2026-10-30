@@ -1,5 +1,5 @@
 <section class="operations-page" [attr.aria-busy]="loading()">
-  <a class="back-link" [routerLink]="staffId() ? ['/laboratories/staff', staffId()] : ['/laboratories/staff-list']">
+  <a class="back-link" [routerLink]="staffId() ? ['/laboratories/staff', staffId()] : ['/laboratories/staff']">
     <mat-icon aria-hidden="true">arrow_back</mat-icon>{{ 'staff.detail.back' | translate }}
   </a>
   <div class="page-heading"><h1>{{ 'staff.profile.title' | translate }}</h1></div>
