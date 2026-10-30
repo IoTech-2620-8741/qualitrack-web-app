@@ -108,7 +108,7 @@
       </mat-card-content>
 
       <mat-card-actions align="end">
-        <a mat-button routerLink="../equipment-list">{{ 'common.cancel' | translate }}</a>
+        <a mat-button routerLink="/equipments">{{ 'common.cancel' | translate }}</a>
 
         <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid || store.saving() || !store.canManage()">
           @if (store.saving()) {

@@ -74,6 +74,6 @@ export class EquipmentForm {
   protected async onSave(): Promise<void> {
     if (this.form.invalid) return;
     const equipment = await this.store.registerEquipment(this.form.getRawValue());
-    if (equipment) await this.router.navigate(['/equipments/equipment-detail', equipment.id]);
+    if (equipment) await this.router.navigate(['/equipments', equipment.id]);
   }
 }

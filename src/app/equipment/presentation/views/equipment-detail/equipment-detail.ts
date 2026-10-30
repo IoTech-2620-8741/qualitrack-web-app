@@ -78,7 +78,7 @@ export class EquipmentDetail implements OnInit {
   });
 
   ngOnInit(): void {
-    const id = Number(this.route.snapshot.paramMap.get('id'));
+    const id = Number(this.route.snapshot.paramMap.get('equipmentId'));
     if (!Number.isSafeInteger(id) || id <= 0) return;
     this.equipmentId.set(id);
     void this.store.loadEnvironments();
