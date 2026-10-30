@@ -1,1 +1,11 @@
-<router-outlet></router-outlet>
+<app-layout
+  [isSignedIn]="iam.isSignedIn()"
+  [hasOperationalAccess]="iam.onboarding()?.nextStep === 'READY'"
+  [canManageQuality]="iam.canManageQuality()"
+>
+  <app-notification-bell notificationBell />
+  <app-user-profile-badge profileBadge />
+  <app-user-session-section userSession />
+
+  <router-outlet />
+</app-layout>
