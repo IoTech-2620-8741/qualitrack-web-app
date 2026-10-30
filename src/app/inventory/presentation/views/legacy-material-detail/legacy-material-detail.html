@@ -38,7 +38,7 @@
           <tbody>@for (usage of store.legacyDetailConsumptions(); track usage.id) {
             <tr>
               <td [attr.data-label]="'material-history.date' | translate">{{ usage.usageDate | date:'yyyy-MM-dd HH:mm' }}</td>
-              <td [attr.data-label]="'material-history.batch' | translate"><a [routerLink]="['/batches/batch-detail', usage.batchId]">{{ store.legacyDetailBatchLabel(usage.batchId) }}</a>
+              <td [attr.data-label]="'material-history.batch' | translate"><a [routerLink]="['/batches', usage.batchId]">{{ store.legacyDetailBatchLabel(usage.batchId) }}</a>
                 @if (usage.stockAfter === null) {<small>{{ 'material-history.legacy' | translate }}</small>}</td>
               <td [attr.data-label]="'material-history.consumed' | translate" class="consumed">-{{ usage.quantityUsed | number:'1.0-3' }} {{ usage.unit }}</td>
               <td [attr.data-label]="'material-history.before' | translate">{{ usage.stockBefore === null ? ('material-history.unrecorded' | translate) : (usage.stockBefore | number:'1.0-3') + ' ' + usage.unit }}</td>
