@@ -7,12 +7,16 @@ import { AlertApiEndpoint, AlertFilters } from './alert-api-endpoint';
 import { ComplianceEventApiEndpoint } from './compliance-event-api-endpoint';
 import { NotificationPreferenceApiEndpoint } from './notification-preference-api-endpoint';
 import { NotificationApiEndpoint } from './notification-api-endpoint';
+import { AlertDeviceApiEndpoint } from './alert-device-api-endpoint';
+import { AlertEnvironmentApiEndpoint } from './alert-environment-api-endpoint';
 import { AlertEmailNotificationResource } from './notification-response';
 
 import { DeviationAlert } from '../domain/model/deviation-alert.entity';
 import { ComplianceEvent } from '../domain/model/compliance-event.entity';
 import { NotificationPreference } from '../domain/model/notification-preference.entity';
 import { Notification } from '../domain/model/notification.entity';
+import { AlertDevice } from '../domain/model/alert-device.entity';
+import { AlertEnvironment } from '../domain/model/alert-environment.entity';
 import { UpdateNotificationPreferenceRequest } from './notification-preference.request';
 import { ResolveAlertRequest } from './resolve-alert.request';
 
@@ -66,6 +70,10 @@ export class CaApi extends BaseApi {
    */
   private readonly _notificationEndpoint: NotificationApiEndpoint;
 
+  /** Reads the devices of Equipment Management where alerts originate. */
+  private readonly _deviceEndpoint: AlertDeviceApiEndpoint;
+  private readonly _environmentEndpoint: AlertEnvironmentApiEndpoint;
+
   /**
    * Creates an instance of CaApi.
    *
@@ -82,6 +90,8 @@ export class CaApi extends BaseApi {
     this._complianceEventEndpoint = new ComplianceEventApiEndpoint(http);
     this._preferenceEndpoint = new NotificationPreferenceApiEndpoint(http);
     this._notificationEndpoint = new NotificationApiEndpoint(http);
+    this._deviceEndpoint = new AlertDeviceApiEndpoint(http);
+    this._environmentEndpoint = new AlertEnvironmentApiEndpoint(http);
   }
 
   /**
@@ -223,5 +233,25 @@ export class CaApi extends BaseApi {
    */
   markAllNotificationsAsRead(): Observable<number> {
     return this._notificationEndpoint.markAllAsRead();
+  }
+
+  /**
+   * Retrieves the devices of the laboratory, to name the origin of each alert.
+   *
+   * @param laboratoryId - The laboratory identifier
+   * @returns Observable emitting the devices
+   */
+  getAlertDevices(laboratoryId: number): Observable<AlertDevice[]> {
+    return this._deviceEndpoint.getDevices(laboratoryId);
+  }
+
+  /**
+   * Retrieves the environments of the laboratory, to choose whose alerts are shown.
+   *
+   * @param laboratoryId - The laboratory identifier
+   * @returns Observable emitting the environments
+   */
+  getAlertEnvironments(laboratoryId: number): Observable<AlertEnvironment[]> {
+    return this._environmentEndpoint.getEnvironments(laboratoryId);
   }
 }

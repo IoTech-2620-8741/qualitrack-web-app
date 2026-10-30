@@ -8,33 +8,33 @@ import { qualityManagerGuard } from './iam/infrastructure/role-guards';
 const about = () => import('./shared/presentation/views/about/about').then((m) => m.About);
 
 const dashboard = () =>
-  import('./shared/presentation/views/dashboard/dashboard').then((m) => m.Dashboard);
+  import('./ra/presentation/views/dashboard/dashboard').then((m) => m.Dashboard);
 
 const pageNotFound = () =>
   import('./shared/presentation/views/page-not-found/page-not-found').then((m) => m.PageNotFound);
 
 const laboratoryRoutes = () =>
-  import('./laboratory/presentation/laboratory-routes').then((m) => m.laboratoryRoutes);
+  import('./laboratory/presentation/laboratory.routes').then((m) => m.laboratoryRoutes);
 
 const iamRoutes = () => import('./iam/presentation/iam.routes').then((m) => m.iamRoutes);
 
 const equipmentRoutes = () =>
-  import('./equipment/presentation/equipment-routes').then((m) => m.equipmentRoutes);
+  import('./equipment/presentation/equipment.routes').then((m) => m.equipmentRoutes);
 
-const batchRoutes = () => import('./batch/presentation/batch-routes').then((m) => m.batchRoutes);
+const batchRoutes = () => import('./batch/presentation/batch.routes').then((m) => m.batchRoutes);
 
-const caRoutes = () => import('./ca/presentation/ca-routes').then((m) => m.caRoutes);
+const caRoutes = () => import('./ca/presentation/ca.routes').then((m) => m.caRoutes);
 
-const raRoutes = () => import('./ra/presentation/ra-routes').then((m) => m.raRoutes);
+const raRoutes = () => import('./ra/presentation/ra.routes').then((m) => m.raRoutes);
 
 const trackingRoutes = () =>
-  import('./tracking/presentation/tracking-routes').then((m) => m.trackingRoutes);
+  import('./tracking/presentation/tracking.routes').then((m) => m.trackingRoutes);
 
 const profileRoutes = () =>
-  import('./profile/presentation/profile-routes').then((m) => m.profileRoutes);
+  import('./profile/presentation/profile.routes').then((m) => m.profileRoutes);
 
 const subscriptionRoutes = () =>
-  import('./subscription/presentation/subscription-routes').then((m) => m.subscriptionRoutes);
+  import('./subscription/presentation/subscription.routes').then((m) => m.subscriptionRoutes);
 
 const baseTitle = 'QualiTrack';
 
@@ -48,7 +48,7 @@ export const routes: Routes = [
     children: [{ path: '', loadComponent: dashboard, title: `Dashboard - ${baseTitle}` }],
   },
   { path: 'iam', loadChildren: iamRoutes },
-  { path: 'inventory', loadChildren: () => import('./inventory/presentation/inventory-routes').then(m => m.inventoryRoutes), canActivate: [onboardingGuard], canActivateChild: [onboardingGuard] },
+  { path: 'inventory', loadChildren: () => import('./inventory/presentation/inventory.routes').then(m => m.inventoryRoutes), canActivate: [onboardingGuard], canActivateChild: [onboardingGuard] },
   { path: 'laboratories', loadChildren: laboratoryRoutes, canActivate: [iamGuard] },
   { path: 'equipments', loadChildren: equipmentRoutes, canActivate: [onboardingGuard], canActivateChild: [onboardingGuard] },
   { path: 'batches', loadChildren: batchRoutes, canActivate: [onboardingGuard], canActivateChild: [onboardingGuard] },

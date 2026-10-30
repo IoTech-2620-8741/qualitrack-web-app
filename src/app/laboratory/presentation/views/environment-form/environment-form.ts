@@ -1,7 +1,7 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -11,7 +11,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 
-import { EnvironmentStore } from '../../../application/environment.store';
+import { LaboratoryStore } from '../../../application/laboratory.store';
 import { ENVIRONMENT_USAGES, EnvironmentUsage } from '../../../domain/model/environment-usage';
 
 /**
@@ -26,7 +26,7 @@ import { ENVIRONMENT_USAGES, EnvironmentUsage } from '../../../domain/model/envi
   standalone: true,
   imports: [
     ReactiveFormsModule,
-    TranslateModule,
+    TranslatePipe,
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
@@ -36,14 +36,33 @@ import { ENVIRONMENT_USAGES, EnvironmentUsage } from '../../../domain/model/envi
     MatIconModule,
   ],
   templateUrl: './environment-form.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './environment-form.css',
 })
 export class EnvironmentForm implements OnInit {
-  protected readonly store = inject(EnvironmentStore);
+  /**
+   * Store that manages the environments of the current laboratory.
+   */
+  protected readonly store = inject(LaboratoryStore);
+
+  /**
+   * Form builder used to create the environment form.
+   */
   private readonly fb = inject(FormBuilder);
+
+  /**
+   * Router used to navigate after user actions.
+   */
   private readonly router = inject(Router);
+
+  /**
+   * Current route, which carries the identifier of the environment being edited.
+   */
   private readonly route = inject(ActivatedRoute);
 
+  /**
+   * Usages offered when registering an environment.
+   */
   protected readonly usages = ENVIRONMENT_USAGES;
 
   /**
@@ -56,6 +75,9 @@ export class EnvironmentForm implements OnInit {
    */
   protected readonly currentUsage = signal<EnvironmentUsage | null>(null);
 
+  /**
+   * Reactive form used to capture the environment data.
+   */
   protected readonly form = this.fb.nonNullable.group({
     code: ['', [Validators.required, Validators.maxLength(30)]],
     name: ['', [Validators.required, Validators.maxLength(100)]],
@@ -63,8 +85,13 @@ export class EnvironmentForm implements OnInit {
     usage: this.fb.control<EnvironmentUsage | null>(null),
   });
 
+  /**
+   * Lifecycle hook that, when editing, loads the environment and hydrates the form.
+   *
+   * @returns A promise that resolves when the environment is loaded
+   */
   async ngOnInit(): Promise<void> {
-    this.store.clearError();
+    this.store.clearEnvironmentError();
     const id = Number(this.route.snapshot.paramMap.get('environmentId'));
     if (!Number.isInteger(id) || id <= 0) return;
 
@@ -79,10 +106,18 @@ export class EnvironmentForm implements OnInit {
     });
   }
 
+  /**
+   * Indicates whether the form edits an existing environment.
+   */
   protected get isEdit(): boolean {
     return this.environmentId() !== null;
   }
 
+  /**
+   * Registers or updates the environment and returns to the environment list when saved.
+   *
+   * @returns A promise that resolves when the operation finishes
+   */
   protected async onSubmit(): Promise<void> {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
@@ -95,12 +130,16 @@ export class EnvironmentForm implements OnInit {
       description: value.description.trim() || null,
     };
     const id = this.environmentId();
-    const saved = id === null
-      ? await this.store.register({ ...data, usage: value.usage })
-      : await this.store.update(id, data);
+    const saved =
+      id === null
+        ? await this.store.registerEnvironment({ ...data, usage: value.usage })
+        : await this.store.updateEnvironment(id, data);
     if (saved) await this.router.navigate(['/laboratories/environments']);
   }
 
+  /**
+   * Discards the changes and returns to the environment list.
+   */
   protected onCancel(): void {
     void this.router.navigate(['/laboratories/environments']);
   }

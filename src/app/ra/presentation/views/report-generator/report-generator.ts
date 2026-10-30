@@ -1,7 +1,7 @@
-import { Component, OnInit, computed, inject } from '@angular/core';
+import { Component, OnInit, computed, inject, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -16,10 +16,15 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { RaStore } from '../../../application/ra.store';
 import { IamStore } from '../../../../iam/application/iam.store';
-import { BatchStore } from '../../../../batch/application/batch.store';
-import { EquipmentStore } from '../../../../equipment/application/equipment.store';
-import { EnvironmentStore } from '../../../../laboratory/application/environment.store';
-import { localIsoDate } from '../../../../shared/presentation/utils/local-date';
+import { localIsoDate, todayInLima } from '../../../../shared/presentation/utils/local-date';
+import { MIN_DATE } from '../../../../shared/presentation/validators/date.validators';
+import {
+  calendarDate,
+  MAX_REPORT_DAYS,
+  PERIOD_ERROR_KEYS,
+  PeriodError,
+  periodError,
+} from '../../utils/report-period';
 import { ALL_ENVIRONMENTS } from '../../../domain/model/indicator-period';
 
 /**
@@ -43,7 +48,7 @@ import { ALL_ENVIRONMENTS } from '../../../domain/model/indicator-period';
   imports: [
     CommonModule,
     FormsModule,
-    TranslateModule,
+    TranslatePipe,
     MatCardModule,
     MatButtonModule,
     MatIconModule,
@@ -55,45 +60,68 @@ import { ALL_ENVIRONMENTS } from '../../../domain/model/indicator-period';
     MatProgressSpinnerModule,
     MatTooltipModule,
   ],
-  providers: [BatchStore, EquipmentStore],
   templateUrl: './report-generator.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './report-generator.css',
 })
 export class ReportGeneratorComponent implements OnInit {
-  protected readonly batchStore = inject(BatchStore);
-  protected readonly equipmentStore = inject(EquipmentStore);
-  protected readonly environments = inject(EnvironmentStore);
   protected readonly ALL_ENVIRONMENTS = ALL_ENVIRONMENTS;
+
+  /** Batches of the laboratory, newest first, whose report can be generated. */
+  protected readonly batches = computed(() => this.store.overviewBatches().data ?? []);
+
+  /** Whether the batches of the laboratory are being read. */
+  protected readonly batchesLoading = computed(() => this.store.overviewBatches().status === 'loading');
+
+  /** Whether the batches of the laboratory could not be read. */
+  protected readonly batchesFailed = computed(() => this.store.overviewBatches().status === 'error');
 
   /** Equipment located in an environment: its log report belongs to that environment (TS86). */
   protected readonly locatedEquipment = computed(() =>
-    this.equipmentStore.equipmentList().filter(equipment => equipment.environmentId !== null));
+    (this.store.overviewEquipment().data ?? []).filter((equipment) => equipment.environmentId !== null),
+  );
+
+  /** Whether the equipment of the laboratory is being read. */
+  protected readonly equipmentLoading = computed(() => this.store.overviewEquipment().status === 'loading');
+
+  /** Whether the equipment of the laboratory could not be read. */
+  protected readonly equipmentFailed = computed(() => this.store.overviewEquipment().status === 'error');
 
   ngOnInit(): void {
     this.store.clearMessages();
     this.reloadBatches();
     this.reloadEquipment();
-    if (!this.environments.loaded()) void this.environments.loadEnvironments();
+    if (!this.store.environmentsLoaded()) void this.store.loadEnvironments();
   }
 
   protected reloadBatches(): void {
     this.batchForm.batchId = null;
-    this.batchStore.loadBatches(this.currentLaboratoryId);
+    this.store.loadBatches();
   }
 
   protected reloadEquipment(): void {
     this.equipmentForm.equipmentId = null;
-    this.equipmentStore.loadEquipment(this.currentLaboratoryId);
+    this.store.loadEquipment();
   }
 
   protected get hasSelectedBatch(): boolean {
-    return !this.batchStore.isLoading() && !this.batchStore.error() &&
-      this.batchStore.batches().some(batch => batch.id === this.batchForm.batchId && batch.labId === this.currentLaboratoryId);
+    return (
+      !this.batchesLoading() &&
+      !this.batchesFailed() &&
+      this.batches().some((batch) => batch.id === this.batchForm.batchId)
+    );
   }
 
   protected get hasSelectedEquipment(): boolean {
-    return !this.equipmentStore.isLoading() && !this.equipmentStore.error() &&
-      this.locatedEquipment().some(equipment => equipment.id === this.equipmentForm.equipmentId && equipment.labId === this.currentLaboratoryId);
+    return (
+      !this.equipmentLoading() &&
+      !this.equipmentFailed() &&
+      this.locatedEquipment().some(
+        (equipment) =>
+          equipment.id === this.equipmentForm.equipmentId &&
+          equipment.laboratoryId === this.currentLaboratoryId,
+      )
+    );
   }
   /**
    * The application store managing the state for the Reporting and Analysis bounded context.
@@ -139,7 +167,10 @@ export class ReportGeneratorComponent implements OnInit {
   /**
    * Form state for the inventory report: every environment ({@link ALL_ENVIRONMENTS}) or one.
    */
-  protected inventoryForm: { environmentId: number; format: 'PDF' | 'CSV' } = { environmentId: ALL_ENVIRONMENTS, format: 'PDF' };
+  protected inventoryForm: { environmentId: number; format: 'PDF' | 'CSV' } = {
+    environmentId: ALL_ENVIRONMENTS,
+    format: 'PDF',
+  };
 
   /**
    * Form state for exporting equipment maintenance and operational logs.
@@ -158,6 +189,48 @@ export class ReportGeneratorComponent implements OnInit {
     endDate: null,
     format: 'PDF',
   };
+
+  /**
+   * Earliest day the date range pickers accept.
+   */
+  protected readonly minDate = calendarDate(MIN_DATE);
+
+  /**
+   * Latest day the date range pickers accept: today in Lima.
+   *
+   * @returns The Date of today at local midnight.
+   */
+  protected get maxDate(): Date {
+    return calendarDate(todayInLima());
+  }
+
+  /**
+   * Problem with the dates of the environmental report, if any.
+   *
+   * @returns The first problem found, or null.
+   */
+  protected get complianceError(): PeriodError | null {
+    return periodError(this.complianceForm.startDate, this.complianceForm.endDate, MAX_REPORT_DAYS);
+  }
+
+  /**
+   * Problem with the dates of the equipment log, if any.
+   *
+   * @returns The first problem found, or null.
+   */
+  protected get equipmentError(): PeriodError | null {
+    return periodError(this.equipmentForm.startDate, this.equipmentForm.endDate, MAX_REPORT_DAYS);
+  }
+
+  /**
+   * Translation key of the message for a problem with the dates.
+   *
+   * @param error - The problem found
+   * @returns The translation key.
+   */
+  protected periodMessage(error: PeriodError): string {
+    return PERIOD_ERROR_KEYS[error];
+  }
 
   /**
    * Retrieves the current laboratory ID from the active application context.
@@ -195,7 +268,13 @@ export class ReportGeneratorComponent implements OnInit {
    * The days are sent in the browser time zone; {@link Date.toISOString} would move evening dates to the next day.
    */
   protected onGenerateComplianceReport(): void {
-    if (!this.complianceForm.startDate || !this.complianceForm.endDate || this.store.isLoading()) return;
+    if (
+      !this.complianceForm.startDate ||
+      !this.complianceForm.endDate ||
+      this.complianceError ||
+      this.store.isLoading()
+    )
+      return;
 
     this.store.generateComplianceReport({
       laboratoryId: this.currentLaboratoryId,
@@ -227,14 +306,19 @@ export class ReportGeneratorComponent implements OnInit {
    */
   protected onExportEquipmentLog(): void {
     if (
-      !this.equipmentForm.equipmentId || !this.hasSelectedEquipment || this.store.isLoading() ||
+      !this.equipmentForm.equipmentId ||
+      !this.hasSelectedEquipment ||
+      this.store.isLoading() ||
       !this.equipmentForm.startDate ||
-      !this.equipmentForm.endDate
+      !this.equipmentForm.endDate ||
+      this.equipmentError
     ) {
       return;
     }
 
-    const equipment = this.locatedEquipment().find(item => item.id === this.equipmentForm.equipmentId);
+    const equipment = this.locatedEquipment().find(
+      (item) => item.id === this.equipmentForm.equipmentId,
+    );
     if (!equipment?.environmentId) return;
 
     this.store.exportEquipmentLog({

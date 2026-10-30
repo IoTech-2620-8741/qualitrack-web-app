@@ -8,6 +8,22 @@ import { EnvironmentUsage } from './environment-usage';
  * In Domain-Driven Design, the Environment belongs to the Laboratory bounded context.
  * Other bounded contexts reference it to place raw materials, products, equipment
  * and IoT devices, and to organize environmental measurements.
+ *
+ * @example
+ * ```typescript
+ * const environment = new Environment({
+ *   id: 3,
+ *   laboratoryId: 1,
+ *   code: 'ALM-01',
+ *   name: 'Raw material warehouse',
+ *   description: null,
+ *   usage: 'RAW_MATERIAL_STORAGE',
+ *   usageAssignedBy: 7,
+ *   usageAssignedAt: '2026-05-10T14:00:00Z',
+ * });
+ *
+ * console.log(environment.hasUsage); // true
+ * ```
  */
 export class Environment implements BaseEntity {
   /**
@@ -53,7 +69,10 @@ export class Environment implements BaseEntity {
   /**
    * Creates a new Environment entity.
    *
-   * @param params - Initialization properties
+   * @remarks
+   * Every property is copied as received; optional values must be passed as `null`.
+   *
+   * @param params - Initialization properties, one per field of the entity
    */
   constructor(params: {
     id: number;
@@ -77,6 +96,8 @@ export class Environment implements BaseEntity {
 
   /**
    * Indicates whether a usage has been assigned to the environment.
+   *
+   * @returns `true` when {@link Environment.usage} is not `null`
    */
   get hasUsage(): boolean {
     return this.usage !== null;

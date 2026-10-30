@@ -11,13 +11,13 @@
           <mat-button-toggle [value]="option">{{ 'reporting.period.days-' + option | translate }}</mat-button-toggle>
         }
       </mat-button-toggle-group>
-      @if (!environments.isEmpty()) {
+      @if (!store.environmentsEmpty()) {
         <mat-form-field appearance="outline" subscriptSizing="dynamic" class="scope-select">
           <mat-label>{{ 'environments.selector' | translate }}</mat-label>
           <mat-icon matPrefix aria-hidden="true">meeting_room</mat-icon>
           <mat-select [value]="environmentId() ?? ALL_ENVIRONMENTS" (selectionChange)="changeEnvironment($event.value)">
             <mat-option [value]="ALL_ENVIRONMENTS">{{ 'reporting.all-environments' | translate }}</mat-option>
-            @for (environment of environments.environments(); track environment.id) {
+            @for (environment of store.environments(); track environment.id) {
               <mat-option [value]="environment.id">{{ environment.code }} · {{ environment.name }}</mat-option>
             }
           </mat-select>
@@ -30,7 +30,7 @@
     <p class="error" role="alert">{{ error | translate }}</p>
   }
 
-  @if (environments.isEmpty()) {
+  @if (store.environmentsEmpty()) {
     <p class="notice">{{ 'reporting.no-environments' | translate }}</p>
   } @else if (store.isLoading()) {
     <div class="loading" role="status"><mat-spinner diameter="40" [attr.aria-label]="'onboarding.loading-data' | translate" /></div>

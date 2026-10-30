@@ -7,6 +7,7 @@ skinparam classAttributeIconSize 0
 hide empty members
 
 package "shared" {
+  class EnvironmentSelector <<component>>
   interface BaseEntity
   class BaseApi
   class BaseApiEndpoint
@@ -22,31 +23,40 @@ package "iam.application" {
   }
 }
 
-package "laboratory" {
-  class EnvironmentStore {
-    +preferredEnvironment(usage?, scope?): Environment
-    +rememberEnvironment(id, scope?): void
-  }
-  class EnvironmentSelector <<component>>
-  class LaboratoryApi {
-    +getStaff(laboratoryId)
-  }
-}
-
-package "inventory.infrastructure" {
-  class InventoryApi {
-    +materials(lab, environmentId, stockStatus?)
-    +receipts(lab, environmentId, material, usable?)
-  }
-}
-
-package "equipment.infrastructure" {
-  class EquipmentApi {
-    +getEquipment(labId)
+package "shared.infrastructure" {
+  class EnvironmentPreference {
+    +choose(laboratoryId, environments, preferredUsage?)
+    +remember(laboratoryId, environmentId): void
   }
 }
 
 package "batch.domain.model" {
+  class ProductionEnvironment {
+    +id / code / name
+    +usage: string | null
+  }
+  class ProductionStaffMember {
+    +id / fullName / role
+    +active: boolean
+    +accessRole: string | null
+    +userId: number | null
+    +assignable: boolean
+  }
+  class ConsumableRawMaterial {
+    +id / name / unit
+    +usableStock: number
+  }
+  class ConsumableLot {
+    +id / rawMaterialId / batchNumber / unit
+    +availableAmount: number
+    +expiresOn: string
+  }
+  class ProductionEquipment {
+    +id / name / serialNumber / status
+    +deviceType: string | null
+    +environmentId: number | null
+    +isIotDevice / isOperational / isContainerMonitor
+  }
   class PharmaceuticalProduct {
     +id: number
     +laboratoryId: number
@@ -75,9 +85,23 @@ package "batch.domain.model" {
     +detailLink: route | null
   }
   class RawMaterialUsage
-  interface EquipmentUsage
-  interface StaffParticipation
-  interface BatchTraceability {
+  class TracedRawMaterialUsage {
+    +constructor(params)
+  }
+  class ReleaseEvidence {
+    +constructor(params)
+  }
+  class RejectionEvidence {
+    +constructor(params)
+  }
+  class EquipmentUsage {
+    +constructor(params)
+  }
+  class StaffParticipation {
+    +constructor(params)
+  }
+  class BatchTraceability {
+    +constructor(params)
     +batch: Batch
     +product
     +rawMaterials: TracedRawMaterialUsage[]
@@ -87,13 +111,19 @@ package "batch.domain.model" {
     +rejection: RejectionEvidence | null
     +container: BatchContainer | null
   }
-  interface BatchContainer {
+  class BatchContainer {
+    +constructor(params)
     +batchId: number
     +containerMonitorId: number
     +containerName: string | null
     +environmentId: number
     +assignedBy: number
     +assignedAt: string
+  }
+  interface BatchPath {
+    +laboratoryId: number
+    +environmentId: number
+    +productId: number
   }
   interface CreateProductCommand
   interface CreateBatchCommand
@@ -104,12 +134,35 @@ package "batch.domain.model" {
 
 PharmaceuticalProduct ..|> BaseEntity
 Batch ..|> BaseEntity
+EquipmentUsage ..|> BaseEntity
+StaffParticipation ..|> BaseEntity
+TracedRawMaterialUsage ..|> BaseEntity
+BatchTraceability --> TracedRawMaterialUsage
+BatchTraceability --> ReleaseEvidence
+BatchTraceability --> RejectionEvidence
 BatchTraceability --> Batch
 BatchTraceability --> EquipmentUsage
 BatchTraceability --> StaffParticipation
 BatchTraceability --> "0..1" BatchContainer
 
 package "batch.infrastructure" {
+  class ProductionEquipmentApiEndpoint {
+    +getEquipment(laboratoryId)
+  }
+  class ProductionEquipmentAssembler
+  class ProductionEnvironmentApiEndpoint {
+    +getEnvironments(laboratoryId)
+  }
+  class ProductionEnvironmentAssembler
+  class ProductionStaffMemberApiEndpoint {
+    +getStaff(laboratoryId)
+  }
+  class ProductionStaffMemberAssembler
+  class ConsumableStockApiEndpoint {
+    +getRawMaterials(laboratoryId, environmentId)
+    +getUsableLots(laboratoryId, environmentId, rawMaterialId)
+  }
+  class ConsumableStockAssembler
   class BatchApi {
     +getProducts(lab, environmentId)
     +getProduct(lab, environmentId, productId)
@@ -127,11 +180,6 @@ package "batch.infrastructure" {
     +assignContainer(path, batchId, containerMonitorId)
     +getRawMaterialUsages(lab, environmentId, rawMaterialId)
     +getMaterialHistory(laboratoryId, legacyRawMaterialId)
-  }
-  interface BatchPath {
-    +laboratoryId: number
-    +environmentId: number
-    +productId: number
   }
   class ProductApiEndpoint
   class BatchApiEndpoint
@@ -169,7 +217,15 @@ package "batch.application" {
     +selectedBatch: Signal<Batch>
     +traceability: Signal<BatchTraceability>
     +canDecide: Signal<boolean>
+    +environments: Signal<ProductionEnvironment[]>
+    +environmentsLoading / environmentsError / environmentsEmpty
+    +loadEnvironments(): Promise<void>
+    +preferredProductionEnvironment(): ProductionEnvironment | null
+    +rememberProductionEnvironment(environmentId)
+    +preferredStorageEnvironment(): ProductionEnvironment | null
+    +loadStaff(): Promise<ProductionStaffMember[]>
     +loadBatches(labId)
+    +findBatch(batchId): Promise<Batch | undefined>
     +loadProductBatches(path)
     +loadBatch(path, batchId)
     +createBatch(path, command)
@@ -178,35 +234,30 @@ package "batch.application" {
     +registerEquipment(path, batchId, equipmentId)
     +registerStaff(path, batchId, staffId)
     +assignContainer(path, batchId, containerMonitorId)
-  }
-  class ProductStore <<component scoped>> {
     +products: Signal<PharmaceuticalProduct[]>
     +product: Signal<PharmaceuticalProduct>
-    +canManage: Signal<boolean>
-    +load(environmentId)
+    +canManageProducts: Signal<boolean>
+    +loadProducts(environmentId)
     +loadProduct(environmentId, productId)
-    +create(environmentId, command)
-  }
-  class RawMaterialConsumptionStore <<component scoped>> {
-    +materials
-    +lots
-    +selectedLot
-    +selectEnvironment(environmentId)
-    +selectMaterial(materialId)
-    +consume(path, batchId, amount): Promise<boolean>
+    +createProduct(environmentId, command)
+    +consumptionMaterials / consumptionLots / consumptionLot
+    +clearConsumption()
+    +selectConsumptionEnvironment(environmentId)
+    +selectConsumptionMaterial(materialId)
+    +selectConsumptionLot(lotId)
+    +consumeRawMaterial(path, batchId, amount): Promise<boolean>
   }
   class batchError <<function>>
 }
 
 BatchStore --> BatchApi
 BatchStore --> IamStore
-ProductStore --> BatchApi
-ProductStore --> IamStore
-RawMaterialConsumptionStore --> InventoryApi
-RawMaterialConsumptionStore --> BatchApi
-note bottom of RawMaterialConsumptionStore
+BatchStore --> EnvironmentPreference
+note bottom of BatchStore
   Reuses the operationId while retrying the same consumption;
   Inventory decides lot eligibility and available stock.
+  Remembers the production environment ("production") and reads the
+  raw material storage remembered by Inventory ("inventory").
 end note
 
 package "batch.presentation" {
@@ -231,11 +282,10 @@ package "batch.presentation" {
   class BatchRoutes
 }
 
-BatchHome --> EnvironmentStore
-ProductCatalog --> ProductStore
+BatchHome --> BatchStore
+ProductCatalog --> BatchStore
 ProductCatalog --> EnvironmentSelector
-ProductForm --> ProductStore
-ProductDetail --> ProductStore
+ProductForm --> BatchStore
 ProductDetail --> BatchStore
 BatchList --> BatchStore
 BatchForm --> BatchStore
@@ -246,11 +296,9 @@ BatchDetail *-- BatchTraceabilityView
 BatchDetail *-- BatchStorage
 BatchReleaseForm --> BatchStore
 BatchRejectForm --> BatchStore
-RawMaterialUsageComponent --> RawMaterialConsumptionStore
+RawMaterialUsageComponent --> BatchStore
 RawMaterialUsageComponent --> EnvironmentSelector
 BatchParticipants --> BatchStore
-BatchParticipants --> EquipmentApi
-BatchParticipants --> LaboratoryApi
 BatchParticipants --> IamStore
 note bottom of BatchParticipants
   Quality managers add any active operator; an operator can only assign themselves.
@@ -258,15 +306,13 @@ note bottom of BatchParticipants
 end note
 BatchTraceabilityView --> BatchStore
 BatchStorage --> BatchStore
-BatchStorage --> EquipmentApi
-BatchStorage --> EnvironmentStore
 BatchStorage --> IamStore
 note bottom of BatchStorage
   Storage tab (US78, US79): operational container monitors grouped by
   PRODUCT_STORAGE environment; auditors only see the current container.
   "View container conditions" -> /tracking/history?environmentId=&deviceId=.
 end note
-BatchRedirect --> BatchApi
+BatchRedirect --> BatchStore
 BatchForm ..> localIsoDate
 BatchReleaseForm ..> localIsoDate
 BatchRejectForm ..> localIsoDate
@@ -279,6 +325,50 @@ note bottom of BatchRoutes
   .../products/:productId/batches/new
   .../batches/:batchId[/release|/reject]
   /batches/batch-list and /batches/batch-detail/:id (resolves the full path)
+end note
+
+BatchApi --> ProductionEquipmentApiEndpoint
+ProductionEquipmentApiEndpoint --> ProductionEquipmentAssembler
+ProductionEquipmentAssembler ..> ProductionEquipment
+BatchStore ..> ProductionEquipment : loadProductionEquipment()
+note bottom of ProductionEquipmentApiEndpoint
+  Equipment -> Product Batch (Customer/Supplier):
+  GET /laboratories/{id}/equipments in Batch's own model.
+end note
+
+BatchApi --> ProductionEnvironmentApiEndpoint
+ProductionEnvironmentApiEndpoint --> ProductionEnvironmentAssembler
+ProductionEnvironmentAssembler ..> ProductionEnvironment
+BatchApi --> ProductionStaffMemberApiEndpoint
+ProductionStaffMemberApiEndpoint --> ProductionStaffMemberAssembler
+ProductionStaffMemberAssembler ..> ProductionStaffMember
+BatchApi --> ConsumableStockApiEndpoint
+ConsumableStockApiEndpoint --> ConsumableStockAssembler
+ConsumableStockAssembler ..> ConsumableRawMaterial
+ConsumableStockAssembler ..> ConsumableLot
+note bottom of ProductionEnvironmentApiEndpoint
+  Laboratory -> Product Batch (Customer/Supplier):
+  GET /laboratories/{id}/environments and /staff in Batch's own models.
+end note
+note bottom of ConsumableStockApiEndpoint
+  Inventory -> Product Batch (Customer/Supplier):
+  GET .../environments/{id}/raw-materials and
+  .../raw-materials/{id}/batches?usable=true in Batch's own models.
+end note
+note bottom of RawMaterialUsageApiEndpoint
+  Product Batch owns consumption writes and history resources.
+  Inventory reads the same resources through its own MaterialConsumption ACL;
+  it no longer imports BatchApi or RawMaterialUsage.
+end note
+
+note bottom of RawMaterialUsageComponent
+  Pre-Inventory usages link to /inventory/legacy-materials/:id.
+  Current receipts retain their environment-scoped Inventory links.
+end note
+
+note left of BatchRoutes
+  Source: batch/presentation/batch.routes.ts
+  Public paths and guards remain unchanged.
 end note
 
 @enduml

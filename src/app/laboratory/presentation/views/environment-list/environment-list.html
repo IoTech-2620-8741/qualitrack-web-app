@@ -8,7 +8,7 @@
       </div>
     </div>
 
-    @if (store.canManage()) {
+    @if (store.canManageEnvironments()) {
       <button mat-flat-button color="primary" type="button" (click)="onRegister()">
         <mat-icon>add_location_alt</mat-icon>
         {{ 'environments.register' | translate }}
@@ -16,19 +16,19 @@
     }
   </div>
 
-  @if (store.error()) {
+  @if (store.environmentError()) {
     <div class="error-box" role="alert">
       <mat-icon aria-hidden="true">error_outline</mat-icon>
-      <span>{{ store.error() }}</span>
-      <button mat-icon-button type="button" (click)="store.clearError()"
+      <span>{{ store.environmentError() }}</span>
+      <button mat-icon-button type="button" (click)="store.clearEnvironmentError()"
               [attr.aria-label]="'common.actions.cancel' | translate">
         <mat-icon>close</mat-icon>
       </button>
     </div>
   }
 
-  <div class="table-card mat-elevation-z2" [attr.aria-busy]="store.isLoading()">
-    @if (store.isLoading()) {
+  <div class="table-card mat-elevation-z2" [attr.aria-busy]="store.environmentsLoading()">
+    @if (store.environmentsLoading()) {
       <div class="loading-overlay">
         <mat-spinner diameter="40" [attr.aria-label]="'common.status-loading' | translate"></mat-spinner>
       </div>
@@ -90,7 +90,7 @@
       <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="environment-row"></tr>
     </table>
 
-    @if (store.isEmpty()) {
+    @if (store.environmentsEmpty()) {
       <div class="empty-state">
         <mat-icon aria-hidden="true">location_off</mat-icon>
         <p>{{ 'environments.empty' | translate }}</p>

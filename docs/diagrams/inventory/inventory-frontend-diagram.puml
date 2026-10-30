@@ -6,6 +6,7 @@ skinparam classAttributeIconSize 0
 hide empty members
 
 package "shared" {
+  class EnvironmentSelector <<component>>
   interface BaseEntity
   class BaseApi
   class BaseApiEndpoint
@@ -21,36 +22,35 @@ package "iam.application" {
   }
 }
 
-package "laboratory" {
-  class LaboratoryApi {
-    +getEnvironment(laboratoryId, environmentId)
-  }
-  class EnvironmentStore {
-    +preferredEnvironment(usage?, scope?): Environment
-    +rememberEnvironment(id, scope?): void
-  }
-  class EnvironmentSelector <<component>>
-}
-
-package "equipment" {
-  class EquipmentApi {
-    +getEquipment(labId)
-  }
-  class Equipment {
-    +deviceType: IotDeviceType | null
-    +environmentId: number | null
-    +status: EquipmentStatus
-  }
-}
-
-package "batch.infrastructure" {
-  class BatchApi {
-    +getRawMaterialUsages(lab, environmentId, rawMaterialId)
-    +getMaterialHistory(laboratoryId, legacyRawMaterialId)
+package "shared.infrastructure" {
+  class EnvironmentPreference {
+    +choose(laboratoryId, environments, preferredUsage?)
+    +remember(laboratoryId, environmentId): void
   }
 }
 
 package "inventory.domain.model" {
+  class LegacyMaterialSnapshot {
+    +id / name / code / supplier / batchNumber
+    +expirationDate / quantityInStock / unit / minimumStock
+  }
+  class ConsumingBatch {
+    +id: number
+    +batchNumber: string
+  }
+  class MaterialConsumption {
+    +id / batchId / inventoryReceiptId
+    +quantityUsed / unit / usageDate
+    +stockBefore / stockAfter: number | null
+  }
+  class StorageEnvironment {
+    +id / code / name
+    +usage: string | null
+  }
+  class StorageContainer {
+    +id / name / serialNumber / status
+    +environmentId: number | null
+  }
   class RawMaterial {
     +id: number
     +laboratoryId: number
@@ -80,7 +80,9 @@ package "inventory.domain.model" {
     +containerMonitorId: number | null
   }
   class InventoryMovement
-  class LegacyMaterial
+  class LegacyMaterial {
+    +constructor(params)
+  }
   interface SaveRawMaterialCommand
   interface ReceiveRawMaterialBatchCommand
   interface ReviewRawMaterialBatchCommand
@@ -89,8 +91,27 @@ package "inventory.domain.model" {
 RawMaterial ..|> BaseEntity
 RawMaterialBatch ..|> BaseEntity
 InventoryMovement ..|> BaseEntity
+LegacyMaterial ..|> BaseEntity
 
 package "inventory.infrastructure" {
+  interface LegacyMaterialSnapshotResource
+  class LegacyMaterialSnapshotAssembler
+  class LegacyMaterialSnapshotApiEndpoint
+  interface ConsumingBatchResource
+  class ConsumingBatchAssembler
+  class ConsumingBatchApiEndpoint
+  interface MaterialConsumptionResource
+  class MaterialConsumptionAssembler
+  class MaterialConsumptionApiEndpoint
+  class StorageContainerApiEndpoint {
+    +getContainers(laboratoryId, environmentId)
+  }
+  class StorageContainerAssembler
+  class StorageEnvironmentApiEndpoint {
+    +getEnvironments(laboratoryId)
+    +getEnvironment(laboratoryId, environmentId)
+  }
+  class StorageEnvironmentAssembler
   class InventoryApi {
     +materials(lab, environmentId, stockStatus?)
     +material(lab, environmentId, id)
@@ -103,6 +124,8 @@ package "inventory.infrastructure" {
     +movements(lab, environmentId, material)
     +legacy(lab)
     +import(lab, environmentId, legacyId)
+    +environments(lab)
+    +environment(lab, environmentId)
   }
   class RawMaterialApiEndpoint
   class RawMaterialBatchApiEndpoint
@@ -135,20 +158,30 @@ note right of RawMaterialBatchApiEndpoint
 end note
 
 package "inventory.application" {
-  class InventoryStore <<component scoped>> {
+  class InventoryStore <<root>> {
+    +legacyDetailMaterial / legacyDetailConsumptions / legacyDetailBatches
+    +legacyDetailLoading / legacyDetailError / legacyDetailHasUnrecordedStock
+    +loadLegacyDetail(materialId): void
+    +clearLegacyDetail(): void
+    +legacyDetailBatchLabel(batchId): string
+    +environments: Signal<StorageEnvironment[]>
+    +environmentsLoaded / environmentsLoading / environmentsError / environmentsEmpty
+    +loadEnvironments(): Promise<void>
+    +preferredEnvironment(): StorageEnvironment | null
+    +rememberEnvironment(environmentId): void
     +environmentId: Signal<number>
     +materials: Signal<RawMaterial[]>
     +lowStockMaterials: Signal<RawMaterial[]>
     +receipts: Signal<RawMaterialBatch[]>
     +nearExpiry: Signal<RawMaterialBatch[]>
     +movements: Signal<InventoryMovement[]>
-    +usages: Signal<RawMaterialUsage[]>
+    +usages: Signal<MaterialConsumption[]>
     +affectedBatches: Signal<number[]>
     +canReview: Signal<boolean>
     +canOperate: Signal<boolean>
-    +containers: Signal<Equipment[]>
-    +environmentUsage: Signal<EnvironmentUsage | null>
-    +availableContainers: Signal<Equipment[]>
+    +containers: Signal<StorageContainer[]>
+    +environmentUsage: Signal<string | null>
+    +availableContainers: Signal<StorageContainer[]>
     +storesInContainers: Signal<boolean>
     +load(environmentId, id?): Promise<boolean>
     +loadLowStock()
@@ -165,13 +198,12 @@ package "inventory.application" {
 }
 
 InventoryStore --> InventoryApi
-InventoryStore --> BatchApi
 InventoryStore --> IamStore
-InventoryStore --> EquipmentApi : container monitors
-InventoryStore --> LaboratoryApi : environment usage
-InventoryStore ..> Equipment
+InventoryStore --> EnvironmentPreference
+InventoryStore ..> StorageContainer
 
 package "inventory.presentation" {
+  class LegacyMaterialDetail
   class InventoryHome
   class InventoryCatalogue
   class InventoryDetail
@@ -179,10 +211,10 @@ package "inventory.presentation" {
   class InventoryRoutes
 }
 
-InventoryHome --> EnvironmentStore
+InventoryHome --> InventoryStore
+InventoryHome --> IamStore
 InventoryCatalogue --> InventoryStore
 InventoryCatalogue --> EnvironmentSelector
-InventoryCatalogue --> EnvironmentStore
 InventoryDetail --> InventoryStore
 RegisterMaterial --> InventoryStore
 InventoryCatalogue ..> OperationsPage
@@ -201,6 +233,54 @@ end note
 note bottom of RawMaterial
   Stock is a server-derived projection, not a local counter.
   Laboratory legacy material and Inventory material have separate IDs.
+end note
+
+InventoryApi --> StorageContainerApiEndpoint
+StorageContainerApiEndpoint --> StorageContainerAssembler
+StorageContainerAssembler ..> StorageContainer
+InventoryApi --> StorageEnvironmentApiEndpoint
+StorageEnvironmentApiEndpoint --> StorageEnvironmentAssembler
+StorageEnvironmentAssembler ..> StorageEnvironment
+note bottom of StorageEnvironmentApiEndpoint
+  Laboratory -> Inventory (Customer/Supplier):
+  GET /laboratories/{id}/environments[/{environmentId}] in Inventory's own model.
+end note
+MaterialConsumption ..|> BaseEntity
+InventoryApi --> MaterialConsumptionApiEndpoint
+MaterialConsumptionApiEndpoint --|> ErrorHandlingEnabledBaseType
+MaterialConsumptionApiEndpoint --> MaterialConsumptionAssembler
+MaterialConsumptionAssembler ..> MaterialConsumption
+MaterialConsumptionAssembler ..> MaterialConsumptionResource
+note bottom of MaterialConsumption
+  Read-only ACL from Product Batch. Used for affected production batches
+  (OBSERVED or REJECTED receipts) and pre-Inventory consumption history.
+  Product Batch retains consumption ownership and writes.
+end note
+
+LegacyMaterialSnapshot ..|> BaseEntity
+ConsumingBatch ..|> BaseEntity
+InventoryApi --> LegacyMaterialSnapshotApiEndpoint
+InventoryApi --> ConsumingBatchApiEndpoint
+LegacyMaterialSnapshotApiEndpoint --|> ErrorHandlingEnabledBaseType
+LegacyMaterialSnapshotApiEndpoint --> LegacyMaterialSnapshotAssembler
+LegacyMaterialSnapshotAssembler ..> LegacyMaterialSnapshotResource
+LegacyMaterialSnapshotAssembler ..> LegacyMaterialSnapshot
+ConsumingBatchApiEndpoint --|> ErrorHandlingEnabledBaseType
+ConsumingBatchApiEndpoint --> ConsumingBatchAssembler
+ConsumingBatchAssembler ..> ConsumingBatchResource
+ConsumingBatchAssembler ..> ConsumingBatch
+LegacyMaterialDetail --> InventoryStore
+InventoryRoutes --> LegacyMaterialDetail
+note bottom of LegacyMaterialDetail
+  /inventory/legacy-materials/:id preserves the old stock summary,
+  consumption history, before/after balances, production batch names and links.
+  Reads all old materials, including imported and empty ones.
+  Previous-balance import remains available in the catalogue.
+end note
+
+note left of InventoryRoutes
+  Source: inventory/presentation/inventory.routes.ts
+  Public paths and guards remain unchanged.
 end note
 
 @enduml

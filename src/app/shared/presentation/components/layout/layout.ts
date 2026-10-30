@@ -1,17 +1,19 @@
-import { Component, DestroyRef, computed, effect, inject, signal, viewChild } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  computed,
+  effect,
+  inject,
+  signal,
+  viewChild,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { filter, map } from 'rxjs';
 import { IamStore } from '../../../../iam/application/iam.store';
-import { LaboratoryStore } from '../../../../laboratory/application/laboratory.store';
-import { EquipmentStore } from '../../../../equipment/application/equipment.store';
-import { BatchStore } from '../../../../batch/application/batch.store';
-import { CaStore } from '../../../../ca/application/ca.store';
-import { RaStore } from '../../../../ra/application/ra.store';
-import { TrackingStore } from '../../../../tracking/application/tracking.store';
-import { SubscriptionStore } from '../../../../subscription/application/subscription.store';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
@@ -22,6 +24,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { LanguageSwitcher } from '../language-switcher/language-switcher';
 import { UserSessionSection } from '../../../../iam/presentation/components/user-session-section/user-session-section';
+import { UserProfileBadge } from '../../../../profile/presentation/components/user-profile-badge/user-profile-badge';
 import { NotificationBell } from '../../../../ca/presentation/components/notification-bell/notification-bell';
 
 /** Entry of the side navigation menu. */
@@ -45,11 +48,10 @@ interface NavigationOption {
 @Component({
   selector: 'app-layout',
   standalone: true,
-  providers: [LaboratoryStore, EquipmentStore, BatchStore, CaStore, RaStore, TrackingStore, SubscriptionStore],
   imports: [
     RouterOutlet,
     RouterLink,
-    TranslateModule,
+    TranslatePipe,
     MatToolbarModule,
     MatSidenavModule,
     MatIconModule,
@@ -58,9 +60,11 @@ interface NavigationOption {
     MatTooltipModule,
     LanguageSwitcher,
     UserSessionSection,
+    UserProfileBadge,
     NotificationBell,
   ],
   templateUrl: './layout.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './layout.css',
 })
 export class Layout {
@@ -69,11 +73,17 @@ export class Layout {
    */
   private readonly breakpoints = inject(BreakpointObserver);
   private readonly iam = inject(IamStore);
+  /** Whether the toolbar composes the profile badge and the session action. */
+  protected readonly isSignedIn = this.iam.isSignedIn;
   private readonly drawer = viewChild(MatSidenav);
-  protected readonly mobile = toSignal(this.breakpoints.observe('(max-width: 1023px)').pipe(
-    map((state) => state.matches)), { initialValue: this.breakpoints.isMatched('(max-width: 1023px)') });
-  protected readonly sidenavMode = computed(() => this.mobile() ? 'over' : 'side');
-  protected readonly hasOperationalAccess = computed(() => this.iam.onboarding()?.nextStep === 'READY');
+  protected readonly mobile = toSignal(
+    this.breakpoints.observe('(max-width: 1023px)').pipe(map((state) => state.matches)),
+    { initialValue: this.breakpoints.isMatched('(max-width: 1023px)') },
+  );
+  protected readonly sidenavMode = computed(() => (this.mobile() ? 'over' : 'side'));
+  protected readonly hasOperationalAccess = computed(
+    () => this.iam.onboarding()?.nextStep === 'READY',
+  );
 
   /**
    * Indicates whether the sidenav starts opened.
@@ -105,7 +115,11 @@ export class Layout {
       link: '/equipments',
       children: [
         { label: 'nav.equipment-list', link: '/equipments/equipment-list' },
-        { label: 'nav.register-equipment', link: '/equipments/register-equipment', qualityOnly: true },
+        {
+          label: 'nav.register-equipment',
+          link: '/equipments/register-equipment',
+          qualityOnly: true,
+        },
         { label: 'nav.register-device', link: '/equipments/register-device', qualityOnly: true },
       ],
     },
@@ -144,9 +158,7 @@ export class Layout {
       label: 'nav.inventory',
       icon: 'inventory_2',
       link: '/inventory',
-      children: [
-        { label: 'nav.raw-material-catalog', link: '/inventory' },
-      ],
+      children: [{ label: 'nav.raw-material-catalog', link: '/inventory' }],
     },
     {
       label: 'nav.tracking',
@@ -190,10 +202,14 @@ export class Layout {
 
   constructor(private readonly router: Router) {
     effect(() => this.sidenavOpened.set(!this.mobile() && this.hasOperationalAccess()));
-    router.events.pipe(filter((event) => event instanceof NavigationEnd),
-      takeUntilDestroyed(inject(DestroyRef))).subscribe(() => {
+    router.events
+      .pipe(
+        filter((event) => event instanceof NavigationEnd),
+        takeUntilDestroyed(inject(DestroyRef)),
+      )
+      .subscribe(() => {
         if (this.mobile()) void this.drawer()?.close();
-    });
+      });
   }
 
   /**

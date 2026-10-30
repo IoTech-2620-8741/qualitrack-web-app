@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -13,6 +13,14 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { RaStore } from '../../../application/ra.store';
+import { todayInLima } from '../../../../shared/presentation/utils/local-date';
+import { MIN_DATE } from '../../../../shared/presentation/validators/date.validators';
+import {
+  calendarDate,
+  PERIOD_ERROR_KEYS,
+  PeriodError,
+  periodError,
+} from '../../utils/report-period';
 import { AuditAction } from '../../../domain/model/audit-log-entry.entity';
 
 /**
@@ -41,6 +49,7 @@ import { AuditAction } from '../../../domain/model/audit-log-entry.entity';
     MatProgressSpinnerModule,
   ],
   templateUrl: './audit-log-viewer.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './audit-log-viewer.css',
 })
 export class AuditLogViewerComponent implements OnInit {
@@ -73,6 +82,63 @@ export class AuditLogViewerComponent implements OnInit {
   };
 
   /**
+   * Earliest day the date range picker accepts.
+   */
+  protected readonly minDate = calendarDate(MIN_DATE);
+
+  /**
+   * Latest day the date range picker accepts: today in Lima.
+   *
+   * @returns The Date of today at local midnight.
+   */
+  protected get maxDate(): Date {
+    return calendarDate(todayInLima());
+  }
+
+  /**
+   * Problem with the dates of the filter, if any.
+   *
+   * @returns The first problem found, or null.
+   */
+  protected get periodProblem(): PeriodError | null {
+    return periodError(this.filters.dateFrom, this.filters.dateTo);
+  }
+
+  /**
+   * Translation key of the message for a problem with the dates.
+   *
+   * @param error - The problem found
+   * @returns The translation key.
+   */
+  protected periodMessage(error: PeriodError): string {
+    return PERIOD_ERROR_KEYS[error];
+  }
+
+  /**
+   * Whether an entity identifier typed in the filter is not a positive whole number.
+   *
+   * @param value - The typed identifier; null or empty when the filter is not used
+   * @returns True if the value is filled in and is not a positive whole number.
+   */
+  protected isInvalidId(value: number | null): boolean {
+    if (value === null || (value as unknown) === '') return false;
+    return !Number.isInteger(Number(value)) || Number(value) < 1;
+  }
+
+  /**
+   * Whether the filters can be sent: valid identifiers and a valid period.
+   *
+   * @returns True if nothing in the filters is wrong.
+   */
+  protected get filtersValid(): boolean {
+    return (
+      !this.periodProblem &&
+      !this.isInvalidId(this.filters.equipmentId) &&
+      !this.isInvalidId(this.filters.batchId)
+    );
+  }
+
+  /**
    * Lifecycle hook that initializes the component by loading the default audit log collection.
    */
   ngOnInit(): void {
@@ -87,6 +153,7 @@ export class AuditLogViewerComponent implements OnInit {
    * the store receives `undefined`, allowing the backend to return its default log collection.
    */
   protected loadLogs(): void {
+    if (!this.filtersValid) return;
     const query: {
       equipmentId?: number;
       batchId?: number;

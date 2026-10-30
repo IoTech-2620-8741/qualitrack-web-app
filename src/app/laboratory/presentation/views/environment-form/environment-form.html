@@ -11,10 +11,10 @@
     </mat-card-header>
 
     <mat-card-content>
-      @if (store.error()) {
+      @if (store.environmentError()) {
         <div class="error-box" role="alert">
           <mat-icon aria-hidden="true">error_outline</mat-icon>
-          <span>{{ store.error() }}</span>
+          <span>{{ store.environmentError() }}</span>
         </div>
       }
 
@@ -79,8 +79,8 @@
 
         <div class="form-actions">
           <button mat-button type="button" (click)="onCancel()">{{ 'common.cancel' | translate }}</button>
-          <button mat-flat-button color="primary" type="submit" [disabled]="store.isLoading()">
-            @if (store.isLoading()) {
+          <button mat-flat-button color="primary" type="submit" [disabled]="store.environmentsLoading()">
+            @if (store.environmentsLoading()) {
               <mat-spinner diameter="20" [attr.aria-label]="'common.status-loading' | translate"></mat-spinner>
             } @else {
               <mat-icon>save</mat-icon>

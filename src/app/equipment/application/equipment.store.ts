@@ -5,6 +5,8 @@ import { IamStore } from '../../iam/application/iam.store';
 import { ApiError } from '../../shared/infrastructure/api-error';
 import { EquipmentApi } from '../infrastructure/equipment-api';
 import { Equipment } from '../domain/model/equipment.entity';
+import { InstallationEnvironment } from '../domain/model/installation-environment.entity';
+import { MaintenanceTechnician } from '../domain/model/maintenance-technician.entity';
 import { BpmParameterConfig } from '../domain/model/bpm-parameter-config.entity';
 import { MaintenanceRecord } from '../domain/model/maintenance-record.entity';
 import { RegisterEquipmentCommand } from '../domain/model/register-equipment.command';
@@ -109,6 +111,9 @@ export class EquipmentStore {
   /** Translation key of the last success message, or `null` if there is none. */
   private readonly _successMsg = signal<string | null>(null);
 
+  /** Environments of the laboratory where equipment can be installed. */
+  private readonly _environments = signal<InstallationEnvironment[]>([]);
+
   /** Equipment and IoT devices of the laboratory (read-only). */
   readonly equipmentList = this._equipmentList.asReadonly();
 
@@ -132,6 +137,9 @@ export class EquipmentStore {
 
   /** Translation key of the last success message (read-only). */
   readonly successMsg = this._successMsg.asReadonly();
+
+  /** Environments of the laboratory where equipment can be installed (read-only). */
+  readonly environments = this._environments.asReadonly();
 
   /** Equipment and devices are registered and located by quality managers and administrators (US45, US47). */
   readonly canManage = this.iam.canManageQuality;
@@ -166,6 +174,29 @@ export class EquipmentStore {
    */
   loadEquipment(labId: number = this.laboratoryId): void {
     void this.refresh(labId);
+  }
+
+  /**
+   * Reads the environments of the laboratory where equipment can be installed (Laboratory → Equipment).
+   *
+   * @remarks
+   * On failure the previous list is kept, so the views show the identifier of the environment instead of its name.
+   */
+  async loadEnvironments(): Promise<void> {
+    try {
+      this._environments.set(await firstValueFrom(this.api.getEnvironments(this.laboratoryId)));
+    } catch {
+      // The environments only name where equipment is; the equipment views keep working without them.
+    }
+  }
+
+  /**
+   * Reads the staff of the laboratory who can be chosen as the technician of a maintenance (Laboratory → Equipment).
+   *
+   * @returns The staff members of the laboratory of the session.
+   */
+  async loadTechnicians(): Promise<MaintenanceTechnician[]> {
+    return firstValueFrom(this.api.getTechnicians(this.laboratoryId));
   }
 
   /**

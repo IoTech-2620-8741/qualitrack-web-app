@@ -49,6 +49,12 @@
   border: 1px solid #fca5a5;
 }
 
+.field-error {
+  margin: -8px 0 16px;
+  font-size: 0.85rem;
+  color: #b91c1c;
+}
+
 .success-message {
   color: #047857;
   background-color: #d1fae5;

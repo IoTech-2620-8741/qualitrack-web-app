@@ -1,19 +1,20 @@
-import { Injectable, computed, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { LegacyMaterialSnapshot } from '../domain/model/legacy-material-snapshot.entity';
+import { ConsumingBatch } from '../domain/model/consuming-batch.entity';
+import { DestroyRef, Injectable, computed, inject, signal } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ApiError } from '../../shared/infrastructure/api-error';
-import { firstValueFrom, forkJoin, Observable } from 'rxjs';
+import { firstValueFrom, forkJoin, Observable, Subject, takeUntil } from 'rxjs';
 import { InventoryApi } from '../infrastructure/inventory-api';
 import { RawMaterial } from '../domain/model/raw-material.entity';
 import { InventoryMovement } from '../domain/model/inventory-movement.entity';
 import { LegacyMaterial } from '../domain/model/legacy-material.entity';
 import { RawMaterialBatch } from '../domain/model/raw-material-batch.entity';
-import { BatchApi } from '../../batch/infrastructure/batch-api';
-import { RawMaterialUsage } from '../../batch/domain/model/raw-material-usage.entity';
+import { MaterialConsumption } from '../domain/model/material-consumption.entity';
 import { IamStore } from '../../iam/application/iam.store';
-import { EquipmentApi } from '../../equipment/infrastructure/equipment-api';
-import { Equipment } from '../../equipment/domain/model/equipment.entity';
-import { LaboratoryApi } from '../../laboratory/infrastructure/laboratory-api';
-import { EnvironmentUsage } from '../../laboratory/domain/model/environment-usage';
+import { StorageContainer } from '../domain/model/storage-container.entity';
+import { StorageEnvironment } from '../domain/model/storage-environment.entity';
+import { EnvironmentPreference } from '../../shared/infrastructure/environment-preference';
 import { SaveRawMaterialCommand } from '../domain/model/save-raw-material.command';
 import { ReceiveRawMaterialBatchCommand } from '../domain/model/receive-raw-material-batch.command';
 import { ReviewRawMaterialBatchCommand } from '../domain/model/review-raw-material-batch.command';
@@ -53,8 +54,60 @@ export function inventoryError(error: unknown): string {
  * Each inventory view maintains its own instance scoped to
  * the selected laboratory environment.
  */
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class InventoryStore {
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly reloadLegacyDetail = new Subject<void>();
+  readonly legacyDetailMaterial = signal<LegacyMaterialSnapshot | null>(null);
+  readonly legacyDetailConsumptions = signal<MaterialConsumption[]>([]);
+  readonly legacyDetailBatches = signal<ConsumingBatch[]>([]);
+  readonly legacyDetailLoading = signal(false);
+  readonly legacyDetailError = signal<string | null>(null);
+  /** Whether historical usages predate recorded stock balances. */
+  readonly legacyDetailHasUnrecordedStock = computed(() => this.legacyDetailConsumptions().some((usage) => usage.stockAfter === null));
+
+  /** Cancels stale history and clears the detail when its route changes or is left. */
+  clearLegacyDetail(): void {
+    this.reloadLegacyDetail.next();
+    this.legacyDetailMaterial.set(null);
+    this.legacyDetailConsumptions.set([]);
+    this.legacyDetailBatches.set([]);
+    this.legacyDetailLoading.set(false);
+    this.legacyDetailError.set(null);
+  }
+
+  /** Loads preserved pre-Inventory material data and consumption without changing previous-balance imports. */
+  loadLegacyDetail(materialId: number): void {
+    this.clearLegacyDetail();
+    if (!Number.isSafeInteger(materialId) || materialId <= 0) {
+      this.legacyDetailError.set('material-history.not-found');
+      return;
+    }
+    this.legacyDetailLoading.set(true);
+    forkJoin({
+      materials: this.api.legacyMaterialSnapshots(this.lab),
+      usages: this.api.legacyMaterialConsumptions(this.lab, materialId),
+      batches: this.api.consumingBatches(this.lab),
+    }).pipe(takeUntil(this.reloadLegacyDetail), takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: ({ materials, usages, batches }) => {
+        this.legacyDetailMaterial.set(materials.find((material) => material.id === materialId) ?? null);
+        this.legacyDetailConsumptions.set(usages);
+        this.legacyDetailBatches.set(batches);
+        if (!this.legacyDetailMaterial()) this.legacyDetailError.set('material-history.not-found');
+        this.legacyDetailLoading.set(false);
+      },
+      error: () => {
+        this.legacyDetailError.set('material-history.load-error');
+        this.legacyDetailLoading.set(false);
+      },
+    });
+  }
+
+  /** Batch number shown in history, with an identifier fallback when the batch is unavailable. */
+  legacyDetailBatchLabel(batchId: number): string {
+    return this.legacyDetailBatches().find((batch) => batch.id === batchId)?.batchNumber ?? '#' + batchId;
+  }
+
   /**
    * Infrastructure facade for inventory operations.
    * @private
@@ -68,22 +121,35 @@ export class InventoryStore {
   private readonly iam = inject(IamStore);
 
   /**
-   * API service for product batches and material usage.
+   * Raw material storage opened last time in this browser.
    * @private
    */
-  private readonly batchApi = inject(BatchApi);
+  private readonly environmentPreference = new EnvironmentPreference('inventory');
 
   /**
-   * API service for equipment and container monitors.
-   * @private
+   * Signal containing the environments of the laboratory where raw materials can be kept.
    */
-  private readonly equipmentApi = inject(EquipmentApi);
+  readonly environments = signal<StorageEnvironment[]>([]);
 
   /**
-   * API service for laboratory environment information.
-   * @private
+   * Signal indicating whether the environments have been read at least once.
    */
-  private readonly laboratoryApi = inject(LaboratoryApi);
+  readonly environmentsLoaded = signal(false);
+
+  /**
+   * Signal indicating whether the environments are being read.
+   */
+  readonly environmentsLoading = signal(false);
+
+  /**
+   * Signal containing the translation key of the failure to read the environments, or an empty string.
+   */
+  readonly environmentsError = signal('');
+
+  /**
+   * Indicates whether the laboratory has no environment yet.
+   */
+  readonly environmentsEmpty = computed(() => this.environmentsLoaded() && this.environments().length === 0);
 
   /**
    * Signal containing the selected storage environment identifier.
@@ -121,7 +187,7 @@ export class InventoryStore {
   /**
    * Signal containing usage records of the selected raw material.
    */
-  readonly usages = signal<RawMaterialUsage[]>([]);
+  readonly usages = signal<MaterialConsumption[]>([]);
 
   /**
    * Signal containing legacy inventory materials.
@@ -131,7 +197,7 @@ export class InventoryStore {
   /**
    * Signal containing historical usage records of a legacy material.
    */
-  readonly legacyHistory = signal<RawMaterialUsage[]>([]);
+  readonly legacyHistory = signal<MaterialConsumption[]>([]);
 
   /**
    * Signal containing errors related to legacy material history.
@@ -144,12 +210,12 @@ export class InventoryStore {
    * @remarks
    * Each monitor represents a monitored storage container.
    */
-  readonly containers = signal<Equipment[]>([]);
+  readonly containers = signal<StorageContainer[]>([]);
 
   /**
    * Signal containing the usage classification of the environment.
    */
-  readonly environmentUsage = signal<EnvironmentUsage | null>(null);
+  readonly environmentUsage = signal<string | null>(null);
 
   /**
    * Signal containing errors related to storage information.
@@ -279,6 +345,46 @@ export class InventoryStore {
   }
 
   /**
+   * Reads the environments of the laboratory (Laboratory → Inventory).
+   *
+   * @returns A Promise that resolves when the operation finishes.
+   *
+   * @remarks
+   * On failure the previous list is kept and the reason is exposed through {@link InventoryStore.environmentsError}.
+   */
+  async loadEnvironments(): Promise<void> {
+    this.environmentsLoading.set(true);
+    this.environmentsError.set('');
+    try {
+      this.environments.set(await firstValueFrom(this.api.environments(this.lab)));
+      this.environmentsLoaded.set(true);
+    } catch (error) {
+      this.environmentsError.set(inventoryError(error));
+    } finally {
+      this.environmentsLoading.set(false);
+    }
+  }
+
+  /**
+   * Picks the environment to open: the last one used in this browser, otherwise the first raw material storage,
+   * otherwise the first environment of the laboratory.
+   *
+   * @returns The environment, or null when the laboratory has none.
+   */
+  preferredEnvironment(): StorageEnvironment | null {
+    return this.environmentPreference.choose(this.lab, this.environments(), 'RAW_MATERIAL_STORAGE');
+  }
+
+  /**
+   * Remembers the environment whose raw materials the user opened.
+   *
+   * @param environmentId - Identifier of the storage environment.
+   */
+  rememberEnvironment(environmentId: number): void {
+    this.environmentPreference.remember(this.lab, environmentId);
+  }
+
+  /**
    * Gets the identifier of the selected storage environment.
    *
    * @returns The current environment identifier.
@@ -395,6 +501,7 @@ export class InventoryStore {
     this.selectedId.set(id);
     this.loading.set(true);
     this.error.set('');
+    this.notice.set('');
     this.receipts.set([]);
     this.movements.set([]);
     this.usages.set([]);
@@ -413,7 +520,7 @@ export class InventoryStore {
           forkJoin({
             receipts: this.api.receipts(this.lab, environmentId, id),
             movements: this.api.movements(this.lab, environmentId, id),
-            usages: this.batchApi.getRawMaterialUsages(this.lab, environmentId, id),
+            usages: this.api.materialConsumptions(this.lab, environmentId, id),
           }),
         );
         if (generation !== this.generation) return false;
@@ -424,7 +531,7 @@ export class InventoryStore {
         const legacyId = this.selected()?.legacyId;
         if (legacyId) {
           try {
-            const history = await firstValueFrom(this.batchApi.getMaterialHistory(this.lab, legacyId));
+            const history = await firstValueFrom(this.api.legacyMaterialConsumptions(this.lab, legacyId));
             if (generation === this.generation) this.legacyHistory.set(history);
           } catch (error) {
             if (generation === this.generation) this.legacyError.set(inventoryError(error));
@@ -459,16 +566,12 @@ export class InventoryStore {
     try {
       const storage = await firstValueFrom(
         forkJoin({
-          equipment: this.equipmentApi.getEquipment(this.lab),
-          environment: this.laboratoryApi.getEnvironment(this.lab, environmentId),
+          containers: this.api.containers(this.lab, environmentId),
+          environment: this.api.environment(this.lab, environmentId),
         }),
       );
       if (generation !== this.generation) return;
-      this.containers.set(
-        storage.equipment.filter(
-          (item) => item.deviceType === 'CONTAINER_MONITOR' && item.environmentId === environmentId,
-        ),
-      );
+      this.containers.set(storage.containers);
       this.environmentUsage.set(storage.environment.usage);
     } catch (error) {
       if (generation !== this.generation) return;

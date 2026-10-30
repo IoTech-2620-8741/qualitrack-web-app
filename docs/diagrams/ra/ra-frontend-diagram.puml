@@ -7,9 +7,11 @@ skinparam classAttributeIconSize 0
 hide empty members
 
 package "shared" {
+  class EnvironmentSelector <<component>>
   interface BaseEntity
   class BaseApi
   class BaseApiEndpoint
+  class ErrorHandlingEnabledBaseType
   interface BaseAssembler
   interface BaseResource
   interface BaseResponse
@@ -24,38 +26,19 @@ package "iam.application" {
   }
 }
 
-package "equipment" {
-  class EquipmentStore {
-    +equipmentList
-    +loadEquipment(labId: number): void
-  }
-  class EquipmentApi {
-    +getEquipment(laboratoryId: number)
-  }
-}
-
-package "batch.application" {
-  class BatchStore {
-    +batches
-    +loadBatches(labId: number): void
-  }
-}
-
-package "laboratory" {
-  class EnvironmentStore {
-    +environments
-    +isEmpty
-    +loadEnvironments(): Promise<void>
-    +preferredEnvironment(usage?, scope): Environment
-    +rememberEnvironment(environmentId, scope): void
-  }
-  class EnvironmentSelector {
-    +selectedId
-    +selectedChange
+package "shared.infrastructure" {
+  class EnvironmentPreference {
+    +choose(laboratoryId, environments, preferredUsage?)
+    +remember(laboratoryId, environmentId): void
   }
 }
 
 package "ra.domain.model" {
+  class AuditedStaffMember {
+    +id: number
+    +fullName: string
+    +role: string
+  }
   class KpiDashboard {
     +id: number
     +laboratoryId: number
@@ -157,10 +140,59 @@ package "ra.domain.model" {
     +endDate: string
     +format: "PDF | CSV"
   }
+
+  class OverviewLaboratory {
+    +id: number
+    +name: string
+  }
+  class OverviewEnvironment {
+    +id / code / name
+    +usage: string | null
+  }
+  class OverviewEquipment {
+    +id / laboratoryId / environmentId
+    +name: string
+    +deviceType: string | null
+    +isIotDevice: boolean
+    +isContainerMonitor: boolean
+  }
+  class OverviewBatch {
+    +id / batchNumber / productName / status
+    +environmentId / productId
+    +detailLink
+  }
+  class OverviewRawMaterial {
+    +id / name / stockStatus
+    +isLowStock: boolean
+  }
+  class OverviewAlert {
+    +id / equipmentId / parameterName
+    +recordedValue / unit / severity / status / timestamp
+    +isOpen: boolean
+  }
+  class OverviewReading {
+    +deviceId / metric / value / unit / measuredAt
+    +isChartable: boolean
+  }
+  class OverviewSubscription {
+    +laboratoryId / planCode / billingCycle / status
+    +currentPeriodEnd: string | null
+  }
+  class OverviewPlan {
+    +code / name / billingPeriod
+    +priceAmount / currency
+    +maxEquipment: number | null
+  }
 }
 
 package "ra.infrastructure" {
+  interface AuditedStaffMemberResource
+  class AuditedStaffMemberAssembler
+  class AuditedStaffMemberApiEndpoint {
+    +getStaffMember(laboratoryId, staffId)
+  }
   class RaApi {
+    +getAuditedStaffMember(laboratoryId, staffId)
     -_kpiEndpoint: KpiApiEndpoint
     -_deviationTrendEndpoint: DeviationTrendApiEndpoint
     -_auditLogEndpoint: AuditLogApiEndpoint
@@ -309,12 +341,35 @@ package "ra.infrastructure" {
     +endDate: string
     +format: "PDF | CSV"
   }
+
+  class OperationalOverviewApiEndpoint {
+    +getLaboratory(laboratoryId)
+    +getEnvironments(laboratoryId)
+    +getLowStockMaterials(laboratoryId, environmentId)
+    +getBatches(laboratoryId)
+    +getEquipment(laboratoryId)
+    +getOpenAlerts(laboratoryId, environmentId)
+    +getReadings(laboratoryId, environmentId, containerMonitorId, period)
+    +getActiveSubscription(laboratoryId)
+    +getPlans()
+  }
+  class OperationalOverviewAssembler
+  note bottom of OperationalOverviewApiEndpoint
+    Anti-Corruption Layer: reads the REST resources of Laboratory, Inventory,
+    Product Batch, Equipment, Compliance & Alerting, Tracking & Telemetry and
+    Payments & Subscriptions and translates them into the Overview* models.
+  end note
 }
 
 package "ra.application" {
   class RaStore {
+    +staffActivity
+    +auditedStaffMember
+    +staffActivityLoading
+    +staffActivityError
+    +loadStaffActivity(staffId): void
+    +clearStaffActivity(): void
     -api: RaApi
-    -equipmentApi: EquipmentApi
     -_dashboard
     -_deviationTrends
     -_devices
@@ -340,11 +395,44 @@ package "ra.application" {
     +generateInventoryReport(command: GenerateInventoryReportCommand): void
     +exportEquipmentLog(command: ExportEquipmentLogCommand): void
     +clearMessages(): void
+
+    +environments: Signal<OverviewEnvironment[]>
+    +environmentsLoaded / environmentsEmpty
+    +loadEnvironments(): Promise<void>
+    +preferredEnvironmentId(): number | null
+    +rememberEnvironment(environmentId): void
+    +loadEquipment(): void
+    +loadBatches(): void
+
+    +overviewLaboratory / overviewEquipment / overviewBatches
+    +overviewMaterials / overviewAlerts / overviewMeasurements
+    +overviewSubscription / overviewPlans: Signal<OverviewState>
+    +overviewDevices / overviewOpenAlerts / overviewLowStock
+    +overviewSeries / overviewReadings / overviewReadingRange
+    +reloadOverview(): void
+    +loadOverviewSubscription(): void
+    +loadOverviewPlans(): void
+    +loadOverviewAlerts(): void
+    +selectOverviewDevice(deviceId: number | null): void
+    +selectOverviewSeries(key: string): void
   }
 }
 
 package "ra.presentation" {
+  class StaffActivity {
+    #entityFilter
+    #entityTypes
+    #visibleActivity
+    #lastActivity
+  }
   class RaRoutes
+
+  class Dashboard {
+    #store: RaStore
+    #summaryCards / batchDistribution / recentBatches
+    #chartData / chartOptions
+    #reloadAll(): void
+  }
 
   class KpiDashboardComponent {
     +periods
@@ -431,7 +519,7 @@ AuditLogEntryResource ..|> BaseResource
 AuditLogEntriesResponse ..|> BaseResponse
 
 RaStore --> RaApi
-RaStore --> EquipmentApi : device names
+RaStore ..> OverviewEquipment : device names and equipment report
 RaStore --> IamStore
 
 RaStore ..> KpiDashboard
@@ -447,6 +535,25 @@ RaApi --> KpiApiEndpoint
 RaApi --> DeviationTrendApiEndpoint
 RaApi --> AuditLogApiEndpoint
 RaApi --> ReportApiEndpoint
+RaApi --> OperationalOverviewApiEndpoint
+OperationalOverviewApiEndpoint --|> ErrorHandlingEnabledBaseType
+OperationalOverviewApiEndpoint --> OperationalOverviewAssembler
+OperationalOverviewAssembler ..> OverviewLaboratory
+OperationalOverviewAssembler ..> OverviewEnvironment
+RaStore --> EnvironmentPreference
+note bottom of OverviewEnvironment
+  Laboratory -> Reporting & Audit: the environments of the indicators,
+  trends and reports; the trend chart remembers the environment with the
+  monitoring views ("tracking").
+end note
+OperationalOverviewAssembler ..> OverviewEquipment
+OperationalOverviewAssembler ..> OverviewBatch
+OperationalOverviewAssembler ..> OverviewRawMaterial
+OperationalOverviewAssembler ..> OverviewAlert
+OperationalOverviewAssembler ..> OverviewReading
+OperationalOverviewAssembler ..> OverviewSubscription
+OperationalOverviewAssembler ..> OverviewPlan
+Dashboard --> RaStore
 
 KpiApiEndpoint --> KpiAssembler
 DeviationTrendApiEndpoint --> DeviationTrendAssembler
@@ -472,19 +579,15 @@ AuditLogAssembler ..> AuditLogEntry
 AuditLogAssembler ..> AuditLogEntryResource
 
 KpiDashboardComponent --> RaStore
-KpiDashboardComponent --> EnvironmentStore
 KpiDashboardComponent ..> LastDays
 
 DeviationTrendChartComponent --> RaStore
-DeviationTrendChartComponent --> EnvironmentStore
 DeviationTrendChartComponent --> EnvironmentSelector
 DeviationTrendChartComponent ..> LastDays
 
 ReportGeneratorComponent --> RaStore
 ReportGeneratorComponent --> IamStore
-ReportGeneratorComponent --> BatchStore
-ReportGeneratorComponent --> EquipmentStore
-ReportGeneratorComponent --> EnvironmentStore
+ReportGeneratorComponent --> RaStore : loadEquipment(), loadBatches()
 ReportGeneratorComponent ..> LocalIsoDate : report days
 
 AuditLogViewerComponent --> RaStore
@@ -493,5 +596,28 @@ RaRoutes ..> KpiDashboardComponent
 RaRoutes ..> DeviationTrendChartComponent
 RaRoutes ..> ReportGeneratorComponent
 RaRoutes ..> AuditLogViewerComponent
+
+AuditedStaffMember ..|> BaseEntity
+RaApi --> AuditedStaffMemberApiEndpoint
+AuditedStaffMemberApiEndpoint --|> ErrorHandlingEnabledBaseType
+AuditedStaffMemberApiEndpoint --> AuditedStaffMemberAssembler
+AuditedStaffMemberAssembler ..> AuditedStaffMemberResource
+AuditedStaffMemberAssembler ..> AuditedStaffMember
+RaStore ..> AuditedStaffMember
+StaffActivity --> RaStore
+RaRoutes ..> StaffActivity : staffActivityGuard
+note bottom of StaffActivity
+  /reports/staff-activity/:staffId: newest activity first, type filter,
+  latest activity and a link back to the Laboratory staff detail.
+  RA reads the staff identity through its own Laboratory ACL:
+  GET /laboratories/{lab}/staff/{staffId}.
+end note
+
+note left of RaRoutes
+  Source: ra/presentation/ra.routes.ts
+  Public paths and guards remain unchanged.
+end note
+
+ReportApiEndpoint --|> ErrorHandlingEnabledBaseType
 
 @enduml

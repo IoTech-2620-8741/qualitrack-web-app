@@ -1,8 +1,8 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router, RouterLink } from '@angular/router';
 import { CdkConnectedOverlay, CdkOverlayOrigin, ConnectedPosition } from '@angular/cdk/overlay';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { switchMap, timer } from 'rxjs';
 
 import { MatBadgeModule } from '@angular/material/badge';
@@ -10,7 +10,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
-import { NotificationStore } from '../../../application/notification.store';
+import { CaStore } from '../../../application/ca.store';
 import { Notification } from '../../../domain/model/notification.entity';
 
 /** How often the bell asks for the unread count. */
@@ -30,18 +30,19 @@ const KNOWN_METRICS = new Set(['AIR_QUALITY', 'TEMPERATURE', 'HUMIDITY', 'LUMINO
     RouterLink,
     CdkConnectedOverlay,
     CdkOverlayOrigin,
-    TranslateModule,
+    TranslatePipe,
     MatBadgeModule,
     MatButtonModule,
     MatIconModule,
     MatProgressSpinnerModule,
   ],
   templateUrl: './notification-bell.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './notification-bell.css',
 })
 export class NotificationBell {
   /** Store with the unread count and the latest notifications. */
-  protected readonly store = inject(NotificationStore);
+  protected readonly store = inject(CaStore);
   private readonly router = inject(Router);
   private readonly translate = inject(TranslateService);
 
@@ -61,10 +62,12 @@ export class NotificationBell {
    * Asks for the unread count right away and then every 30 seconds, until the component is destroyed.
    */
   constructor() {
-    timer(0, REFRESH_INTERVAL_MS).pipe(
-      switchMap(() => this.store.refreshUnreadCount()),
-      takeUntilDestroyed(),
-    ).subscribe();
+    timer(0, REFRESH_INTERVAL_MS)
+      .pipe(
+        switchMap(() => this.store.refreshUnreadNotifications()),
+        takeUntilDestroyed(),
+      )
+      .subscribe();
   }
 
   /**
@@ -73,7 +76,7 @@ export class NotificationBell {
    * @returns The unread count, or `99+` when there are more than 99
    */
   protected badge(): string {
-    const count = this.store.unreadCount();
+    const count = this.store.unreadNotifications();
     return count > 99 ? '99+' : String(count);
   }
 
@@ -86,7 +89,7 @@ export class NotificationBell {
       return;
     }
     this.open.set(true);
-    this.store.loadLatest();
+    this.store.loadLatestNotifications();
   }
 
   /** Closes the panel. */
@@ -109,7 +112,7 @@ export class NotificationBell {
    * @param notification - The notification the person chose
    */
   protected openNotification(notification: Notification): void {
-    this.store.markAsRead(notification);
+    this.store.markNotificationAsRead(notification);
     this.close();
     void this.router.navigate(notification.link);
   }
@@ -123,17 +126,24 @@ export class NotificationBell {
    * environment and the actor
    */
   protected params(notification: Notification): Record<string, unknown> {
-    const variable = notification.parameterName && KNOWN_METRICS.has(notification.parameterName)
-      ? this.translate.instant(`tracking.metrics.${notification.parameterName}`)
-      : notification.parameterName ?? '';
+    const variable =
+      notification.parameterName && KNOWN_METRICS.has(notification.parameterName)
+        ? this.translate.instant(`tracking.metrics.${notification.parameterName}`)
+        : (notification.parameterName ?? '');
     return {
-      severity: notification.severity ? this.translate.instant(`notifications.severity.${notification.severity}`) : '',
-      level: notification.severity ? this.translate.instant(`notifications.level.${notification.severity}`) : '',
+      severity: notification.severity
+        ? this.translate.instant(`notifications.severity.${notification.severity}`)
+        : '',
+      level: notification.severity
+        ? this.translate.instant(`notifications.level.${notification.severity}`)
+        : '',
       variable,
-      environment: notification.environmentName ?? this.translate.instant('notifications.unknown-environment'),
+      environment:
+        notification.environmentName ?? this.translate.instant('notifications.unknown-environment'),
       device: notification.subjectName ?? '',
       batch: notification.subjectName ?? '',
-      value: notification.recordedValue === null ? '' : this.formatNumber(notification.recordedValue),
+      value:
+        notification.recordedValue === null ? '' : this.formatNumber(notification.recordedValue),
       unit: notification.unit ?? '',
       actor: notification.actorName ?? this.translate.instant('notifications.someone'),
       note: notification.note ?? '',
@@ -180,6 +190,8 @@ export class NotificationBell {
    * @param value - The number to format
    */
   private formatNumber(value: number): string {
-    return new Intl.NumberFormat(this.translate.getCurrentLang() || 'en', { maximumFractionDigits: 2 }).format(value);
+    return new Intl.NumberFormat(this.translate.getCurrentLang() || 'en', {
+      maximumFractionDigits: 2,
+    }).format(value);
   }
 }

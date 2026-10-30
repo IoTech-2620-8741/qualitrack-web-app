@@ -55,6 +55,17 @@
   min-width: 0;
 }
 
+.user-session {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  padding: 4px 6px 4px 4px;
+  border: 1px solid #d8e3ea;
+  border-radius: 999px;
+  background: #f8fbfc;
+}
+
 /* ==================== LAYOUT BODY ==================== */
 .layout-body {
   position: fixed;
@@ -273,6 +284,8 @@ mat-sidenav-content {
 /* On narrow screens the brand gives its room to the photo and name of the user. */
 @media (max-width: 720px) {
   .brand { display: none; }
+  /* Keep the sign-out touch target clear of the profile name. */
+  .user-session { gap: 8px; padding: 3px 2px 3px 3px; }
 }
 
 @media (max-width: 480px) {

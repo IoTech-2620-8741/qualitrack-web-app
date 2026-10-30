@@ -1,8 +1,8 @@
-import { Component, inject, input } from '@angular/core';
+import { Component, inject, input, ChangeDetectionStrategy } from '@angular/core';
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { CaStore } from '../../../application/ca.store';
 import { DeviationAlert } from '../../../domain/model/deviation-alert.entity';
 
@@ -15,9 +15,10 @@ import { DeviationAlert } from '../../../domain/model/deviation-alert.entity';
 @Component({
   selector: 'app-alert-table',
   standalone: true,
-  imports: [DatePipe, DecimalPipe, RouterLink, MatIconModule, TranslateModule],
+  imports: [DatePipe, DecimalPipe, RouterLink, MatIconModule, TranslatePipe],
   templateUrl: './alert-table.html',
-  styleUrl: '../../../../shared/presentation/styles/operations-page.css',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  styleUrl: './alert-table.css',
 })
 export class AlertTable {
   /** Alerts to show, one per row. */

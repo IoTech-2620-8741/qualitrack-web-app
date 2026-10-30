@@ -7,6 +7,7 @@ skinparam classAttributeIconSize 0
 hide empty members
 
 package "shared" {
+  class EnvironmentSelector <<component>>
   interface BaseEntity
   class BaseApi
   class BaseApiEndpoint
@@ -29,22 +30,22 @@ package "@angular/cdk" {
   class CdkConnectedOverlay
 }
 
-package "laboratory" {
-  class EnvironmentStore {
-    +environments: Signal<Environment[]>
-    +preferredEnvironment(usage?, scope?): Environment
-    +rememberEnvironment(id, scope?): void
-  }
-  class EnvironmentSelector <<component>>
-}
-
-package "equipment.infrastructure" {
-  class EquipmentApi {
-    +getEquipment(labId)
+package "shared.infrastructure" {
+  class EnvironmentPreference {
+    +choose(laboratoryId, environments, preferredUsage?)
+    +remember(laboratoryId, environmentId): void
   }
 }
 
 package "ca.domain.model" {
+  class AlertDevice {
+    +id: number
+    +name: string
+  }
+  class AlertEnvironment {
+    +id / code / name
+    +usage: string | null
+  }
   class DeviationAlert {
     +id: number
     +laboratoryId: number | null
@@ -154,6 +155,11 @@ package "ca.application" {
     +getAlertById(id: number)
     +deviceName(equipmentId: number): string | null
     +loadDevices(): void
+    +environments: Signal<AlertEnvironment[]>
+    +environmentsLoaded / environmentsEmpty
+    +loadEnvironments(): Promise<void>
+    +preferredEnvironmentId(): number | null
+    +rememberEnvironment(environmentId): void
     +loadEnvironmentAlerts(environmentId: number, filters?: AlertFilters): void
     +loadAlertById(alertId: number): void
     +acknowledgeAlert(alertId: number): void
@@ -163,21 +169,26 @@ package "ca.application" {
     +loadBatchComplianceEvents(batchId: number): void
     +loadNotificationPreferences(): void
     +updateNotificationPreferences(request: UpdateNotificationPreferenceRequest): Observable<NotificationPreference>
+    +unreadNotifications: Signal<number>
+    +notifications: Signal<Notification[]>
+    +notificationsLoading / notificationsFailed / hasUnreadNotifications
+    +refreshUnreadNotifications(): Observable<number>
+    +loadLatestNotifications(): void
+    +markNotificationAsRead(notification: Notification): void
+    +markAllNotificationsAsRead(): void
   }
   class alertError <<function>>
-
-  class NotificationStore <<root>> {
-    +unreadCount: Signal<number>
-    +notifications: Signal<Notification[]>
-    +loading / failed / hasUnread
-    +refreshUnreadCount(): Observable<number>
-    +loadLatest(): void
-    +markAsRead(notification: Notification): void
-    +markAllAsRead(): void
-  }
 }
 
 package "ca.infrastructure" {
+  class AlertDeviceApiEndpoint {
+    +getDevices(laboratoryId)
+  }
+  class AlertDeviceAssembler
+  class AlertEnvironmentApiEndpoint {
+    +getEnvironments(laboratoryId)
+  }
+  class AlertEnvironmentAssembler
   class CaApi {
     -_alertEndpoint: AlertApiEndpoint
     -_complianceEventEndpoint: ComplianceEventApiEndpoint
@@ -349,6 +360,8 @@ package "ca.presentation" {
     #timeAgo(isoDate): string
   }
 
+  class NotificationSettings
+
   class NotificationPreferencesForm <<component>> {
     #form
     #saved / saving / error
@@ -384,7 +397,7 @@ NotificationPreferenceResource ..|> BaseResource
 NotificationPreferencesResponse ..|> BaseResponse
 
 CaStore --> CaApi
-CaStore --> EquipmentApi : device names
+CaStore ..> AlertDevice : device names
 CaStore --> IamStore
 CaStore ..> alertError
 alertError ..> ApiError
@@ -405,9 +418,8 @@ NotificationApiEndpoint ..> UnreadNotificationsResource
 NotificationApiEndpoint ..> NotificationsReadResource
 NotificationAssembler ..> Notification
 AlertApiEndpoint ..> AlertEmailNotificationResource
-NotificationStore --> CaApi
-NotificationStore --> IamStore : clears on another sign-in
-NotificationStore ..> Notification
+CaStore --> IamStore : clears the notifications on another sign-in
+CaStore ..> Notification
 note bottom of NotificationApiEndpoint
   GET  /users/me/notifications?unread&limit (US83)
   GET  /users/me/notifications/unread-count
@@ -444,17 +456,14 @@ NotificationPreferenceAssembler ..> NotificationPreference
 NotificationPreferenceAssembler ..> NotificationPreferenceResource
 
 AlertDashboard --> CaStore
-AlertDashboard --> EnvironmentStore
 AlertDashboard ..> EnvironmentSelector
 AlertDashboard *-- AlertTable
 AlertHistory --> CaStore
-AlertHistory --> EnvironmentStore
 AlertHistory ..> EnvironmentSelector
 AlertHistory *-- AlertTable
 AlertTable --> CaStore
 
 DeviationDetail --> CaStore
-DeviationDetail --> EnvironmentStore
 note bottom of DeviationDetail
   Origin, variable, value and limit, follow-up (detected, last deviation,
   normalized, attended, resolved) and related actions; operators and
@@ -470,7 +479,7 @@ AlertDashboard ..> OperationsPage
 AlertHistory ..> OperationsPage
 DeviationDetail ..> OperationsPage
 
-NotificationBell --> NotificationStore
+NotificationBell --> CaStore
 NotificationBell ..> CdkConnectedOverlay : panel over the current view
 note bottom of NotificationBell
   In the toolbar: counts the unread notifications every 30 s and opens
@@ -478,7 +487,7 @@ note bottom of NotificationBell
 end note
 NotificationPreferencesForm --> CaStore
 note bottom of NotificationPreferencesForm
-  Shown in the profile: bell, e-mail of critical alerts and the
+  Shown on the notification settings page: bell, e-mail of critical alerts and the
   lowest alert severity notified (/users/me/notification-preferences).
 end note
 
@@ -486,7 +495,28 @@ CaRoutes ..> AlertDashboard
 CaRoutes ..> AlertHistory
 CaRoutes ..> DeviationDetail
 note bottom of CaRoutes
-  /alerts/notification-settings redirects to /profile.
+  /alerts/notification-settings loads NotificationSettings.
+end note
+
+CaApi --> AlertDeviceApiEndpoint
+AlertDeviceApiEndpoint --> AlertDeviceAssembler
+AlertDeviceAssembler ..> AlertDevice
+CaApi --> AlertEnvironmentApiEndpoint
+AlertEnvironmentApiEndpoint --> AlertEnvironmentAssembler
+AlertEnvironmentAssembler ..> AlertEnvironment
+CaStore --> EnvironmentPreference
+note bottom of AlertEnvironmentApiEndpoint
+  Laboratory -> Compliance & Alerts: GET /laboratories/{id}/environments
+  in the model of CA; the chosen environment is remembered with the
+  monitoring views ("tracking").
+end note
+CaRoutes --> NotificationSettings
+NotificationSettings *-- NotificationPreferencesForm
+NotificationBell ..> NotificationSettings : navigation link
+
+note left of CaRoutes
+  Source: ca/presentation/ca.routes.ts
+  Public paths and guards remain unchanged.
 end note
 
 @enduml

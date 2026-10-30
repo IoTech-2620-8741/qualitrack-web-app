@@ -366,4 +366,9 @@ note bottom of SubscriptionApiEndpoint
   the subscription keeps its access until currentPeriodEnd (US23)
 end note
 
+note left of SubscriptionRoutes
+  Source: subscription/presentation/subscription.routes.ts
+  Public paths and guards remain unchanged.
+end note
+
 @enduml

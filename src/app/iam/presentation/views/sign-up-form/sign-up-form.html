@@ -25,6 +25,8 @@
           id="username"
           type="text"
           formControlName="username"
+          maxlength="80"
+          autocomplete="username"
           [placeholder]="'iam.sign-up.username-placeholder' | translate"
           [class.error]="form.controls.username.invalid && form.controls.username.touched" />
 
@@ -40,6 +42,7 @@
           type="email"
           autocomplete="email"
           formControlName="email"
+          maxlength="120"
           [placeholder]="'iam.sign-up.email-placeholder' | translate"
           [class.error]="form.controls.email.invalid && form.controls.email.touched" />
         <span class="field-hint">{{ 'iam.sign-up.email-hint' | translate }}</span>

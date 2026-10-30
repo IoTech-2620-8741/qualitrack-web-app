@@ -14,9 +14,11 @@
           matInput
           type="number"
           min="1"
+          step="1"
           [(ngModel)]="filters.equipmentId"
           placeholder="Ex. 1">
         <mat-icon matSuffix>precision_manufacturing</mat-icon>
+
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="filter-field">
@@ -25,14 +27,16 @@
           matInput
           type="number"
           min="1"
+          step="1"
           [(ngModel)]="filters.batchId"
           placeholder="Ex. 1">
         <mat-icon matSuffix>inventory_2</mat-icon>
+
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="filter-field date-field">
         <mat-label>{{ 'common.date-range' | translate }}</mat-label>
-        <mat-date-range-input [rangePicker]="picker">
+        <mat-date-range-input [rangePicker]="picker" [min]="minDate" [max]="maxDate">
           <input matStartDate [(ngModel)]="filters.dateFrom" placeholder="Start">
           <input matEndDate [(ngModel)]="filters.dateTo" placeholder="End">
         </mat-date-range-input>
@@ -53,7 +57,7 @@
           mat-flat-button
           color="primary"
           type="button"
-          [disabled]="store.isLoading()"
+          [disabled]="store.isLoading() || !filtersValid"
           (click)="loadLogs()">
           <mat-icon>search</mat-icon>
           {{ 'common.search' | translate }}
@@ -61,6 +65,14 @@
       </div>
     </mat-card-content>
   </mat-card>
+
+  <!-- Problems with the filters -->
+  @if (isInvalidId(filters.equipmentId) || isInvalidId(filters.batchId)) {
+    <p class="field-error" role="alert">{{ 'common.invalidId' | translate }}</p>
+  }
+  @if (periodProblem; as error) {
+    <p class="field-error" role="alert">{{ periodMessage(error) | translate }}</p>
+  }
 
   @if (store.isLoading()) {
     <div class="loading-shade">

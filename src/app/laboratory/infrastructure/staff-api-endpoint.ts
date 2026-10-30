@@ -8,6 +8,9 @@ import { RegisteredStaffResource, StaffMemberResource, StaffMembersResponse } fr
 import { StaffAssembler } from './staff-assembler';
 import { RegisterStaffRequest } from './staff.request';
 
+/**
+ * Base URL of the laboratories resource, built from the environment configuration.
+ */
 const laboratoriesEndpointUrl = `${environment.serverBasePath}${environment.laboratoryLabsEndpointPath}`;
 
 /**
@@ -95,6 +98,12 @@ export class StaffApiEndpoint extends BaseApiEndpoint<
       );
   }
 
+  /**
+   * Builds the URL of the staff collection of a laboratory.
+   *
+   * @param laboratoryId - Numeric identifier of the laboratory
+   * @returns URL of the staff collection
+   */
   private staffUrl(laboratoryId: number): string {
     return `${this.endpointUrl}/${laboratoryId}${environment.laboratoryStaffEndpointPath}`;
   }

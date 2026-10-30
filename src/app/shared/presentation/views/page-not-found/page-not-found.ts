@@ -1,5 +1,5 @@
 import { Location } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 
@@ -17,6 +17,7 @@ import { Toolbar } from '../../components/toolbar/toolbar';
   standalone: true,
   imports: [RouterLink, TranslatePipe, MatButtonModule, MatIconModule, Toolbar],
   templateUrl: './page-not-found.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './page-not-found.css',
 })
 export class PageNotFound implements OnInit {

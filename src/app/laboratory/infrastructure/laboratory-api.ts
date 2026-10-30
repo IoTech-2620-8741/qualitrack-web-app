@@ -6,12 +6,10 @@ import { BaseApi } from '../../shared/infrastructure/base-api';
 
 import { Laboratory } from '../domain/model/laboratory.entity';
 import { StaffMember } from '../domain/model/staff-member.entity';
-import { RawMaterial } from '../domain/model/raw-material.entity';
 import { Environment } from '../domain/model/environment.entity';
 
 import { LaboratoryApiEndpoint } from './laboratory-api-endpoint';
 import { StaffApiEndpoint } from './staff-api-endpoint';
-import { RawMaterialApiEndpoint } from './raw-material-api-endpoint';
 import { EnvironmentApiEndpoint } from './environment-api-endpoint';
 
 import { CreateLaboratoryRequest, UpdateLaboratoryRequest } from './laboratory.request';
@@ -30,7 +28,8 @@ import { EnvironmentUsageAssignmentResource } from './environment-response';
  * @remarks
  * This service centralizes all HTTP access for the Laboratory bounded context.
  * It delegates concrete HTTP operations to specialized endpoint clients while
- * exposing a clean API to the application layer.
+ * exposing a clean API to the application layer. Other bounded contexts read
+ * environments and staff members through this facade.
  */
 @Injectable({ providedIn: 'root' })
 export class LaboratoryApi extends BaseApi {
@@ -43,11 +42,6 @@ export class LaboratoryApi extends BaseApi {
    * Endpoint client for laboratory staff operations.
    */
   private readonly staffEndpoint: StaffApiEndpoint;
-
-  /**
-   * Endpoint client for raw material inventory operations.
-   */
-  private readonly materialsEndpoint: RawMaterialApiEndpoint;
 
   /**
    * Endpoint client for laboratory environment operations.
@@ -63,7 +57,6 @@ export class LaboratoryApi extends BaseApi {
     super();
     this.laboratoryEndpoint = new LaboratoryApiEndpoint(http);
     this.staffEndpoint = new StaffApiEndpoint(http);
-    this.materialsEndpoint = new RawMaterialApiEndpoint(http);
     this.environmentsEndpoint = new EnvironmentApiEndpoint(http);
   }
 
@@ -139,16 +132,6 @@ export class LaboratoryApi extends BaseApi {
    */
   deactivateStaff(laboratoryId: number, staffId: number): Observable<StaffMember> {
     return this.staffEndpoint.deactivateStaff(laboratoryId, staffId);
-  }
-
-  /**
-   * Retrieves the raw materials registered before Inventory Management existed (read-only).
-   *
-   * @param laboratoryId - Numeric identifier of the laboratory
-   * @returns Observable stream emitting RawMaterial domain entities
-   */
-  getRawMaterials(laboratoryId: number): Observable<RawMaterial[]> {
-    return this.materialsEndpoint.getRawMaterialsByLaboratoryId(laboratoryId);
   }
 
   /**

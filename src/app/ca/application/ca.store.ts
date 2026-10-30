@@ -1,19 +1,21 @@
-import { computed, DestroyRef, inject, Injectable, Signal, signal } from '@angular/core';
+import { computed, DestroyRef, effect, inject, Injectable, Signal, signal } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Observable, Subject, takeUntil, tap } from 'rxjs';
+import { Observable, Subject, catchError, finalize, firstValueFrom, of, takeUntil, tap } from 'rxjs';
 
 import { DeviationAlert } from '../domain/model/deviation-alert.entity';
 import { ComplianceEvent } from '../domain/model/compliance-event.entity';
 import { NotificationPreference } from '../domain/model/notification-preference.entity';
+import { Notification } from '../domain/model/notification.entity';
 import { CaApi } from '../infrastructure/ca-api';
 import { AlertFilters } from '../infrastructure/alert-api-endpoint';
 import { UpdateNotificationPreferenceRequest } from '../infrastructure/notification-preference.request';
 import { ResolveAlertRequest } from '../infrastructure/resolve-alert.request';
 import { IamStore } from '../../iam/application/iam.store';
 import { ApiError } from '../../shared/infrastructure/api-error';
-import { EquipmentApi } from '../../equipment/infrastructure/equipment-api';
-import { Equipment } from '../../equipment/domain/model/equipment.entity';
+import { EnvironmentPreference } from '../../shared/infrastructure/environment-preference';
+import { AlertDevice } from '../domain/model/alert-device.entity';
+import { AlertEnvironment } from '../domain/model/alert-environment.entity';
 
 /**
  * Translates failures of the alert views into translation keys, or the server details when they explain a rule.
@@ -37,6 +39,9 @@ export function alertError(error: unknown): string {
   return 'ca-alerts.errors.failed';
 }
 
+/** Notifications shown when the bell opens. */
+const NOTIFICATION_PANEL_SIZE = 15;
+
 /**
  * Application store for Compliance & Alerting (CA).
  *
@@ -44,6 +49,9 @@ export function alertError(error: unknown): string {
  * Alerts are read per environment (US85, TS74); the selected alert keeps its detail with the related actions
  * (US86) and is acknowledged (US87) or resolved (US88) by the authenticated user. Operators and quality managers
  * attend alerts; auditors only consult them (decision of 2026-10-04).
+ *
+ * The store also keeps the notifications of the signed-in user (US83): the unread count of the bell in the toolbar
+ * and the latest notifications of its panel. They are emptied whenever another person signs in.
  *
  * Every load replaces the previous state of what it loads, and a new request cancels the one in progress for the
  * same data. Failures are kept in {@link CaStore.error} as a translation key or a server detail.
@@ -64,13 +72,19 @@ export class CaStore {
   private readonly _selectedAlertSignal = signal<DeviationAlert | null>(null);
   private readonly _eventsSignal = signal<ComplianceEvent[]>([]);
   private readonly _preferenceSignal = signal<NotificationPreference | null>(null);
-  private readonly _devicesSignal = signal<Equipment[]>([]);
+  private readonly _devicesSignal = signal<AlertDevice[]>([]);
+  private readonly _environmentsSignal = signal<AlertEnvironment[]>([]);
+  private readonly _environmentsLoadedSignal = signal(false);
 
   private readonly _loadingSignal = signal<boolean>(false);
   private readonly _savingSignal = signal<boolean>(false);
   private readonly _errorSignal = signal<string | null>(null);
   private readonly _noticeSignal = signal<string | null>(null);
   private readonly _noticeParamsSignal = signal<Record<string, unknown>>({});
+  private readonly _unreadNotificationsSignal = signal(0);
+  private readonly _notificationsSignal = signal<Notification[]>([]);
+  private readonly _notificationsLoadingSignal = signal(false);
+  private readonly _notificationsFailedSignal = signal(false);
 
   /** Alerts of the environment currently shown, newest first. */
   readonly alerts = this._alertsSignal.asReadonly();
@@ -84,8 +98,17 @@ export class CaStore {
   /** Notification preferences of the user. */
   readonly preference = this._preferenceSignal.asReadonly();
 
-  /** Equipment and IoT devices of the laboratory, to name the device of each alert. */
+  /** Devices of the laboratory, to name the device of each alert. */
   readonly devices = this._devicesSignal.asReadonly();
+
+  /** Environments of the laboratory, to choose whose alerts are shown. */
+  readonly environments = this._environmentsSignal.asReadonly();
+
+  /** Whether the environments have been read at least once. */
+  readonly environmentsLoaded = this._environmentsLoadedSignal.asReadonly();
+
+  /** Whether the laboratory has no environment yet. */
+  readonly environmentsEmpty = computed(() => this._environmentsLoadedSignal() && this._environmentsSignal().length === 0);
 
   /** Indicates whether alerts, events, preferences or an alert detail are being loaded. */
   readonly loading = this._loadingSignal.asReadonly();
@@ -118,19 +141,102 @@ export class CaStore {
   /** Whether the user can attend alerts: signed in and not only an auditor. */
   readonly canAttend: Signal<boolean>;
 
+  /** Notifications the person has not read. */
+  readonly unreadNotifications = this._unreadNotificationsSignal.asReadonly();
+
+  /** Latest notifications, newest first. */
+  readonly notifications = this._notificationsSignal.asReadonly();
+
+  /** Whether the latest notifications are being loaded. */
+  readonly notificationsLoading = this._notificationsLoadingSignal.asReadonly();
+
+  /** Whether the latest notifications could not be loaded. */
+  readonly notificationsFailed = this._notificationsFailedSignal.asReadonly();
+
+  /** Whether the person has at least one unread notification. */
+  readonly hasUnreadNotifications = computed(() => this.unreadNotifications() > 0);
+
   private readonly destroyRef = inject(DestroyRef);
   private readonly iam = inject(IamStore);
-  private readonly equipmentApi = inject(EquipmentApi);
   private readonly reloadAlerts = new Subject<void>();
   private readonly reloadAlert = new Subject<void>();
+  /** Environment opened last time in the monitoring views of this browser, shared with Tracking. */
+  private readonly environmentPreference = new EnvironmentPreference('tracking');
 
   /**
    * Creates the store.
+   *
+   * @remarks
+   * An effect watches the signed-in user and empties the notification count and list whenever it changes, so that
+   * nothing of a previous person is shown to the next one.
    *
    * @param caApi - The API facade of Compliance & Alerting
    */
   constructor(private caApi: CaApi) {
     this.canAttend = this.iam.canOperate;
+    effect(() => {
+      this.iam.currentUserId();
+      this._unreadNotificationsSignal.set(0);
+      this._notificationsSignal.set([]);
+    });
+  }
+
+  /**
+   * Updates the count of the bell; a failure keeps the last count.
+   *
+   * @returns Observable emitting the new unread count, or the last known one if the request failed. It never errors.
+   */
+  refreshUnreadNotifications(): Observable<number> {
+    return this.caApi.getUnreadNotificationCount().pipe(
+      tap((count) => this._unreadNotificationsSignal.set(count)),
+      catchError(() => of(this._unreadNotificationsSignal())),
+    );
+  }
+
+  /**
+   * Loads the latest notifications for the panel of the bell and refreshes the unread count.
+   */
+  loadLatestNotifications(): void {
+    this._notificationsLoadingSignal.set(true);
+    this._notificationsFailedSignal.set(false);
+    this.caApi.getNotifications(false, NOTIFICATION_PANEL_SIZE).pipe(
+      finalize(() => this._notificationsLoadingSignal.set(false)),
+    ).subscribe({
+      next: (notifications) => {
+        this._notificationsSignal.set(notifications);
+        this.refreshUnreadNotifications().subscribe();
+      },
+      error: () => this._notificationsFailedSignal.set(true),
+    });
+  }
+
+  /**
+   * Marks one notification as read.
+   *
+   * @param notification - The notification the person opened
+   */
+  markNotificationAsRead(notification: Notification): void {
+    if (notification.isRead) return;
+    this.caApi.markNotificationAsRead(notification.id).subscribe({
+      next: (read) => {
+        this._notificationsSignal.update((current) => current.map((item) => item.id === read.id ? read : item));
+        this._unreadNotificationsSignal.update((count) => Math.max(0, count - 1));
+      },
+    });
+  }
+
+  /**
+   * Marks every notification of the person as read.
+   */
+  markAllNotificationsAsRead(): void {
+    this.caApi.markAllNotificationsAsRead().subscribe({
+      next: () => {
+        const readAt = new Date().toISOString();
+        this._notificationsSignal.update((current) => current.map((item) =>
+          item.isRead ? item : new Notification({ ...item, readAt })));
+        this._unreadNotificationsSignal.set(0);
+      },
+    });
   }
 
   /**
@@ -170,10 +276,43 @@ export class CaStore {
    */
   loadDevices(): void {
     if (this._devicesSignal().length) return;
-    this.equipmentApi
-      .getEquipment(this.iam.requireLaboratoryId())
+    this.caApi
+      .getAlertDevices(this.iam.requireLaboratoryId())
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({ next: (devices) => this._devicesSignal.set(devices), error: () => this._devicesSignal.set([]) });
+  }
+
+  /**
+   * Reads the environments of the laboratory (Laboratory → Compliance & Alerts).
+   *
+   * @remarks
+   * On failure the previous list is kept and the reason is exposed through {@link CaStore.error}.
+   */
+  async loadEnvironments(): Promise<void> {
+    try {
+      this._environmentsSignal.set(await firstValueFrom(this.caApi.getAlertEnvironments(this.iam.requireLaboratoryId())));
+      this._environmentsLoadedSignal.set(true);
+    } catch (error) {
+      this._errorSignal.set(alertError(error));
+    }
+  }
+
+  /**
+   * The environment to open: the last one chosen in the monitoring views of this browser, or the first one.
+   *
+   * @returns The environment identifier, or null when the laboratory has none
+   */
+  preferredEnvironmentId(): number | null {
+    return this.environmentPreference.choose(this.iam.requireLaboratoryId(), this._environmentsSignal())?.id ?? null;
+  }
+
+  /**
+   * Remembers the environment the person chose, for the next visit to the monitoring views.
+   *
+   * @param environmentId - The environment identifier
+   */
+  rememberEnvironment(environmentId: number): void {
+    this.environmentPreference.remember(this.iam.requireLaboratoryId(), environmentId);
   }
 
   /**

@@ -43,7 +43,11 @@
         <div class="summary-row">
           <span>{{ 'subscription.checkout.billing' | translate }}</span>
           <strong>
-            {{ 'subscription.billing-period.' + store.selectedPlan()?.billingPeriod?.toLowerCase() | translate }}
+            {{
+              'subscription.billing-period.' +
+                $safeNavigationMigration(store.selectedPlan()?.billingPeriod?.toLowerCase())
+                | translate
+            }}
           </strong>
         </div>
 
@@ -70,12 +74,13 @@
         mat-raised-button
         color="primary"
         [disabled]="
-    !store.selectedPlan() ||
-    !store.selectedBillingCycle() ||
-    store.isLoading() ||
-    !iamStore.currentUserId()
-  "
-        (click)="onCheckout()">
+          !store.selectedPlan() ||
+          !store.selectedBillingCycle() ||
+          store.isLoading() ||
+          !iamStore.currentUserId()
+        "
+        (click)="onCheckout()"
+      >
         <mat-icon>payment</mat-icon>
         {{ 'subscription.checkout.pay' | translate }}
       </button>
