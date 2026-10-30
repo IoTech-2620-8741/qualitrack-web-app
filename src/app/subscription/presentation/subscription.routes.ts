@@ -46,7 +46,7 @@ const billingSummary = () =>
  * @remarks
  * Groups subscription and payment-related views under the shared application
  * layout. The plan list and checkout flow are used to start a subscription,
- * while success, cancel, and billing summary views support the payment lifecycle.
+ * while success, cancel, and billing (`billing`) views support the payment lifecycle.
  */
 export const subscriptionRoutes: Routes = [
   { path: 'plans', loadComponent: planList, canActivate: [subscriptionGuard] },
@@ -57,7 +57,9 @@ export const subscriptionRoutes: Routes = [
       { path: 'checkout', loadComponent: checkout, canActivate: [subscriptionGuard] },
       { path: 'success', loadComponent: paymentSuccess, canActivate: [subscriptionGuard] },
       { path: 'cancel', loadComponent: paymentCancel, canActivate: [subscriptionGuard] },
-      { path: 'billing-summary', loadComponent: billingSummary, canActivate: [onboardingGuard] },
+      { path: 'billing', loadComponent: billingSummary, canActivate: [onboardingGuard] },
+      // View-named path used before semantic routes.
+      { path: 'billing-summary', redirectTo: 'billing', pathMatch: 'full' },
       { path: '', redirectTo: 'plans', pathMatch: 'full' },
     ],
   },
