@@ -1,5 +1,5 @@
 <main class="operations-page">
-  <a routerLink="/alerts/alert-dashboard">{{ 'ca-alerts.active.title' | translate }}</a>
+  <a routerLink="/alerts">{{ 'ca-alerts.active.title' | translate }}</a>
   @if (store.error()) {
     <p class="error" role="alert">{{ store.error()! | translate }}</p>
   }
