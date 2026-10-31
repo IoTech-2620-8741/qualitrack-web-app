@@ -1,18 +1,10 @@
 import {
-  Component,
-  DestroyRef,
-  computed,
-  effect,
-  inject,
-  signal,
-  viewChild,
-  ChangeDetectionStrategy,
+  Component, DestroyRef, computed, effect, inject, input, signal, viewChild, ChangeDetectionStrategy,
 } from '@angular/core';
 import { NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { filter, map } from 'rxjs';
-import { IamStore } from '../../../../iam/application/iam.store';
 import { TranslatePipe } from '@ngx-translate/core';
 
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -23,10 +15,6 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { LanguageSwitcher } from '../language-switcher/language-switcher';
-import { UserSessionSection } from '../../../../iam/presentation/components/user-session-section/user-session-section';
-import { UserProfileBadge } from '../../../../profile/presentation/components/user-profile-badge/user-profile-badge';
-import { NotificationBell } from '../../../../ca/presentation/components/notification-bell/notification-bell';
-
 /** Entry of the side navigation menu. */
 interface NavigationOption {
   label: string;
@@ -37,13 +25,19 @@ interface NavigationOption {
 }
 
 /**
- * Layout component for the main application shell.
+ * Main shell layout component for the application.
  *
  * @remarks
- * Provides the fixed toolbar, side navigation menu, authenticated user section,
- * language switcher, and routed content outlet. Routes that require path
- * parameters are excluded from the menu to avoid navigating users to not-found
- * pages.
+ * This component lives in the `shared` bounded context. To maintain the architectural
+ * integrity (avoiding circular dependencies), it **must not** import components or
+ * stores from other contexts like `iam`, `profile`, or `ca`.
+ *
+ * Instead, it acts as a purely presentational component. It receives the UI state
+ * through `@Input()` signals and uses `<ng-content>` in its template to project
+ * the cross-context components (NotificationBell, UserProfileBadge, UserSessionSection).
+ *
+ * @see app.ts (The root component that wires these dependencies together)
+ * @see app.html (Where the projected components are actually passed)
  */
 @Component({
   selector: 'app-layout',
@@ -58,10 +52,7 @@ interface NavigationOption {
     MatButtonModule,
     MatExpansionModule,
     MatTooltipModule,
-    LanguageSwitcher,
-    UserSessionSection,
-    UserProfileBadge,
-    NotificationBell,
+    LanguageSwitcher
   ],
   templateUrl: './layout.html',
   changeDetection: ChangeDetectionStrategy.Eager,
@@ -72,22 +63,32 @@ export class Layout {
    * Material sidenav display mode.
    */
   private readonly breakpoints = inject(BreakpointObserver);
-  private readonly iam = inject(IamStore);
-  /** Whether the toolbar composes the profile badge and the session action. */
-  protected readonly isSignedIn = this.iam.isSignedIn;
+
+
+  /**
+   * Injected from the App root.
+   * Determines if the user is authenticated to show the user session area.
+   */
+  readonly isSignedIn = input<boolean>(false);
+
+  /**
+   * Injected from the App root.
+   * Determines if the user has completed onboarding to show the sidebar.
+   */
+  readonly hasOperationalAccess = input<boolean>(false);
+
+  /**
+   * Injected from the App root.
+   * Determines if the user is a quality manager to filter the menu options.
+   */
+  readonly canManageQuality = input<boolean>(false);
+
   private readonly drawer = viewChild(MatSidenav);
   protected readonly mobile = toSignal(
     this.breakpoints.observe('(max-width: 1023px)').pipe(map((state) => state.matches)),
     { initialValue: this.breakpoints.isMatched('(max-width: 1023px)') },
   );
   protected readonly sidenavMode = computed(() => (this.mobile() ? 'over' : 'side'));
-  protected readonly hasOperationalAccess = computed(
-    () => this.iam.onboarding()?.nextStep === 'READY',
-  );
-
-  /**
-   * Indicates whether the sidenav starts opened.
-   */
   protected readonly sidenavOpened = signal(false);
 
   /**
@@ -105,8 +106,8 @@ export class Layout {
       icon: 'inventory',
       link: '/batches',
       children: [
-        { label: 'nav.products', link: '/batches' },
-        { label: 'nav.batch-list', link: '/batches/batch-list' },
+        { label: 'nav.products', link: '/batches/environments' },
+        { label: 'nav.batch-list', link: '/batches' },
       ],
     },
     {
@@ -114,13 +115,13 @@ export class Layout {
       icon: 'precision_manufacturing',
       link: '/equipments',
       children: [
-        { label: 'nav.equipment-list', link: '/equipments/equipment-list' },
+        { label: 'nav.equipment-list', link: '/equipments' },
         {
           label: 'nav.register-equipment',
-          link: '/equipments/register-equipment',
+          link: '/equipments/new',
           qualityOnly: true,
         },
-        { label: 'nav.register-device', link: '/equipments/register-device', qualityOnly: true },
+        { label: 'nav.register-device', link: '/equipments/devices/new', qualityOnly: true },
       ],
     },
     {
@@ -128,8 +129,8 @@ export class Layout {
       icon: 'warning',
       link: '/alerts',
       children: [
-        { label: 'nav.alert-dashboard', link: '/alerts/alert-dashboard' },
-        { label: 'nav.alert-history', link: '/alerts/alert-history' },
+        { label: 'nav.alert-dashboard', link: '/alerts' },
+        { label: 'nav.alert-history', link: '/alerts/history' },
       ],
     },
     {
@@ -137,9 +138,9 @@ export class Layout {
       icon: 'description',
       link: '/reports',
       children: [
-        { label: 'nav.kpi-dashboard', link: '/reports/kpi-dashboard' },
+        { label: 'nav.kpi-dashboard', link: '/reports/kpis' },
         { label: 'nav.deviation-trends', link: '/reports/deviation-trends' },
-        { label: 'nav.report-generator', link: '/reports/report-generator' },
+        { label: 'nav.report-generator', link: '/reports/new' },
         { label: 'nav.audit-log', link: '/reports/audit-log' },
       ],
     },
@@ -148,10 +149,10 @@ export class Layout {
       icon: 'science',
       link: '/laboratories',
       children: [
-        { label: 'nav.lab-profile', link: '/laboratories/lab-profile' },
+        { label: 'nav.lab-profile', link: '/laboratories/profile' },
         { label: 'nav.environments', link: '/laboratories/environments' },
-        { label: 'nav.staff-list', link: '/laboratories/staff-list' },
-        { label: 'nav.register-staff', link: '/laboratories/staff-form', qualityOnly: true },
+        { label: 'nav.staff-list', link: '/laboratories/staff' },
+        { label: 'nav.register-staff', link: '/laboratories/staff/new', qualityOnly: true },
       ],
     },
     {
@@ -165,7 +166,7 @@ export class Layout {
       icon: 'sensors',
       link: '/tracking',
       children: [
-        { label: 'nav.tracking-monitoring', link: '/tracking/dashboard' },
+        { label: 'nav.tracking-monitoring', link: '/tracking/monitoring' },
         { label: 'nav.tracking-history', link: '/tracking/history' },
         { label: 'nav.tracking-profiles', link: '/tracking/profiles' },
       ],
@@ -176,22 +177,17 @@ export class Layout {
       link: '/subscriptions',
       qualityOnly: true,
       children: [
-        { label: 'nav.billing-summary', link: '/subscriptions/billing-summary' },
+        { label: 'nav.billing-summary', link: '/subscriptions/billing' },
         { label: 'nav.subscription-plans', link: '/subscriptions/plans' },
       ],
     },
   ];
 
   /**
-   * Creates a new Layout component.
-   *
-   * @param router - Angular router used for navigation and active route checks
-   */
-  /**
-   * Options visible to the signed-in user.
+   * Computed signal that filters the navigation options based on the user's role.
    */
   protected readonly visibleOptions = computed(() => {
-    const quality = this.iam.canManageQuality();
+    const quality = this.canManageQuality();
     return this.options
       .filter((option) => quality || !option.qualityOnly)
       .map((option) => ({
@@ -199,17 +195,11 @@ export class Layout {
         children: option.children?.filter((child) => quality || !child.qualityOnly),
       }));
   });
-
   constructor(private readonly router: Router) {
     effect(() => this.sidenavOpened.set(!this.mobile() && this.hasOperationalAccess()));
     router.events
-      .pipe(
-        filter((event) => event instanceof NavigationEnd),
-        takeUntilDestroyed(inject(DestroyRef)),
-      )
-      .subscribe(() => {
-        if (this.mobile()) void this.drawer()?.close();
-      });
+      .pipe(filter((event) => event instanceof NavigationEnd), takeUntilDestroyed(inject(DestroyRef)))
+      .subscribe(() => { if (this.mobile()) void this.drawer()?.close(); });
   }
 
   /**
@@ -229,5 +219,21 @@ export class Layout {
    */
   protected isActive(link: string): boolean {
     return this.router.url === link || this.router.url.startsWith(`${link}/`);
+  }
+
+  /**
+   * Finds the sub-option that owns the current URL.
+   *
+   * @remarks
+   * Semantic routes nest resources (`/alerts` and `/alerts/history`), so several sub-options can match the URL;
+   * the most specific one is the active one.
+   *
+   * @param option - Option whose sub-options are compared
+   * @returns The link of the most specific active sub-option, or undefined when none is active
+   */
+  protected activeChildLink(option: NavigationOption): string | undefined {
+    return option.children
+      ?.filter((child) => this.isActive(child.link))
+      .reduce<string | undefined>((best, child) => (child.link.length > (best?.length ?? -1) ? child.link : best), undefined);
   }
 }

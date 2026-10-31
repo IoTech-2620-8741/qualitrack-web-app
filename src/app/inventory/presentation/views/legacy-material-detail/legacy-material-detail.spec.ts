@@ -37,7 +37,7 @@ describe('LegacyMaterialDetail', () => {
     expect(rows.length).toBe(2);
     expect(rows[0].querySelectorAll('td')[4].textContent).toBe('0 kg');
     expect(rows[1].textContent).toContain('material-history.unrecorded');
-    expect(rows[0].querySelector('a')?.getAttribute('href')).toBe('/batches/batch-detail/8');
+    expect(rows[0].querySelector('a')?.getAttribute('href')).toBe('/batches/8');
     expect(rows[0].querySelector('a')?.textContent).toBe('PB-8');
   });
   it('reloads on identifier changes and clears the preserved detail on navigation away', () => {

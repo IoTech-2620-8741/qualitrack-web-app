@@ -267,7 +267,7 @@ package "subscription" {
       +checkout: Checkout
       +success: PaymentSuccess
       +cancel: PaymentCancel
-      +billing-summary: BillingSummary
+      +billing: BillingSummary
     }
 
     class PlanList {

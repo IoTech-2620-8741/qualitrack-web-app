@@ -9,7 +9,7 @@
       <button mat-stroked-button type="button" (click)="refresh()" [disabled]="store.loading() || environmentId() === null">
         <mat-icon>refresh</mat-icon>{{ 'common.refresh' | translate }}
       </button>
-      <a mat-stroked-button routerLink="/alerts/alert-history"><mat-icon>history</mat-icon>{{ 'nav.alert-history' | translate }}</a>
+      <a mat-stroked-button routerLink="/alerts/history"><mat-icon>history</mat-icon>{{ 'nav.alert-history' | translate }}</a>
     </div>
   </header>
 

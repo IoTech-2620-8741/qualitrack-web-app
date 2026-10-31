@@ -182,15 +182,15 @@ end note
 note right of StaffDetail
   Laboratory data and deactivation only. Navigation links open
   /profile/staff/:staffId (quality managers with a staff account) and
-  /reports/staff-activity/:staffId (quality managers and auditors).
+  /reports/staff/:staffId/activity (quality managers and auditors).
   No Profile or Reporting & Audit code is imported.
 end note
 
 note bottom of LaboratoryRoutes
-  /laboratories/lab-profile, environments[/new|/:environmentId/edit],
-  staff-list, staff-form (quality managers), staff/:staffId (quality managers and auditors),
+  /laboratories/profile, environments[/new|/:environmentId/edit],
+  staff, staff/new (quality managers), staff/:staffId (quality managers and auditors),
   raw-materials/:id redirects to /inventory/legacy-materials/:id.
-  product-catalog and product-form redirect to /batches;
+  product-catalog and product-form redirect to /batches/environments;
   raw-material-list and raw-material-form redirect to /inventory.
 end note
 

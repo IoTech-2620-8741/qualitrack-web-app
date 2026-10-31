@@ -204,12 +204,12 @@ end note
 BpmConfigForm --> EquipmentStore
 
 note bottom of EquipmentRoutes
-  /equipments/equipment-list: summary (process equipment, IoT devices, in maintenance
+  /equipments: summary (process equipment, IoT devices, in maintenance
   or out of service), search and filters by kind and attention, like the inventory
-  /equipments/register-equipment, /equipments/register-device
-  /equipments/equipment-detail/:id (location, status change, BPM, maintenance)
-  /equipments/maintenance-form/:id, /equipments/bpm-config-form/:id
-  /equipments/maintenance-history/:id redirects to the detail
+  /equipments/new, /equipments/devices/new
+  /equipments/:equipmentId (location, status change, BPM, maintenance)
+  /equipments/:equipmentId/maintenances/new, /equipments/:equipmentId/bpm-configuration
+  view-named paths (equipment-detail/:id, maintenance-history/:id...) redirect
 end note
 
 note left of EquipmentRoutes

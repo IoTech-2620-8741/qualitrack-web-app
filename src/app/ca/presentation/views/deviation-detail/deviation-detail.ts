@@ -78,14 +78,14 @@ export class DeviationDetail implements OnInit {
    * Loads the environments and devices when needed and the alert of the route.
    *
    * @remarks
-   * It follows the `id` parameter of the route: every time it changes, the resolution form and the error are
+   * It follows the `alertId` parameter of the route: every time it changes, the resolution form and the error are
    * cleared and the alert is loaded again.
    */
   ngOnInit(): void {
     if (!this.store.environmentsLoaded()) void this.store.loadEnvironments();
     this.store.loadDevices();
     this.route.paramMap.pipe(takeUntilDestroyed(this.destroy)).subscribe((params) => {
-      this.alertId = Number(params.get('id')) || 0;
+      this.alertId = Number(params.get('alertId')) || 0;
       this.alert = this.store.getAlertById(this.alertId);
       this.resolutionForm.reset();
       this.store.clearError();

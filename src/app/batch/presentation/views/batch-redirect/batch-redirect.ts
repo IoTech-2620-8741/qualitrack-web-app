@@ -21,7 +21,7 @@ import { BatchStore, batchError } from '../../../application/batch.store';
     <main class="operations-page">
       @if (message(); as key) {
         <p class="notice" role="status">{{ key | translate }}</p>
-        <a routerLink="/batches/batch-list">{{ 'batches.title' | translate }}</a>
+        <a routerLink="/batches">{{ 'batches.title' | translate }}</a>
       } @else {
         <p role="status">{{ 'common.status-loading' | translate }}</p>
       }
@@ -44,7 +44,7 @@ export class BatchRedirect implements OnInit {
    * Lifecycle hook that finds the batch by the id of the route and navigates to its detail.
    */
   async ngOnInit(): Promise<void> {
-    const batchId = Number(this.route.snapshot.paramMap.get('id'));
+    const batchId = Number(this.route.snapshot.paramMap.get('batchId'));
     try {
       const batch = await this.store.findBatch(batchId);
       if (!batch) this.message.set('batches.errors.not-found');

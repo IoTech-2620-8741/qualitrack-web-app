@@ -82,36 +82,36 @@ const maintenanceForm = () =>
  * Layout component. Each child route uses Angular lazy loading through
  * loadComponent, allowing the application to load each view only when needed.
  *
- * Child routes:
- * - `equipment-list`: list of the equipment and IoT devices.
- * - `register-equipment`: equipment registration form.
- * - `register-device`: IoT device registration form.
- * - `equipment-detail/:id`: detail of an equipment; it also shows its maintenance history.
- * - `bpm-config-form/:id`: BPM parameter configuration form; protected by `operatorGuard`.
- * - `maintenance-history/:id`: redirects to `equipment-detail/:id`, where the history is shown.
- * - `maintenance-form/:id`: maintenance registration form; protected by `operatorGuard`.
- * - empty path: redirects to `equipment-list`.
+ * Child routes name the resource, not the view that renders it:
+ * - empty path: list of the equipment and IoT devices.
+ * - `new`: equipment registration form.
+ * - `devices/new`: IoT device registration form.
+ * - `:equipmentId`: detail of an equipment; it also shows its maintenance history.
+ * - `:equipmentId/bpm-configuration`: BPM parameter configuration; protected by `operatorGuard`.
+ * - `:equipmentId/maintenances/new`: maintenance registration form; protected by `operatorGuard`.
  *
- * Routes with an `:id` parameter are not meant to be used directly from the
- * sidebar because they require a concrete equipment identifier selected from
- * the equipment catalog.
- *
- * The empty child route redirects users to the equipment list by default.
+ * Static segments are declared before `:equipmentId` so that `new` and `devices` are not read as identifiers.
+ * The view-named paths used before semantic routes redirect to their new address, so bookmarks keep working.
  */
 const equipmentRoutes: Routes = [
   {
     path: '',
     component: Layout,
     children: [
-      { path: 'equipment-list', loadComponent: equipmentList },
-      { path: 'register-equipment', loadComponent: equipmentForm },
-      { path: 'register-device', loadComponent: deviceForm },
-      { path: 'equipment-detail/:id', loadComponent: equipmentDetail },
-      { path: 'bpm-config-form/:id', loadComponent: bpmConfigForm, canActivate: [operatorGuard] },
-      // The maintenance history is shown in the equipment detail.
-      { path: 'maintenance-history/:id', redirectTo: 'equipment-detail/:id' },
-      { path: 'maintenance-form/:id', loadComponent: maintenanceForm, canActivate: [operatorGuard] },
-      { path: '', redirectTo: 'equipment-list', pathMatch: 'full' },
+      { path: '', loadComponent: equipmentList, pathMatch: 'full' },
+      { path: 'new', loadComponent: equipmentForm },
+      { path: 'devices/new', loadComponent: deviceForm },
+      // View-named paths used before semantic routes, declared before the identifier so they are not read as one.
+      { path: 'equipment-list', redirectTo: '/equipments', pathMatch: 'full' },
+      { path: 'register-equipment', redirectTo: '/equipments/new', pathMatch: 'full' },
+      { path: 'register-device', redirectTo: '/equipments/devices/new', pathMatch: 'full' },
+      { path: 'equipment-detail/:id', redirectTo: '/equipments/:id' },
+      { path: 'maintenance-history/:id', redirectTo: '/equipments/:id' },
+      { path: 'bpm-config-form/:id', redirectTo: '/equipments/:id/bpm-configuration' },
+      { path: 'maintenance-form/:id', redirectTo: '/equipments/:id/maintenances/new' },
+      { path: ':equipmentId', loadComponent: equipmentDetail },
+      { path: ':equipmentId/bpm-configuration', loadComponent: bpmConfigForm, canActivate: [operatorGuard] },
+      { path: ':equipmentId/maintenances/new', loadComponent: maintenanceForm, canActivate: [operatorGuard] },
     ],
   },
 ];

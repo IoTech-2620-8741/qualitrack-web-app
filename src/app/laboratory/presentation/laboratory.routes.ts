@@ -43,34 +43,41 @@ const staffDetail = () => import('./views/staff-detail/staff-detail').then((m) =
  * Routes of the Laboratory bounded context.
  *
  * @remarks
- * `create` registers the laboratory of a user that has none yet. The other routes are
- * rendered inside the application layout once onboarding is complete. Legacy product and
+ * `new` registers the laboratory of a user that has none yet. The other routes are
+ * rendered inside the application layout once onboarding is complete and are addressed by resource:
+ * `profile`, `environments[/new|/:environmentId/edit]` and `staff[/new|/:staffId]`. The view-named paths
+ * used before semantic routes redirect to their new address. Legacy product and
  * raw material routes redirect to Product Batch Management and Inventory Management,
  * which now own those resources.
  */
 export const laboratoryRoutes: Routes = [
-  { path: 'create', loadComponent: labForm, canActivate: [laboratorySetupGuard] },
-  { path: 'lab-form', redirectTo: 'create', pathMatch: 'full' },
+  { path: 'new', loadComponent: labForm, canActivate: [laboratorySetupGuard] },
+  { path: 'create', redirectTo: 'new', pathMatch: 'full' },
+  { path: 'lab-form', redirectTo: 'new', pathMatch: 'full' },
   {
     path: '',
     component: Layout,
     canActivate: [onboardingGuard],
     canActivateChild: [onboardingGuard],
     children: [
-      { path: 'lab-profile', loadComponent: labProfile },
+      { path: 'profile', loadComponent: labProfile },
       { path: 'environments', loadComponent: environmentList },
       { path: 'environments/new', loadComponent: environmentForm },
       { path: 'environments/:environmentId/edit', loadComponent: environmentForm },
-      { path: 'staff-list', loadComponent: staffList },
-      { path: 'staff-form', loadComponent: staffForm, canActivate: [qualityManagerGuard] },
+      { path: 'staff', loadComponent: staffList },
+      { path: 'staff/new', loadComponent: staffForm, canActivate: [qualityManagerGuard] },
       { path: 'staff/:staffId', loadComponent: staffDetail, canActivate: [staffActivityGuard] },
+      // View-named paths used before semantic routes.
+      { path: 'lab-profile', redirectTo: 'profile', pathMatch: 'full' },
+      { path: 'staff-list', redirectTo: 'staff', pathMatch: 'full' },
+      { path: 'staff-form', redirectTo: 'staff/new', pathMatch: 'full' },
       // Products belong to Product Batch Management and are registered per environment.
-      { path: 'product-catalog', redirectTo: '/batches', pathMatch: 'full' },
-      { path: 'product-form', redirectTo: '/batches', pathMatch: 'full' },
+      { path: 'product-catalog', redirectTo: '/batches/environments', pathMatch: 'full' },
+      { path: 'product-form', redirectTo: '/batches/environments', pathMatch: 'full' },
       { path: 'raw-material-list', redirectTo: '/inventory', pathMatch: 'full' },
       { path: 'raw-material-form', redirectTo: '/inventory', pathMatch: 'full' },
       { path: 'raw-materials/:id', redirectTo: '/inventory/legacy-materials/:id', pathMatch: 'full' },
-      { path: '', redirectTo: 'lab-profile', pathMatch: 'full' },
+      { path: '', redirectTo: 'profile', pathMatch: 'full' },
     ],
   },
 ];

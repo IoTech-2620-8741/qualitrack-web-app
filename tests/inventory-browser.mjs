@@ -129,7 +129,7 @@ try {
   await page.getByRole('button', { name: 'Confirm review', exact: true }).click();
   await page.getByText('Released', { exact: true }).waitFor();
   await page.screenshot({ path: join(output, `receipts-${width}.png`), fullPage: true, animations: 'disabled' });
-  await page.goto(origin + '/batches/batch-detail/7');
+  await page.goto(origin + '/batches/7');
   await page.getByRole('tab', { name: 'Raw Materials Used' }).click();
   const usage = page.locator('app-raw-material-usage');
   const quantity = usage.getByRole('spinbutton'), add = usage.getByRole('button', { name: 'Add Material' });

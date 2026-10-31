@@ -116,7 +116,7 @@ export class MaintenanceForm implements OnInit {
   }
 
   ngOnInit(): void {
-    const id = Number(this.route.snapshot.paramMap.get('id'));
+    const id = Number(this.route.snapshot.paramMap.get('equipmentId'));
     if (!Number.isSafeInteger(id) || id <= 0) return;
     this.equipmentId.set(id);
     if (!this.equipment()) void this.store.loadEquipmentById(id);
@@ -143,6 +143,6 @@ export class MaintenanceForm implements OnInit {
       technicianStaffId,
       maintenanceDate: localIsoDate(new Date(maintenanceDate)),
     });
-    if (saved) await this.router.navigate(['/equipments/equipment-detail', equipment.id]);
+    if (saved) await this.router.navigate(['/equipments', equipment.id]);
   }
 }

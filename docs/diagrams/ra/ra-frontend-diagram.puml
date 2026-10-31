@@ -607,7 +607,7 @@ RaStore ..> AuditedStaffMember
 StaffActivity --> RaStore
 RaRoutes ..> StaffActivity : staffActivityGuard
 note bottom of StaffActivity
-  /reports/staff-activity/:staffId: newest activity first, type filter,
+  /reports/staff/:staffId/activity: newest activity first, type filter,
   latest activity and a link back to the Laboratory staff detail.
   RA reads the staff identity through its own Laboratory ACL:
   GET /laboratories/{lab}/staff/{staffId}.

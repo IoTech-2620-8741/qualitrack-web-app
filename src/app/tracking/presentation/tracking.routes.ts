@@ -19,12 +19,14 @@ const trackingRoutes: Routes = [
     path: '',
     component: Layout,
     children: [
-      { path: 'dashboard', loadComponent: environmentalMonitoring },
+      { path: 'monitoring', loadComponent: environmentalMonitoring },
       { path: 'history', loadComponent: telemetryHistory },
       { path: 'profiles', loadComponent: environmentalProfiles },
       // The analysis chart is part of the history of each device.
       { path: 'analysis', redirectTo: 'history', pathMatch: 'full' },
-      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+      // View-named path used before semantic routes.
+      { path: 'dashboard', redirectTo: 'monitoring', pathMatch: 'full' },
+      { path: '', redirectTo: 'monitoring', pathMatch: 'full' },
     ],
   },
 ];

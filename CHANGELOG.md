@@ -5,7 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [2.1.0] - 2026-10-30
+
+### Changed
+
+- Routing: every bounded context now uses semantic routes that name the resource instead of the view (#8 of the web app corrections):
+  - Equipment (equipment): `/equipments`, `/equipments/new`, `/equipments/devices/new`, `/equipments/:equipmentId`, `/equipments/:equipmentId/bpm-configuration` and `/equipments/:equipmentId/maintenances/new`.
+  - Compliance & Alerts (ca): `/alerts` (active alerts), `/alerts/history` and `/alerts/:alertId`.
+  - Reporting & Audit (ra): `/reports/kpis`, `/reports/new` and `/reports/staff/:staffId/activity`.
+  - Laboratory (laboratory): `/laboratories/new`, `/laboratories/profile`, `/laboratories/staff` and `/laboratories/staff/new`.
+  - Product Batch (batch): `/batches` lists every batch, `/batches/environments` opens the product catalogue and `/batches/:batchId` resolves the full batch path.
+  - Tracking (tracking): `/tracking/monitoring`.
+  - Subscription (subscription): `/subscriptions/billing`.
+- Shared (shared): the side menu highlights only the most specific sub-option of the current URL.
+
+### Removed
+
+- Routing: the view-named paths (`equipment-list`, `deviation-detail/:id`, `batch-list`, `lab-profile`, `kpi-dashboard`, `billing-summary` and the rest) only redirect to their semantic route and will be removed in a future major version.
 
 ## [2.0.0] - 2026-10-28
 

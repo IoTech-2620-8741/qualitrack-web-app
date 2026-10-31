@@ -10,7 +10,6 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { SubscriptionStore } from '../../../application/subscription.store';
 import { IamStore } from '../../../../iam/application/iam.store';
-import { Toolbar } from '../../../../shared/presentation/components/toolbar/toolbar';
 import { SubscriptionPlan } from '../../../domain/model/subscription-plan.entity';
 
 /**
@@ -26,7 +25,6 @@ import { SubscriptionPlan } from '../../../domain/model/subscription-plan.entity
   standalone: true,
   imports: [
     CommonModule,
-    Toolbar,
     TranslatePipe,
     MatCardModule,
     MatButtonModule,

@@ -42,7 +42,7 @@ export class Dashboard {
       value: this.store.overviewEquipment().data?.length,
       state: this.store.overviewEquipment().status,
       icon: 'precision_manufacturing',
-      route: '/equipments/equipment-list',
+      route: '/equipments',
       color: 'blue',
     },
     {
@@ -50,7 +50,7 @@ export class Dashboard {
       value: this.store.overviewBatches().data?.filter((item) => item.status === 'IN_PROGRESS').length,
       state: this.store.overviewBatches().status,
       icon: 'inventory_2',
-      route: '/batches/batch-list',
+      route: '/batches',
       color: 'teal',
     },
     {
@@ -58,7 +58,7 @@ export class Dashboard {
       value: this.store.overviewOpenAlerts().length,
       state: this.store.overviewAlerts().status,
       icon: 'warning_amber',
-      route: '/alerts/alert-dashboard',
+      route: '/alerts',
       color: 'red',
     },
     {

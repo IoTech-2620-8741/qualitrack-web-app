@@ -14,7 +14,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { IamStore, errorStatus } from '../../../application/iam.store';
-import { Toolbar } from '../../../../shared/presentation/components/toolbar/toolbar';
 import { notBlankValidator } from '../../../../shared/presentation/validators/not-blank.validator';
 
 /** Password fields of the reset form whose visibility can be toggled. */
@@ -37,7 +36,6 @@ type PasswordField = 'newPassword' | 'confirmPassword';
     MatIconModule,
     MatProgressSpinnerModule,
     RouterLink,
-    Toolbar,
   ],
   templateUrl: './password-recovery.html',
   changeDetection: ChangeDetectionStrategy.Eager,

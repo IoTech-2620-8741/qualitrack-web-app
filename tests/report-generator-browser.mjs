@@ -54,7 +54,7 @@ try {
     const page = await context.newPage();
     const runtimeErrors = [];
     page.on('pageerror', error => runtimeErrors.push(error.message));
-    await page.goto(origin + '/reports/report-generator');
+    await page.goto(origin + '/reports/new');
     const batch = page.getByTestId('batch-select');
     const download = page.locator('mat-card').first().getByRole('button', { name: /Download|Descargar/ });
     await batch.waitFor();

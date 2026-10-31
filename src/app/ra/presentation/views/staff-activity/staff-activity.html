@@ -1,5 +1,5 @@
 <section class="operations-page" [attr.aria-busy]="store.staffActivityLoading()">
-  <a class="back-link" [routerLink]="staffId() ? ['/laboratories/staff', staffId()] : ['/laboratories/staff-list']">
+  <a class="back-link" [routerLink]="staffId() ? ['/laboratories/staff', staffId()] : ['/laboratories/staff']">
     <mat-icon aria-hidden="true">arrow_back</mat-icon>{{ 'staff.detail.back' | translate }}
   </a>
   @if (store.staffActivityLoading()) {
@@ -54,7 +54,7 @@
               <td [attr.data-label]="'audit-log.table.entity' | translate">
                 @if (entityKey(entry.entityType); as key) { {{ key | translate }} } @else { {{ entry.entityType }} }
                 @if (entry.entityType === 'EQUIPMENT') {
-                  <a [routerLink]="['/equipments/equipment-detail', entry.entityId]">#{{ entry.entityId }}</a>
+                  <a [routerLink]="['/equipments', entry.entityId]">#{{ entry.entityId }}</a>
                 } @else {
                   <span class="muted">#{{ entry.entityId }}</span>
                 }

@@ -38,7 +38,7 @@
         </h2>
         <a
           mat-icon-button
-          routerLink="/tracking/dashboard"
+          routerLink="/tracking/monitoring"
           [matTooltip]="'nav.tracking' | translate"
           [attr.aria-label]="'nav.tracking' | translate"
           ><mat-icon>arrow_forward</mat-icon></a
@@ -182,7 +182,7 @@
         } @else {
           <p class="empty">{{ 'dashboard.cards.no-subscription' | translate }}</p>
         }
-        <a mat-stroked-button routerLink="/subscriptions/billing-summary"
+        <a mat-stroked-button routerLink="/subscriptions/billing"
           ><mat-icon>receipt_long</mat-icon>{{ 'dashboard.overview.manage-billing' | translate }}</a
         >
       </section>
@@ -194,7 +194,7 @@
         </h2>
         <a
           mat-icon-button
-          routerLink="/alerts/alert-dashboard"
+          routerLink="/alerts"
           [matTooltip]="'nav.alerts' | translate"
           [attr.aria-label]="'nav.alerts' | translate"
           ><mat-icon>arrow_forward</mat-icon></a
@@ -206,7 +206,7 @@
         <ng-container *ngTemplateOutlet="error; context: { retry: retryAlerts }" />
       } @else {
         @for (alert of store.overviewOpenAlerts().slice(0, 4); track alert.id) {
-          <a class="record-row" [routerLink]="['/alerts/deviation-detail', alert.id]">
+          <a class="record-row" [routerLink]="['/alerts', alert.id]">
             <span class="severity-mark" [class.critical]="alert.severity === 'CRITICAL'"></span>
             <div class="record-main">
               <strong>{{ store.overviewEquipmentName(alert.equipmentId) }}</strong>
@@ -232,7 +232,7 @@
         </h2>
         <a
           mat-icon-button
-          routerLink="/batches/batch-list"
+          routerLink="/batches"
           [matTooltip]="'dashboard.cards.batches' | translate"
           [attr.aria-label]="'dashboard.cards.batches' | translate"
           ><mat-icon>arrow_forward</mat-icon></a
@@ -263,7 +263,7 @@
         @for (batch of recentBatches(); track batch.id) {
           <a
             class="record-row batch-row"
-            [routerLink]="batch.detailLink ?? ['/batches/batch-detail', batch.id]"
+            [routerLink]="batch.detailLink ?? ['/batches', batch.id]"
           >
             <div class="record-main">
               <strong>{{ batch.batchNumber }}</strong
