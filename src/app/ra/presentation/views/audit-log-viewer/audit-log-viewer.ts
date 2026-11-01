@@ -1,7 +1,7 @@
-import { Component, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
+import {Component, OnInit, inject, ChangeDetectionStrategy, computed} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { TranslatePipe } from '@ngx-translate/core';
+import {TranslatePipe, TranslateService} from '@ngx-translate/core';
 
 import { MatTableModule } from '@angular/material/table';
 import { MatCardModule } from '@angular/material/card';
@@ -22,6 +22,11 @@ import {
   periodError,
 } from '../../utils/report-period';
 import { AuditAction } from '../../../domain/model/audit-log-entry.entity';
+import {AuditLogTable} from '../../components/audit-log-table/audit-log-table';
+import {AuditLogQuery, toAuditLogRows} from '../../utils/audit-log-viewer.utils';
+import {toSignal} from '@angular/core/rxjs-interop';
+import {ErrorBanner} from '../../../../shared/presentation/components/error-banner/error-banner';
+import {AuditLogFilters} from '../../components/audit-log-filters/audit-log-filters';
 
 /**
  * Component responsible for displaying and filtering the system audit log.
@@ -47,6 +52,9 @@ import { AuditAction } from '../../../domain/model/audit-log-entry.entity';
     MatDatepickerModule,
     MatNativeDateModule,
     MatProgressSpinnerModule,
+    AuditLogTable,
+    ErrorBanner,
+    AuditLogFilters,
   ],
   templateUrl: './audit-log-viewer.html',
   changeDetection: ChangeDetectionStrategy.Eager,
@@ -57,11 +65,22 @@ export class AuditLogViewerComponent implements OnInit {
    * The application store managing the state for the Reporting and Analysis bounded context.
    */
   protected readonly store = inject(RaStore);
+  private readonly translate = inject(TranslateService);
+
+  /** Se re-evalúa cuando cambia el idioma, para reformatear las fechas. */
+  private readonly language = toSignal(this.translate.onLangChange, { initialValue: null });
 
   /**
    * Column identifiers displayed in the audit log data table.
    */
   protected readonly displayedColumns = ['timestamp', 'action', 'entity', 'performedBy'];
+
+  /** Filas listas para la tabla, con fechas y badges ya resueltos. */
+  protected readonly rows = computed(() => {
+    this.language();
+    return toAuditLogRows(this.store.auditLogs(), this.translate.currentLang() || 'en');
+  });
+
   /**
    * Current filter state for querying audit logs.
    *
@@ -227,5 +246,13 @@ export class AuditLogViewerComponent implements OnInit {
       default:
         return 'badge-default';
     }
+  }
+
+  protected onSearch(query: AuditLogQuery | undefined): void {
+    this.store.loadAuditLog(query);
+  }
+
+  protected onClear(): void {
+    this.store.loadAuditLog(undefined);
   }
 }
