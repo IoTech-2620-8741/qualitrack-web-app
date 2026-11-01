@@ -1,3 +1,7 @@
+:host { display: block; color: #233b47; border-top: 1px solid #d5e0e5; padding-top: 16px; min-width: 0;}
+.section-header { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 18px; min-height: 40px; }
+h2 { font-size: 17px; margin: 0; display: flex; align-items: center; gap: 9px; }
+h2 mat-icon { color: #43766d; flex-shrink: 0;}
 .plan-heading { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin: 14px 0 24px; }
 h3 { font-size: 23px; margin: 0; overflow-wrap: anywhere; }
 .subscription-details { margin: 0 0 24px; }
