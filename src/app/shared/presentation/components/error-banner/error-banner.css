@@ -1,0 +1,25 @@
+.error-message {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 16px;
+  margin-bottom: 24px;
+  color: #b91c1c;
+  background-color: #fee2e2;
+  border-radius: 8px;
+}
+
+.message {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.error-message mat-icon {
+  flex-shrink: 0;
+}
+
+.error-message button {
+  flex-shrink: 0;
+  margin: -8px -8px -8px 0;
+}
