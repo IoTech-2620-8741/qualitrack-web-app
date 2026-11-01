@@ -1,0 +1,21 @@
+:host { display: block; }
+.summary-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin-bottom: 30px; }
+.summary-item { display: grid; grid-template-columns: 28px 1fr; gap: 8px 10px; padding: 18px; min-height: 82px; text-decoration: none; color: inherit; background: #fff; border: 1px solid #dce4e9; border-radius: 8px; }
+.summary-item:hover { border-color: #728d99; background: #f9fcfc; }
+.summary-item:focus-visible { outline: 2px solid #166d83; outline-offset: 3px; }
+.summary-item strong { font-size: 27px; grid-column: 2; font-variant-numeric: tabular-nums; }
+.summary-label { font-size: 13px; align-self: center; overflow-wrap: anywhere; }
+.summary-item small { grid-column: 2; color: #667681; }
+.blue mat-icon { color: #2775b9; } .teal mat-icon { color: #148071; }
+.red mat-icon { color: #c44143; } .amber mat-icon { color: #a57510; }
+
+@media (max-width: 1000px) {
+  .summary-item { padding: 14px; }
+}
+@media (max-width: 760px) {
+  .summary-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+}
+@media (max-width: 420px) {
+  .summary-item { grid-template-columns: 22px 1fr; gap: 8px; padding: 12px; }
+  .summary-item mat-icon { font-size: 20px; width: 22px; }
+}

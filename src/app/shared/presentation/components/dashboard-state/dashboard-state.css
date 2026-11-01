@@ -1,0 +1,3 @@
+.state { display: flex; align-items: center; justify-content: center; gap: 12px; min-height: 140px; font-size: 13px; }
+.state.error { color: #a83e48; }
+.state mat-icon, .state mat-spinner { flex-shrink: 0; }
