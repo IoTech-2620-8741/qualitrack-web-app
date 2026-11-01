@@ -16,6 +16,17 @@ import { DashboardAlerts } from '../../components/dashboard-alerts/dashboard-ale
 import { DashboardBatches } from '../../components/dashboard-batches/dashboard-batches';
 import { DashboardSubscription } from '../../components/dashboard-subscription/dashboard-subscription';
 
+/**
+ * Orchestrator component for the main Dashboard.
+ *
+ * @remarks
+ * This component acts as a bridge between the global `RaStore` and its
+ * sub-components (`DashboardSummary`, `DashboardTelemetry`, `DashboardSubscription`,
+ * `DashboardAlerts`, and `DashboardBatches`).
+ *
+ * It computes derived data (like chart configurations and batch distributions)
+ * and passes the data down to the pure presentational components.
+ */
 @Component({
   selector: 'app-dashboard',
   standalone: true,
@@ -39,9 +50,16 @@ import { DashboardSubscription } from '../../components/dashboard-subscription/d
   styleUrl: './dashboard.css',
 })
 export class Dashboard {
+  /** The application store managing the state for the Reporting and Analysis bounded context. */
   protected readonly store = inject(RaStore);
+
+  /** Translation service for language formatting. */
   private readonly translate = inject(TranslateService);
+
+  /** Re-evaluates when the language changes to reformat dates in charts. */
   private readonly language = toSignal(this.translate.onLangChange);
+
+  /** Data for the top summary cards. */
   protected readonly summaryCards = computed(() => [
     {
       key: 'equipment',
@@ -76,16 +94,24 @@ export class Dashboard {
       color: 'amber',
     },
   ]);
+
+  /** List of batch statuses used for the distribution chart. */
   protected readonly batchStatuses = ['PENDING', 'IN_PROGRESS', 'RELEASED', 'REJECTED'] as const;
+
+  /** Computes the count of batches per status. */
   protected readonly batchDistribution = computed(() =>
     this.batchStatuses.map((status) => ({
       status,
       count: this.store.overviewBatches().data?.filter((batch) => batch.status === status).length ?? 0,
     })),
   );
+
+  /** Retrieves the 4 most recent batches. */
   protected readonly recentBatches = computed(() =>
     [...(this.store.overviewBatches().data ?? [])].sort((a, b) => b.id - a.id).slice(0, 4),
   );
+
+  /** Configuration object for the telemetry line chart. */
   protected readonly chartData = computed<ChartData<'line'>>(() => {
     this.language();
     return {
@@ -105,6 +131,8 @@ export class Dashboard {
       ],
     };
   });
+
+  /** Options object for the telemetry line chart. */
   protected readonly chartOptions = computed<ChartOptions<'line'>>(() => {
     this.language();
     return {
@@ -135,14 +163,32 @@ export class Dashboard {
       },
     };
   });
+
+  /** Triggers a full reload of the dashboard data. */
   protected readonly reloadAll = () => this.store.reloadOverview();
+
+  /** Retries loading the telemetry data for the currently selected device. */
   protected readonly retryTelemetry = () =>
     this.store.selectOverviewDevice(this.store.overviewDeviceId());
+
+  /** Retries loading the subscription data. */
   protected readonly retrySubscription = () => this.store.loadOverviewSubscription();
+
+  /** Retries loading the alerts data. */
   protected readonly retryAlerts = () => this.store.loadOverviewAlerts();
+
+  /** Initializes the dashboard by loading the overview data. */
   constructor() {
     this.store.reloadOverview();
   }
+
+  /**
+   * Formats a date string or timestamp into a localized string.
+   *
+   * @param value - The date value (string or timestamp number)
+   * @param short - If true, returns only time (HH:mm). Otherwise, returns date and time.
+   * @returns The formatted date string.
+   */
   protected formatDate(value: string | number, short = false): string {
     this.language();
     const locale = this.translate.getCurrentLang()?.startsWith('es') ? 'es-PE' : 'en-US';

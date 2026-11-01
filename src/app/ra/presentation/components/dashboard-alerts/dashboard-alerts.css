@@ -34,8 +34,8 @@ h2 mat-icon {
   gap: 12px;
   padding: 15px 0;
   border-bottom: 1px solid #dce4e9;
-  text-decoration: none; /* Quita el subrayado azul */
-  color: inherit;        /* Quita el color azul */
+  text-decoration: none;
+  color: inherit;
 }
 .record-row:hover {
   background: #eaf1f4;

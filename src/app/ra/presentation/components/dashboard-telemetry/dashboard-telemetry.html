@@ -19,7 +19,6 @@
     <p class="empty">{{ 'dashboard.overview.no-devices' | translate }}</p>
   } @else {
 
-    <!-- AQUÍ ESTÁN LOS SELECTORES QUE FALTABAN -->
     <div class="telemetry-filters">
       <mat-form-field appearance="outline" subscriptSizing="dynamic">
         <mat-label>{{ 'dashboard.overview.equipment' | translate }}</mat-label>
@@ -49,7 +48,6 @@
       </mat-form-field>
     </div>
 
-    <!-- AQUÍ SIGUE LA LÓGICA DE LAS LECTURAS -->
     @if (measurementsStatus() === 'loading' || measurementsStatus() === 'error') {
       <app-dashboard-state [state]="measurementsStatus()" (retry)="retry.emit()" />
     } @else if (latestReading()) {

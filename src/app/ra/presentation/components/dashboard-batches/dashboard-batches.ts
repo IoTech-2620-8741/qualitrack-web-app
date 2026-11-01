@@ -4,8 +4,15 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { MatIconButton } from '@angular/material/button';
 import { RouterLink } from '@angular/router';
 import { MatTooltip } from '@angular/material/tooltip';
-import { DashboardState } from '../dashboard-state/dashboard-state';
+import { DashboardState } from '../../../../shared/presentation/components/dashboard-state/dashboard-state';
 
+/**
+ * Batch production section of the dashboard.
+ *
+ * @remarks
+ * Displays a distribution bar chart of batch statuses and a list
+ * of the most recently created batches.
+ */
 @Component({
   imports: [
     MatIcon,
@@ -20,10 +27,18 @@ import { DashboardState } from '../dashboard-state/dashboard-state';
   templateUrl: './dashboard-batches.html',
 })
 export class DashboardBatches {
+  /** Status of the batches request. */
   readonly batchesStatus = input.required<string>();
+
+  /** Total number of batches, used to calculate the meter percentages. */
   readonly totalBatches = input.required<number>();
+
+  /** Array of batch statuses and their counts. */
   readonly distribution = input.required<any[]>();
+
+  /** Array of the most recent batches. */
   readonly recentBatches = input.required<any[]>();
 
+  /** Emits when the user clicks retry. */
   readonly retry = output<void>();
 }

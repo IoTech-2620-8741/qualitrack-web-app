@@ -9,12 +9,15 @@ import { RouterLink } from '@angular/router';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartData, ChartOptions } from 'chart.js';
 
-import { DashboardState } from '../dashboard-state/dashboard-state';
+import { DashboardState } from '../../../../shared/presentation/components/dashboard-state/dashboard-state';
 import { MatTooltip } from '@angular/material/tooltip';
 
 /**
  * Telemetry section of the dashboard.
- * Displays device and series selectors, the latest reading, and the Chart.js line graph.
+ *
+ * @remarks
+ * Displays selectors for device and parameter, the latest reading, and a Chart.js line graph.
+ * It is a pure `OnPush` component that receives all data and chart configurations from its parent.
  */
 @Component({
   selector: 'app-dashboard-telemetry',
@@ -36,26 +39,48 @@ import { MatTooltip } from '@angular/material/tooltip';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DashboardTelemetry {
-  // --- Inputs de Estado ---
+  /** Status of the equipment request ('loading', 'error', 'ready'). */
   readonly equipmentStatus = input.required<string>();
+
+  /** List of available IoT devices. */
   readonly devices = input.required<any[]>();
+
+  /** Currently selected device ID. */
   readonly selectedDeviceId = input.required<number | null>();
+
+  /** List of available parameters (series) for the selected device. */
   readonly series = input.required<any[]>();
+
+  /** The currently selected parameter (series). */
   readonly activeSeries = input.required<any>();
+
+  /** Status of the measurements request. */
   readonly measurementsStatus = input.required<string>();
+
+  /** The latest reading object. */
   readonly latestReading = input.required<any>();
+
+  /** Array of readings for the chart. */
   readonly readings = input.required<any[]>();
+
+  /** Min and max values for the summary text. */
   readonly readingRange = input.required<any>();
 
-  // --- Inputs de Datos del Gráfico ---
+  /** Configuration data for Chart.js. */
   readonly chartData = input.required<ChartData<'line'>>();
+
+  /** Configuration options for Chart.js. */
   readonly chartOptions = input.required<ChartOptions<'line'>>();
 
-  // --- Inputs de Utilidades ---
+  /** Utility function passed from the parent to format dates. */
   readonly formatDate = input.required<(value: string | number, short?: boolean) => string>();
 
-  // --- Outputs de Eventos ---
+  /** Emits when the user selects a different device. */
   readonly deviceChange = output<number>();
+
+  /** Emits when the user selects a different parameter. */
   readonly seriesChange = output<string>();
+
+  /** Emits when the user clicks retry. */
   readonly retry = output<void>();
 }
