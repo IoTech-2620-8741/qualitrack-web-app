@@ -1,6 +1,5 @@
 import { Component, computed, inject, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { MatIconModule } from '@angular/material/icon';
@@ -9,16 +8,19 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { BaseChartDirective } from 'ng2-charts';
 import { ChartData, ChartOptions } from 'chart.js';
 import { RaStore } from '../../../application/ra.store';
+import { DashboardSummary } from '../../components/dashboard-summary/dashboard-summary';
+import { DashboardTelemetry } from '../../components/dashboard-telemetry/dashboard-telemetry';
+import { DashboardAlerts } from '../../components/dashboard-alerts/dashboard-alerts';
+import { DashboardBatches } from '../../components/dashboard-batches/dashboard-batches';
+import { DashboardSubscription } from '../../components/dashboard-subscription/dashboard-subscription';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
   imports: [
     CommonModule,
-    RouterLink,
     TranslatePipe,
     MatIconModule,
     MatButtonModule,
@@ -26,7 +28,11 @@ import { RaStore } from '../../../application/ra.store';
     MatSelectModule,
     MatTooltipModule,
     MatProgressSpinnerModule,
-    BaseChartDirective,
+    DashboardSummary,
+    DashboardTelemetry,
+    DashboardAlerts,
+    DashboardBatches,
+    DashboardSubscription
   ],
   templateUrl: './dashboard.html',
   changeDetection: ChangeDetectionStrategy.Eager,
