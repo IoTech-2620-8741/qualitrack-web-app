@@ -32,6 +32,7 @@ import { MatTooltip } from '@angular/material/tooltip';
     MatTooltip
   ],
   templateUrl: './dashboard-telemetry.html',
+  styleUrl: './dashboard-telemetry.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DashboardTelemetry {
