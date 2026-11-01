@@ -29,13 +29,12 @@ import {ErrorBanner} from '../../../../shared/presentation/components/error-bann
 import {AuditLogFilters} from '../../components/audit-log-filters/audit-log-filters';
 
 /**
- * Component responsible for displaying and filtering the system audit log.
+ * Orchestrator component for the Audit Log Viewer.
  *
  * @remarks
- * In the presentation layer, this component provides the user interface for
- * querying historical system actions for compliance and traceability purposes.
- * It interacts with {@link RaStore} to fetch filtered records based on equipment,
- * production batches, or specific timeframes.
+ * This component connects the global `RaStore` with its two sub-components:
+ * `AuditLogFilters` and `AuditLogTable`. It contains no complex logic or validation,
+ * acting only as a bridge that listens to child events and formats the store data.
  */
 @Component({
   selector: 'app-audit-log-viewer',
@@ -75,7 +74,7 @@ export class AuditLogViewerComponent implements OnInit {
    */
   protected readonly displayedColumns = ['timestamp', 'action', 'entity', 'performedBy'];
 
-  /** Filas listas para la tabla, con fechas y badges ya resueltos. */
+  /** Formatted rows ready for the table, recalculated if the language changes. */
   protected readonly rows = computed(() => {
     this.language();
     return toAuditLogRows(this.store.auditLogs(), this.translate.currentLang() || 'en');
@@ -248,10 +247,16 @@ export class AuditLogViewerComponent implements OnInit {
     }
   }
 
+  /**
+   * Handles the search event emitted by the filter component.
+   *
+   * @param query - The built query payload, or undefined for no filters
+   */
   protected onSearch(query: AuditLogQuery | undefined): void {
     this.store.loadAuditLog(query);
   }
 
+  /** Handles the clear event emitted by the filter component. */
   protected onClear(): void {
     this.store.loadAuditLog(undefined);
   }

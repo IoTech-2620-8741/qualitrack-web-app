@@ -3,16 +3,11 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { MatIconModule } from '@angular/material/icon';
 
 /**
- * Estado vacío reutilizable: icono + mensaje traducible.
+ * Shared presentational component for empty states.
  *
  * @remarks
- * Componente puro de presentación. Sin lógica de negocio, sin dependencias
- * del store. Reutilizable en cualquier vista que muestre listas o tablas.
- *
- * @example
- * ```html
- * <app-empty-state icon="manage_search" messageKey="audit-log.empty" />
- * ```
+ * Reusable across the application to display a generic icon and a translated
+ * message when a list or table has no data.
  */
 @Component({
   selector: 'app-empty-state',
@@ -28,9 +23,9 @@ import { MatIconModule } from '@angular/material/icon';
   styleUrl: './empty-state.css',
 })
 export class EmptyState {
-  /** Nombre del icono de Material a mostrar. */
+  /** Name of the Material icon to display. */
   readonly icon = input('manage_search');
 
-  /** Clave de traducción del mensaje. */
+  /** Translation key for the message. */
   readonly messageKey = input.required<string>();
 }

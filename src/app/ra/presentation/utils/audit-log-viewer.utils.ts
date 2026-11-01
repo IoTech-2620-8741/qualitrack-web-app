@@ -1,10 +1,15 @@
 import {AuditAction, AuditLogEntry} from '../../domain/model/audit-log-entry.entity';
 
-/** Columnas de la tabla de auditoría, en orden de presentación. */
+/** Columns to display in the audit log data table. */
 export const AUDIT_LOG_COLUMNS = ['timestamp', 'action', 'entity', 'performedBy'] as const;
 export type AuditLogColumn = (typeof AUDIT_LOG_COLUMNS)[number];
 
-/** Clase CSS del badge según la acción de auditoría. */
+/**
+ * Resolves the CSS class for the action badge based on the audit action.
+ *
+ * @param action - The audit action recorded in the log entry
+ * @returns The CSS class name to apply
+ */
 export function actionBadgeClass(action: AuditAction): string {
   switch (action) {
     case 'CREATE':
@@ -29,8 +34,13 @@ export function actionBadgeClass(action: AuditAction): string {
 }
 
 /**
- * Indica si un identificador tecleado en el filtro no es un entero positivo.
- * null/vacío = filtro no usado → válido.
+ * Checks if an identifier typed in the filter is not a positive integer.
+ *
+ * @remarks
+ * A null or empty value means the filter is not being used, so it is considered valid.
+ *
+ * @param value - The identifier to validate
+ * @returns True if the value is filled in and is not a positive integer
  */
 export function isInvalidId(value: number | null | '' | undefined): boolean {
   if (value === null || value === undefined || (value as unknown) === '') return false;
@@ -38,7 +48,7 @@ export function isInvalidId(value: number | null | '' | undefined): boolean {
   return !Number.isInteger(n) || n < 1;
 }
 
-/** Query que el store envía al backend. */
+/** Query payload sent to the backend to filter audit logs. */
 export interface AuditLogQuery {
   equipmentId?: number;
   batchId?: number;
@@ -46,7 +56,12 @@ export interface AuditLogQuery {
   dateTo?: string;
 }
 
-/** Construye el query a partir del estado del formulario, omitiendo vacíos. */
+/**
+ * Builds the audit log query from the form state, omitting empty fields.
+ *
+ * @param filters - The current state of the filter form
+ * @returns The query object, or undefined if no filters are applied
+ */
 export function buildAuditLogQuery(filters: {
   equipmentId: number | null;
   batchId: number | null;
@@ -61,7 +76,11 @@ export function buildAuditLogQuery(filters: {
   return Object.keys(query).length > 0 ? query : undefined;
 }
 
-/** Estado vacío del formulario de filtros. */
+/**
+ * Returns the default empty state for the filter form.
+ *
+ * @returns An object with all filter fields set to null
+ */
 export function emptyAuditLogFilters() {
   return {
     equipmentId: null as number | null,
@@ -71,7 +90,7 @@ export function emptyAuditLogFilters() {
   };
 }
 
-/** Filas con la entidad legible, sin lógica de presentación en el template. */
+/** View model for a row in the audit log table, pre-formatted for the UI. */
 export interface AuditLogRow {
   entry: AuditLogEntry;
   badgeClass: string;
@@ -85,6 +104,16 @@ export interface AuditLogRow {
 }
 
 /**
+ * Transforms store entities into pre-formatted rows ready for the table.
+ *
+ * @remarks
+ * Date formatting is delegated to `Intl` with an explicit locale to ensure
+ * consistency between the UI and the user's language.
+ *
+ * @param entries - The raw audit log entries from the store
+ * @param locale - The locale string for date formatting
+ * @returns An array of formatted view models
+ *//**
  * Transforma los entries del store en filas listas para pintar.
  * El formateo de fecha se delega a `Intl` con locale explícito (inyectado por el caller).
  */

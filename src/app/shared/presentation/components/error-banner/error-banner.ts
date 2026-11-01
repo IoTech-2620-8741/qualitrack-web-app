@@ -4,19 +4,11 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 
 /**
- * Banner de error traducible, con cierre opcional.
+ * Shared presentational component for error messages.
  *
  * @remarks
- * El `messageKey` debe ser una clave de traducción (no texto literal).
- * El padre decide si es descartable y qué hacer al cerrarlo.
- *
- * @example
- * ```html
- * @if (store.error()) {
- *   <app-error-banner [messageKey]="store.error()!" [dismissible]="true"
- *                     (dismiss)="store.clearMessages()" />
- * }
- * ```
+ * Reusable banner to display translated error keys. It optionally allows a
+ * dismiss button to clear the error from the parent view.
  */
 @Component({
   selector: 'app-error-banner',
@@ -41,12 +33,12 @@ import { MatButtonModule } from '@angular/material/button';
   styleUrl: './error-banner.css',
 })
 export class ErrorBanner {
-  /** Clave de traducción del mensaje de error. */
+  /** Translation key for the error message. */
   readonly messageKey = input.required<string>();
 
-  /** Si muestra el botón de cerrar. */
+  /** Indicates if the close button should be displayed. */
   readonly dismissible = input(false);
 
-  /** Emite cuando el usuario pulsa cerrar. */
+  /** Emits an event when the user clicks the close button. */
   readonly dismiss = output<void>();
 }

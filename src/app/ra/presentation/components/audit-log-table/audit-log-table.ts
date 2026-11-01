@@ -8,8 +8,12 @@ import {NgClass} from '@angular/common';
 import {EmptyState} from '../../../../shared/presentation/components/empty-state/empty-state';
 
 /**
- * Tabla de solo presentación del audit log.
- * No conoce el store ni los filtros: recibe filas ya formateadas y estados de carga.
+ * Pure presentation table for the Audit Log Viewer.
+ *
+ * @remarks
+ * This component has no knowledge of the global store or the filters.
+ * It strictly receives an array of pre-formatted `AuditLogRow` objects
+ * and a `loading` state. It delegates the empty state to the shared `EmptyState`.
  */
 @Component({
   selector: 'app-audit-log-table',
@@ -20,12 +24,12 @@ import {EmptyState} from '../../../../shared/presentation/components/empty-state
   styleUrl: './audit-log-table.css',
 })
 export class AuditLogTable {
-  /** Filas ya formateadas por el padre. */
+  /** Formatted rows provided by the parent component. */
   readonly rows = input.required<readonly AuditLogRow[]>();
 
-  /** Si el store está cargando. */
+  /** Indicates if the data is currently being fetched. */
   readonly loading = input(false);
 
-  /** Columnas visibles. */
+  /** Column identifiers displayed in the data table. */
   protected readonly columns = AUDIT_LOG_COLUMNS;
 }
