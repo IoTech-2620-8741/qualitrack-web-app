@@ -1245,9 +1245,57 @@
   },
   "report-generator": {
     "title": "Generador de Reportes y Documentos",
-    "generating": "Generando documento",
+    "subtitle": "Documentos de trazabilidad y cumplimiento listos para auditoría DIGEMID.",
+    "generating": "Generando reporte...",
     "loading-options": "Cargando registros...",
+    "breadcrumbs": "Reportes y KPIs / Generador de reportes",
     "retry": "Reintentar",
+    "format": "Formato",
+    "step-1": "Tipo de reporte",
+    "step-2": "Parámetros",
+    "select-environment": "Ambiente",
+    "all-environments": "Todos los ambientes",
+    "select-batch": "Seleccionar Lote",
+    "select-equipment": "Seleccionar Equipo",
+    "generate-excel": "Generar Excel",
+    "period": "Periodo",
+    "last-7-days": "Últimos 7 días",
+    "last-30-days": "Últimos 30 días",
+    "max-days-hint": "Máximo 31 días por reporte.",
+    "format-hint": "PDF para auditoría · CSV para análisis en Excel",
+    "report-content": "Contenido del reporte",
+    "preview": "Vista previa",
+    "generate-pdf": "Generar PDF",
+    "contents": {
+      "batch": {
+        "general": "Datos generales del lote y producto",
+        "traceability": "Trazabilidad de materiales y lotes usados",
+        "equipment": "Equipos y personal involucrado",
+        "storage": "Almacenamiento y decisión de calidad",
+        "deviations": "Revisión de desviaciones y firma SHA-256"
+      },
+      "compliance": {
+        "summary": "Resumen del periodo y método",
+        "readings": "Lecturas por variable y ambiente (promedios, mínimos, máximos)",
+        "time-in-range": "Tiempo en rango y desviaciones",
+        "alerts": "Alertas detectadas y su resolución",
+        "actions": "Acciones automáticas ejecutadas (ej. ventilación)"
+      },
+      "inventory": {
+        "date": "Fecha de negocio y alcance",
+        "environment": "Desglose por ambiente",
+        "stock": "Stock físico vs. stock usable",
+        "expiration": "Lotes con stock y evaluación de vencimiento",
+        "author": "Nota de autoría y fecha de exportación"
+      },
+      "equipment": {
+        "general": "Datos del equipo y periodo de actividad",
+        "limits": "Límites configurados actuales",
+        "maintenance": "Registro de mantenimiento",
+        "audit": "Entradas de auditoría (actores y acciones)",
+        "scope": "Nota de alcance (sin telemetría ni certificaciones)"
+      }
+    },
     "errors": {
       "resource-unavailable": "El registro seleccionado no está disponible para tu cuenta. Recarga esta página y selecciona un registro disponible.",
       "session-expired": "Tu sesión ha vencido. Inicia sesión nuevamente.",
