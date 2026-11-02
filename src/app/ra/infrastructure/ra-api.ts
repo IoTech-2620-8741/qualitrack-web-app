@@ -31,6 +31,7 @@ import {
   ExportEquipmentLogRequest,
   GenerateInventoryReportRequest,
 } from './report.request';
+import { OverviewEnvironmentalProfile } from '../domain/model/overview-environmental-profile.entity';
 
 /**
  * Infrastructure service facade for Reporting and Analysis (RA) external API operations.
@@ -171,6 +172,16 @@ export class RaApi extends BaseApi {
     return this._auditedStaffEndpoint.getStaffMember(laboratoryId, staffId);
   }
 
+  /**
+   * Requests the generation of a production batch report (US96).
+   *
+   * @param request - DTO containing the batch ID, whether to include deviations, and the output format.
+   * @returns Observable stream emitting the generated document as a binary {@link Blob}.
+   *
+   * @remarks
+   * Delegates the request to {@link ReportApiEndpoint}, which calls:
+   * `POST /reports/batches`.
+   */
   generateBatchReport(request: GenerateBatchReportRequest): Observable<Blob> {
     return this._reportEndpoint.generateBatchReport(request);
   }
@@ -255,5 +266,43 @@ export class RaApi extends BaseApi {
   /** Subscription plans, to show the name, price and equipment limit of the current one. */
   getOverviewPlans(): Observable<OverviewPlan[]> {
     return this._overviewEndpoint.getPlans();
+  }
+
+  /**
+   * Retrieves the environmental profile (thresholds) configured for a specific environment.
+   *
+   * @param laboratoryId - The laboratory identifier.
+   * @param environmentId - The environment identifier.
+   * @returns Observable stream emitting the environmental profile, or null if it is not configured yet.
+   *
+   * @remarks
+   * This profile is used by the KPI Dashboard to evaluate and color-code the readings
+   * of environmental devices. If the API returns a 404, the endpoint resolves to `null`.
+   */
+  getOverviewEnvironmentalProfile(
+    laboratoryId: number,
+    environmentId: number,
+  ): Observable<OverviewEnvironmentalProfile | null> {
+    return this._overviewEndpoint.getEnvironmentalProfile(laboratoryId, environmentId);
+  }
+
+  /**
+   * Retrieves the environmental profile (thresholds) configured for a specific container monitor.
+   *
+   * @param laboratoryId - The laboratory identifier.
+   * @param environmentId - The environment identifier where the container is located.
+   * @param deviceId - The container monitor identifier.
+   * @returns Observable stream emitting the container's environmental profile, or null if it is not configured yet.
+   *
+   * @remarks
+   * Container monitors have independent thresholds from the environment.
+   * This profile is used by the KPI Dashboard to evaluate readings from specific containers.
+   */
+  getOverviewContainerMonitorProfile(
+    laboratoryId: number,
+    environmentId: number,
+    deviceId: number,
+  ): Observable<OverviewEnvironmentalProfile | null> {
+    return this._overviewEndpoint.getContainerMonitorProfile(laboratoryId, environmentId, deviceId);
   }
 }
