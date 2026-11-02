@@ -28,6 +28,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Reporting & Audit (ra): the audit log, the operational overview and the report generator are split into smaller components (#59, #60, #61). The report generator works in two steps, report type and then its parameters, and can preview a PDF before downloading it (#61).
 
+- Compliance & Alerts (ca) and Reporting & Audit (ra): the "View detail" link of the alert tables and the report preview button only show the eye icon; their words stay as the tooltip and the accessible name (#62).
+
 ### Deprecated
 
 - Routing: the view-named paths (`equipment-list`, `deviation-detail/:id`, `batch-list`, `lab-profile`, `kpi-dashboard`, `billing-summary` and the rest) only redirect to their semantic route and will be removed in a future major version (#57).
