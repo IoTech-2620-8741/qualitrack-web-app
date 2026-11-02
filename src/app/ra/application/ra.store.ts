@@ -19,12 +19,8 @@ import { OverviewAlert } from '../domain/model/overview-alert.entity';
 import { OverviewReading } from '../domain/model/overview-reading.entity';
 import { OverviewSubscription } from '../domain/model/overview-subscription.entity';
 import { OverviewPlan } from '../domain/model/overview-plan.entity';
-
-import { GenerateBatchReportCommand } from '../domain/model/generate-batch-report.command';
-import { GenerateComplianceReportCommand } from '../domain/model/generate-compliance-report.command';
-import { GenerateInventoryReportCommand } from '../domain/model/generate-inventory-report.command';
-import { ExportEquipmentLogCommand } from '../domain/model/export-equipment-log.command';
 import { ReportOrder } from '../domain/model/report-order';
+import { OverviewEnvironmentalProfile } from '../domain/model/overview-environmental-profile.entity';
 
 /** State of one part of the operational overview: what is being read and what was read. */
 type OverviewState<T> = { status: 'idle' | 'loading' | 'ready' | 'error'; data: T | null };
@@ -69,6 +65,7 @@ export class RaStore {
   private readonly _auditedStaffMember = signal<AuditedStaffMember | null>(null);
   private readonly _staffActivityLoading = signal(false);
   private readonly _staffActivityError = signal<string | null>(null);
+  private readonly _profiles = signal<Record<number, OverviewEnvironmentalProfile | null>>({});
 
   /** Activity of the selected staff member, newest first. */
   readonly staffActivity = this._staffActivity.asReadonly();
@@ -76,6 +73,8 @@ export class RaStore {
   readonly auditedStaffMember = this._auditedStaffMember.asReadonly();
   readonly staffActivityLoading = this._staffActivityLoading.asReadonly();
   readonly staffActivityError = this._staffActivityError.asReadonly();
+  /** Environmental profile by environment; null if it hasn't been read yet or doesn't exist. */
+  readonly profiles = this._profiles.asReadonly();
 
   /** Cancels the previous request and releases state when the activity route changes or is left. */
   clearStaffActivity(): void {
@@ -344,6 +343,7 @@ export class RaStore {
   reloadOverview(): void {
     const preferredDevice = this._overviewDeviceId();
     const laboratoryId = this.iam.requireLaboratoryId();
+    this.clearProfiles();
     this.overviewRequests.forEach((request) => request.unsubscribe());
     this.overviewRequests.clear();
     this._overviewDeviceId.set(null);
@@ -564,42 +564,6 @@ export class RaStore {
   }
 
   /**
-   * Generates and downloads the traceability report of a batch (US96).
-   *
-   * @param command - Batch, deviation section and format
-   */
-  generateBatchReport(command: GenerateBatchReportCommand): void {
-    this.generateReport({ type: 'batch', command });
-  }
-
-  /**
-   * Generates and downloads the environmental report of a period (US95).
-   *
-   * @param command - Laboratory, optional environment, calendar days and format
-   */
-  generateComplianceReport(command: GenerateComplianceReportCommand): void {
-    this.generateReport({ type: 'compliance', command });
-  }
-
-  /**
-   * Generates and downloads the inventory report of the laboratory or of one environment (US97).
-   *
-   * @param command - Laboratory, optional environment and format
-   */
-  generateInventoryReport(command: GenerateInventoryReportCommand): void {
-    this.generateReport({ type: 'inventory', command });
-  }
-
-  /**
-   * Exports and downloads the maintenance and operation log of an equipment (US98).
-   *
-   * @param command - Command containing equipment log export parameters
-   */
-  exportEquipmentLog(command: ExportEquipmentLogCommand): void {
-    this.generateReport({ type: 'equipment', command });
-  }
-
-  /**
    * Generates and downloads a report.
    *
    * @remarks
@@ -767,6 +731,42 @@ export class RaStore {
         error: () => target.set({ status: 'error', data: null }),
       }),
     );
+  }
+
+  /**
+   * Reads the environmental profile of one device (environment or container monitor) so KPI cards can be colored.
+   *
+   * @remarks
+   * It dynamically chooses the correct endpoint based on the equipment type.
+   * A 404 (not configured) resolves to null; other failures are silent.
+   *
+   * @param deviceId - The device whose profile is required.
+   * @param environmentId - The environment where the device is located.
+   */
+  loadProfile(deviceId: number, environmentId: number): void {
+    if (deviceId in this._profiles()) return;
+    const laboratoryId = this.iam.requireLaboratoryId();
+    const equipment = this._overviewEquipment().data?.find(e => e.id === deviceId);
+    const isContainer = equipment?.isContainerMonitor === true;
+    const request$ = isContainer
+      ? this.api.getOverviewContainerMonitorProfile(laboratoryId, environmentId, deviceId)
+      : this.api.getOverviewEnvironmentalProfile(laboratoryId, environmentId);
+    request$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (profile) => this._profiles.update((map) => ({ ...map, [deviceId]: profile })),
+        error: () => this._profiles.update((map) => ({ ...map, [deviceId]: null })),
+      });
+  }
+
+  /**
+   * Forgets the profiles read, forcing a new fetch next time they are needed.
+   *
+   * @remarks
+   * Useful when changing laboratories or manually reloading the dashboard.
+   */
+  clearProfiles(): void {
+    this._profiles.set({});
   }
 
   /**
