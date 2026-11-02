@@ -1,7 +1,9 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslatePipe } from '@ngx-translate/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
 
 import { ReportGeneratorState } from './report-generator.state';
 import { RaStore } from '../../../application/ra.store';
@@ -25,6 +27,8 @@ import { ReportParamsForm } from '../../components/report-params-form/report-par
     CommonModule,
     TranslatePipe,
     MatProgressSpinnerModule,
+    MatIconModule,
+    MatButtonModule,
     ReportTypeSelector,
     ReportParamsForm,
     ErrorBanner
@@ -33,15 +37,21 @@ import { ReportParamsForm } from '../../components/report-params-form/report-par
   templateUrl: './report-generator.html',
   styleUrl: './report-generator.css'
 })
-export class ReportGeneratorComponent implements OnInit {
+export class ReportGeneratorComponent implements OnInit, OnDestroy {
   /** The application store managing the Reporting and Analysis state. */
   protected store = inject(RaStore);
 
   /** Initializes the component by loading the required reference data. */
   ngOnInit() {
     this.store.clearMessages();
+    this.store.clearReportPreview();
     this.store.loadBatches();
     this.store.loadEquipment();
     if (!this.store.environmentsLoaded()) void this.store.loadEnvironments();
+  }
+
+  /** Forgets the previewed report, so a later visit generates the report again with the current data. */
+  ngOnDestroy() {
+    this.store.clearReportPreview();
   }
 }
