@@ -9,6 +9,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatButtonModule } from '@angular/material/button';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog } from '@angular/material/dialog';
 import { firstValueFrom } from 'rxjs';
 
@@ -33,7 +34,7 @@ import { ReportPreviewDialog } from '../report-preview-dialog/report-preview-dia
   imports: [
     CommonModule, FormsModule, TranslatePipe, MatIconModule, MatFormFieldModule,
     MatSelectModule, MatDatepickerModule, MatNativeDateModule,
-    MatButtonToggleModule, MatButtonModule
+    MatButtonToggleModule, MatButtonModule, MatTooltipModule
   ],
   templateUrl: './report-params-form.html',
   styleUrl: './report-params-form.css'

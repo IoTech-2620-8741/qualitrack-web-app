@@ -117,8 +117,10 @@ periodError(state.form().startDate, state.form().endDate, MAX_REPORT_DAYS)) {
 <div class="panel-footer">
   <div class="actions">
     @if (state.form().format === 'PDF') {
-      <button mat-stroked-button type="button" (click)="onPreview()" [disabled]="!isValid() || store.isLoading()">
-        <mat-icon>visibility</mat-icon> {{ 'report-generator.preview' | translate }}
+      <button mat-icon-button type="button" (click)="onPreview()" [disabled]="!isValid() || store.isLoading()"
+              [attr.aria-label]="'report-generator.preview' | translate"
+              [matTooltip]="'report-generator.preview' | translate">
+        <mat-icon aria-hidden="true">visibility</mat-icon>
       </button>
     }
 
