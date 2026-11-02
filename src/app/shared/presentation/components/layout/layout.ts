@@ -89,6 +89,12 @@ export class Layout {
     { initialValue: this.breakpoints.isMatched('(max-width: 1023px)') },
   );
   protected readonly sidenavMode = computed(() => (this.mobile() ? 'over' : 'side'));
+
+  /** The logo and the name lead to the home page before signing in and to the dashboard afterwards. */
+  protected readonly brandLink = computed(() => (this.isSignedIn() ? '/dashboard' : '/home'));
+
+  /** Accessible name of the logo link, following {@link Layout.brandLink}. */
+  protected readonly brandLabel = computed(() => (this.isSignedIn() ? 'brand.go-dashboard' : 'brand.go-home'));
   protected readonly sidenavOpened = signal(false);
 
   /**
