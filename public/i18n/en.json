@@ -340,6 +340,7 @@
     "clear": "Clear Filters",
     "refresh": "Refresh",
     "download": "Download",
+    "close": "Close",
     "export": "Export",
     "format": "Format",
     "date-range": "Date Range",
