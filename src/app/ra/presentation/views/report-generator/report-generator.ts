@@ -26,6 +26,11 @@ import {
   periodError,
 } from '../../utils/report-period';
 import { ALL_ENVIRONMENTS } from '../../../domain/model/indicator-period';
+import { ErrorBanner } from '../../../../shared/presentation/components/error-banner/error-banner';
+import { ReportBatchCard } from '../../components/report-batch-card/report-batch-card';
+import { ReportComplianceCard } from '../../components/report-compliance-card/report-compliance-card';
+import { ReportInventoryCard } from '../../components/report-inventory-card/report-inventory-card';
+import { ReportEquipmentCard } from '../../components/report-equipment-card/report-equipment-card';
 
 /**
  * Component responsible for providing a user interface to request operational reports.
@@ -59,6 +64,11 @@ import { ALL_ENVIRONMENTS } from '../../../domain/model/indicator-period';
     MatNativeDateModule,
     MatProgressSpinnerModule,
     MatTooltipModule,
+    ErrorBanner,
+    ReportBatchCard,
+    ReportComplianceCard,
+    ReportInventoryCard,
+    ReportEquipmentCard
   ],
   templateUrl: './report-generator.html',
   changeDetection: ChangeDetectionStrategy.Eager,
@@ -328,6 +338,42 @@ export class ReportGeneratorComponent implements OnInit {
       startDate: localIsoDate(this.equipmentForm.startDate),
       endDate: localIsoDate(this.equipmentForm.endDate),
       format: this.equipmentForm.format,
+    });
+  }
+
+  protected onBatchReport(form: any): void {
+    this.store.generateBatchReport(form);
+  }
+
+  protected onComplianceReport(form: any): void {
+    this.store.generateComplianceReport({
+      laboratoryId: this.currentLaboratoryId,
+      environmentId: form.environmentId || null,
+      startDate: localIsoDate(form.startDate),
+      endDate: localIsoDate(form.endDate),
+      format: form.format,
+    });
+  }
+
+  protected onInventoryReport(form: any): void {
+    this.store.generateInventoryReport({
+      laboratoryId: this.currentLaboratoryId,
+      environmentId: form.environmentId || null,
+      format: form.format,
+    });
+  }
+
+  protected onEquipmentExport(form: any): void {
+    const equipment = this.locatedEquipment().find((e) => e.id === form.equipmentId);
+    if (!equipment?.environmentId) return;
+
+    this.store.exportEquipmentLog({
+      laboratoryId: this.currentLaboratoryId,
+      environmentId: equipment.environmentId,
+      equipmentId: form.equipmentId,
+      startDate: localIsoDate(form.startDate),
+      endDate: localIsoDate(form.endDate),
+      format: form.format,
     });
   }
 }
