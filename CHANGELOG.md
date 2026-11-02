@@ -5,11 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.1.0] - 2026-10-30
+## [Unreleased]
+
+### Added
+
+- Shared (shared): `EmptyState`, `ErrorBanner` and `DashboardState` show empty lists, failures with a retry and the loading state of each part of a page (#59, #60).
 
 ### Changed
 
-- Routing: every bounded context now uses semantic routes that name the resource instead of the view (#8 of the web app corrections):
+- Routing: every bounded context now uses semantic routes that name the resource instead of the view (#57):
   - Equipment (equipment): `/equipments`, `/equipments/new`, `/equipments/devices/new`, `/equipments/:equipmentId`, `/equipments/:equipmentId/bpm-configuration` and `/equipments/:equipmentId/maintenances/new`.
   - Compliance & Alerts (ca): `/alerts` (active alerts), `/alerts/history` and `/alerts/:alertId`.
   - Reporting & Audit (ra): `/reports/kpis`, `/reports/new` and `/reports/staff/:staffId/activity`.
@@ -17,11 +21,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Product Batch (batch): `/batches` lists every batch, `/batches/environments` opens the product catalogue and `/batches/:batchId` resolves the full batch path.
   - Tracking (tracking): `/tracking/monitoring`.
   - Subscription (subscription): `/subscriptions/billing`.
-- Shared (shared): the side menu highlights only the most specific sub-option of the current URL.
+
+- Shared (shared): the side menu highlights only the most specific sub-option of the current URL (#57).
+
+- Shared (shared): `shared` no longer imports any bounded context. The root component wraps every page in the layout and projects the notification bell, the profile badge and the sign-out action into it; the home page receives the sign-in section from its route (#58).
+
+- Reporting & Audit (ra): the audit log, the operational overview and the report generator are split into smaller components (#59, #60, #61). The report generator works in two steps, report type and then its parameters, and can preview a PDF before downloading it (#61).
+
+- Compliance & Alerts (ca) and Reporting & Audit (ra): the "View detail" link of the alert tables and the report preview button only show the eye icon; their words stay as the tooltip and the accessible name (#62).
+
+### Deprecated
+
+- Routing: the view-named paths (`equipment-list`, `deviation-detail/:id`, `batch-list`, `lab-profile`, `kpi-dashboard`, `billing-summary` and the rest) only redirect to their semantic route and will be removed in a future major version (#57).
 
 ### Removed
 
-- Routing: the view-named paths (`equipment-list`, `deviation-detail/:id`, `batch-list`, `lab-profile`, `kpi-dashboard`, `billing-summary` and the rest) only redirect to their semantic route and will be removed in a future major version.
+- Shared (shared): the `Toolbar` component, unused since the layout wraps every page (#62).
+
+### Fixed
+
+- Shared (shared): the logo leads to the home page again before signing in, `/about` shows a single toolbar and the not-found page offers the dashboard to signed-in users (#62).
+
+- Compliance & Alerts (ca): visitors no longer request the unread notification count every 30 seconds; the bell is created only with operational access (#62).
 
 ## [2.0.0] - 2026-10-28
 

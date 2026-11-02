@@ -1,5 +1,6 @@
 import {
   ApplicationConfig,
+  inject,
   provideBrowserGlobalErrorListeners,
   provideZoneChangeDetection,
 } from '@angular/core';
@@ -10,6 +11,8 @@ import { provideTranslateHttpLoader } from '@ngx-translate/http-loader';
 import { routes } from './app.routes';
 import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
 import { authenticationInterceptor } from './iam/infrastructure/iam-interceptor';
+import { IamStore } from './iam/application/iam.store';
+import { SIGNED_IN } from './shared/presentation/tokens/signed-in.token';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -22,5 +25,7 @@ export const appConfig: ApplicationConfig = {
       fallbackLang: 'en',
     }),
     provideCharts(withDefaultRegisterables()),
+    // The shared views read the session through this token, so shared never imports IAM.
+    { provide: SIGNED_IN, useFactory: () => inject(IamStore).isSignedIn },
   ],
 };

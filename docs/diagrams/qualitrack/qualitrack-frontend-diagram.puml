@@ -45,7 +45,6 @@ package "qualitrack-frontend" {
 
     package "presentation.components" {
       class Layout
-      class Toolbar
       class LanguageSwitcher
       class EnvironmentSelector
     }
@@ -412,8 +411,6 @@ ProfileStore --> ProfileApi
 ProfileApi --> ProfileApiEndpoint
 ProfileApiEndpoint --> ProfileAssembler
 ProfileAssembler ..> Profile
-Toolbar --> LanguageSwitcher
-Home --> Toolbar
 Home --> AuthenticationSection
 
 Dashboard --> RaStore : operational overview with its own models (ACL)
