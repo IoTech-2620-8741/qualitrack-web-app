@@ -1246,7 +1246,7 @@
   "report-generator": {
     "title": "Generador de Reportes y Documentos",
     "subtitle": "Documentos de trazabilidad y cumplimiento listos para auditoría DIGEMID.",
-    "generating": "Generando documento",
+    "generating": "Generando reporte...",
     "loading-options": "Cargando registros...",
     "breadcrumbs": "Reportes y KPIs / Generador de reportes",
     "retry": "Reintentar",

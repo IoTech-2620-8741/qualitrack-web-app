@@ -1246,7 +1246,7 @@
   "report-generator": {
     "title": "Report & Document Generator",
     "subtitle": "Traceability and compliance documents ready for DIGEMID audit.",
-    "generating": "Generating document",
+    "generating": "Generating report...",
     "loading-options": "Loading records...",
     "breadcrumbs": "Reports & KPIs / Report Generator",
     "retry": "Try again",
