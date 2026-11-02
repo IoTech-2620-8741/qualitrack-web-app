@@ -1,5 +1,5 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, catchError, map } from 'rxjs';
+import { Observable, catchError, map, of } from 'rxjs';
 import { ErrorHandlingEnabledBaseType } from '../../shared/infrastructure/error-handling-enabled-base-type';
 import { environment } from '../../../environments/environment';
 import { OverviewLaboratory } from '../domain/model/overview-laboratory.entity';
@@ -15,6 +15,7 @@ import { IndicatorPeriod } from '../domain/model/indicator-period';
 import {
   OverviewAlertResource,
   OverviewBatchResource,
+  OverviewEnvironmentalProfileResource,
   OverviewEnvironmentResource,
   OverviewEquipmentResource,
   OverviewLaboratoryResource,
@@ -24,6 +25,7 @@ import {
   OverviewSubscriptionResource,
 } from './operational-overview-response';
 import { OperationalOverviewAssembler } from './operational-overview-assembler';
+import { OverviewEnvironmentalProfile } from '../domain/model/overview-environmental-profile.entity';
 
 const laboratoriesEndpointUrl = `${environment.serverBasePath}${environment.laboratoryLabsEndpointPath}`;
 const plansEndpointUrl = `${environment.serverBasePath}${environment.subscriptionPlansEndpointPath}`;
@@ -43,12 +45,24 @@ const plansEndpointUrl = `${environment.serverBasePath}${environment.subscriptio
  * - GET /laboratories/{laboratoryId}/subscriptions?status=ACTIVE and /subscription-plans (Payments & Subscriptions)
  */
 export class OperationalOverviewApiEndpoint extends ErrorHandlingEnabledBaseType {
+  /** Assembler used to map raw API resources to domain entities. */
   private readonly assembler = new OperationalOverviewAssembler();
 
+  /**
+   * Creates an instance of OperationalOverviewApiEndpoint.
+   *
+   * @param http - Angular HttpClient used to perform the HTTP requests.
+   */
   constructor(private readonly http: HttpClient) {
     super();
   }
 
+  /**
+   * Reads the main data of a laboratory.
+   *
+   * @param laboratoryId - The laboratory identifier.
+   * @returns Observable stream emitting the {@link OverviewLaboratory} entity.
+   */
   getLaboratory(laboratoryId: number): Observable<OverviewLaboratory> {
     return this.http.get<OverviewLaboratoryResource>(this.laboratory(laboratoryId)).pipe(
       map((resource) => this.assembler.toLaboratory(resource)),
@@ -56,6 +70,12 @@ export class OperationalOverviewApiEndpoint extends ErrorHandlingEnabledBaseType
     );
   }
 
+  /**
+   * Reads the environments registered in a laboratory.
+   *
+   * @param laboratoryId - The laboratory identifier.
+   * @returns Observable stream emitting an array of {@link OverviewEnvironment} entities.
+   */
   getEnvironments(laboratoryId: number): Observable<OverviewEnvironment[]> {
     return this.http
       .get<OverviewEnvironmentResource[]>(`${this.laboratory(laboratoryId)}${environment.laboratoryEnvironmentsEndpointPath}`)
@@ -65,6 +85,13 @@ export class OperationalOverviewApiEndpoint extends ErrorHandlingEnabledBaseType
       );
   }
 
+  /**
+   * Reads the raw materials of an environment that have low stock.
+   *
+   * @param laboratoryId - The laboratory identifier.
+   * @param environmentId - The environment identifier.
+   * @returns Observable stream emitting an array of {@link OverviewRawMaterial} entities.
+   */
   getLowStockMaterials(laboratoryId: number, environmentId: number): Observable<OverviewRawMaterial[]> {
     const params = new HttpParams().set('stockStatus', 'LOW');
     return this.http
@@ -78,6 +105,12 @@ export class OperationalOverviewApiEndpoint extends ErrorHandlingEnabledBaseType
       );
   }
 
+  /**
+   * Reads the production batches of a laboratory.
+   *
+   * @param laboratoryId - The laboratory identifier.
+   * @returns Observable stream emitting an array of {@link OverviewBatch} entities.
+   */
   getBatches(laboratoryId: number): Observable<OverviewBatch[]> {
     return this.http
       .get<OverviewBatchResource[]>(`${this.laboratory(laboratoryId)}${environment.productBatchesEndpointPath}`)
@@ -87,6 +120,12 @@ export class OperationalOverviewApiEndpoint extends ErrorHandlingEnabledBaseType
       );
   }
 
+  /**
+   * Reads the equipment and IoT devices of a laboratory.
+   *
+   * @param laboratoryId - The laboratory identifier.
+   * @returns Observable stream emitting an array of {@link OverviewEquipment} entities.
+   */
   getEquipment(laboratoryId: number): Observable<OverviewEquipment[]> {
     return this.http
       .get<OverviewEquipmentResource[]>(`${this.laboratory(laboratoryId)}${environment.equipmentEndpointPath}`)
@@ -96,6 +135,13 @@ export class OperationalOverviewApiEndpoint extends ErrorHandlingEnabledBaseType
       );
   }
 
+  /**
+   * Reads the open alerts of a specific environment.
+   *
+   * @param laboratoryId - The laboratory identifier.
+   * @param environmentId - The environment identifier.
+   * @returns Observable stream emitting an array of {@link OverviewAlert} entities.
+   */
   getOpenAlerts(laboratoryId: number, environmentId: number): Observable<OverviewAlert[]> {
     const params = new HttpParams().set('active', true);
     return this.http
@@ -111,6 +157,12 @@ export class OperationalOverviewApiEndpoint extends ErrorHandlingEnabledBaseType
 
   /**
    * Reads the measurements of an environment, or of one container monitor when its identifier is given.
+   *
+   * @param laboratoryId - The laboratory identifier.
+   * @param environmentId - The environment identifier.
+   * @param containerMonitorId - Optional container monitor identifier.
+   * @param period - The time period for the readings.
+   * @returns Observable stream emitting an array of {@link OverviewReading} entities.
    */
   getReadings(
     laboratoryId: number,
@@ -133,7 +185,8 @@ export class OperationalOverviewApiEndpoint extends ErrorHandlingEnabledBaseType
   /**
    * Reads the active subscription of the laboratory.
    *
-   * @returns The active subscription, or null when the laboratory has none
+   * @param laboratoryId - The laboratory identifier.
+   * @returns Observable stream emitting the active subscription, or null when the laboratory has none.
    */
   getActiveSubscription(laboratoryId: number): Observable<OverviewSubscription | null> {
     const params = new HttpParams().set('status', 'ACTIVE');
@@ -151,6 +204,11 @@ export class OperationalOverviewApiEndpoint extends ErrorHandlingEnabledBaseType
       );
   }
 
+  /**
+   * Reads all the available subscription plans in the platform.
+   *
+   * @returns Observable stream emitting an array of {@link OverviewPlan} entities.
+   */
   getPlans(): Observable<OverviewPlan[]> {
     return this.http.get<OverviewPlanResource[]>(plansEndpointUrl).pipe(
       map((resources) => resources.map((resource) => this.assembler.toPlan(resource))),
@@ -158,10 +216,81 @@ export class OperationalOverviewApiEndpoint extends ErrorHandlingEnabledBaseType
     );
   }
 
+  /**
+   * Reads the environmental profile (thresholds) of an environment.
+   *
+   * @remarks
+   * Tracking already exposes it; RA only consumes it to color the KPI cards.
+   * A 404 means "not configured yet" and resolves to null.
+   *
+   * @param laboratoryId - The laboratory identifier.
+   * @param environmentId - The environment identifier.
+   * @returns Observable stream emitting the profile or null.
+   */
+  getEnvironmentalProfile(
+    laboratoryId: number,
+    environmentId: number,
+  ): Observable<OverviewEnvironmentalProfile | null> {
+    const url = `${this.environment(laboratoryId, environmentId)}${environment.trackingEnvironmentalProfileEndpointPath}`;
+    return this.http
+      .get<OverviewEnvironmentalProfileResource>(url)
+      .pipe(
+        map((resource) => this.assembler.toEnvironmentalProfile(resource)),
+        catchError((error: any) =>
+          error?.status === 404
+            ? of(null)
+            : this.handleError(`Failed to fetch environmental profile of environment ${environmentId}`)(error),
+        ),
+      );
+  }
+
+  /**
+   * Reads the environmental profile (thresholds) of a specific container monitor.
+   *
+   * @remarks
+   * Container monitors have their own thresholds independent of the environment.
+   * A 404 means "not configured yet" and resolves to null.
+   *
+   * @param laboratoryId - The laboratory identifier.
+   * @param environmentId - The environment identifier.
+   * @param deviceId - The container monitor identifier.
+   * @returns Observable stream emitting the profile or null.
+   */
+  getContainerMonitorProfile(
+    laboratoryId: number,
+    environmentId: number,
+    deviceId: number,
+  ): Observable<OverviewEnvironmentalProfile | null> {
+    const url = `${this.environment(laboratoryId, environmentId)}${environment.containerMonitorsEndpointPath}/${deviceId}${environment.trackingEnvironmentalProfileEndpointPath}`;
+    return this.http
+      .get<OverviewEnvironmentalProfileResource>(url)
+      .pipe(
+        map((resource) => this.assembler.toEnvironmentalProfile(resource)),
+        catchError((error: any) =>
+          error?.status === 404
+            ? of(null)
+            : this.handleError(`Failed to fetch container monitor profile`)(error),
+        ),
+      );
+  }
+
+  /**
+   * Builds the base URL for a specific laboratory.
+   *
+   * @param laboratoryId - The laboratory identifier.
+   * @returns The absolute URL path to the laboratory.
+   */
   private laboratory(laboratoryId: number): string {
     return `${laboratoriesEndpointUrl}/${laboratoryId}`;
   }
 
+  /**
+   * Builds the base URL for a specific environment within a laboratory.
+   *
+   * @param laboratoryId - The laboratory identifier.
+   * @param environmentId - The environment identifier.
+   * @returns The absolute URL path to the environment.
+   */
   private environment(laboratoryId: number, environmentId: number): string {
     return `${this.laboratory(laboratoryId)}${environment.laboratoryEnvironmentsEndpointPath}/${environmentId}`;
   }
