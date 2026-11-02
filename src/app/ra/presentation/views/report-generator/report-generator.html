@@ -1,69 +1,30 @@
 <div class="generator-container">
-  <div class="section-header">
-    <div class="title-group">
-      <mat-icon class="title-icon">description</mat-icon>
-      <h2>{{ 'report-generator.title' | translate }}</h2>
-    </div>
+  <div class="page-header">
+    <div class="breadcrumbs">{{ 'report-generator.breadcrumbs' | translate }}</div>
+    <h1 class="page-title">{{ 'report-generator.title' | translate }}</h1>
+    <p class="page-desc">{{ 'report-generator.subtitle' | translate }}</p>
   </div>
 
   @if (store.error()) {
     <app-error-banner [messageKey]="store.error()!" [dismissible]="true" (dismiss)="store.clearMessages()" />
   }
 
-  @if (store.successMsg()) {
-    <div class="alert success-message">
-      <mat-icon>check_circle</mat-icon>
-      <span role="status">{{ store.successMsg()! | translate }}</span>
-      <button mat-icon-button type="button" (click)="store.clearMessages()">
-        <mat-icon>close</mat-icon>
-      </button>
+  <div class="layout-grid" [class.loading-blur]="store.isLoading()">
+    <!-- Componente Izquierdo -->
+    <div class="sidebar">
+      <app-report-type-selector />
     </div>
-  }
+
+    <!-- Componente Derecho -->
+    <div class="main-panel">
+      <app-report-params-form />
+    </div>
+  </div>
 
   @if (store.isLoading()) {
     <div class="loading-overlay">
-      <mat-spinner diameter="60"></mat-spinner>
-      <p>{{ 'report-generator.generating' | translate }}...</p>
+      <mat-spinner diameter="50"></mat-spinner>
+      <p>{{ 'report-generator.generating' | translate }}</p>
     </div>
   }
-
-  <div class="reports-grid" [class.loading-blur]="store.isLoading()">
-
-    <app-report-batch-card
-      [batches]="batches()"
-      [loading]="batchesLoading()"
-      [failed]="batchesFailed()"
-      [isLoading]="store.isLoading()"
-      (generate)="onBatchReport($event)"
-      (reload)="store.loadBatches()"
-      (clearMessages)="store.clearMessages()"
-    />
-
-    <app-report-compliance-card
-      [environments]="store.environments()"
-      [allEnvironments]="ALL_ENVIRONMENTS"
-      [isLoading]="store.isLoading()"
-      (generate)="onComplianceReport($event)"
-      (clearMessages)="store.clearMessages()"
-    />
-
-    <app-report-inventory-card
-      [environments]="store.environments()"
-      [allEnvironments]="ALL_ENVIRONMENTS"
-      [isLoading]="store.isLoading()"
-      (generate)="onInventoryReport($event)"
-      (clearMessages)="store.clearMessages()"
-    />
-
-    <app-report-equipment-card
-      [equipmentList]="locatedEquipment()"
-      [loading]="equipmentLoading()"
-      [failed]="equipmentFailed()"
-      [isLoading]="store.isLoading()"
-      (generate)="onEquipmentExport($event)"
-      (reload)="store.loadEquipment()"
-      (clearMessages)="store.clearMessages()"
-    />
-
-  </div>
 </div>
