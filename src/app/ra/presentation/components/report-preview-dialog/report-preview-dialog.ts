@@ -1,13 +1,17 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, OnDestroy, inject } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { MAT_DIALOG_DATA, MatDialogContent, MatDialogRef, MatDialogTitle } from '@angular/material/dialog';
 import { MatIcon } from '@angular/material/icon';
-import { MatIconButton } from '@angular/material/button';
+import { MatButton, MatIconButton } from '@angular/material/button';
+import { MatTooltip } from '@angular/material/tooltip';
 import { TranslatePipe } from '@ngx-translate/core';
+import { RaStore } from '../../../application/ra.store';
 
 /** Data injected into the preview dialog. */
 export interface PreviewDialogData {
-  blob: Blob;
+  /** PDF of the report generated for the preview. */
+  file: Blob;
+  /** Translation key of the report type. */
   title: string;
 }
 
@@ -15,46 +19,50 @@ export interface PreviewDialogData {
  * Modal dialog to display a preview of the generated PDF.
  *
  * @remarks
- * It takes a Blob from the API response, creates a secure URL, and renders
- * it inside a native iframe, allowing the user to read the document before downloading.
+ * It renders the report generated for the preview inside an iframe. Downloading it from here reuses that report
+ * through {@link RaStore.downloadPreview}, so the platform does not generate and store it twice.
  */
 @Component({
   imports: [
     MatIcon,
     MatDialogContent,
     MatDialogTitle,
+    MatButton,
     MatIconButton,
+    MatTooltip,
     TranslatePipe
   ],
   selector: 'app-report-preview-dialog',
   styleUrl: './report-preview-dialog.css',
   templateUrl: './report-preview-dialog.html',
 })
-export class ReportPreviewDialog implements OnInit {
-  /** The sanitized URL of the PDF object. */
-  protected pdfUrl: SafeResourceUrl | null = null;
+export class ReportPreviewDialog implements OnDestroy {
+  /** The data injected by MatDialog: the PDF and the report type. */
+  protected readonly data = inject<PreviewDialogData>(MAT_DIALOG_DATA);
 
-  /**
-   * Creates an instance of ReportPreviewDialog.
-   *
-   * @param data - The data injected by MatDialog (Blob and title)
-   * @param dialogRef - Reference to the dialog to close it
-   * @param sanitizer - Service to bypass security for the Blob URL
-   */
-  constructor(
-    @Inject(MAT_DIALOG_DATA) public data: PreviewDialogData,
-    private dialogRef: MatDialogRef<ReportPreviewDialog>,
-    private sanitizer: DomSanitizer
-  ) {}
+  private readonly dialogRef = inject(MatDialogRef<ReportPreviewDialog>);
 
-  /** Generates the Blob URL and sanitizes it for iframe rendering. */
-  ngOnInit() {
-    const url = URL.createObjectURL(this.data.blob);
-    this.pdfUrl = this.sanitizer.bypassSecurityTrustResourceUrl(url);
+  private readonly store = inject(RaStore);
+
+  /** Temporary URL of the PDF, released when the dialog closes. */
+  private readonly fileUrl = URL.createObjectURL(this.data.file);
+
+  /** The URL of the PDF, trusted for the iframe. */
+  protected readonly pdfUrl: SafeResourceUrl = inject(DomSanitizer).bypassSecurityTrustResourceUrl(this.fileUrl);
+
+  /** Releases the temporary URL of the PDF. */
+  ngOnDestroy(): void {
+    URL.revokeObjectURL(this.fileUrl);
+  }
+
+  /** Downloads the previewed report and closes the dialog. */
+  protected download(): void {
+    this.store.downloadPreview();
+    this.dialogRef.close();
   }
 
   /** Closes the modal dialog. */
-  protected close() {
+  protected close(): void {
     this.dialogRef.close();
   }
 }
