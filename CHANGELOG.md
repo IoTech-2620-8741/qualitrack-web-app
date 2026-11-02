@@ -44,6 +44,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Compliance & Alerts (ca): visitors no longer request the unread notification count every 30 seconds; the bell is created only with operational access (#62).
 
+- Reporting & Audit (ra): the report preview generates the report once; downloading it from the preview, or again with the same parameters, reuses that file instead of storing another report. A failed preview shows its translated message, the preview dialog shows its title and a download button, and the "report downloaded" message is shown again (#63).
+
+- Internationalization: the close label of dialogs and error banners exists in English and Spanish (#63).
+
 ## [2.0.0] - 2026-10-28
 
 ### Changed

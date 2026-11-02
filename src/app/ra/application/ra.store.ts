@@ -24,6 +24,7 @@ import { GenerateBatchReportCommand } from '../domain/model/generate-batch-repor
 import { GenerateComplianceReportCommand } from '../domain/model/generate-compliance-report.command';
 import { GenerateInventoryReportCommand } from '../domain/model/generate-inventory-report.command';
 import { ExportEquipmentLogCommand } from '../domain/model/export-equipment-log.command';
+import { ReportOrder } from '../domain/model/report-order';
 
 /** State of one part of the operational overview: what is being read and what was read. */
 type OverviewState<T> = { status: 'idle' | 'loading' | 'ready' | 'error'; data: T | null };
@@ -139,6 +140,11 @@ export class RaStore {
    * Latest confirmation as a translation key.
    */
   private readonly _successMsg = signal<string | null>(null);
+
+  /**
+   * Report generated for the preview: its file, the key of its parameters and how it is downloaded.
+   */
+  private readonly _reportPreview = signal<{ key: string; file: Blob; filename: string; success: string } | null>(null);
 
   /**
    * Read-only signal for the indicators of the laboratory.
@@ -563,9 +569,7 @@ export class RaStore {
    * @param command - Batch, deviation section and format
    */
   generateBatchReport(command: GenerateBatchReportCommand): void {
-    this.download(this.api.generateBatchReport(command),
-      `Batch_Report_${command.batchId}.${command.format.toLowerCase()}`, 'report-generator.success.batch',
-      'report-generator.errors.batch');
+    this.generateReport({ type: 'batch', command });
   }
 
   /**
@@ -574,10 +578,7 @@ export class RaStore {
    * @param command - Laboratory, optional environment, calendar days and format
    */
   generateComplianceReport(command: GenerateComplianceReportCommand): void {
-    const scope = command.environmentId ?? command.laboratoryId;
-    this.download(this.api.generateComplianceReport(command),
-      `Environmental_Report_${scope}_${command.startDate}_${command.endDate}.${command.format.toLowerCase()}`,
-      'report-generator.success.compliance', 'report-generator.errors.compliance');
+    this.generateReport({ type: 'compliance', command });
   }
 
   /**
@@ -586,10 +587,7 @@ export class RaStore {
    * @param command - Laboratory, optional environment and format
    */
   generateInventoryReport(command: GenerateInventoryReportCommand): void {
-    const scope = command.environmentId ?? command.laboratoryId;
-    this.download(this.api.generateInventoryReport(command),
-      `Inventory_Report_${scope}.${command.format.toLowerCase()}`, 'report-generator.success.inventory',
-      'report-generator.errors.inventory');
+    this.generateReport({ type: 'inventory', command });
   }
 
   /**
@@ -598,9 +596,73 @@ export class RaStore {
    * @param command - Command containing equipment log export parameters
    */
   exportEquipmentLog(command: ExportEquipmentLogCommand): void {
-    this.download(this.api.exportEquipmentLog(command),
-      `Equipment_Log_${command.equipmentId}.${command.format.toLowerCase()}`, 'report-generator.success.equipment',
-      'report-generator.errors.equipment');
+    this.generateReport({ type: 'equipment', command });
+  }
+
+  /**
+   * Generates and downloads a report.
+   *
+   * @remarks
+   * The platform stores every report it generates, so a report already generated for the preview with the same
+   * parameters is downloaded again instead of generating another one.
+   *
+   * @param order - Type and parameters of the report
+   */
+  generateReport(order: ReportOrder): void {
+    const report = this.describeReport(order);
+    const preview = this._reportPreview();
+    if (preview?.key === report.key) {
+      this.downloadPreview();
+      return;
+    }
+    this.download(report.request(), report.filename, report.success, report.fallback);
+  }
+
+  /**
+   * Generates a report to show it before downloading it, without downloading it.
+   *
+   * @remarks
+   * The file is kept until {@link RaStore.clearReportPreview}, so downloading it afterwards does not generate the
+   * report again. On failure the reason is exposed through {@link RaStore.error}.
+   *
+   * @param order - Type and parameters of the report
+   * @returns The file, or null when it could not be generated
+   */
+  async previewReport(order: ReportOrder): Promise<Blob | null> {
+    const report = this.describeReport(order);
+    const preview = this._reportPreview();
+    if (preview?.key === report.key) return preview.file;
+    this._isLoading.set(true);
+    this._error.set(null);
+    this._successMsg.set(null);
+    try {
+      const file = await firstValueFrom(report.request());
+      this._reportPreview.set({ key: report.key, file, filename: report.filename, success: report.success });
+      return file;
+    } catch (error) {
+      this._error.set(this.formatError(error, report.fallback));
+      return null;
+    } finally {
+      this._isLoading.set(false);
+    }
+  }
+
+  /**
+   * Downloads the report generated for the preview.
+   */
+  downloadPreview(): void {
+    const preview = this._reportPreview();
+    if (!preview) return;
+    this._error.set(null);
+    this.downloadFile(preview.file, preview.filename);
+    this._successMsg.set(preview.success);
+  }
+
+  /**
+   * Forgets the report generated for the preview, so the next download generates a new one.
+   */
+  clearReportPreview(): void {
+    this._reportPreview.set(null);
   }
 
   /**
@@ -708,15 +770,50 @@ export class RaStore {
   }
 
   /**
-   * Get the report file without automatically downloading it so you can preview it.
+   * Request, file name and messages of a report.
+   *
+   * @param order - Type and parameters of the report
+   * @returns The key that identifies the report by its parameters, the request that generates it, its file name and
+   *   the translation keys of its success and failure
    */
-  previewReport(type: 'batch' | 'compliance' | 'inventory' | 'equipment', command: any): Observable<Blob> {
-    switch (type) {
-      case 'batch': return this.api.generateBatchReport(command);
-      case 'compliance': return this.api.generateComplianceReport(command);
-      case 'inventory': return this.api.generateInventoryReport(command);
-      case 'equipment': return this.api.exportEquipmentLog(command);
-      default: throw new Error('Tipo de reporte no soportado');
+  private describeReport(order: ReportOrder): ReportDescription {
+    const key = JSON.stringify(order);
+    const extension = order.command.format.toLowerCase();
+    switch (order.type) {
+      case 'batch':
+        return { key, request: () => this.api.generateBatchReport(order.command),
+          filename: `Batch_Report_${order.command.batchId}.${extension}`,
+          success: 'report-generator.success.batch', fallback: 'report-generator.errors.batch' };
+      case 'compliance': {
+        const { environmentId, laboratoryId, startDate, endDate } = order.command;
+        return { key, request: () => this.api.generateComplianceReport(order.command),
+          filename: `Environmental_Report_${environmentId ?? laboratoryId}_${startDate}_${endDate}.${extension}`,
+          success: 'report-generator.success.compliance', fallback: 'report-generator.errors.compliance' };
+      }
+      case 'inventory':
+        return { key, request: () => this.api.generateInventoryReport(order.command),
+          filename: `Inventory_Report_${order.command.environmentId ?? order.command.laboratoryId}.${extension}`,
+          success: 'report-generator.success.inventory', fallback: 'report-generator.errors.inventory' };
+      case 'equipment':
+        return { key, request: () => this.api.exportEquipmentLog(order.command),
+          filename: `Equipment_Log_${order.command.equipmentId}.${extension}`,
+          success: 'report-generator.success.equipment', fallback: 'report-generator.errors.equipment' };
     }
   }
+}
+
+/**
+ * How a report is generated and delivered.
+ */
+interface ReportDescription {
+  /** Identifies the report by its type and parameters. */
+  key: string;
+  /** Generates the report and reads its file. */
+  request: () => Observable<Blob>;
+  /** Name of the downloaded file. */
+  filename: string;
+  /** Translation key shown once the file is downloaded. */
+  success: string;
+  /** Translation key shown when the report cannot be generated. */
+  fallback: string;
 }

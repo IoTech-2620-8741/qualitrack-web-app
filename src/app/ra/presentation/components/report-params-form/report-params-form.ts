@@ -11,10 +11,10 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog } from '@angular/material/dialog';
-import { firstValueFrom } from 'rxjs';
 
 import { ReportGeneratorState } from '../../views/report-generator/report-generator.state';
 import { RaStore } from '../../../application/ra.store';
+import { ReportOrder } from '../../../domain/model/report-order';
 import { IamStore } from '../../../../iam/application/iam.store';
 import { localIsoDate } from '../../../../shared/presentation/utils/local-date';
 import { periodError, MAX_REPORT_DAYS } from '../../utils/report-period';
@@ -102,100 +102,71 @@ export class ReportParamsForm {
   });
 
   /**
-   * Fetches the report as a Blob and opens it in a preview modal.
+   * Generates the report once and shows it in a dialog, from which it can be downloaded without generating it again.
    */
-  protected async onPreview() {
-    if (!this.isValid()) return;
-
-    const form = this.state.form();
-    const laboratoryId = this.iamStore.requireLaboratoryId();
-    let command: any;
-
-    switch (form.type) {
-      case 'batch':
-        command = { batchId: form.batchId!, includeDeviations: true, format: form.format };
-        break;
-      case 'compliance':
-        command = { laboratoryId, environmentId: form.environmentId || null, startDate: localIsoDate(form.startDate!), endDate: localIsoDate(form.endDate!), format: form.format };
-        break;
-      case 'inventory':
-        command = { laboratoryId, environmentId: form.environmentId || null, format: form.format };
-        break;
-      case 'equipment':
-        const equipment = this.locatedEquipment().find(e => e.id === form.equipmentId);
-        if (!equipment?.environmentId) return;
-        command = { laboratoryId, environmentId: equipment.environmentId, equipmentId: form.equipmentId!, startDate: localIsoDate(form.startDate!), endDate: localIsoDate(form.endDate!), format: form.format };
-        break;
-    }
-
-    try {
-      const blob = await firstValueFrom(this.store.previewReport(form.type, command));
-
-      this.dialog.open(ReportPreviewDialog, {
-        width: '900px',
-        maxWidth: '95vw',
-        height: '85vh',
-        panelClass: 'custom-dialog-container',
-        data: {
-          blob: blob,
-          title: this.getTitle()
-        }
-      });
-    } catch (error) {
-      console.error('Error al generar vista previa', error);
-      alert('No se pudo generar la vista previa del reporte.');
-    }
+  protected async onPreview(): Promise<void> {
+    const order = this.order();
+    if (!order) return;
+    const file = await this.store.previewReport(order);
+    if (!file) return;
+    this.dialog.open(ReportPreviewDialog, {
+      width: '900px',
+      maxWidth: '95vw',
+      height: '85vh',
+      panelClass: 'custom-dialog-container',
+      data: { file, title: this.getTitle() },
+    });
   }
 
   /**
-   * Dispatches the command to generate and download the selected report.
+   * Downloads the selected report: the one already generated for the preview when its parameters did not change,
+   * otherwise a new one.
    */
-  protected onGenerate() {
-    if (!this.isValid()) return;
+  protected onGenerate(): void {
+    const order = this.order();
+    if (order) this.store.generateReport(order);
+  }
 
+  /**
+   * The report described by the form.
+   *
+   * @returns The type and command of the report, or null while the form is not valid
+   */
+  private order(): ReportOrder | null {
+    if (!this.isValid()) return null;
     const form = this.state.form();
     const laboratoryId = this.iamStore.requireLaboratoryId();
-
     switch (form.type) {
       case 'batch':
-        this.store.generateBatchReport({
-          batchId: form.batchId!,
-          includeDeviations: true,
-          format: form.format
-        });
-        break;
-
+        return { type: 'batch', command: { batchId: form.batchId!, includeDeviations: true, format: form.format } };
       case 'compliance':
-        this.store.generateComplianceReport({
-          laboratoryId,
-          environmentId: form.environmentId || null,
-          startDate: localIsoDate(form.startDate!),
-          endDate: localIsoDate(form.endDate!),
-          format: form.format
-        });
-        break;
-
+        return {
+          type: 'compliance',
+          command: {
+            laboratoryId,
+            environmentId: form.environmentId || null,
+            startDate: localIsoDate(form.startDate!),
+            endDate: localIsoDate(form.endDate!),
+            format: form.format,
+          },
+        };
       case 'inventory':
-        this.store.generateInventoryReport({
-          laboratoryId,
-          environmentId: form.environmentId || null,
-          format: form.format
-        });
-        break;
-
-      case 'equipment':
-        const equipment = this.locatedEquipment().find(e => e.id === form.equipmentId);
-        if (!equipment?.environmentId) return;
-
-        this.store.exportEquipmentLog({
-          laboratoryId,
-          environmentId: equipment.environmentId,
-          equipmentId: form.equipmentId!,
-          startDate: localIsoDate(form.startDate!),
-          endDate: localIsoDate(form.endDate!),
-          format: form.format
-        });
-        break;
+        return { type: 'inventory', command: { laboratoryId, environmentId: form.environmentId || null, format: form.format } };
+      case 'equipment': {
+        const equipment = this.locatedEquipment().find((item) => item.id === form.equipmentId);
+        if (!equipment?.environmentId) return null;
+        return {
+          type: 'equipment',
+          command: {
+            laboratoryId,
+            environmentId: equipment.environmentId,
+            equipmentId: form.equipmentId!,
+            startDate: localIsoDate(form.startDate!),
+            endDate: localIsoDate(form.endDate!),
+            format: form.format,
+          },
+        };
+      }
     }
   }
 }
