@@ -706,4 +706,17 @@ export class RaStore {
       }),
     );
   }
+
+  /**
+   * Get the report file without automatically downloading it so you can preview it.
+   */
+  previewReport(type: 'batch' | 'compliance' | 'inventory' | 'equipment', command: any): Observable<Blob> {
+    switch (type) {
+      case 'batch': return this.api.generateBatchReport(command);
+      case 'compliance': return this.api.generateComplianceReport(command);
+      case 'inventory': return this.api.generateInventoryReport(command);
+      case 'equipment': return this.api.exportEquipmentLog(command);
+      default: throw new Error('Tipo de reporte no soportado');
+    }
+  }
 }
