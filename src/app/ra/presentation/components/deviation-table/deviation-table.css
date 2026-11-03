@@ -1,0 +1,15 @@
+.table-container { background: white; border-radius: 12px; border: 1px solid #e2e8f0; overflow: hidden; margin-bottom: 24px; }
+th.mat-mdc-header-cell { background: #f8fafc; color: #64748b; font-size: 12px; padding: 12px 16px; border-bottom: 1px solid #e2e8f0; }
+td.mat-mdc-cell { padding: 16px; border-bottom: 1px solid #e2e8f0; color: #1e293b; font-size: 13px; }
+.var-cell { display: flex; flex-direction: column; gap: 4px; }
+.var-cell small { color: #64748b; font-size: 11px; }
+.progress-cell { display: flex; align-items: center; gap: 12px; }
+.progress-bar { width: 120px; height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden; }
+.progress-fill { height: 100%; background: #10b981; }
+.progress-fill.warning { background: #f59e0b; }
+.progress-text { font-weight: 600; font-size: 12px; width: 50px; }
+.critical-badge { display: inline-flex; align-items: center; gap: 4px; color: #ef4444; font-weight: 600; background: #fee2e2; padding: 4px 8px; border-radius: 6px; font-size: 11px; }
+.critical-badge mat-icon { font-size: 14px; width: 14px; height: 14px; }
+.trend-cell { display: flex; align-items: center; gap: 4px; }
+.active-row { background: #f0fdf4; }
+tr.mat-mdc-row { cursor: pointer; }
