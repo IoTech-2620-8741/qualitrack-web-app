@@ -360,7 +360,8 @@
       "search": "Search",
       "refresh": "Refresh"
     },
-    "undo": "Undo"
+    "undo": "Undo",
+    "breadcrumb": "Breadcrumb"
   },
   "status": {
     "ON_TRACK": "On Track",
@@ -782,6 +783,15 @@
       "sent": "The alert was e-mailed to {{count}} person(s).",
       "no-recipients": "Nobody else in the laboratory has e-mail notices enabled.",
       "failed": "The e-mail could not be sent. Check that e-mail is configured on the platform."
+    },
+    "page": {
+      "title": "Compliance alerts",
+      "preferences": "Notification preferences",
+      "sections": "Alert sections"
+    },
+    "tabs": {
+      "active": "Active",
+      "history": "History"
     }
   },
   "notifications": {

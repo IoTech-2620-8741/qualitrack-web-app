@@ -1,5 +1,4 @@
 import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
-import { RouterLink } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -7,6 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { CaStore } from '../../../application/ca.store';
 import { EnvironmentSelector } from '../../../../shared/presentation/components/environment-selector/environment-selector';
 import { AlertTable } from '../../components/alert-table/alert-table';
+import { AlertsPageHeader } from '../../components/alerts-page-header/alerts-page-header';
 
 /**
  * Active alerts of an environment and its monitored containers (US85): open alerts, unresolved or being attended,
@@ -16,12 +16,12 @@ import { AlertTable } from '../../components/alert-table/alert-table';
   selector: 'app-alert-dashboard',
   standalone: true,
   imports: [
-    RouterLink,
     TranslatePipe,
     MatButtonModule,
     MatIconModule,
     EnvironmentSelector,
     AlertTable,
+    AlertsPageHeader,
   ],
   templateUrl: './alert-dashboard.html',
   changeDetection: ChangeDetectionStrategy.Eager,
