@@ -24,6 +24,12 @@ interface NavigationOption {
   children?: NavigationOption[];
 }
 
+/** Group of side navigation options; the untitled group stays above the titled ones. */
+interface NavigationSection {
+  title?: string;
+  options: NavigationOption[];
+}
+
 /**
  * Main shell layout component for the application.
  *
@@ -98,108 +104,134 @@ export class Layout {
   protected readonly sidenavOpened = signal(false);
 
   /**
-   * Navigation options rendered by the layout template. Entries marked qualityOnly (subscription,
-   * equipment and staff registration) are reserved to quality managers.
+   * Navigation sections rendered by the layout template, ordered by how often the laboratory works with them:
+   * daily operation first, then quality review and finally administration. Entries marked qualityOnly
+   * (subscription, equipment and staff registration) are reserved to quality managers.
    */
-  private readonly options: NavigationOption[] = [
+  private readonly sections: NavigationSection[] = [
     {
-      label: 'nav.dashboard',
-      icon: 'dashboard',
-      link: '/dashboard',
-    },
-    {
-      label: 'nav.batches',
-      icon: 'inventory',
-      link: '/batches',
-      children: [
-        { label: 'nav.products', link: '/batches/environments' },
-        { label: 'nav.batch-list', link: '/batches' },
-      ],
-    },
-    {
-      label: 'nav.equipment',
-      icon: 'precision_manufacturing',
-      link: '/equipments',
-      children: [
-        { label: 'nav.equipment-list', link: '/equipments' },
+      options: [
         {
-          label: 'nav.register-equipment',
-          link: '/equipments/new',
-          qualityOnly: true,
+          label: 'nav.dashboard',
+          icon: 'dashboard',
+          link: '/dashboard',
         },
-        { label: 'nav.register-device', link: '/equipments/devices/new', qualityOnly: true },
       ],
     },
     {
-      label: 'nav.alerts',
-      icon: 'warning',
-      link: '/alerts',
-      children: [
-        { label: 'nav.alert-dashboard', link: '/alerts' },
-        { label: 'nav.alert-history', link: '/alerts/history' },
+      title: 'nav.section.operation',
+      options: [
+        {
+          label: 'nav.batches',
+          icon: 'inventory',
+          link: '/batches',
+          children: [
+            { label: 'nav.products', link: '/batches/environments' },
+            { label: 'nav.batch-list', link: '/batches' },
+          ],
+        },
+        {
+          label: 'nav.equipment',
+          icon: 'precision_manufacturing',
+          link: '/equipments',
+          children: [
+            { label: 'nav.equipment-list', link: '/equipments' },
+            {
+              label: 'nav.register-equipment',
+              link: '/equipments/new',
+              qualityOnly: true,
+            },
+            { label: 'nav.register-device', link: '/equipments/devices/new', qualityOnly: true },
+          ],
+        },
+        {
+          label: 'nav.tracking',
+          icon: 'sensors',
+          link: '/tracking',
+          children: [
+            { label: 'nav.tracking-monitoring', link: '/tracking/monitoring' },
+            { label: 'nav.tracking-history', link: '/tracking/history' },
+            { label: 'nav.tracking-profiles', link: '/tracking/profiles' },
+          ],
+        },
+        {
+          label: 'nav.alerts',
+          icon: 'warning',
+          link: '/alerts',
+          children: [
+            { label: 'nav.alert-dashboard', link: '/alerts' },
+            { label: 'nav.alert-history', link: '/alerts/history' },
+          ],
+        },
+        {
+          label: 'nav.inventory',
+          icon: 'inventory_2',
+          link: '/inventory',
+          children: [{ label: 'nav.raw-material-catalog', link: '/inventory' }],
+        },
       ],
     },
     {
-      label: 'nav.reports',
-      icon: 'description',
-      link: '/reports',
-      children: [
-        { label: 'nav.kpi-dashboard', link: '/reports/kpis' },
-        { label: 'nav.deviation-trends', link: '/reports/deviation-trends' },
-        { label: 'nav.report-generator', link: '/reports/new' },
-        { label: 'nav.audit-log', link: '/reports/audit-log' },
+      title: 'nav.section.quality',
+      options: [
+        {
+          label: 'nav.reports',
+          icon: 'description',
+          link: '/reports',
+          children: [
+            { label: 'nav.kpi-dashboard', link: '/reports/kpis' },
+            { label: 'nav.deviation-trends', link: '/reports/deviation-trends' },
+            { label: 'nav.report-generator', link: '/reports/new' },
+            { label: 'nav.audit-log', link: '/reports/audit-log' },
+          ],
+        },
       ],
     },
     {
-      label: 'nav.laboratory',
-      icon: 'science',
-      link: '/laboratories',
-      children: [
-        { label: 'nav.lab-profile', link: '/laboratories/profile' },
-        { label: 'nav.environments', link: '/laboratories/environments' },
-        { label: 'nav.staff-list', link: '/laboratories/staff' },
-        { label: 'nav.register-staff', link: '/laboratories/staff/new', qualityOnly: true },
-      ],
-    },
-    {
-      label: 'nav.inventory',
-      icon: 'inventory_2',
-      link: '/inventory',
-      children: [{ label: 'nav.raw-material-catalog', link: '/inventory' }],
-    },
-    {
-      label: 'nav.tracking',
-      icon: 'sensors',
-      link: '/tracking',
-      children: [
-        { label: 'nav.tracking-monitoring', link: '/tracking/monitoring' },
-        { label: 'nav.tracking-history', link: '/tracking/history' },
-        { label: 'nav.tracking-profiles', link: '/tracking/profiles' },
-      ],
-    },
-    {
-      label: 'nav.subscription',
-      icon: 'payments',
-      link: '/subscriptions',
-      qualityOnly: true,
-      children: [
-        { label: 'nav.billing-summary', link: '/subscriptions/billing' },
-        { label: 'nav.subscription-plans', link: '/subscriptions/plans' },
+      title: 'nav.section.administration',
+      options: [
+        {
+          label: 'nav.laboratory',
+          icon: 'science',
+          link: '/laboratories',
+          children: [
+            { label: 'nav.lab-profile', link: '/laboratories/profile' },
+            { label: 'nav.environments', link: '/laboratories/environments' },
+            { label: 'nav.staff-list', link: '/laboratories/staff' },
+            { label: 'nav.register-staff', link: '/laboratories/staff/new', qualityOnly: true },
+          ],
+        },
+        {
+          label: 'nav.subscription',
+          icon: 'payments',
+          link: '/subscriptions',
+          qualityOnly: true,
+          children: [
+            { label: 'nav.billing-summary', link: '/subscriptions/billing' },
+            { label: 'nav.subscription-plans', link: '/subscriptions/plans' },
+          ],
+        },
       ],
     },
   ];
 
   /**
-   * Computed signal that filters the navigation options based on the user's role.
+   * Computed signal that filters the navigation sections based on the user's role.
+   * A section whose options are all reserved to quality managers is hidden with them.
    */
-  protected readonly visibleOptions = computed(() => {
+  protected readonly visibleSections = computed(() => {
     const quality = this.canManageQuality();
-    return this.options
-      .filter((option) => quality || !option.qualityOnly)
-      .map((option) => ({
-        ...option,
-        children: option.children?.filter((child) => quality || !child.qualityOnly),
-      }));
+    return this.sections
+      .map((section) => ({
+        ...section,
+        options: section.options
+          .filter((option) => quality || !option.qualityOnly)
+          .map((option) => ({
+            ...option,
+            children: option.children?.filter((child) => quality || !child.qualityOnly),
+          })),
+      }))
+      .filter((section) => section.options.length > 0);
   });
   constructor(private readonly router: Router) {
     effect(() => this.sidenavOpened.set(!this.mobile() && this.hasOperationalAccess()));
