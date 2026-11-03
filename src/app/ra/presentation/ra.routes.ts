@@ -15,6 +15,10 @@ const reportGenerator = () =>
 const auditLogViewer = () =>
   import('./views/audit-log-viewer/audit-log-viewer').then((m) => m.AuditLogViewerComponent);
 
+const deviationDetailPage = () =>
+  import('./views/deviation-detail-page/deviation-detail-page').then(
+    (m) => m.DeviationDetailPage,
+  );
 /**
  * Route tree of Reporting & Audit (RA), addressed by resource:
  * - `kpis`: KPI dashboard of the laboratory.
@@ -29,6 +33,7 @@ const auditLogViewer = () =>
 const raRoutes: Routes = [
   { path: 'staff/:staffId/activity', loadComponent: () => import('./views/staff-activity/staff-activity').then((m) => m.StaffActivity), canActivate: [staffActivityGuard], title: 'Staff activity - QualiTrack' },
   { path: 'kpis', loadComponent: kpiDashboard },
+  { path: 'deviation-trends/:equipmentId/:parameter', loadComponent: deviationDetailPage, title: 'Detalle de desviaciones - QualiTrack', },
   { path: 'deviation-trends', loadComponent: deviationTrendChart },
   { path: 'new', loadComponent: reportGenerator },
   { path: 'audit-log', loadComponent: auditLogViewer },
