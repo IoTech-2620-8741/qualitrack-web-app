@@ -712,7 +712,7 @@
       "low": "Baja",
       "info": "Informativo",
       "warning": "Advertencia",
-      "critical": "Crítico"
+      "critical": "Crítica"
     },
     "status": {
       "unresolved": "Abierta",

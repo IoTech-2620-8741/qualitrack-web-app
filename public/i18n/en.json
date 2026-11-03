@@ -688,7 +688,7 @@
     "kpi": {
       "critical": "Critical",
       "open": "Open alerts",
-      "attending": "Being attended"
+      "attending": "In progress"
     },
     "fields": {
       "parameter": "Variable",
@@ -716,7 +716,7 @@
     },
     "status": {
       "unresolved": "Open",
-      "acknowledged": "Being attended",
+      "acknowledged": "In progress",
       "resolved": "Resolved",
       "ignored": "Ignored"
     },
@@ -760,7 +760,7 @@
       "saved": "Notification preferences saved."
     },
     "no-environments": "Alerts are listed per environment. Register an environment and its IoT devices first.",
-    "normalized": "Condition back to normal",
+    "normalized": "Condition normalized",
     "acknowledged": "The attention of the alert was registered.",
     "resolved": "The alert was resolved.",
     "errors": {
