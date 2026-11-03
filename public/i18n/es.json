@@ -1615,7 +1615,8 @@
       "usage-edit-hint": "Cambia el uso desde la lista de ambientes.",
       "max-length": "Usa como máximo {{max}} caracteres."
     },
-    "selector": "Ambiente"
+    "selector": "Ambiente",
+    "all": "Todos los ambientes ({{count}})"
   },
   "environment-usage": {
     "LABORATORY": "Laboratorio",
