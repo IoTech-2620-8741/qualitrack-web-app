@@ -128,7 +128,7 @@
     "heroImageAlt": "Two female pharmacy professionals reviewing inventory"
   },
   "language-switcher": {
-  "aria-label": "Preferred language"
+    "aria-label": "Preferred language"
   },
   "auth": {
     "already-have-account": "Already have an account?",
@@ -546,7 +546,12 @@
       "select": "Select Plan",
       "selected": "Selected",
       "continue": "Continue to Checkout",
-      "empty": "No subscription plans are currently available."
+      "empty": "No subscription plans are currently available.",
+      "toggle-monthly": "Monthly",
+      "toggle-yearly": "Annually",
+      "period-label": "Billing period",
+      "get": "Get {{name}}",
+      "already-active": "You already have an active subscription. To change plans, go to Billing."
     },
     "billing-period": {
       "monthly": "Monthly",
