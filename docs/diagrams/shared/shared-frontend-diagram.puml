@@ -9,6 +9,11 @@ package "external bounded contexts" <<External>> {
   class AuthenticationSection
 }
 
+package "app (composition root)" <<External>> {
+  class App
+  class appConfig <<providers>>
+}
+
 package "shared" {
 
   package "domain.model" {
@@ -87,13 +92,12 @@ package "shared" {
       +useLanguage(language: string): void
     }
 
-    class Toolbar {
-      -iam: IamStore
+    class Layout {
+      +isSignedIn: InputSignal<boolean>
+      +hasOperationalAccess: InputSignal<boolean>
+      +canManageQuality: InputSignal<boolean>
       #brandLink: Signal<string>
       #brandLabel: Signal<string>
-    }
-
-    class Layout {
       -router: Router
       #sidenavMode: 'side' | 'over'
       #sidenavOpened: boolean
@@ -102,6 +106,10 @@ package "shared" {
       #navigateTo(link: string): void
       #isActive(link: string): boolean
     }
+
+    class EmptyState
+    class ErrorBanner
+    class DashboardState
 
     class NavigationOption <<type>> {
       +label: string
@@ -131,11 +139,15 @@ package "shared" {
 
     class PageNotFound {
       #invalidPath: string
-      -route: ActivatedRoute
+      #isSignedIn: Signal<boolean>
       -router: Router
       +ngOnInit(): void
-      #navigateToHome(): void
+      #goBack(): void
     }
+  }
+
+  package "presentation.tokens" {
+    class SIGNED_IN <<InjectionToken<Signal<boolean>>>>
   }
 }
 
@@ -168,32 +180,36 @@ package "ca.presentation.components" <<External>> {
   class NotificationBell
 }
 
-Toolbar --> LanguageSwitcher
 Layout --> LanguageSwitcher
-Layout --> UserProfileBadge
-Layout --> UserSessionSection
-Layout --> NotificationBell : with operational access
 Layout *-- NavigationOption
-Toolbar --> IamStore
-note bottom of Toolbar
-  Pages before signing in (home, about, sign-in, sign-up) and onboarding pages.
-  The logo and the name lead to /home without a session and to /dashboard with one.
-end note
+App *-- Layout
+App --> IamStore
+App ..> UserProfileBadge : projected into Layout
+App ..> UserSessionSection : projected into Layout
+App ..> NotificationBell : projected into Layout
+appConfig ..> SIGNED_IN : provides IamStore.isSignedIn
+appConfig ..> IamStore
 note bottom of Layout
-  The logo and the name lead to /dashboard. Menu labels only use nav.* keys:
+  Wraps every page from app.html. The side menu only shows with operational
+  access. The logo and the name lead to /home without a session and to
+  /dashboard with one. Menu labels only use nav.* keys:
   English Title Case, Spanish sentence case, "Catalog" spelling.
-  The toolbar composes the notification bell (ca), profile badge (profile)
-  and sign-out action (iam). The badge photo and name open the profile.
+  App projects the notification bell (ca), profile badge (profile)
+  and sign-out action (iam) into its slots, so shared imports no context.
+  The badge photo and name open the profile.
   The layout keeps both user widgets inside one capsule. Up to 720px the brand is hidden
   so the user section stays complete; up to 480px the language switcher is
   compact (no check mark).
 end note
 NavigationOption *-- NavigationChild
 
-Home --> Toolbar
-Home --> AuthenticationSection
+Home ..> AuthenticationSection : route data, NgComponentOutlet
 PageNotFound --> Router
-PageNotFound --> ActivatedRoute
+PageNotFound --> SIGNED_IN
+note bottom of SIGNED_IN
+  Whether a user is signed in, read by shared views without importing IAM;
+  false unless the composition root provides it.
+end note
 
 EnvironmentSelector ..> EnvironmentOption
 note bottom of EnvironmentSelector

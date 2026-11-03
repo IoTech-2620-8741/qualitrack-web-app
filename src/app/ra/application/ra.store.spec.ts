@@ -59,3 +59,52 @@ describe('RaStore staff activity', () => {
     expect(store.staffActivityError()).toBe('staff.detail.load-error');
   });
 });
+
+describe('RaStore report preview', () => {
+  const pdf = new Blob(['%PDF-1.7'], { type: 'application/pdf' });
+  const api = { generateComplianceReport: vi.fn() };
+  const order = (endDate: string) => ({
+    type: 'compliance' as const,
+    command: { laboratoryId: 7, environmentId: null, startDate: '2026-10-01', endDate, format: 'PDF' as const },
+  });
+  beforeEach(() => {
+    api.generateComplianceReport.mockReset().mockReturnValue(of(pdf));
+    URL.createObjectURL = vi.fn(() => 'blob:report');
+    URL.revokeObjectURL = vi.fn();
+    vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => undefined);
+    TestBed.configureTestingModule({ providers: [
+      { provide: IamStore, useValue: { requireLaboratoryId: () => 7, canManageQuality: () => true } },
+      { provide: RaApi, useValue: api },
+    ] });
+  });
+  afterEach(() => vi.restoreAllMocks());
+
+  it('downloads the previewed report without generating it again', async () => {
+    const store = TestBed.inject(RaStore);
+    expect(await store.previewReport(order('2026-10-07'))).toBe(pdf);
+    store.generateReport(order('2026-10-07'));
+    expect(api.generateComplianceReport).toHaveBeenCalledTimes(1);
+    expect(HTMLAnchorElement.prototype.click).toHaveBeenCalledTimes(1);
+    expect(store.successMsg()).toBe('report-generator.success.compliance');
+  });
+
+  it('generates a new report when the parameters changed or the preview was forgotten', async () => {
+    const store = TestBed.inject(RaStore);
+    await store.previewReport(order('2026-10-07'));
+    store.generateReport(order('2026-10-08'));
+    expect(api.generateComplianceReport).toHaveBeenCalledTimes(2);
+    store.clearReportPreview();
+    store.generateReport(order('2026-10-07'));
+    expect(api.generateComplianceReport).toHaveBeenCalledTimes(3);
+  });
+
+  it('shows why the preview failed and keeps nothing to download', async () => {
+    api.generateComplianceReport.mockReturnValue(throwError(() => new Error('report-generator.errors.connection')));
+    const store = TestBed.inject(RaStore);
+    expect(await store.previewReport(order('2026-10-07'))).toBeNull();
+    expect(store.error()).toBe('report-generator.errors.connection');
+    expect(store.isLoading()).toBe(false);
+    store.downloadPreview();
+    expect(HTMLAnchorElement.prototype.click).not.toHaveBeenCalled();
+  });
+});

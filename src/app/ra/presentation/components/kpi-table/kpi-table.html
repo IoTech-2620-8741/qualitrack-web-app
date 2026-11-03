@@ -1,0 +1,76 @@
+<div class="table-container">
+  <table mat-table [dataSource]="summaries()" class="full-width-table">
+
+    <ng-container matColumnDef="device">
+      <th mat-header-cell *matHeaderCellDef>
+        {{ 'reporting.fields.device' | translate }}
+      </th>
+      <td mat-cell *matCellDef="let summary">
+        {{ deviceNameFn()(summary.deviceId) }}
+      </td>
+    </ng-container>
+
+    <!-- Variable Column -->
+    <ng-container matColumnDef="variable">
+      <th mat-header-cell *matHeaderCellDef>
+        {{ 'reporting.fields.variable' | translate }}
+      </th>
+      <td mat-cell *matCellDef="let summary">
+        {{ 'tracking.metrics.' + summary.metric | translate }}
+      </td>
+    </ng-container>
+
+    <!-- Readings Column -->
+    <ng-container matColumnDef="readings">
+      <th mat-header-cell *matHeaderCellDef class="numeric">
+        {{ 'reporting.fields.readings' | translate }}
+      </th>
+      <td mat-cell *matCellDef="let summary" class="numeric">
+        {{ summary.readings | number }}
+      </td>
+    </ng-container>
+
+    <!-- Average Column -->
+    <ng-container matColumnDef="average">
+      <th mat-header-cell *matHeaderCellDef class="numeric">
+        {{ 'reporting.fields.average' | translate }}
+      </th>
+      <td mat-cell *matCellDef="let summary" class="numeric">
+        {{ summary.average | number:'1.0-2' }} {{ summary.unit }}
+      </td>
+    </ng-container>
+
+    <!-- Minimum Column -->
+    <ng-container matColumnDef="minimum">
+      <th mat-header-cell *matHeaderCellDef class="numeric">
+        {{ 'reporting.fields.minimum' | translate }}
+      </th>
+      <td mat-cell *matCellDef="let summary" class="numeric">
+        {{ summary.minimum | number:'1.0-2' }} {{ summary.unit }}
+      </td>
+    </ng-container>
+
+    <!-- Maximum Column -->
+    <ng-container matColumnDef="maximum">
+      <th mat-header-cell *matHeaderCellDef class="numeric">
+        {{ 'reporting.fields.maximum' | translate }}
+      </th>
+      <td mat-cell *matCellDef="let summary" class="numeric">
+        {{ summary.maximum | number:'1.0-2' }} {{ summary.unit }}
+      </td>
+    </ng-container>
+
+    <!-- Last Reading Column -->
+    <ng-container matColumnDef="lastReading">
+      <th mat-header-cell *matHeaderCellDef>
+        {{ 'reporting.fields.last-reading' | translate }}
+      </th>
+      <td mat-cell *matCellDef="let summary">
+        {{ summary.lastMeasuredAt | date:'short' }}
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
+</div>
