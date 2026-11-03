@@ -11,6 +11,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { SubscriptionStore } from '../../../application/subscription.store';
 import { IamStore } from '../../../../iam/application/iam.store';
 import { SubscriptionPlan } from '../../../domain/model/subscription-plan.entity';
+import { computed, signal } from '@angular/core';
 
 /**
  * Component responsible for displaying available subscription plans.
@@ -50,6 +51,16 @@ export class PlanList implements OnInit {
    * Router used to navigate to authentication or checkout views.
    */
   private readonly router = inject(Router);
+
+  /** Billing periods supported by the toggle. */
+  readonly billingPeriod = signal<'MONTHLY' | 'YEARLY'>('MONTHLY');
+
+  /**
+   * Currently selected billing period.
+   */
+  readonly visiblePlans = computed(() =>
+    this.store.plans().filter((p) => p.billingPeriod?.toUpperCase() === this.billingPeriod()),
+  );
 
   /**
    * Lifecycle hook that loads available subscription plans.
