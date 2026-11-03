@@ -359,7 +359,8 @@
       "register": "Register",
       "search": "Search",
       "refresh": "Refresh"
-    }
+    },
+    "undo": "Undo"
   },
   "status": {
     "ON_TRACK": "On Track",

@@ -43,3 +43,10 @@ mat-card-title, mat-card-subtitle, h1, h2, h3, p { overflow-wrap: anywhere; }
   --mat-sys-on-primary: var(--qt-surface);
   color: var(--qt-text);
 }
+
+/* The snack bar is rendered outside the component that opens it, so its colors are set here. */
+.undo-toast-panel {
+  --mat-snack-bar-container-color: var(--qt-text);
+  --mat-snack-bar-supporting-text-color: var(--qt-surface);
+  --mat-snack-bar-button-color: var(--qt-primary-on-dark);
+}

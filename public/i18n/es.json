@@ -359,7 +359,8 @@
       "register": "Registrar",
       "search": "Buscar",
       "refresh": "Actualizar"
-    }
+    },
+    "undo": "Deshacer"
   },
   "status": {
     "ON_TRACK": "En Camino",
