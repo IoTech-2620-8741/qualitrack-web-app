@@ -1,5 +1,4 @@
 import { Routes } from '@angular/router';
-import { Layout } from '../../shared/presentation/components/layout/layout';
 import { laboratorySetupGuard, onboardingGuard } from '../../iam/infrastructure/onboarding-guard';
 import { qualityManagerGuard, staffActivityGuard } from '../../iam/infrastructure/role-guards';
 
@@ -43,8 +42,8 @@ const staffDetail = () => import('./views/staff-detail/staff-detail').then((m) =
  * Routes of the Laboratory bounded context.
  *
  * @remarks
- * `new` registers the laboratory of a user that has none yet. The other routes are
- * rendered inside the application layout once onboarding is complete and are addressed by resource:
+ * `new` registers the laboratory of a user that has none yet. The other routes require a
+ * completed onboarding and are addressed by resource:
  * `profile`, `environments[/new|/:environmentId/edit]` and `staff[/new|/:staffId]`. The view-named paths
  * used before semantic routes redirect to their new address. Legacy product and
  * raw material routes redirect to Product Batch Management and Inventory Management,
@@ -56,7 +55,6 @@ export const laboratoryRoutes: Routes = [
   { path: 'lab-form', redirectTo: 'new', pathMatch: 'full' },
   {
     path: '',
-    component: Layout,
     canActivate: [onboardingGuard],
     canActivateChild: [onboardingGuard],
     children: [
