@@ -5,3 +5,41 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 img, video { max-width: 100%; }
 mat-card, mat-card-content, mat-form-field { min-width: 0; }
 mat-card-title, mat-card-subtitle, h1, h2, h3, p { overflow-wrap: anywhere; }
+
+/* Design tokens of the QualiTrack style guide. */
+:root {
+  --qt-primary: #0d9488;
+  --qt-primary-strong: #0f766e; /* Reaches AA on white, so it is the one used for text and filled buttons. */
+  --qt-primary-surface: #f0fdfa;
+  --qt-primary-on-dark: #5eead4;
+  --qt-text: #0f172a;
+  --qt-text-muted: #64748b; /* Reaches AA only on white; use --qt-neutral-text over other backgrounds. */
+  --qt-background: #f3f4f6;
+  --qt-surface: #ffffff;
+  --qt-border: #e2e8f0;
+
+  --qt-error: #f44336;
+  --qt-error-surface: #ffebee;
+  --qt-error-text: #b71c1c;
+  --qt-warning: #ffc107;
+  --qt-warning-surface: #fff8e1;
+  --qt-warning-text: #7a5a00;
+  --qt-success: #4caf50;
+  --qt-success-surface: #e8f5e9;
+  --qt-success-text: #1b5e20;
+  --qt-info-surface: #eff6ff;
+  --qt-info-text: #1e40af;
+  --qt-neutral-surface: #f1f5f9;
+  --qt-neutral-text: #475569;
+
+  --qt-radius-small: 8px;
+  --qt-radius-medium: 12px;
+  --qt-radius-pill: 999px;
+}
+
+/* Applies the palette of the style guide to the Angular Material components of a page that already adopted it. */
+.qt-theme {
+  --mat-sys-primary: var(--qt-primary-strong);
+  --mat-sys-on-primary: var(--qt-surface);
+  color: var(--qt-text);
+}
