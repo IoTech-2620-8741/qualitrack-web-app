@@ -9,7 +9,7 @@ import { MatCard, MatCardContent } from '@angular/material/card';
 import { MatFormField, MatInput, MatLabel } from '@angular/material/input';
 import { FormsModule } from '@angular/forms';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatButton, MatIconButton } from '@angular/material/button';
+import { MatButton } from '@angular/material/button';
 import { MatNativeDateModule } from '@angular/material/core';
 
 /**
@@ -34,7 +34,6 @@ import { MatNativeDateModule } from '@angular/material/core';
     MatDatepickerModule,
     MatNativeDateModule,
     MatButton,
-    MatIconButton,
     MatInput,
     TranslatePipe,
   ],

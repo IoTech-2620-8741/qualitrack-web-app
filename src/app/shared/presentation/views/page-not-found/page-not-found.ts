@@ -1,10 +1,12 @@
 import { Location } from '@angular/common';
-import { Component, inject, OnInit, input, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+
+import { SIGNED_IN } from '../../tokens/signed-in.token';
 
 @Component({
   selector: 'app-page-not-found',
@@ -17,7 +19,8 @@ import { MatIconModule } from '@angular/material/icon';
 export class PageNotFound implements OnInit {
   protected invalidPath = '';
 
-  readonly isSignedIn = input<boolean>(false);
+  /** Whether the user is signed in: the main action opens the dashboard instead of the home page. */
+  protected readonly isSignedIn = inject(SIGNED_IN);
 
   private readonly router = inject(Router);
   private readonly location = inject(Location);

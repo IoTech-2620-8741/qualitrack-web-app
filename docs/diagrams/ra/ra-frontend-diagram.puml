@@ -141,6 +141,11 @@ package "ra.domain.model" {
     +format: "PDF | CSV"
   }
 
+  class ReportOrder <<type>> {
+    +type: "batch | compliance | inventory | equipment"
+    +command: the command of that type
+  }
+
   class OverviewLaboratory {
     +id: number
     +name: string
@@ -394,6 +399,10 @@ package "ra.application" {
     +generateComplianceReport(command: GenerateComplianceReportCommand): void
     +generateInventoryReport(command: GenerateInventoryReportCommand): void
     +exportEquipmentLog(command: ExportEquipmentLogCommand): void
+    +generateReport(order: ReportOrder): void
+    +previewReport(order: ReportOrder): Promise<Blob | null>
+    +downloadPreview(): void
+    +clearReportPreview(): void
     +clearMessages(): void
 
     +environments: Signal<OverviewEnvironment[]>
@@ -472,14 +481,28 @@ package "ra.presentation" {
   end note
 
   class ReportGeneratorComponent {
-    +batchForm
-    +complianceForm
-    +inventoryForm
-    +equipmentForm
-    +onGenerateBatchReport(): void
-    +onGenerateComplianceReport(): void
-    +onGenerateInventoryReport(): void
-    +onExportEquipmentLog(): void
+    +ngOnInit(): void
+    +ngOnDestroy(): void
+  }
+
+  class ReportGeneratorState <<view state>> {
+    +type: Signal<ReportType>
+    +form: Signal<ReportConfig>
+    +setType(type): void
+    +updateForm(partial): void
+  }
+
+  class ReportTypeSelector <<component>>
+
+  class ReportParamsForm <<component>> {
+    #onPreview(): Promise<void>
+    #onGenerate(): void
+    -order(): ReportOrder | null
+  }
+
+  class ReportPreviewDialog <<component>> {
+    #download(): void
+    #close(): void
   }
 
   class AuditLogViewerComponent {
@@ -585,10 +608,23 @@ DeviationTrendChartComponent --> RaStore
 DeviationTrendChartComponent --> EnvironmentSelector
 DeviationTrendChartComponent ..> LastDays
 
-ReportGeneratorComponent --> RaStore
-ReportGeneratorComponent --> IamStore
 ReportGeneratorComponent --> RaStore : loadEquipment(), loadBatches()
-ReportGeneratorComponent ..> LocalIsoDate : report days
+ReportGeneratorComponent *-- ReportGeneratorState : provides
+ReportGeneratorComponent *-- ReportTypeSelector
+ReportGeneratorComponent *-- ReportParamsForm
+ReportTypeSelector --> ReportGeneratorState
+ReportParamsForm --> ReportGeneratorState
+ReportParamsForm --> RaStore
+ReportParamsForm --> IamStore
+ReportParamsForm ..> ReportOrder
+ReportParamsForm ..> LocalIsoDate : report days
+ReportParamsForm ..> ReportPreviewDialog : opens
+ReportPreviewDialog --> RaStore : downloadPreview()
+note bottom of ReportPreviewDialog
+  The platform stores every generated report: the preview generates it once,
+  and downloading it (from the dialog or with the same parameters) reuses
+  that file until the parameters change or the view closes.
+end note
 
 AuditLogViewerComponent --> RaStore
 

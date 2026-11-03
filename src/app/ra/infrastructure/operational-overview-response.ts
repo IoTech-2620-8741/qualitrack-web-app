@@ -85,3 +85,35 @@ export interface OverviewPlanResource {
   billingCycle: string;
   maxEquipment: number | null;
 }
+
+/**
+ * Represents the configured threshold limits for an environmental metric.
+ */
+export interface OverviewEnvironmentalThresholdResource {
+  metric: string;
+  unit?: string;
+  normalMin: number | null;
+  normalMax: number | null;
+  criticalMin: number | null;
+  criticalMax: number | null;
+}
+
+/**
+ * Environmental profile resource returned by Tracking.
+ *
+ * @remarks
+ * Exposed by `GET .../environments/{envId}/environmental-profile` or
+ * `GET .../container-monitors/{devId}/environmental-profile`.
+ */
+export interface OverviewEnvironmentalProfileResource {
+  id: number;
+  scope: 'ENVIRONMENT' | 'CONTAINER_MONITOR';
+  laboratoryId: number;
+  environmentId: number | null;
+  deviceId: number | null;
+  version: number;
+  thresholds: OverviewEnvironmentalThresholdResource[];
+  actuationRules: { metric: string; state: string; action: string }[];
+  updatedAt: string | null;
+  updatedBy: number | null;
+}

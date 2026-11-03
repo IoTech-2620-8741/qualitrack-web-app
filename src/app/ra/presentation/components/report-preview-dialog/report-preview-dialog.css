@@ -1,0 +1,6 @@
+:host { display: flex; flex-direction: column; height: 100%; }
+.dialog-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 24px; border-bottom: 1px solid #e2e8f0; flex-shrink: 0; }
+.dialog-header h2 { margin: 0; color: #1a3a5c; font-size: 1.1rem; font-weight: 600; }
+.dialog-content { padding: 0 !important; flex-grow: 1; display: flex; overflow: hidden; background: #f8fafc; }
+iframe { height: 100%; width: 100%; border: none; flex-grow: 1; }
+.dialog-actions { display: flex; align-items: center; gap: 8px; }

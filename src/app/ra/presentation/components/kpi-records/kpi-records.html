@@ -1,0 +1,13 @@
+<div class="records-grid">
+  @for (metric of metrics(); track metric.name) {
+    <a class="record-link-wrapper" [routerLink]="getRoute(metric.name)">
+      <mat-card class="record-card" [class.alert-card]="metric.name === 'unresolved-alert-count'">
+        <mat-card-content class="record-content">
+          <span class="record-label">{{ 'operational-metrics.' + metric.name | translate }}</span>
+          <strong class="record-value">{{ metric.value | number }}</strong>
+          <span class="record-link-text">{{ getLinkText(metric.name) | translate }} →</span>
+        </mat-card-content>
+      </mat-card>
+    </a>
+  }
+</div>

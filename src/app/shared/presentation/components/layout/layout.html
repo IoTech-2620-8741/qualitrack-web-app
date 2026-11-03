@@ -12,7 +12,7 @@
   </button>
   }
 
-  <a class="brand" routerLink="/dashboard" [attr.aria-label]="'brand.go-dashboard' | translate">
+  <a class="brand" [routerLink]="brandLink()" [attr.aria-label]="brandLabel() | translate">
     <img src="/qualitrack-logo.png" alt="">
     <span class="toolbar-title">QualiTrack</span>
   </a>

@@ -3,9 +3,16 @@
   [hasOperationalAccess]="iam.onboarding()?.nextStep === 'READY'"
   [canManageQuality]="iam.canManageQuality()"
 >
-  <app-notification-bell notificationBell />
-  <app-user-profile-badge profileBadge />
-  <app-user-session-section userSession />
+  <!-- Projected content is created even where the Layout does not show it: create each widget only when it applies. -->
+  @if (iam.onboarding()?.nextStep === 'READY') {
+    <app-notification-bell notificationBell />
+  }
+  @if (iam.isSignedIn()) {
+    <app-user-profile-badge profileBadge />
+  }
+  @if (iam.isSignedIn()) {
+    <app-user-session-section userSession />
+  }
 
   <router-outlet />
 </app-layout>
