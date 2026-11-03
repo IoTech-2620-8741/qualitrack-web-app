@@ -406,7 +406,12 @@
     "tracking-profiles": "Perfiles ambientales",
     "subscription": "Suscripción y facturación",
     "billing-summary": "Resumen de facturación",
-    "subscription-plans": "Planes de suscripción"
+    "subscription-plans": "Planes de suscripción",
+    "section": {
+      "operation": "Operación",
+      "quality": "Calidad",
+      "administration": "Administración"
+    }
   },
   "dashboard": {
     "overview": {

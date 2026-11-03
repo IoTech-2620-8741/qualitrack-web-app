@@ -1,5 +1,4 @@
 import { Routes } from '@angular/router';
-import { Layout } from '../../shared/presentation/components/layout/layout';
 
 const inventoryHome = () =>
   import('./views/inventory-home/inventory-home').then((m) => m.InventoryHome);
@@ -18,22 +17,16 @@ const registerMaterial = () =>
  * /api/v1/laboratories/{laboratoryId}/environments/{environmentId}/raw-materials.
  */
 const inventoryRoutes: Routes = [
-  {
-    path: '',
-    component: Layout,
-    children: [
-      { path: 'legacy-materials/:id', loadComponent: () => import('./views/legacy-material-detail/legacy-material-detail').then((m) => m.LegacyMaterialDetail), title: 'Material history - QualiTrack' },
-      { path: '', loadComponent: inventoryHome, pathMatch: 'full' },
-      { path: 'environments/:environmentId/raw-materials', loadComponent: inventoryCatalogue },
-      { path: 'environments/:environmentId/raw-materials/new', loadComponent: registerMaterial },
-      { path: 'environments/:environmentId/raw-materials/:rawMaterialId', loadComponent: inventoryDetail },
-      // Links created before raw materials were scoped to environments open the environment picker.
-      { path: 'inventory-catalogue', redirectTo: '', pathMatch: 'full' },
-      { path: 'register-material', redirectTo: '', pathMatch: 'full' },
-      { path: 'inventory-detail/:id', redirectTo: '', pathMatch: 'full' },
-      { path: 'materials/:id', redirectTo: '', pathMatch: 'full' },
-    ],
-  },
+  { path: 'legacy-materials/:id', loadComponent: () => import('./views/legacy-material-detail/legacy-material-detail').then((m) => m.LegacyMaterialDetail), title: 'Material history - QualiTrack' },
+  { path: '', loadComponent: inventoryHome, pathMatch: 'full' },
+  { path: 'environments/:environmentId/raw-materials', loadComponent: inventoryCatalogue },
+  { path: 'environments/:environmentId/raw-materials/new', loadComponent: registerMaterial },
+  { path: 'environments/:environmentId/raw-materials/:rawMaterialId', loadComponent: inventoryDetail },
+  // Links created before raw materials were scoped to environments open the environment picker.
+  { path: 'inventory-catalogue', redirectTo: '', pathMatch: 'full' },
+  { path: 'register-material', redirectTo: '', pathMatch: 'full' },
+  { path: 'inventory-detail/:id', redirectTo: '', pathMatch: 'full' },
+  { path: 'materials/:id', redirectTo: '', pathMatch: 'full' },
 ];
 
 export { inventoryRoutes };

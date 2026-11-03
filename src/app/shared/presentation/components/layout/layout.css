@@ -105,6 +105,26 @@ mat-sidenav {
   overflow-x: hidden;
 }
 
+/* ==================== NAV SECTIONS ==================== */
+.nav-section {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.nav-section + .nav-section {
+  margin-top: 12px;
+}
+
+.nav-section-title {
+  padding: 4px 14px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #5f6368;
+}
+
 .nav-item {
   border: 0;
   text-align: left;
