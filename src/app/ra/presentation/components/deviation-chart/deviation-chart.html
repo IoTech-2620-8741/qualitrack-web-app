@@ -21,18 +21,18 @@
   </div>
 
   <div class="custom-legend">
-    <span class="legend-item"><span class="line-legend"></span> Lectura</span>
+    <span class="legend-item"><span class="line-legend"></span> {{ 'reporting.deviations.legend-reading' | translate }}</span>
     <span class="legend-item">
       <span class="box-legend normal-bg"></span>
-      Rango normal ({{ thresholds().normalMin }} - {{ thresholds().warningMax }} {{ thresholds().unit }})
+      {{ 'reporting.deviations.legend-normal' | translate:{ min: thresholds().normalMin, max: thresholds().warningMax, unit: thresholds().unit } }}
     </span>
     <span class="legend-item">
       <span class="triangle-warning"></span>
-      Advertencia ({{ thresholds().warningMax }} - {{ thresholds().criticalMax }} {{ thresholds().unit }})
+      {{ 'reporting.deviations.legend-warning' | translate:{ max: thresholds().warningMax, critical: thresholds().criticalMax, unit: thresholds().unit } }}
     </span>
     <span class="legend-item">
       <span class="critical-dot"></span>
-      Crítica ≥ {{ thresholds().criticalMax }} {{ thresholds().unit }}
+      {{ 'reporting.deviations.legend-critical' | translate:{ critical: thresholds().criticalMax, unit: thresholds().unit } }}
     </span>
   </div>
 </div>

@@ -45,16 +45,13 @@
 
       <!-- Filtros -->
       <section class="filters">
-        <!-- Rango de fechas CORREGIDO -->
         <mat-form-field appearance="outline" class="date-range-field">
-          <mat-label>Rango de fechas</mat-label>
-          <!-- Agregamos #pickerInput para leer el valor desde el TS -->
+          <mat-label>{{ 'reporting.deviations.date-range-label' | translate }}</mat-label>
           <mat-date-range-input #pickerInput [rangePicker]="picker">
-            <input matStartDate placeholder="Inicio" [ngModel]="fromDate()" />
-            <input matEndDate placeholder="Fin" [ngModel]="toDate()" />
+            <input matStartDate [placeholder]="'reporting.deviations.date-start-placeholder' | translate" [ngModel]="fromDate()" />
+            <input matEndDate [placeholder]="'reporting.deviations.date-end-placeholder' | translate" [ngModel]="toDate()" />
           </mat-date-range-input>
           <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-          <!-- Escuchamos (closed) y le pasamos el valor del input -->
           <mat-date-range-picker #picker (closed)="onDateRangeChange(pickerInput.value)"></mat-date-range-picker>
         </mat-form-field>
 

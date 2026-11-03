@@ -144,12 +144,14 @@ export class DeviationTrendChartComponent implements OnInit {
             title: (items) => this.formatDate(items[0].parsed.x ?? 0),
             label: (item) => {
               const point = trend?.dataPoints[item.dataIndex];
-              const stateLabel =
-                point?.state === 'CRITICAL'
-                  ? 'Crítica · Límite 10 °C'
-                  : point?.state === 'WARNING'
-                    ? 'Advertencia · Límite 8 °C'
-                    : '';
+              let stateLabel = '';
+
+              if (point?.state === 'CRITICAL') {
+                stateLabel = this.translate.instant('reporting.deviations.tooltip-critical', { limit: criticalMax, unit });
+              } else if (point?.state === 'WARNING') {
+                stateLabel = this.translate.instant('reporting.deviations.tooltip-warning', { limit: warningMax, unit });
+              }
+
               return `${item.parsed.y} ${unit}${stateLabel ? `\n${stateLabel}` : ''}`;
             },
             labelTextColor: (context) => {
@@ -189,7 +191,7 @@ export class DeviationTrendChartComponent implements OnInit {
               borderDash: [5, 5],
               label: {
                 display: true,
-                content: `Crítico ≥ ${criticalMax} ${unit}`,
+                content: this.translate.instant('reporting.deviations.chart-critical-line', { limit: criticalMax, unit }),
                 position: 'start',
                 backgroundColor: 'transparent',
                 color: '#ef4444',
@@ -207,7 +209,7 @@ export class DeviationTrendChartComponent implements OnInit {
               borderDash: [5, 5],
               label: {
                 display: true,
-                content: `Advertencia ${warningMax} – ${criticalMax} ${unit}`,
+                content: this.translate.instant('reporting.deviations.chart-warning-line', { min: warningMax, max: criticalMax, unit }),
                 position: 'start',
                 backgroundColor: 'transparent',
                 color: '#b45309',
@@ -225,7 +227,7 @@ export class DeviationTrendChartComponent implements OnInit {
               borderDash: [5, 5],
               label: {
                 display: true,
-                content: `Normal ${normalMin} – ${warningMax} ${unit}`,
+                content: this.translate.instant('reporting.deviations.chart-normal-line', { min: normalMin, max: warningMax, unit }),
                 position: 'start',
                 backgroundColor: 'transparent',
                 color: '#047857',
