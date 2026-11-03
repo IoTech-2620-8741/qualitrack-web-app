@@ -231,3 +231,53 @@ a {
     flex: 1;
   }
 }
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 20px;
+  align-items: center;
+}
+
+.date-range-field {
+  min-width: 280px;
+}
+
+.clear-btn {
+  height: 56px;
+}
+.empty-state {
+  border: 2px dashed #cbd5e1;
+  border-radius: 12px;
+  padding: 300px 24px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #f8fafc;
+  margin-top: 40px;
+}
+
+.empty-state mat-icon {
+  font-size: 50px;
+  width: 48px;
+  height: 48px;
+  color: #94a3b8;
+  margin-bottom: 16px;
+}
+
+.empty-state h3 {
+  margin: 0 0 8px;
+  font-size: 20px;
+  color: #1e293b;
+  font-weight: 600;
+}
+
+.empty-state p {
+  color: #64748b;
+  margin: 0;
+  font-size: 16px;
+  max-width: 400px;
+  line-height: 1.5;
+}

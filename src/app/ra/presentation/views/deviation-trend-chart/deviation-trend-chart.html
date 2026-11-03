@@ -5,8 +5,7 @@
       <p class="muted">{{ 'reporting.deviations.subtitle' | translate }}</p>
     </div>
     <div class="actions">
-      <mat-button-toggle-group [value]="days()" (change)="changePeriod($event.value)" [disabled]="store.isLoading()"
-                               [attr.aria-label]="'reporting.period.label' | translate">
+      <mat-button-toggle-group [value]="days()" (change)="changePeriod($event.value)" [disabled]="store.isLoading()">
         @for (option of periods; track option) {
           <mat-button-toggle [value]="option">{{ 'reporting.period.days-' + option | translate }}</mat-button-toggle>
         }
@@ -15,78 +14,44 @@
     </div>
   </header>
 
-  @if (store.error(); as error) {
-    <p class="error" role="alert">{{ error | translate }}</p>
-  }
-
-  @if (store.environmentsEmpty()) {
+  @if (store.error()) {
+    <p class="error" role="alert">{{ store.error()! | translate }}</p>
+  } @else if (store.environmentsEmpty()) {
     <p class="notice">{{ 'reporting.no-environments' | translate }}</p>
   } @else if (store.isLoading()) {
-    <div class="loading" role="status"><mat-spinner diameter="40" [attr.aria-label]="'onboarding.loading-data' | translate" /></div>
-  } @else if (environmentId() !== null && !store.error()) {
+    <div class="loading"><mat-spinner diameter="40" /></div>
+  } @else if (environmentId() !== null) {
     @if (store.deviationTrends().length) {
-      <table class="data-table selectable">
-        <thead>
-          <tr>
-            <th>{{ 'reporting.fields.device' | translate }}</th>
-            <th>{{ 'reporting.fields.variable' | translate }}</th>
-            <th class="numeric">{{ 'reporting.fields.evaluated' | translate }}</th>
-            <th class="numeric">{{ 'reporting.fields.time-in-range' | translate }}</th>
-            <th class="numeric">{{ 'reporting.fields.deviations' | translate }}</th>
-            <th class="numeric">{{ 'reporting.fields.critical' | translate }}</th>
-            <th>{{ 'reporting.fields.trend' | translate }}</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (trend of store.deviationTrends(); track trend.equipmentId + trend.parameterName + trend.unit) {
-            <tr [class.active]="isActive(trend)" (click)="select(trend)">
-              <td [attr.data-label]="'reporting.fields.device' | translate">
-                <button type="button" class="row-link" (click)="select(trend); $event.stopPropagation()"
-                        [attr.aria-pressed]="isActive(trend)">{{ deviceLabel(trend.equipmentId) }}</button>
-              </td>
-              <td [attr.data-label]="'reporting.fields.variable' | translate">
-                {{ 'tracking.metrics.' + trend.parameterName | translate }}
-                @if (trend.unit) { <small>{{ trend.unit }}</small> }
-              </td>
-              <td class="numeric" [attr.data-label]="'reporting.fields.evaluated' | translate">
-                {{ trend.evaluatedReadings | number }} / {{ trend.dataPoints.length | number }}
-              </td>
-              <td class="numeric" [attr.data-label]="'reporting.fields.time-in-range' | translate">
-                @if (trend.timeInRangePercent !== null) {
-                  <strong [class.warning]="trend.timeInRangePercent < 100">{{ trend.timeInRangePercent | number:'1.0-1' }} %</strong>
-                } @else {
-                  <span class="muted">{{ 'reporting.deviations.not-enough' | translate }}</span>
-                }
-              </td>
-              <td class="numeric" [attr.data-label]="'reporting.fields.deviations' | translate">{{ trend.deviationCount | number }}</td>
-              <td class="numeric" [attr.data-label]="'reporting.fields.critical' | translate">
-                <span [class.critical]="trend.criticalDeviationCount > 0">{{ trend.criticalDeviationCount | number }}</span>
-              </td>
-              <td [attr.data-label]="'reporting.fields.trend' | translate">
-                <span class="trend"><mat-icon aria-hidden="true">{{ trendIcon(trend.trendDirection) }}</mat-icon>
-                  {{ 'trend-direction.' + trend.trendDirection | translate }}</span>
-              </td>
-            </tr>
-          }
-        </tbody>
-      </table>
-      <p class="muted formula">{{ 'reporting.deviations.formula' | translate }}</p>
 
+      <!-- 1. Tarjetas de KPI -->
+      <app-deviation-kpi-cards [trends]="store.deviationTrends()" />
+
+      <!-- 2. Tabla de Variables -->
+      <app-deviation-table
+        [trends]="store.deviationTrends()"
+        [deviceLabel]="deviceLabel.bind(this)"
+        [trendIcon]="trendIcon.bind(this)"
+        [isActive]="isActive.bind(this)"
+        (select)="select($event)"
+      />
+
+      <!-- 3. Gráfico y Eventos -->
       @if (activeTrend(); as trend) {
-        <h2>{{ deviceLabel(trend.equipmentId) }} · {{ 'tracking.metrics.' + trend.parameterName | translate }}</h2>
-        <div class="chart-wrapper">
-          <canvas baseChart type="line" [data]="chartData()" [options]="chartOptions()" role="img"
-                  [attr.aria-label]="('reporting.deviations.chart' | translate) + ': ' + ('tracking.metrics.' + trend.parameterName | translate)"></canvas>
-        </div>
-        <p class="legend">
-          <span class="legend-item"><span class="dot normal"></span>{{ 'tracking.states.NORMAL' | translate }}</span>
-          <span class="legend-item"><span class="dot warning-dot"></span>{{ 'tracking.states.WARNING' | translate }}</span>
-          <span class="legend-item"><span class="dot critical-dot"></span>{{ 'tracking.states.CRITICAL' | translate }}</span>
-          <span class="legend-item"><span class="dot unevaluated"></span>{{ 'reporting.deviations.unevaluated' | translate }}</span>
-        </p>
+        <app-deviation-chart
+          [trend]="trend"
+          [chartData]="chartData()"
+          [chartOptions]="chartOptions()"
+          [thresholds]="activeThresholds()"
+          [deviceLabel]="deviceLabel.bind(this)"
+          (openDetail)="openDetail(trend)"
+        />
+
       }
     } @else {
-      <p class="notice">{{ 'reporting.deviations.empty' | translate }}</p>
-    }
+      <div class="empty-state">
+        <mat-icon>query_stats</mat-icon>
+        <h3>{{ 'reporting.deviations.empty-title' | translate }}</h3>
+        <p>{{ 'reporting.deviations.empty-desc' | translate }}</p>
+      </div>    }
   }
 </main>
