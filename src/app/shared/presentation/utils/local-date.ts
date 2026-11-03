@@ -13,7 +13,7 @@ export function localIsoDate(date = new Date()): string {
 }
 
 /** Time zone of the laboratories, which all operate in Peru. */
-const LABORATORY_TIME_ZONE = 'America/Lima';
+export const LABORATORY_TIME_ZONE = 'America/Lima';
 
 /**
  * Today's calendar date in Lima, whatever the time zone of the browser.
