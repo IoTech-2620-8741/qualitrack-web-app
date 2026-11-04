@@ -20,11 +20,10 @@ import { RelativeTimePipe } from '../../../../shared/presentation/pipes/relative
 import { DeviationAlert } from '../../../domain/model/deviation-alert.entity';
 import { ALERT_NORMALIZED_CHIP, ALERT_SEVERITY_CHIPS, ALERT_STATUS_CHIPS } from '../../alert-chips';
 import { alertVariableName } from '../../alert-variable';
-import { AlertLifecycle } from '../alert-lifecycle/alert-lifecycle';
 
 /**
- * Card of an open alert in the inbox: how serious it is, how far it went past the limit, how long it has been open,
- * who attends it and the next step of its life cycle.
+ * Card of an open alert in the inbox: how serious it is, in which step of its life cycle it is, how far it went past the
+ * limit, how long it has been open and who attends it.
  *
  * @remarks
  * It only shows what it receives and tells the view what the person wants to do. Each card has a single primary
@@ -42,7 +41,6 @@ import { AlertLifecycle } from '../alert-lifecycle/alert-lifecycle';
     StatusChip,
     DateTimePipe,
     RelativeTimePipe,
-    AlertLifecycle,
   ],
   templateUrl: './alert-card.html',
   changeDetection: ChangeDetectionStrategy.Eager,

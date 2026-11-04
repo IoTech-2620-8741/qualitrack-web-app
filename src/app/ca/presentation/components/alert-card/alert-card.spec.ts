@@ -66,6 +66,16 @@ describe('AlertCard', () => {
     expect(element.querySelector('article')?.classList).toContain('severity-critical');
   });
 
+  it('tells how serious the alert is and in which step of its life cycle it is', () => {
+    const { element } = create(alertOf({ status: 'ACKNOWLEDGED' }));
+    const chips = Array.from(element.querySelectorAll('app-status-chip')).map((chip) =>
+      chip.textContent?.trim(),
+    );
+
+    expect(chips.some((chip) => chip?.includes('ca-alerts.severity.critical'))).toBe(true);
+    expect(chips.some((chip) => chip?.includes('ca-alerts.status.acknowledged'))).toBe(true);
+  });
+
   it('names the device by its id while its name is unknown', () => {
     const { fixture, element } = create(alertOf());
 

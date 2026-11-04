@@ -806,7 +806,6 @@
         "environment": "Ambiente"
       },
       "card": {
-        "lifecycle": "Ciclo de vida de la alerta",
         "limit": "límite {{value}} {{unit}}",
         "opened": "Abierta {{time}}",
         "no-owner": "Sin responsable",

@@ -98,8 +98,8 @@ async function openInbox(browser, { width = 1280, height = 900, roles = '["ROLE_
 const titles = (page) => page.locator('app-alert-card h2').allInnerTexts();
 const cardsShown = (page, count) =>
   page.waitForFunction((expected) => document.querySelectorAll('app-alert-card').length === expected, count);
-const stepShown = (page, device, step) =>
-  page.locator('app-alert-card', { hasText: device }).locator('[aria-current="step"]', { hasText: step }).waitFor();
+const statusShown = (page, device, status) =>
+  page.locator('app-alert-card', { hasText: device }).locator('app-status-chip', { hasText: status }).waitFor();
 const attendButton = (page, device) =>
   page.locator('app-alert-card', { hasText: device }).getByRole('button', { name: /Registrar atención/ });
 /** Elements of the inbox past the right edge of the page, which the scrolling container hides; the tabs scroll by themselves. */
@@ -167,20 +167,20 @@ try {
   {
     const { context, page, state, errors } = await openInbox(browser);
     await attendButton(page, 'Refrigerador').click();
-    await stepShown(page, 'Refrigerador', 'En atención');
+    await statusShown(page, 'Refrigerador', 'En atención');
     assert.deepEqual(state.acknowledgements, []);
     await page.screenshot({ path: `${directory}/undo-window.png` });
     await page.waitForFunction(() => /^Resolver: .*Refrigerador/.test(document.activeElement?.getAttribute('aria-label') ?? ''));
     await page.getByRole('button', { name: 'Deshacer' }).click();
     await page.locator('app-undo-toast').waitFor({ state: 'detached' });
-    await stepShown(page, 'Refrigerador', 'Abierta');
+    await statusShown(page, 'Refrigerador', 'Abierta');
     await page.waitForTimeout(5500);
     assert.deepEqual(state.acknowledgements, [], 'Undone attention must never reach the platform');
 
     await attendButton(page, 'Refrigerador').click();
     await page.locator('app-undo-toast').waitFor({ state: 'detached', timeout: 7000 });
     assert.deepEqual(state.acknowledgements, [102]);
-    await stepShown(page, 'Refrigerador', 'En atención');
+    await statusShown(page, 'Refrigerador', 'En atención');
     assert.deepEqual(errors, []);
     await context.close();
   }
@@ -255,7 +255,7 @@ try {
       const banner = document.querySelector('app-error-banner').getBoundingClientRect();
       return banner.top >= 0 && banner.bottom <= window.innerHeight;
     });
-    await stepShown(page, 'Refrigerador', 'En atención');
+    await statusShown(page, 'Refrigerador', 'En atención');
     await context.close();
   }
 

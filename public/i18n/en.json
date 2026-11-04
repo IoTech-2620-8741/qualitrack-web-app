@@ -806,7 +806,6 @@
         "environment": "Environment"
       },
       "card": {
-        "lifecycle": "Life cycle of the alert",
         "limit": "limit {{value}} {{unit}}",
         "opened": "Opened {{time}}",
         "no-owner": "No one assigned",
