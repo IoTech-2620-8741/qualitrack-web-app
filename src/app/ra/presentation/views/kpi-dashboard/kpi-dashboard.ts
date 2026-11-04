@@ -71,6 +71,9 @@ export class KpiDashboardComponent implements OnInit {
   /** Selected environment, or null for all. */
   protected readonly environmentId = signal<number | null>(null);
 
+  /** Resolves the display name of a device, or null when it is unknown. */
+  protected readonly deviceName = (id: number): string | null => this.store.deviceName(id);
+
   /** Current view mode: 'cards' or 'table'. */
   protected readonly viewMode = signal<'cards' | 'table'>('cards');
 
@@ -111,8 +114,10 @@ export class KpiDashboardComponent implements OnInit {
   /**
    * Lifecycle hook that initializes the dashboard.
    * Loads devices, ensures environments are loaded, and triggers the first data fetch.
+   * Profiles can have changed since the last visit, so they are read again.
    */
   async ngOnInit(): Promise<void> {
+    this.store.clearProfiles();
     this.store.loadDevices();
     if (!this.store.environmentsLoaded()) await this.store.loadEnvironments();
     this.reload();

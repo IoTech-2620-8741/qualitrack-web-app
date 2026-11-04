@@ -45,11 +45,12 @@
       @if (viewMode() === 'cards') {
         <app-kpi-summary-cards
           [summaries]="group.summaries"
+          [deviceNameFn]="deviceName"
           [profiles]="store.profiles()" />
       } @else {
         <app-kpi-table
           [summaries]="group.summaries"
-          [deviceNameFn]="store.deviceName.bind(store)"
+          [deviceNameFn]="deviceName"
         />
       }
     } @empty {

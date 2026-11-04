@@ -4,6 +4,7 @@ import { DatePipe, DecimalPipe } from '@angular/common';
 import { TranslatePipe } from '@ngx-translate/core';
 import { MatCard, MatCardContent, MatCardFooter, MatCardHeader, MatCardTitle } from '@angular/material/card';
 import { OverviewEnvironmentalProfile } from '../../../domain/model/overview-environmental-profile.entity';
+import { MeasurementSummary } from '../../../domain/model/kpi-dashboard.entity';
 
 /** Possible visual states for a KPI summary card based on threshold evaluation. */
 export type SummaryState = 'NORMAL' | 'WARNING' | 'CRITICAL' | 'UNCONFIGURED';
@@ -27,7 +28,10 @@ export type SummaryState = 'NORMAL' | 'WARNING' | 'CRITICAL' | 'UNCONFIGURED';
 })
 export class KpiSummaryCards {
   /** The raw measurement summaries returned by the API. */
-  readonly summaries = input.required<any[]>();
+  readonly summaries = input.required<MeasurementSummary[]>();
+
+  /** Resolves the display name of a device, or null when it is unknown. */
+  readonly deviceNameFn = input.required<(id: number) => string | null>();
 
   /** Environmental profiles (thresholds) mapped by device ID to evaluate the states. */
   readonly profiles = input<Record<number, OverviewEnvironmentalProfile | null>>({});
@@ -36,18 +40,13 @@ export class KpiSummaryCards {
    * Determines the visual state of a KPI summary card.
    *
    * @remarks
-   * The evaluation follows this priority:
-   * 1. Explicit backend state (`worstState` or `state`), if present.
-   * 2. Real thresholds from the specific device profile (environment or container).
-   * 3. `UNCONFIGURED` if there are no thresholds (e.g., RFID_TAG, MOTION) or invalid data.
+   * The average is compared with the real thresholds of the device profile (environment or container); it is
+   * `UNCONFIGURED` if there are no thresholds (e.g., RFID_TAG, MOTION) or invalid data.
    *
    * @param summary - The measurement summary containing the average and device ID.
    * @returns The evaluated state (`NORMAL`, `WARNING`, `CRITICAL`, or `UNCONFIGURED`).
    */
-  protected stateOf(summary: any): SummaryState {
-    const explicit = summary.worstState ?? summary.state;
-    if (explicit === 'CRITICAL' || explicit === 'WARNING' || explicit === 'NORMAL') return explicit;
-
+  protected stateOf(summary: MeasurementSummary): SummaryState {
     const profile = this.profiles()[summary.deviceId];
     const threshold = profile?.threshold(summary.metric);
 
@@ -104,7 +103,7 @@ export class KpiSummaryCards {
    * @param summary - The measurement summary containing min, max, and average.
    * @returns A number between 0 and 100 representing the percentage position.
    */
-  protected dotPosition(summary: any): number {
+  protected dotPosition(summary: MeasurementSummary): number {
     const min = Number(summary.minimum);
     const max = Number(summary.maximum);
     const avg = Number(summary.average);

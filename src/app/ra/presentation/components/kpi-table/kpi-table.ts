@@ -10,6 +10,7 @@ import {
 } from '@angular/material/table';
 import { TranslatePipe } from '@ngx-translate/core';
 import { DatePipe, DecimalPipe } from '@angular/common';
+import { MeasurementSummary } from '../../../domain/model/kpi-dashboard.entity';
 
 /**
  * Component that displays the environmental KPI summaries in a tabular format.
@@ -42,7 +43,7 @@ import { DatePipe, DecimalPipe } from '@angular/common';
 })
 export class KpiTable {
   /** The raw measurement summaries returned by the API. */
-  readonly summaries = input.required<any[]>();
+  readonly summaries = input.required<MeasurementSummary[]>();
 
   /**
    * Function provided by the parent to resolve a device's display name from its ID.

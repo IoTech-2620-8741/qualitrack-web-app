@@ -8,7 +8,7 @@
 
       <mat-card-header class="card-header">
         <mat-card-title class="variable">
-          {{ 'tracking.metrics.' + summary.metric | translate }} · {{ summary.deviceName }}
+          {{ 'tracking.metrics.' + summary.metric | translate }} · {{ deviceNameFn()(summary.deviceId) ?? '#' + summary.deviceId }}
         </mat-card-title>
 
         <span class="status-badge"
@@ -38,8 +38,8 @@
                  [style.left.%]="dotPosition(summary)"></div>
           </div>
           <div class="range-labels">
-            <span>mín {{ summary.minimum | number:'1.0-2' }}</span>
-            <span>máx {{ summary.maximum | number:'1.0-2' }}</span>
+            <span>{{ 'reporting.summary.min' | translate }} {{ summary.minimum | number:'1.0-2' }}</span>
+            <span>{{ 'reporting.summary.max' | translate }} {{ summary.maximum | number:'1.0-2' }}</span>
           </div>
         </div>
       </mat-card-content>
