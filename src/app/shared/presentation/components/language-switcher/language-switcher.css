@@ -1,12 +1,74 @@
-/* Narrow screens: smaller buttons so the toolbar keeps room for the user. */
+:host {
+  display: inline-block;
+}
+
+mat-button-toggle-group {
+  display: inline-flex;
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid #e2e8f0;
+  border-radius: 999px;
+  background: #fff;
+  overflow: visible;
+  --mat-standard-button-toggle-height: 44px;
+  --mat-standard-button-toggle-shape: 999px;
+  --mat-standard-button-toggle-divider-color: transparent;
+  --mat-standard-button-toggle-text-color: #64748b;
+  --mat-standard-button-toggle-background-color: transparent;
+  --mat-standard-button-toggle-selected-state-text-color: #fff;
+  --mat-standard-button-toggle-selected-state-background-color: #0f766e;
+}
+
+mat-button-toggle-group ::ng-deep .mat-button-toggle {
+  flex: 0 0 auto;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: #64748b;
+  font-family: inherit;
+}
+
+mat-button-toggle-group ::ng-deep .mat-button-toggle + .mat-button-toggle {
+  border-left: 0;
+}
+
+mat-button-toggle-group ::ng-deep .mat-button-toggle-label-content {
+  padding: 0 24px;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 44px;
+}
+
+mat-button-toggle-group ::ng-deep .mat-button-toggle:hover:not(.mat-button-toggle-checked) {
+  background: #f3f4f6;
+}
+
+mat-button-toggle-group ::ng-deep .mat-button-toggle-checked {
+  background: #0f766e;
+  color: #fff;
+}
+
+mat-button-toggle-group ::ng-deep .mat-button-toggle-checked .mat-button-toggle-label-content {
+  font-weight: 600;
+}
+
+mat-button-toggle-group ::ng-deep .mat-button-toggle-focus-overlay {
+  border-radius: 999px;
+}
+
+mat-button-toggle-group ::ng-deep .mat-button-toggle:has(.mat-button-toggle-button:focus-visible) {
+  outline: 3px solid #0d9488;
+  outline-offset: 2px;
+}
+
 @media (max-width: 480px) {
-  :host ::ng-deep .mat-button-toggle-label-content {
+  mat-button-toggle-group ::ng-deep .mat-button-toggle-label-content {
     padding: 0 10px;
   }
 }
 
 @media (max-width: 340px) {
-  :host ::ng-deep .mat-button-toggle-label-content {
+  mat-button-toggle-group ::ng-deep .mat-button-toggle-label-content {
     padding: 0 7px;
   }
 }
