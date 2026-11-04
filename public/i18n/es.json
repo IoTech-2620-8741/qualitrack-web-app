@@ -359,7 +359,9 @@
       "register": "Registrar",
       "search": "Buscar",
       "refresh": "Actualizar"
-    }
+    },
+    "undo": "Deshacer",
+    "breadcrumb": "Ruta de navegación"
   },
   "status": {
     "ON_TRACK": "En Camino",
@@ -711,7 +713,7 @@
       "low": "Baja",
       "info": "Informativo",
       "warning": "Advertencia",
-      "critical": "Crítico"
+      "critical": "Crítica"
     },
     "status": {
       "unresolved": "Abierta",
@@ -781,6 +783,15 @@
       "sent": "Se avisó por correo a {{count}} persona(s).",
       "no-recipients": "Nadie más del laboratorio tiene activados los avisos por correo.",
       "failed": "No se pudo enviar el correo. Revisa que el envío de correos esté configurado en la plataforma."
+    },
+    "page": {
+      "title": "Alertas de cumplimiento",
+      "preferences": "Preferencias de aviso",
+      "sections": "Secciones de alertas"
+    },
+    "tabs": {
+      "active": "Activas",
+      "history": "Historial"
     }
   },
   "notifications": {
@@ -1261,8 +1272,46 @@
       "no-records": "El laboratorio aún no tiene equipos ni lotes registrados."
     },
     "deviations": {
+      "detail-title": "Detalle de Desviación",
+      "back-to-chart": "Volver al gráfico",
+      "all-events": "Todos los eventos",
+      "readings": "lecturas",
+      "view-detail": "Ver detalle",
+      "alert-type": "Tipo de alerta",
+      "all-alerts": "Todas las alertas",
+      "clear-filters": "Limpiar filtros",
+      "legend-reading": "Lectura",
+      "legend-normal": "Rango normal ({{min}} - {{max}} {{unit}})",
+      "legend-warning": "Advertencia ({{max}} - {{critical}} {{unit}})",
+      "legend-critical": "Crítica ≥ {{critical}} {{unit}}",
+      "tooltip-critical": "Crítica · Límite {{limit}} {{unit}}",
+      "tooltip-warning": "Advertencia · Límite {{limit}} {{unit}}",
+      "chart-critical-line": "Crítico ≥ {{limit}} {{unit}}",
+      "chart-warning-line": "Advertencia {{min}} – {{max}} {{unit}}",
+      "chart-normal-line": "Normal {{min}} – {{max}} {{unit}}",
+      "date-range-label": "Rango de fechas",
+      "date-start-placeholder": "Inicio",
+      "date-end-placeholder": "Fin",
       "title": "Indicadores de desviación",
+      "empty-title": "Sin indicadores calculados",
+      "empty-desc": "No hay lecturas numéricas de este ambiente en el periodo seleccionado. Intenta cambiar el periodo o seleccionar otro ambiente.",
       "subtitle": "Tiempo en rango y desviaciones de cada variable del ambiente en el periodo, calculados a partir de la condición de las lecturas.",
+      "kpi": {
+        "variables": "Variables evaluadas",
+        "time-in-range": "Tiempo en rango (prom.)",
+        "goal": "Meta 95% · cumple",
+        "deviations": "Desviaciones",
+        "worse-readings": "Lecturas peores que la anterior",
+        "critical": "Críticas",
+        "critical-events": "Eventos críticos"
+      },
+      "view-chart": "Gráfico",
+      "view-table": "Tabla",
+      "events-title": "Eventos del periodo",
+      "view-alert": "Ver alerta",
+      "critical-label": "crítica",
+      "limit": "límite",
+      "no-events": "No se registraron eventos críticos o de advertencia en este periodo.",
       "not-enough": "Lecturas insuficientes",
       "formula": "Cada lectura evaluada mantiene su condición hasta la siguiente; el tiempo en rango es el tiempo en condición normal sobre el tiempo entre la primera y la última lectura evaluada. Una desviación es una lectura cuya condición es peor que la anterior; es crítica cuando entra en condición crítica. Las lecturas de variables sin umbrales no se evalúan.",
       "chart": "Lecturas del periodo",
@@ -1615,7 +1664,8 @@
       "usage-edit-hint": "Cambia el uso desde la lista de ambientes.",
       "max-length": "Usa como máximo {{max}} caracteres."
     },
-    "selector": "Ambiente"
+    "selector": "Ambiente",
+    "all": "Todos los ambientes ({{count}})"
   },
   "environment-usage": {
     "LABORATORY": "Laboratorio",

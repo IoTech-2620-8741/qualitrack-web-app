@@ -359,7 +359,9 @@
       "register": "Register",
       "search": "Search",
       "refresh": "Refresh"
-    }
+    },
+    "undo": "Undo",
+    "breadcrumb": "Breadcrumb"
   },
   "status": {
     "ON_TRACK": "On Track",
@@ -687,7 +689,7 @@
     "kpi": {
       "critical": "Critical",
       "open": "Open alerts",
-      "attending": "Being attended"
+      "attending": "In progress"
     },
     "fields": {
       "parameter": "Variable",
@@ -715,7 +717,7 @@
     },
     "status": {
       "unresolved": "Open",
-      "acknowledged": "Being attended",
+      "acknowledged": "In progress",
       "resolved": "Resolved",
       "ignored": "Ignored"
     },
@@ -759,7 +761,7 @@
       "saved": "Notification preferences saved."
     },
     "no-environments": "Alerts are listed per environment. Register an environment and its IoT devices first.",
-    "normalized": "Condition back to normal",
+    "normalized": "Condition normalized",
     "acknowledged": "The attention of the alert was registered.",
     "resolved": "The alert was resolved.",
     "errors": {
@@ -781,6 +783,15 @@
       "sent": "The alert was e-mailed to {{count}} person(s).",
       "no-recipients": "Nobody else in the laboratory has e-mail notices enabled.",
       "failed": "The e-mail could not be sent. Check that e-mail is configured on the platform."
+    },
+    "page": {
+      "title": "Compliance alerts",
+      "preferences": "Notification preferences",
+      "sections": "Alert sections"
+    },
+    "tabs": {
+      "active": "Active",
+      "history": "History"
     }
   },
   "notifications": {
@@ -1261,7 +1272,46 @@
       "no-records": "The laboratory has no equipment or batches recorded yet."
     },
     "deviations": {
+      "detail-title": "Deviation Detail",
+      "back-to-chart": "Back to chart",
+      "all-events": "All events",
+      "readings": "readings",
+      "view-detail": "View detail",
+      "alert-type": "Alert type",
+      "all-alerts": "All alerts",
+      "clear-filters": "Clear filters",
+      "legend-reading": "Reading",
+      "legend-normal": "Normal range ({{min}} - {{max}} {{unit}})",
+      "legend-warning": "Warning ({{max}} - {{critical}} {{unit}})",
+      "legend-critical": "Critical ≥ {{critical}} {{unit}}",
+      "tooltip-critical": "Critical · Limit {{limit}} {{unit}}",
+      "tooltip-warning": "Warning · Limit {{limit}} {{unit}}",
+      "chart-critical-line": "Critical ≥ {{limit}} {{unit}}",
+      "chart-warning-line": "Warning {{min}} – {{max}} {{unit}}",
+      "chart-normal-line": "Normal {{min}} – {{max}} {{unit}}",
+      "date-range-label": "Date Range",
+      "date-start-placeholder": "Start",
+      "date-end-placeholder": "End",
+
+      "empty-title": "No indicators calculated",
+      "empty-desc": "There are no numeric readings for this environment in the selected period. Try changing the period or selecting another environment.",
       "title": "Deviation indicators",
+      "kpi": {
+        "variables": "Evaluated variables",
+        "time-in-range": "Time in range (avg.)",
+        "goal": "Goal 95% · meets",
+        "deviations": "Deviations",
+        "worse-readings": "Readings worse than the previous one",
+        "critical": "Critical",
+        "critical-events": "Critical events"
+      },
+      "view-chart": "Chart",
+      "view-table": "Table",
+      "events-title": "Period events",
+      "view-alert": "View alert",
+      "critical-label": "critical",
+      "limit": "limit",
+      "no-events": "No critical or warning events recorded in this period.",
       "subtitle": "Time in range and deviations of each variable of the environment in the period, calculated from the condition of the readings.",
       "not-enough": "Not enough readings",
       "formula": "Each evaluated reading keeps its condition until the next one; the time in range is the time in normal condition over the time between the first and the last evaluated reading. A deviation is a reading whose condition is worse than the previous one; it is critical when it enters the critical condition. Readings of variables without thresholds are not evaluated.",
@@ -1615,7 +1665,8 @@
       "usage-edit-hint": "Change the usage from the environment list.",
       "max-length": "Use at most {{max}} characters."
     },
-    "selector": "Environment"
+    "selector": "Environment",
+    "all": "All environments ({{count}})"
   },
   "environment-usage": {
     "LABORATORY": "Laboratory",

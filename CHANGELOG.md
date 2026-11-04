@@ -11,7 +11,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Shared (shared): `EmptyState`, `ErrorBanner` and `DashboardState` show empty lists, failures with a retry and the loading state of each part of a page (#59, #60).
 
+- Shared (shared): design tokens of the style guide (`--qt-*`) and the `.qt-theme` class for the pages that adopt them; `StatusChip` shows a status with color, icon and text; `UndoToast` gives a few seconds to undo an action, with a progress bar that stops under the pointer or the focus; the `dateTime` and `relativeTime` pipes format every date the same way, in the chosen language and the time zone of the laboratories; `EnvironmentSelector` can offer an option for every environment.
+
+- Compliance & Alerts (ca): `AlertsPageHeader` with the breadcrumb, the notification preferences and the Active and History tabs, and `alert-chips` with the chip of each severity and status.
+
 ### Changed
+
+- Compliance & Alerts (ca): the active alerts page uses `AlertsPageHeader`. In Spanish the critical severity reads "Crítica"; in English "Being attended" becomes "In progress" and "Condition back to normal" becomes "Condition normalized".
 
 - Routing: every bounded context now uses semantic routes that name the resource instead of the view (#57):
   - Equipment (equipment): `/equipments`, `/equipments/new`, `/equipments/devices/new`, `/equipments/:equipmentId`, `/equipments/:equipmentId/bpm-configuration` and `/equipments/:equipmentId/maintenances/new`.
