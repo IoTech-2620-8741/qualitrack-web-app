@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.1.0] - 2026-11-04
+
 ### Added
 
 - Shared (shared): `EmptyState`, `ErrorBanner` and `DashboardState` show empty lists, failures with a retry and the loading state of each part of a page (#59, #60).
@@ -34,6 +36,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Compliance & Alerts (ca): with the focus on the inbox, J and K move between the cards and A registers attention, which can be undone (#71).
 
 ### Changed
+
+- Release: package and lockfile versions are now 2.1.0.
 
 - Shared (shared): `EnvironmentSelector` shows the whole name of the chosen environment, in two lines if needed (#70).
 
