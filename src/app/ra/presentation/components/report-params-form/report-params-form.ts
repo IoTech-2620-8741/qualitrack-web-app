@@ -17,7 +17,7 @@ import { RaStore } from '../../../application/ra.store';
 import { ReportOrder } from '../../../domain/model/report-order';
 import { IamStore } from '../../../../iam/application/iam.store';
 import { localIsoDate } from '../../../../shared/presentation/utils/local-date';
-import { periodError, MAX_REPORT_DAYS } from '../../utils/report-period';
+import { MAX_REPORT_DAYS, PERIOD_ERROR_KEYS, periodError } from '../../utils/report-period';
 import { ReportPreviewDialog } from '../report-preview-dialog/report-preview-dialog';
 
 /**
@@ -58,11 +58,13 @@ export class ReportParamsForm {
   /** Available equipment that is located in an environment. */
   protected readonly locatedEquipment = computed(() => (this.store.overviewEquipment().data ?? []).filter(e => e.environmentId !== null));
 
-  /** Utility function exposed to validate date periods in the template. */
-  protected readonly periodError = periodError;
-
-  /** Maximum days allowed for a report period. */
-  protected readonly MAX_REPORT_DAYS = MAX_REPORT_DAYS;
+  /** Translation key of what is wrong with the period chosen, or null when it is fine or the report has no period. */
+  protected readonly periodErrorKey = computed(() => {
+    const form = this.state.form();
+    if (form.type !== 'compliance' && form.type !== 'equipment') return null;
+    const error = periodError(form.startDate, form.endDate, MAX_REPORT_DAYS);
+    return error ? PERIOD_ERROR_KEYS[error] : null;
+  });
 
   /** Returns the translation key for the current report type title. */
   protected getTitle(): string {

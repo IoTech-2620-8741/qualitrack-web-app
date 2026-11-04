@@ -44,7 +44,7 @@ h3 {
   font-weight: 600;
 }
 
-/* Panel de Filtros */
+/* Filters panel */
 .filters-panel {
   display: flex;
   align-items: center;
@@ -55,11 +55,11 @@ h3 {
   border: 1px solid #e2e8f0;
   margin-bottom: 32px;
   flex-wrap: wrap;
-  /* Altura mínima para que todo quede centrado */
+  /* Minimum height so everything stays centered */
   min-height: 64px;
 }
 
-/* Selector de ambiente */
+/* Environment selector */
 .scope-select {
   width: 260px;
   margin-bottom: 0;
@@ -169,6 +169,18 @@ h3 {
   .filters-panel {
     flex-direction: column;
     align-items: stretch;
+  }
+  .filters-panel mat-button-toggle-group {
+    display: flex;
+  }
+  .filters-panel mat-button-toggle {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+  .filters-panel ::ng-deep .mat-button-toggle-label-content {
+    padding: 0 8px;
+    white-space: normal;
+    line-height: 1.2;
   }
   .scope-select {
     width: 100%;
