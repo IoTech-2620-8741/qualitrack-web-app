@@ -1,33 +1,250 @@
 <main class="operations-page qt-theme">
+  <div class="context-bar">
+    <app-environment-selector
+      class="full-width"
+      allOptionKey="environments.all"
+      [environments]="store.environments()"
+      [selectedId]="environmentId()"
+      (selectedChange)="chooseEnvironment($event)"
+      (allSelected)="chooseAllEnvironments()"
+    />
+    <div class="live-status">
+      @if (store.alertsUpdatedAt(); as updatedAt) {
+        <span class="live" [class.partial]="store.unavailableEnvironmentIds().length">
+          <span class="live-dot" aria-hidden="true"></span>
+          {{
+            (store.unavailableEnvironmentIds().length
+              ? 'ca-alerts.active.live-partial'
+              : 'ca-alerts.active.live'
+            ) | translate: { time: (updatedAt | relativeTime: now()) }
+          }}
+        </span>
+      }
+      <button
+        mat-stroked-button
+        type="button"
+        [disabled]="store.loading() || store.refreshing()"
+        (click)="refresh()"
+      >
+        <mat-icon aria-hidden="true">refresh</mat-icon>{{ 'common.refresh' | translate }}
+      </button>
+    </div>
+  </div>
+
   <app-alerts-page-header
     section="active"
     subtitleKey="ca-alerts.active.subtitle"
-    [activeCount]="store.openAlertsCount()"
+    [activeCount]="stats().open"
     [environmentId]="environmentId()"
   >
-    <app-environment-selector [environments]="store.environments()" [selectedId]="environmentId()" (selectedChange)="changeEnvironment($event)" />
-    <button mat-stroked-button type="button" (click)="refresh()" [disabled]="store.loading() || environmentId() === null">
-      <mat-icon>refresh</mat-icon>{{ 'common.refresh' | translate }}
-    </button>
-    <div alertsSection>
-      @if (store.error()) {
-        <p class="error" role="alert">{{ store.error()! | translate }}</p>
+    <div alertsSection class="inbox">
+      @if (store.error() || store.notice()) {
+        <div class="feedback">
+          @if (store.error(); as error) {
+            <app-error-banner
+              [messageKey]="error"
+              [dismissible]="true"
+              (dismiss)="store.clearError()"
+            />
+          }
+          @if (store.notice(); as notice) {
+            <p class="notice" role="status">{{ notice | translate: store.noticeParams() }}</p>
+          }
+        </div>
       }
 
       @if (store.environmentsEmpty()) {
-        <p class="notice">{{ 'ca-alerts.no-environments' | translate }}</p>
-      } @else if (environmentId() !== null) {
-        <section class="summary-strip" [attr.aria-label]="'ca-alerts.active.title' | translate">
-          <div><span>{{ 'ca-alerts.kpi.open' | translate }}</span><strong>{{ store.openAlertsCount() }}</strong></div>
-          <div><span>{{ 'ca-alerts.kpi.critical' | translate }}</span><strong>{{ store.criticalAlertsCount() }}</strong></div>
-          <div><span>{{ 'ca-alerts.kpi.attending' | translate }}</span><strong>{{ store.acknowledgedAlertsCount() }}</strong></div>
-        </section>
+        <p class="no-environments">{{ 'ca-alerts.no-environments' | translate }}</p>
+      } @else if (store.environmentsLoaded()) {
+        @if (unavailableEnvironments(); as environments) {
+          <app-action-banner
+            icon="cloud_off"
+            tone="warning"
+            actionKey="ca-alerts.active.retry"
+            (action)="refresh()"
+          >
+            {{ 'ca-alerts.active.unavailable' | translate: { environments } }}
+          </app-action-banner>
+        }
 
         @if (store.loading()) {
           <p role="status">{{ 'common.status-loading' | translate }}</p>
-        } @else if (!store.error()) {
-          <app-alert-table [alerts]="store.alerts()" emptyKey="ca-alerts.active.empty" />
+        } @else if (isAllClear()) {
+          <app-empty-state
+            icon="verified"
+            titleKey="ca-alerts.active.empty.title"
+            [messageKey]="
+              scopeEnvironmentCount() === 1
+                ? 'ca-alerts.active.empty.message-one'
+                : 'ca-alerts.active.empty.message-many'
+            "
+            [messageParams]="{ count: scopeEnvironmentCount() }"
+            [positive]="true"
+          >
+            <a
+              mat-stroked-button
+              routerLink="/alerts/history"
+              [queryParams]="environmentId() === null ? {} : { environmentId: environmentId() }"
+            >
+              <mat-icon aria-hidden="true">history</mat-icon>
+              {{ 'ca-alerts.active.empty.history' | translate }}
+            </a>
+            <a mat-stroked-button routerLink="/tracking/monitoring">
+              <mat-icon aria-hidden="true">monitor_heart</mat-icon>
+              {{ 'ca-alerts.active.empty.monitoring' | translate }}
+            </a>
+          </app-empty-state>
+        } @else {
+          @if (oldestUnattendedCritical(); as oldest) {
+            <app-action-banner
+              actionKey="ca-alerts.active.critical-banner.action"
+              (action)="showUnattendedCritical()"
+            >
+              <strong>{{
+                (unattendedCriticalCount() === 1
+                  ? 'ca-alerts.active.critical-banner.title-one'
+                  : 'ca-alerts.active.critical-banner.title-many'
+                ) | translate: { count: unattendedCriticalCount() }
+              }}</strong>
+              {{
+                'ca-alerts.active.critical-banner.oldest'
+                  | translate
+                    : {
+                        device: deviceLabelOf(oldest),
+                        variable: variableOf(oldest),
+                        value: (oldest.recordedValue | number: '1.0-2'),
+                        unit: oldest.unit,
+                      }
+              }}
+              <span class="banner-detail">{{
+                'ca-alerts.active.critical-banner.detail'
+                  | translate: { time: (oldest.timestamp | relativeTime: now()) }
+              }}</span>
+            </app-action-banner>
+          }
+
+          <section class="stats" [attr.aria-label]="'ca-alerts.active.title' | translate">
+            <app-stat-filter-card
+              icon="notifications"
+              labelKey="ca-alerts.kpi.open"
+              [value]="stats().open"
+              [hintKey]="
+                stats().environmentCount === 1
+                  ? 'ca-alerts.active.stats.environments-one'
+                  : 'ca-alerts.active.stats.environments-many'
+              "
+              [hintParams]="{ count: stats().environmentCount }"
+              [pressed]="!criticalOnly() && attentionFilter() === null"
+              (toggled)="criticalOnly.set(false); attentionFilter.set(null)"
+            />
+            <app-stat-filter-card
+              icon="error"
+              labelKey="ca-alerts.kpi.critical"
+              [value]="stats().critical"
+              [hintKey]="
+                stats().warningCount === 1
+                  ? 'ca-alerts.active.stats.warnings-one'
+                  : 'ca-alerts.active.stats.warnings-many'
+              "
+              [hintParams]="{ count: stats().warningCount }"
+              [pressed]="criticalOnly()"
+              (toggled)="criticalOnly.set(!criticalOnly())"
+            />
+            <app-stat-filter-card
+              icon="pending_actions"
+              labelKey="ca-alerts.active.stats.unattended"
+              [value]="stats().unattended"
+              [hintKey]="stats().oldestUnattendedAt ? 'ca-alerts.active.stats.oldest' : null"
+              [hintParams]="{ time: (stats().oldestUnattendedAt | relativeTime: now()) }"
+              [pressed]="attentionFilter() === 'unattended'"
+              (toggled)="toggleAttentionFilter('unattended')"
+            />
+            <app-stat-filter-card
+              icon="pan_tool"
+              labelKey="ca-alerts.kpi.attending"
+              [value]="stats().attending"
+              [hintKey]="
+                stats().normalizedCount === 1
+                  ? 'ca-alerts.active.stats.normalized-one'
+                  : stats().normalizedCount
+                    ? 'ca-alerts.active.stats.normalized-many'
+                    : null
+              "
+              [hintParams]="{ count: stats().normalizedCount }"
+              [pressed]="attentionFilter() === 'attending'"
+              (toggled)="toggleAttentionFilter('attending')"
+            />
+          </section>
+
+          <div class="toolbar">
+            <div class="sort" role="group" aria-labelledby="alert-sort-label">
+              <span id="alert-sort-label">{{ 'ca-alerts.active.sort.label' | translate }}</span>
+              @for (option of sortOrders; track option.order) {
+                <button
+                  type="button"
+                  class="sort-pill"
+                  [class.selected]="sortOrder() === option.order"
+                  [attr.aria-pressed]="sortOrder() === option.order"
+                  (click)="sortOrder.set(option.order)"
+                >
+                  @if (option.icon) {
+                    <mat-icon aria-hidden="true">{{ option.icon }}</mat-icon>
+                  }
+                  {{ option.labelKey | translate }}
+                </button>
+              }
+            </div>
+            <mat-form-field appearance="outline" subscriptSizing="dynamic" class="search">
+              <mat-icon matPrefix aria-hidden="true">search</mat-icon>
+              <input
+                matInput
+                type="search"
+                [value]="searchTerm()"
+                [placeholder]="'ca-alerts.active.search' | translate"
+                [attr.aria-label]="'ca-alerts.active.search' | translate"
+                (input)="searchTerm.set($any($event.target).value)"
+              />
+            </mat-form-field>
+          </div>
+
+          @if (isFiltered()) {
+            <p class="result-count" role="status">
+              {{
+                'ca-alerts.active.results'
+                  | translate: { shown: visibleAlerts().length, total: stats().open }
+              }}
+            </p>
+          }
+
+          <ul class="alert-list">
+            @for (alert of visibleAlerts(); track alert.id) {
+              <li>
+                <app-alert-card
+                  [alert]="alert"
+                  [deviceName]="store.deviceName(alert.equipmentId)"
+                  [environmentLabel]="environmentLabelOf(alert)"
+                  [canAttend]="store.canAttend()"
+                  [saving]="store.saving()"
+                  [isNew]="store.newAlertIds().has(alert.id)"
+                  [now]="now()"
+                  (attend)="attend(alert)"
+                  (notify)="notify(alert)"
+                  (opening)="closeUndoWindow(alert)"
+                />
+              </li>
+            }
+          </ul>
+
+          @if (!visibleAlerts().length && isFiltered()) {
+            <app-empty-state messageKey="ca-alerts.active.no-results">
+              <button mat-stroked-button type="button" (click)="clearFilters()">
+                {{ 'common.clear' | translate }}
+              </button>
+            </app-empty-state>
+          }
         }
+      } @else if (!store.error()) {
+        <p role="status">{{ 'common.status-loading' | translate }}</p>
       }
     </div>
   </app-alerts-page-header>

@@ -72,3 +72,10 @@ p {
   font-weight: 700;
   line-height: 18px;
 }
+
+/* Without the icons, both sections fit on the narrowest phones instead of hiding behind the arrows of the tabs. */
+@media (max-width: 400px) {
+  [mat-tab-link] mat-icon {
+    display: none;
+  }
+}

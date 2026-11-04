@@ -771,8 +771,56 @@
     },
     "active": {
       "title": "Active Alerts",
-      "subtitle": "Open alerts of the environment and its monitored containers, with their origin and severity.",
-      "empty": "There are no active alerts in this environment."
+      "subtitle": "Open deviations of the monitored environments and containers, from the most to the least urgent.",
+      "live": "Live · updated {{time}}",
+      "live-partial": "Partial data · updated {{time}}",
+      "unavailable": "The alerts of {{environments}} could not be read. What you see of those environments may be out of date.",
+      "retry": "Try again",
+      "new-alerts": "New alerts: {{count}}.",
+      "attention-registered": "{{alert}} in progress",
+      "attended-by-another": "Another person already attended this alert.",
+      "search": "Search device or variable",
+      "results": "Showing {{shown}} of {{total}} alerts.",
+      "no-results": "There are no alerts with these filters.",
+      "critical-banner": {
+        "title-one": "1 critical alert not attended.",
+        "title-many": "{{count}} critical alerts not attended.",
+        "oldest": "The oldest: {{device}} · {{variable}} {{value}} {{unit}}.",
+        "detail": "Opened {{time}} · nobody has registered attention",
+        "action": "View unattended critical"
+      },
+      "stats": {
+        "unattended": "Not attended",
+        "environments-one": "in 1 environment",
+        "environments-many": "in {{count}} environments",
+        "warnings-one": "1 warning",
+        "warnings-many": "{{count}} warnings",
+        "oldest": "oldest: {{time}}",
+        "normalized-one": "1 already normalized",
+        "normalized-many": "{{count}} already normalized"
+      },
+      "sort": {
+        "label": "Sort by",
+        "priority": "Priority",
+        "newest": "Newest",
+        "environment": "Environment"
+      },
+      "card": {
+        "lifecycle": "Life cycle of the alert",
+        "limit": "limit {{value}} {{unit}}",
+        "opened": "Opened {{time}}",
+        "no-owner": "No one assigned",
+        "attending": "In progress {{time}}",
+        "notify": "Notify",
+        "resolve": "Resolve"
+      },
+      "empty": {
+        "title": "Everything within GMP parameters",
+        "message-one": "There are no open alerts in this environment.",
+        "message-many": "There are no open alerts in the {{count}} environments.",
+        "history": "View history",
+        "monitoring": "Go to monitoring"
+      }
     },
     "origin": {
       "ENVIRONMENT": "Environment",

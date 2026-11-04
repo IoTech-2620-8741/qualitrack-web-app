@@ -771,8 +771,56 @@
     },
     "active": {
       "title": "Alertas activas",
-      "subtitle": "Alertas abiertas del ambiente y de sus contenedores monitoreados, con su origen y severidad.",
-      "empty": "No hay alertas activas en este ambiente."
+      "subtitle": "Desviaciones abiertas de los ambientes y contenedores monitoreados, de la más urgente a la menos urgente.",
+      "live": "En vivo · actualizado {{time}}",
+      "live-partial": "Datos parciales · actualizado {{time}}",
+      "unavailable": "No se pudieron leer las alertas de: {{environments}}. Lo que ves de esos ambientes puede no estar al día.",
+      "retry": "Reintentar",
+      "new-alerts": "Alertas nuevas: {{count}}.",
+      "attention-registered": "{{alert}} en atención",
+      "attended-by-another": "Otra persona ya atendió esta alerta.",
+      "search": "Buscar dispositivo o variable",
+      "results": "Se muestran {{shown}} de {{total}} alertas.",
+      "no-results": "No hay alertas con estos filtros.",
+      "critical-banner": {
+        "title-one": "1 alerta crítica sin atender.",
+        "title-many": "{{count}} alertas críticas sin atender.",
+        "oldest": "La más antigua: {{device}} · {{variable}} {{value}} {{unit}}.",
+        "detail": "Abierta {{time}} · nadie la ha registrado en atención",
+        "action": "Ver críticas sin atender"
+      },
+      "stats": {
+        "unattended": "Sin atender",
+        "environments-one": "en 1 ambiente",
+        "environments-many": "en {{count}} ambientes",
+        "warnings-one": "1 advertencia",
+        "warnings-many": "{{count}} advertencias",
+        "oldest": "más antigua: {{time}}",
+        "normalized-one": "1 ya normalizada",
+        "normalized-many": "{{count}} ya normalizadas"
+      },
+      "sort": {
+        "label": "Ordenar por",
+        "priority": "Prioridad",
+        "newest": "Más recientes",
+        "environment": "Ambiente"
+      },
+      "card": {
+        "lifecycle": "Ciclo de vida de la alerta",
+        "limit": "límite {{value}} {{unit}}",
+        "opened": "Abierta {{time}}",
+        "no-owner": "Sin responsable",
+        "attending": "En atención {{time}}",
+        "notify": "Avisar",
+        "resolve": "Resolver"
+      },
+      "empty": {
+        "title": "Todo dentro de los parámetros BPM",
+        "message-one": "No hay alertas abiertas en este ambiente.",
+        "message-many": "No hay alertas abiertas en los {{count}} ambientes.",
+        "history": "Ver historial",
+        "monitoring": "Ir a monitoreo"
+      }
     },
     "origin": {
       "ENVIRONMENT": "Ambiente",

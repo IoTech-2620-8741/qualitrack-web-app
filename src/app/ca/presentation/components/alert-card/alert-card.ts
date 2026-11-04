@@ -1,0 +1,105 @@
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  computed,
+  inject,
+  input,
+  output,
+  viewChild,
+} from '@angular/core';
+import { DecimalPipe } from '@angular/common';
+import { RouterLink } from '@angular/router';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+
+import { StatusChip } from '../../../../shared/presentation/components/status-chip/status-chip';
+import { DateTimePipe } from '../../../../shared/presentation/pipes/date-time.pipe';
+import { RelativeTimePipe } from '../../../../shared/presentation/pipes/relative-time.pipe';
+import { DeviationAlert } from '../../../domain/model/deviation-alert.entity';
+import { ALERT_NORMALIZED_CHIP, ALERT_SEVERITY_CHIPS, ALERT_STATUS_CHIPS } from '../../alert-chips';
+import { alertVariableName } from '../../alert-variable';
+import { AlertLifecycle } from '../alert-lifecycle/alert-lifecycle';
+
+/**
+ * Card of an open alert in the inbox: how serious it is, how far it went past the limit, how long it has been open,
+ * who attends it and the next step of its life cycle.
+ *
+ * @remarks
+ * It only shows what it receives and tells the view what the person wants to do. Each card has a single primary
+ * action, which depends on the state of the alert.
+ */
+@Component({
+  selector: 'app-alert-card',
+  standalone: true,
+  imports: [
+    DecimalPipe,
+    RouterLink,
+    MatButtonModule,
+    MatIconModule,
+    TranslatePipe,
+    StatusChip,
+    DateTimePipe,
+    RelativeTimePipe,
+    AlertLifecycle,
+  ],
+  templateUrl: './alert-card.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  styleUrl: './alert-card.css',
+})
+export class AlertCard {
+  /** Alert to show. */
+  readonly alert = input.required<DeviationAlert>();
+
+  /** Name of the device that detected the deviation, or null while it is unknown. */
+  readonly deviceName = input<string | null>(null);
+
+  /** Code and name of the environment of the alert, or null when it is unknown. */
+  readonly environmentLabel = input<string | null>(null);
+
+  /** Whether the person can attend alerts; otherwise only the detail is offered. */
+  readonly canAttend = input(false);
+
+  /** Whether something is being saved, so the e-mail cannot be sent again yet. */
+  readonly saving = input(false);
+
+  /** Whether the alert just arrived, to catch the eye. */
+  readonly isNew = input(false);
+
+  /** Current time, kept by the view, to tell how long ago things happened. */
+  readonly now = input.required<Date>();
+
+  /** Emits when the person registers that they attend the alert. */
+  readonly attend = output<void>();
+
+  /** Emits when the person e-mails the alert again. */
+  readonly notify = output<void>();
+
+  /** Emits when the person is about to leave the inbox to see the alert. */
+  readonly opening = output<void>();
+
+  private readonly translate = inject(TranslateService);
+  private readonly primaryAction = viewChild('primaryAction', { read: ElementRef });
+
+  protected readonly normalizedChip = ALERT_NORMALIZED_CHIP;
+  protected readonly severityChip = computed(() => ALERT_SEVERITY_CHIPS[this.alert().severity]);
+  protected readonly statusChip = computed(() => ALERT_STATUS_CHIPS[this.alert().status]);
+
+  /** What deviated and where, which also tells apart the actions of each card. */
+  protected readonly title = computed(() => {
+    const alert = this.alert();
+    const variable = alertVariableName(this.translate, alert.parameterName);
+    return `${variable} · ${this.deviceName() ?? '#' + alert.equipmentId}`;
+  });
+
+  /** Icon of where the alert came from. */
+  protected readonly originIcon = computed(() =>
+    this.alert().origin === 'CONTAINER' ? 'inventory_2' : 'sensors',
+  );
+
+  /** Moves the focus to the main action of the card, for example after it changed. */
+  focusPrimaryAction(): void {
+    (this.primaryAction()?.nativeElement as HTMLElement | undefined)?.focus();
+  }
+}
