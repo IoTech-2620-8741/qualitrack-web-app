@@ -36,6 +36,9 @@ export const DEFAULT_ALERT_HISTORY_FILTER: AlertHistoryFilter = {
 /** Milliseconds in one day. */
 const DAY_IN_MILLISECONDS = 24 * 60 * 60 * 1000;
 
+/** UTC offset of the laboratories, which all operate in Peru (America/Lima has no daylight saving time). */
+const LABORATORY_UTC_OFFSET = '-05:00';
+
 /**
  * Whether an alert started inside the period of the filter.
  *
@@ -64,7 +67,7 @@ export function isInPeriod(alert: DeviationAlert, filter: AlertHistoryFilter, no
  * @returns Milliseconds since 1970 at midnight of that day
  */
 function startOfDay(day: string): number {
-  return new Date(day + 'T00:00:00').getTime();
+  return Date.parse(`${day}T00:00:00${LABORATORY_UTC_OFFSET}`);
 }
 
 /**
