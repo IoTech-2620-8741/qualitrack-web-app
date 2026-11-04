@@ -554,7 +554,7 @@ package "ra.presentation" {
   }
 
   class DeviationEvents <<component>> {
-    +trend / points
+    +trend / points / thresholds
     #limitOf(point): number | null
   }
 
@@ -697,6 +697,7 @@ DeviationChart ..> DeviationChartFactory : legend
 DeviationChartFactory ..> OverviewEnvironmentalThreshold
 DeviationDetailPage --> RaStore
 DeviationDetailPage *-- DeviationEvents
+DeviationEvents ..> DeviationChartFactory : limit crossed
 DeviationTrendChartComponent --> RaStore
 DeviationTrendChartComponent --> EnvironmentSelector
 DeviationTrendChartComponent ..> LastDays

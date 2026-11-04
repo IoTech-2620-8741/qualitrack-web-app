@@ -547,7 +547,6 @@ AlertPersonApiEndpoint --> AlertPersonAssembler
 AlertPersonAssembler ..> AlertPerson
 AlertPerson ..|> BaseEntity
 CaStore --> IamStore : beforeSignOut
-AlertHistory *-- AlertsPageHeader
 AlertHistory --> CaStore
 AlertHistory ..> EnvironmentSelector
 AlertHistory *-- AlertTable
