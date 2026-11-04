@@ -1,143 +1,324 @@
+/* ==========================================================================
+   Product detail view
+   Same visual language as the product catalog, plans and billing views.
+   Colors are plain hex values. Only the h1 uses #1a3a5c.
+   ========================================================================== */
+
 :host {
   display: block;
   min-width: 0;
-  color: #20343c;
+  min-height: 100%;
+  background: #f3f4f6;
+  color: #0f172a;
 }
+
+/* Same width and padding as the other views, so the title lines up */
 .operations-page {
-  max-width: 1280px;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 24px;
+  padding: 32px 24px 48px;
 }
-.page-heading,
-.actions {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-.page-heading {
-  justify-content: space-between;
-  margin-bottom: 20px;
-}
-h1 {
-  font-size: 24px;
-  margin: 0;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-h2 {
-  font-size: 19px;
-  margin: 12px 0 18px;
-}
-h3 {
-  font-size: 16px;
-}
+
 h1,
 h2,
-h3,
 p,
 a {
   overflow-wrap: anywhere;
   letter-spacing: 0;
 }
-.actions button {
-  white-space: normal;
+
+/* --------------------------------------------------------------------------
+   Back link (first link of the page, outside the actions)
+   -------------------------------------------------------------------------- */
+.operations-page > a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 16px;
+  color: #0f766e;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.operations-page > a::before {
+  content: '\2190';
+  content: '\2190' / '';
+}
+
+.operations-page > a:hover {
+  text-decoration: underline;
+}
+
+.operations-page > a:focus-visible {
+  outline: 3px solid #0d9488;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* --------------------------------------------------------------------------
+   Page heading: plain title on the left, action on the right
+   -------------------------------------------------------------------------- */
+.page-heading,
+.actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.page-heading {
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+h1 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  color: #1a3a5c;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+h1 mat-icon {
+  flex-shrink: 0;
+  color: #0d9488;
+}
+
+/* Primary action: solid teal (AA: white on #0f766e is 5.47:1) */
+.actions a[mat-flat-button] {
   height: auto;
-  min-height: 40px;
-  padding: 8px 16px;
+  min-height: 48px; /* minimum touch target */
+  padding: 8px 24px;
+  border-radius: 999px;
+  font-weight: 600;
+  white-space: normal;
+  --mdc-filled-button-container-color: #0f766e;
+  --mdc-filled-button-label-text-color: #fff;
+  background: #0f766e;
+  color: #fff;
+  text-decoration: none;
 }
-mat-form-field {
-  width: 100%;
-  min-width: 0;
+
+.actions a[mat-flat-button]:hover {
+  background: #115e59;
 }
+
+.actions a:focus-visible {
+  outline: 3px solid #0d9488;
+  outline-offset: 2px;
+}
+
+/* --------------------------------------------------------------------------
+   Error message
+   -------------------------------------------------------------------------- */
+.error {
+  margin: 0 0 20px;
+  padding: 16px;
+  border: 1px solid #f44336;
+  border-radius: 12px;
+  background: #ffebee;
+  color: #b71c1c;
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+
+/* --------------------------------------------------------------------------
+   Summary strip: code, status and number of batches in one card
+   -------------------------------------------------------------------------- */
 .summary-strip {
   display: flex;
-  gap: 32px;
   flex-wrap: wrap;
-  border-block: 1px solid #cfdbdf;
-  padding: 18px 0;
-  margin: 20px 0;
+  gap: 16px 40px;
+  margin: 0 0 24px;
+  padding: 20px 24px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
 }
+
 .summary-strip span {
   display: block;
-  font-size: 13px;
-  color: #4b6068;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
 }
+
 .summary-strip strong {
   display: block;
-  font-size: 23px;
   margin-top: 6px;
+  color: #0f172a;
+  font-size: 24px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
 }
+
+/* --------------------------------------------------------------------------
+   Description, specifications and section titles
+   -------------------------------------------------------------------------- */
+p {
+  margin: 0 0 16px;
+  color: #64748b;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+h2 {
+  margin: 24px 0 12px;
+  color: #0f172a;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.muted {
+  color: #64748b;
+}
+
+/* --------------------------------------------------------------------------
+   Data table: the table itself is the card
+   -------------------------------------------------------------------------- */
 .data-table {
   width: 100%;
-  border-collapse: collapse;
   table-layout: fixed;
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
   font-size: 14px;
 }
+
 .data-table th {
+  background: #fff;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 500;
   text-align: left;
-  color: #415a63;
-  background: #edf3f4;
-  font-weight: 600;
+  text-transform: uppercase;
 }
+
 .data-table td,
 .data-table th {
-  padding: 14px 12px;
-  border-bottom: 1px solid #d4dfe3;
+  padding: 16px 20px;
+  border-bottom: 1px solid #e2e8f0;
   overflow-wrap: anywhere;
   vertical-align: top;
 }
-.data-table small {
-  display: block;
-  color: #60727a;
-  margin-top: 5px;
+
+.data-table td {
+  color: #0f172a;
+  font-variant-numeric: tabular-nums;
 }
-a {
-  color: #006e76;
+
+.data-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.data-table tbody tr:hover {
+  background: #f3f4f6;
+}
+
+/* Batch number link */
+.data-table a {
+  color: #0f766e;
   font-weight: 600;
+  text-decoration: none;
 }
-.error {
-  padding: 12px 16px;
-  border-left: 4px solid;
-  overflow-wrap: anywhere;
+
+.data-table a:hover {
+  text-decoration: underline;
 }
-.error {
-  background: #fff0f0;
-  color: #9d2424;
+
+.data-table a:focus-visible {
+  outline: 3px solid #0d9488;
+  outline-offset: 2px;
+  border-radius: 4px;
 }
+
+/* Empty / loading row */
+.data-table td[colspan] {
+  padding: 32px 20px;
+  color: #64748b;
+  text-align: center;
+}
+
+/* --------------------------------------------------------------------------
+   Batch status chip (dark text variants for AA contrast)
+   Default is amber (pending / in progress); released and rejected override it.
+   -------------------------------------------------------------------------- */
 .status {
   display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #fff8e1;
+  color: #7a5a00;
   font-size: 12px;
-  font-weight: 600;
-  color: #704f00;
-  padding: 4px 0;
+  font-weight: 500;
 }
+
 .status.released {
-  color: #087957;
+  background: #e8f5e9;
+  color: #1b5e20;
 }
+
 .status.rejected {
-  color: #a12d2d;
+  background: #ffebee;
+  color: #b71c1c;
 }
-.muted {
-  color: #5c7079;
+
+/* Loading message */
+p[role='status'] {
+  padding: 32px 0;
+  text-align: center;
 }
+
+/* --------------------------------------------------------------------------
+   Responsive: each row becomes its own card
+   -------------------------------------------------------------------------- */
 @media (max-width: 760px) {
   .operations-page {
-    padding: 16px 10px;
+    padding: 20px 16px 36px;
   }
+
   h1 {
-    font-size: 21px;
+    font-size: 24px;
   }
+
+  .page-heading .actions {
+    width: 100%;
+  }
+
+  .actions a[mat-flat-button] {
+    flex: 1;
+    justify-content: center;
+  }
+
   .summary-strip {
-    gap: 18px;
+    gap: 16px 24px;
+    padding: 16px;
   }
+
   .summary-strip strong {
     font-size: 20px;
   }
+
   .data-table thead {
     display: none;
   }
+
+  .data-table {
+    overflow: visible;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+  }
+
   .data-table,
   .data-table tbody,
   .data-table tr,
@@ -145,22 +326,32 @@ a {
     display: block;
     width: auto;
   }
+
   .data-table tr {
-    border-bottom: 2px solid #bcced5;
-    padding: 8px 0;
+    margin-bottom: 12px;
+    padding: 8px 12px;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
   }
+
+  .data-table tbody tr:hover {
+    background: #fff;
+  }
+
   .data-table td {
+    padding: 8px 4px;
     border: 0;
-    padding: 6px 4px;
   }
+
   .data-table td[data-label]::before {
     content: attr(data-label);
     display: block;
-    font-size: 12px;
-    color: #5c7079;
     margin-bottom: 4px;
-  }
-  .page-heading .actions {
-    width: 100%;
+    color: #64748b;
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
   }
 }
