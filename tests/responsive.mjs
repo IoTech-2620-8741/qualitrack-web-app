@@ -6,7 +6,7 @@ const origin = process.env.WEB_URL ?? 'http://localhost:4200';
 const populated = process.env.DATASET === 'recorded';
 const directory = process.env.OUTPUT_DIR ?? (populated ? 'test-results/visual-recorded' : 'test-results/visual');
 const widths = (process.env.WIDTHS ?? '320,360,375,390,412,768,1024,1280,1440').split(',').map(Number);
-const paths = process.env.ROUTES?.split(',') ?? ['/home', '/about', '/iam/sign-in', '/iam/sign-up', '/not-found',
+const paths = process.env.ROUTES?.split(',') ?? ['/home', '/about', '/iam/sign-in', '/iam/sign-up', '/iam/password-recovery', '/not-found',
   '/subscriptions/plans', '/subscriptions/checkout?plan=TEST&billingCycle=MONTHLY',
   '/subscriptions/success', '/subscriptions/cancel', '/laboratories/new', '/dashboard',
   '/laboratories/profile', '/laboratories/staff', '/laboratories/staff/new',
@@ -35,6 +35,11 @@ try {
   for (const width of widths) {
     const context = await browser.newContext({ viewport: { width, height: 900 } });
     await context.addInitScript(() => {
+      // Whoever has a session cannot open the pages meant for visitors.
+      if (['/home', '/iam/sign-in', '/iam/sign-up', '/iam/password-recovery'].includes(location.pathname)) {
+        localStorage.clear();
+        return;
+      }
       localStorage.setItem('token', 'test.' + btoa(JSON.stringify({ exp: Date.now() / 1000 + 3600 })) + '.test');
       localStorage.setItem('userId', '27');
       localStorage.setItem('username', 'Browser test user');
@@ -52,10 +57,12 @@ try {
         body = { userId: 27, laboratoryId: subscription || setup ? null : 42,
           subscriptionId: subscription ? null : 73, subscriptionStatus: subscription ? null : 'ACTIVE',
           nextStep: subscription ? 'SUBSCRIPTION' : setup ? 'LABORATORY' : 'READY' };
-      } else if (path === '/api/v1/laboratories/42') body = laboratory;
+      } else if (path.endsWith('/users/me/profile')) body = { userId: 27, staffId: null, username: 'fixture', email: null, roles: [],
+        fullName: 'Browser Test User', dni: null, phoneNumber: null, location: null, position: null, hasPhoto: false };
+      else if (path === '/api/v1/laboratories/42') body = laboratory;
       else if (path.endsWith('/subscription-plans')) body = [plan];
       else if (path.endsWith('/kpi-dashboards')) body = { id: null, laboratoryId: 42,
-        timestamp: '2026-09-01T00:00:00Z', overallHealthScore: null, metrics: [] };
+        timestamp: '2026-09-01T00:00:00Z', overallHealthScore: null, metrics: [], measurementSummaries: [] };
       else if (path.endsWith('/notification-preferences')) body = { id: 89, userId: 27,
         emailEnabled: false, smsEnabled: false, inAppEnabled: false, minimumSeverity: 'WARNING' };
       if (populated) {
