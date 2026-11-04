@@ -148,6 +148,30 @@ describe('CaStore', () => {
     });
   });
 
+  describe('alert history', () => {
+    it('joins every alert of every environment, resolved ones included', async () => {
+      answer({ 1: [alertOf(10, 1, 'RESOLVED')], 2: [alertOf(20, 2)] });
+      const store = await storeWithEnvironments();
+
+      store.loadAlertHistory(null);
+
+      expect(store.alerts().map((alert) => alert.id)).toEqual([10, 20]);
+      expect(api.getEnvironmentAlerts).toHaveBeenCalledWith(42, 1, {});
+      expect(api.getEnvironmentAlerts).toHaveBeenCalledWith(42, 2, {});
+      expect(store.loading()).toBe(false);
+    });
+
+    it('reads only the chosen environment and names it when it fails', async () => {
+      answer({});
+      const store = await storeWithEnvironments();
+
+      store.loadAlertHistory(2);
+
+      expect(api.getEnvironmentAlerts).toHaveBeenCalledTimes(1);
+      expect(store.unavailableEnvironmentIds()).toEqual([2]);
+    });
+  });
+
   describe('silent refresh', () => {
     it('keeps the list on screen while it reads', async () => {
       answer({ 1: [alertOf(10, 1)], 2: [] });
@@ -458,7 +482,9 @@ describe('CaStore', () => {
     });
 
     it('keeps the actions of the detail when the attention reaches the platform', async () => {
-      const actuations = [{ id: 1, action: 'FAN_ON', triggerState: null, result: 'EXECUTED', occurredAt: '' }];
+      const actuations = [
+        { id: 1, action: 'FAN_ON', triggerState: null, result: 'EXECUTED', occurredAt: '' },
+      ];
       api.getAlertById.mockReturnValue(
         of(new DeviationAlert({ ...alertOf(10, 1), relatedActuations: actuations })),
       );

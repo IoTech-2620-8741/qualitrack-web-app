@@ -4,8 +4,10 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { ActivatedRoute } from '@angular/router';
 
 import { ReportGeneratorState } from './report-generator.state';
+import { reportConfigFromQuery } from './report-generator-query';
 import { RaStore } from '../../../application/ra.store';
 import { ErrorBanner } from '../../../../shared/presentation/components/error-banner/error-banner';
 import { ReportTypeSelector } from '../../components/report-type-selector/report-type-selector';
@@ -18,7 +20,8 @@ import { ReportParamsForm } from '../../components/report-params-form/report-par
  * This component acts as a layout wrapper and state provider for the two main sections
  * of the report generator: the type selector and the parameters form.
  * It initializes the necessary domain data (batches, equipment, environments)
- * and handles the global loading and error states.
+ * and handles the global loading and error states. Another view can prepare the form through the address, as the
+ * alert history does with `?type=compliance&environmentId=…&from=…&to=…`.
  */
 @Component({
   selector: 'app-report-generator',
@@ -41,8 +44,17 @@ export class ReportGeneratorComponent implements OnInit, OnDestroy {
   /** The application store managing the Reporting and Analysis state. */
   protected store = inject(RaStore);
 
-  /** Initializes the component by loading the required reference data. */
+  /** The form of the report, which the address can prepare. */
+  private readonly state = inject(ReportGeneratorState);
+
+  /** The route of the view, which carries the values prepared by another view. */
+  private readonly route = inject(ActivatedRoute);
+
+  /** Initializes the component by loading the required reference data and the values of the address. */
   ngOnInit() {
+    const prepared = reportConfigFromQuery(this.route.snapshot.queryParamMap);
+    if (prepared.type) this.state.setType(prepared.type);
+    this.state.updateForm(prepared);
     this.store.clearMessages();
     this.store.clearReportPreview();
     this.store.loadBatches();

@@ -60,7 +60,7 @@ const NOTIFICATION_PANEL_SIZE = 15;
 /** Conflict answered by the platform when the alert is no longer waiting for attention. */
 const HTTP_CONFLICT = 409;
 
-/** Open alerts read from one environment; `alerts` is null when the environment could not be read. */
+/** Alerts read from one environment; `alerts` is null when the environment could not be read. */
 interface EnvironmentAlertsReading {
   environmentId: number;
   alerts: DeviationAlert[] | null;
@@ -453,19 +453,21 @@ export class CaStore {
    * in {@link CaStore.unavailableEnvironmentIds}.
    */
   loadOpenAlerts(environmentId: number | null): void {
-    this.reloadAlerts.next();
-    this._alertsSignal.set([]);
-    this._newAlertIdsSignal.set(new Set());
-    this._unavailableEnvironmentIdsSignal.set([]);
-    this._loadingSignal.set(true);
-    this._errorSignal.set(null);
+    this.loadAlerts(environmentId, { active: true });
+  }
 
-    this.readOpenAlerts(environmentId)
-      .pipe(takeUntil(this.reloadAlerts), takeUntilDestroyed(this.destroyRef))
-      .subscribe((readings) => {
-        this.showOpenAlerts(readings);
-        this._loadingSignal.set(false);
-      });
+  /**
+   * Loads every alert, open or resolved, of one environment or of the whole laboratory, emptying the list first.
+   *
+   * @param environmentId - The environment, or null for every environment of the laboratory
+   * @throws {Error} When the user has no laboratory set up
+   *
+   * @remarks
+   * Used by the alert history, which filters the alerts in the browser. Like {@link CaStore.loadOpenAlerts}, an
+   * environment that fails does not hide the alerts of the others.
+   */
+  loadAlertHistory(environmentId: number | null): void {
+    this.loadAlerts(environmentId, {});
   }
 
   /**
@@ -482,7 +484,7 @@ export class CaStore {
     if (this._loadingSignal() || this._refreshingSignal()) return;
     this._refreshingSignal.set(true);
 
-    this.readOpenAlerts(environmentId)
+    this.readAlerts(environmentId, { active: true })
       .pipe(
         takeUntil(this.reloadAlerts),
         takeUntil(this.discardRefresh),
@@ -491,7 +493,7 @@ export class CaStore {
       )
       .subscribe((readings) => {
         const listedIds = new Set(this._alertsSignal().map((alert) => alert.id));
-        this.showOpenAlerts(readings);
+        this.showAlerts(readings);
         this._newAlertIdsSignal.set(
           new Set(this._alertsSignal().map((alert) => alert.id).filter((id) => !listedIds.has(id))),
         );
@@ -809,19 +811,45 @@ export class CaStore {
   }
 
   /**
-   * Reads the open alerts of each environment asked for, without letting one failure stop the others.
+   * Empties the list and loads the alerts of one environment or of the whole laboratory that match the filters.
    *
    * @param environmentId - The environment, or null for every environment of the laboratory
+   * @param filters - What the platform filters, the same for every environment
+   *
+   * @remarks
+   * Cancels the request in progress.
+   */
+  private loadAlerts(environmentId: number | null, filters: AlertFilters): void {
+    this.reloadAlerts.next();
+    this._alertsSignal.set([]);
+    this._newAlertIdsSignal.set(new Set());
+    this._unavailableEnvironmentIdsSignal.set([]);
+    this._loadingSignal.set(true);
+    this._errorSignal.set(null);
+
+    this.readAlerts(environmentId, filters)
+      .pipe(takeUntil(this.reloadAlerts), takeUntilDestroyed(this.destroyRef))
+      .subscribe((readings) => {
+        this.showAlerts(readings);
+        this._loadingSignal.set(false);
+      });
+  }
+
+  /**
+   * Reads the alerts of each environment asked for, without letting one failure stop the others.
+   *
+   * @param environmentId - The environment, or null for every environment of the laboratory
+   * @param filters - What the platform filters, the same for every environment
    * @returns Observable emitting one reading per environment; it never errors
    */
-  private readOpenAlerts(environmentId: number | null): Observable<EnvironmentAlertsReading[]> {
+  private readAlerts(environmentId: number | null, filters: AlertFilters): Observable<EnvironmentAlertsReading[]> {
     const environmentIds =
       environmentId === null ? this._environmentsSignal().map((environment) => environment.id) : [environmentId];
     if (!environmentIds.length) return of([]);
     const laboratoryId = this.iam.requireLaboratoryId();
     return forkJoin(
       environmentIds.map((id) =>
-        this.caApi.getEnvironmentAlerts(laboratoryId, id, { active: true }).pipe(
+        this.caApi.getEnvironmentAlerts(laboratoryId, id, filters).pipe(
           map((alerts): EnvironmentAlertsReading => ({ environmentId: id, alerts })),
           catchError(() => of<EnvironmentAlertsReading>({ environmentId: id, alerts: null })),
         ),
@@ -834,7 +862,7 @@ export class CaStore {
    *
    * @param readings - One reading per environment
    */
-  private showOpenAlerts(readings: EnvironmentAlertsReading[]): void {
+  private showAlerts(readings: EnvironmentAlertsReading[]): void {
     const unavailableIds = readings.filter(({ alerts }) => alerts === null).map(({ environmentId }) => environmentId);
     const keptAlerts = this._alertsSignal().filter(
       (alert) => alert.environmentId !== null && unavailableIds.includes(alert.environmentId),
