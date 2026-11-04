@@ -312,6 +312,93 @@ describe('AlertDashboard', () => {
     });
   });
 
+  describe('attention', () => {
+    const primaryActionOf = (element: HTMLElement) =>
+      element.querySelector<HTMLButtonElement>('app-alert-card button[mat-flat-button]')!;
+
+    it('shows the alert as attended at once and gives time to undo it', async () => {
+      const { element, press, statCard } = await open();
+
+      press(primaryActionOf(element));
+
+      expect(statCard('ca-alerts.kpi.attending').querySelector('.value')?.textContent).toBe('2');
+      expect(undoToast.open).toHaveBeenCalledWith(
+        expect.objectContaining({ messageKey: 'ca-alerts.active.attention-registered' }),
+      );
+      expect(api.acknowledgeAlert).not.toHaveBeenCalled();
+    });
+
+    it('sends nothing when it is undone', async () => {
+      const { harness, element, press, statCard } = await open();
+      press(primaryActionOf(element));
+
+      toastOutcome.next('undone');
+      harness.detectChanges();
+
+      expect(statCard('ca-alerts.kpi.attending').querySelector('.value')?.textContent).toBe('1');
+      expect(api.acknowledgeAlert).not.toHaveBeenCalled();
+    });
+
+    it('sends it when the time to undo ends', async () => {
+      api.acknowledgeAlert.mockReturnValue(
+        of(alertOf(2, 2, 'CRITICAL', 'ACKNOWLEDGED', '2026-10-04T10:00:00Z')),
+      );
+      const { element, press } = await open();
+      press(primaryActionOf(element));
+
+      toastOutcome.next('confirmed');
+
+      expect(api.acknowledgeAlert).toHaveBeenCalledWith(2);
+    });
+
+    it('sends it even after the person left the view', async () => {
+      api.acknowledgeAlert.mockReturnValue(
+        of(alertOf(2, 2, 'CRITICAL', 'ACKNOWLEDGED', '2026-10-04T10:00:00Z')),
+      );
+      const { harness, element, press } = await open();
+      press(primaryActionOf(element));
+
+      harness.fixture.destroy();
+      toastOutcome.next('confirmed');
+
+      expect(api.acknowledgeAlert).toHaveBeenCalledWith(2);
+    });
+
+    it('closes the time to undo when the person opens that alert', async () => {
+      const { harness, element, press } = await open();
+      press(primaryActionOf(element));
+      const card = Array.from(element.querySelectorAll('app-alert-card')).find((item) =>
+        item.textContent?.includes('Cámara fría'),
+      )!;
+
+      card.querySelector<HTMLAnchorElement>('.actions a')!.click();
+      await harness.fixture.whenStable();
+
+      expect(undoToast.confirmNow).toHaveBeenCalledTimes(1);
+    });
+
+    it('leaves the time to undo running when the person opens another alert', async () => {
+      const { harness, element, press } = await open();
+      press(primaryActionOf(element));
+      const anotherCard = Array.from(element.querySelectorAll('app-alert-card')).find((item) =>
+        item.textContent?.includes('Device 4'),
+      )!;
+
+      anotherCard.querySelector<HTMLAnchorElement>('.actions a')!.click();
+      await harness.fixture.whenStable();
+
+      expect(undoToast.confirmNow).not.toHaveBeenCalled();
+    });
+
+    it('offers nothing but the detail to who cannot attend alerts', async () => {
+      canOperate.set(false);
+      const { element } = await open();
+
+      expect(primaryActionOf(element)).toBeNull();
+      expect(element.querySelectorAll('app-alert-card .actions a')).toHaveLength(4);
+    });
+  });
+
   describe('live refresh', () => {
     const setHidden = (hidden: boolean) =>
       Object.defineProperty(document, 'hidden', { configurable: true, get: () => hidden });

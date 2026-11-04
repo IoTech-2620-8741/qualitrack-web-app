@@ -227,8 +227,9 @@
                   [saving]="store.saving()"
                   [isNew]="store.newAlertIds().has(alert.id)"
                   [now]="now()"
-                  (attend)="store.acknowledgeAlert(alert.id)"
-                  (notify)="store.sendAlertEmailNotification(alert.id)"
+                  (attend)="attend(alert)"
+                  (notify)="notify(alert)"
+                  (opening)="closeUndoWindow(alert)"
                 />
               </li>
             }

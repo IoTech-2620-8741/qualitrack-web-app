@@ -777,6 +777,8 @@
       "unavailable": "The alerts of {{environments}} could not be read. What you see of those environments may be out of date.",
       "retry": "Try again",
       "new-alerts": "New alerts: {{count}}.",
+      "attention-registered": "{{alert}} in progress",
+      "attended-by-another": "Another person already attended this alert.",
       "search": "Search device or variable",
       "results": "Showing {{shown}} of {{total}} alerts.",
       "no-results": "There are no alerts with these filters.",

@@ -777,6 +777,8 @@
       "unavailable": "No se pudieron leer las alertas de: {{environments}}. Lo que ves de esos ambientes puede no estar al día.",
       "retry": "Reintentar",
       "new-alerts": "Alertas nuevas: {{count}}.",
+      "attention-registered": "{{alert}} en atención",
+      "attended-by-another": "Otra persona ya atendió esta alerta.",
       "search": "Buscar dispositivo o variable",
       "results": "Se muestran {{shown}} de {{total}} alertas.",
       "no-results": "No hay alertas con estos filtros.",

@@ -2,6 +2,7 @@ import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { of, Subject, throwError } from 'rxjs';
 import { IamStore } from '../../iam/application/iam.store';
+import { ApiError } from '../../shared/infrastructure/api-error';
 import { AlertEnvironment } from '../domain/model/alert-environment.entity';
 import { AlertStatus, DeviationAlert } from '../domain/model/deviation-alert.entity';
 import { CaApi } from '../infrastructure/ca-api';
@@ -24,6 +25,8 @@ const alertOf = (id: number, environmentId: number, status: AlertStatus = 'UNRES
 const environmentOf = (id: number) =>
   new AlertEnvironment({ id, code: `ENV-${id}`, name: `Environment ${id}`, usage: null });
 
+const conflict = () => new ApiError('Already attended', 409);
+
 describe('CaStore', () => {
   const api = {
     getAlertEnvironments: vi.fn(),
@@ -32,8 +35,10 @@ describe('CaStore', () => {
     getAlertById: vi.fn(),
     sendAlertEmailNotification: vi.fn(),
   };
+  let signOutTasks: (() => void)[];
 
   beforeEach(() => {
+    signOutTasks = [];
     api.getAlertEnvironments.mockReset().mockReturnValue(of([environmentOf(1), environmentOf(2)]));
     api.getEnvironmentAlerts.mockReset().mockReturnValue(of([]));
     api.acknowledgeAlert.mockReset();
@@ -48,6 +53,7 @@ describe('CaStore', () => {
             canOperate: signal(true),
             currentUserId: signal(27),
             requireLaboratoryId: () => 42,
+            beforeSignOut: (task: () => void) => signOutTasks.push(task),
           },
         },
       ],
@@ -198,6 +204,192 @@ describe('CaStore', () => {
 
       expect(api.getEnvironmentAlerts).not.toHaveBeenCalled();
       expect(store.loading()).toBe(true);
+    });
+  });
+
+  describe('attention that can be undone', () => {
+    async function storeWithAlert() {
+      answer({ 1: [alertOf(10, 1)], 2: [] });
+      const store = await storeWithEnvironments();
+      store.loadOpenAlerts(null);
+      return store;
+    }
+
+    const statusOf = (store: CaStore) => store.alerts()[0].status;
+
+    it('shows the alert as attended without telling the platform', async () => {
+      const store = await storeWithAlert();
+
+      store.startAttention(10);
+
+      expect(statusOf(store)).toBe('ACKNOWLEDGED');
+      expect(store.alerts()[0].acknowledgedBy).toBe(27);
+      expect(store.alerts()[0].acknowledgedAt).not.toBeNull();
+      expect(store.hasPendingAttention(10)).toBe(true);
+      expect(api.acknowledgeAlert).not.toHaveBeenCalled();
+    });
+
+    it('forgets the attention when it is undone', async () => {
+      const store = await storeWithAlert();
+      store.startAttention(10);
+
+      store.undoAttention(10);
+      store.confirmAttention(10);
+
+      expect(statusOf(store)).toBe('UNRESOLVED');
+      expect(store.hasPendingAttention(10)).toBe(false);
+      expect(api.acknowledgeAlert).not.toHaveBeenCalled();
+    });
+
+    it('registers the attention once, however many times it is confirmed', async () => {
+      const answerOfPlatform = new Subject<DeviationAlert>();
+      api.acknowledgeAlert.mockReturnValue(answerOfPlatform);
+      const store = await storeWithAlert();
+      store.startAttention(10);
+
+      store.confirmAttention(10);
+      store.confirmAttention(10);
+      answerOfPlatform.next(alertOf(10, 1, 'ACKNOWLEDGED'));
+      answerOfPlatform.complete();
+      store.confirmAttention(10);
+
+      expect(api.acknowledgeAlert).toHaveBeenCalledTimes(1);
+      expect(statusOf(store)).toBe('ACKNOWLEDGED');
+      expect(store.hasPendingAttention(10)).toBe(false);
+    });
+
+    it('can no longer be undone once it was sent', async () => {
+      api.acknowledgeAlert.mockReturnValue(new Subject());
+      const store = await storeWithAlert();
+      store.startAttention(10);
+      store.confirmAttention(10);
+
+      store.undoAttention(10);
+
+      expect(statusOf(store)).toBe('ACKNOWLEDGED');
+      expect(store.hasPendingAttention(10)).toBe(true);
+    });
+
+    it('ignores an alert that is not waiting for attention', async () => {
+      answer({ 1: [alertOf(10, 1, 'ACKNOWLEDGED')], 2: [] });
+      const store = await storeWithEnvironments();
+      store.loadOpenAlerts(null);
+
+      store.startAttention(10);
+
+      expect(store.hasPendingAttention(10)).toBe(false);
+    });
+
+    it('keeps the attention through a refresh', async () => {
+      const store = await storeWithAlert();
+      store.startAttention(10);
+
+      store.refreshOpenAlerts(null);
+
+      expect(statusOf(store)).toBe('ACKNOWLEDGED');
+      expect(api.acknowledgeAlert).not.toHaveBeenCalled();
+    });
+
+    it('discards a refresh that started before the platform answered', async () => {
+      api.acknowledgeAlert.mockReturnValue(of(alertOf(10, 1, 'ACKNOWLEDGED')));
+      const store = await storeWithAlert();
+      const staleReading = new Subject<DeviationAlert[]>();
+      api.getEnvironmentAlerts.mockReturnValue(staleReading);
+      store.startAttention(10);
+      store.refreshOpenAlerts(null);
+
+      store.confirmAttention(10);
+      staleReading.next([alertOf(10, 1)]);
+      staleReading.complete();
+
+      expect(statusOf(store)).toBe('ACKNOWLEDGED');
+      expect(store.refreshing()).toBe(false);
+    });
+
+    it('takes the alert back and explains why when the platform fails', async () => {
+      api.acknowledgeAlert.mockReturnValue(throwError(() => new ApiError('No connection', 0)));
+      const store = await storeWithAlert();
+      store.startAttention(10);
+
+      store.confirmAttention(10);
+
+      expect(statusOf(store)).toBe('UNRESOLVED');
+      expect(store.error()).toBe('ca-alerts.errors.connection');
+    });
+
+    it('shows who got there first when another person attended it', async () => {
+      api.acknowledgeAlert.mockReturnValue(throwError(conflict));
+      api.getAlertById.mockReturnValue(of(alertOf(10, 1, 'ACKNOWLEDGED')));
+      const store = await storeWithAlert();
+      store.startAttention(10);
+
+      store.confirmAttention(10);
+
+      expect(statusOf(store)).toBe('ACKNOWLEDGED');
+      expect(store.error()).toBe('ca-alerts.active.attended-by-another');
+      expect(store.hasPendingAttention(10)).toBe(false);
+    });
+
+    it('sends what is waiting before the person signs out', async () => {
+      api.acknowledgeAlert.mockReturnValue(new Subject());
+      const store = await storeWithAlert();
+      store.startAttention(10);
+
+      signOutTasks.forEach((task) => task());
+
+      expect(api.acknowledgeAlert).toHaveBeenCalledWith(10);
+    });
+
+    it('sends what is waiting when the page goes away, and not again when the window ends', async () => {
+      api.acknowledgeAlert.mockReturnValue(new Subject());
+      const store = await storeWithAlert();
+      store.startAttention(10);
+
+      window.dispatchEvent(new Event('pagehide'));
+      store.confirmAttention(10);
+
+      expect(api.acknowledgeAlert).toHaveBeenCalledTimes(1);
+    });
+
+    it('sends the attention before reading the detail of the alert', async () => {
+      const answerOfPlatform = new Subject<DeviationAlert>();
+      api.acknowledgeAlert.mockReturnValue(answerOfPlatform);
+      api.getAlertById.mockReturnValue(of(alertOf(10, 1, 'ACKNOWLEDGED')));
+      const store = await storeWithAlert();
+      store.startAttention(10);
+
+      store.loadAlertById(10);
+      expect(api.acknowledgeAlert).toHaveBeenCalledTimes(1);
+      expect(api.getAlertById).not.toHaveBeenCalled();
+
+      answerOfPlatform.next(alertOf(10, 1, 'ACKNOWLEDGED'));
+      answerOfPlatform.complete();
+      expect(api.getAlertById).toHaveBeenCalledWith(10);
+      expect(store.selectedAlert()?.status).toBe('ACKNOWLEDGED');
+    });
+
+    it('sends the attention when the alert is e-mailed', async () => {
+      api.acknowledgeAlert.mockReturnValue(of(alertOf(10, 1, 'ACKNOWLEDGED')));
+      api.sendAlertEmailNotification.mockReturnValue(of({ recipients: 2 }));
+      const store = await storeWithAlert();
+      store.startAttention(10);
+
+      store.sendAlertEmailNotification(10);
+
+      expect(api.acknowledgeAlert).toHaveBeenCalledWith(10);
+      expect(store.notice()).toBe('ca-alerts.email.sent');
+    });
+
+    it('leaves the alert of the detail alone when another alert is registered', async () => {
+      api.getAlertById.mockReturnValue(of(alertOf(99, 1)));
+      api.acknowledgeAlert.mockReturnValue(of(alertOf(10, 1, 'ACKNOWLEDGED')));
+      const store = await storeWithAlert();
+      store.loadAlertById(99);
+      store.startAttention(10);
+
+      store.confirmAttention(10);
+
+      expect(store.selectedAlert()?.id).toBe(99);
     });
   });
 });

@@ -38,6 +38,7 @@ export class IamStore {
   private readonly currentUsernameSignal = signal<string | null>(null);
   /** Numeric id of the signed-in user. */
   private readonly currentUserIdSignal = signal<number | null>(null);
+  private readonly beforeSignOutTasks: (() => void)[] = [];
   /** Numeric id of the laboratory of the signed-in user, or null before it is set up. */
   private readonly currentLaboratoryIdSignal = signal<number | null>(null);
   /** Roles of the signed-in user (e.g. `ROLE_QA_MANAGER`). */
@@ -258,6 +259,15 @@ export class IamStore {
   }
 
   /**
+   * Registers work to run right before the person signs out, while the session token is still valid.
+   *
+   * @param task - The work; it starts its requests synchronously, because the session ends right after it
+   */
+  beforeSignOut(task: () => void): void {
+    this.beforeSignOutTasks.push(task);
+  }
+
+  /**
    * Ends the session and goes to the home page.
    *
    * @remarks
@@ -267,6 +277,7 @@ export class IamStore {
    * @param router - Router used to go to `/home`
    */
   signOut(router: Router): void {
+    this.beforeSignOutTasks.forEach((task) => task());
     this.clearSession();
     router.navigate(['/home']).then(() => window.location.reload());
   }
