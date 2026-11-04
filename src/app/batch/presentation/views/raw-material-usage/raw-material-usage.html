@@ -147,7 +147,7 @@
             }
           </td>
           <td [attr.data-label]="'batch-usage.fields.usage-date' | translate">
-            {{ usage.usageDate | date: 'short' }}
+            {{ usage.usageDate | dateTime }}
           </td>
         </tr>
       } @empty {

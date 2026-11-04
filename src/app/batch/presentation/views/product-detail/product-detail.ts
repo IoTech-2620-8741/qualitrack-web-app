@@ -1,5 +1,5 @@
 import { Component, DestroyRef, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
-import { DatePipe, DecimalPipe } from '@angular/common';
+import { DecimalPipe } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
@@ -7,6 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { TranslatePipe } from '@ngx-translate/core';
 import { BatchStore } from '../../../application/batch.store';
 import { IamStore } from '../../../../iam/application/iam.store';
+import { DateOnlyPipe } from '../../../../shared/presentation/pipes/date-only.pipe';
 
 /**
  * A pharmaceutical product and its manufacturing batches.
@@ -20,7 +21,7 @@ import { IamStore } from '../../../../iam/application/iam.store';
 @Component({
   selector: 'app-product-detail',
   standalone: true,
-  imports: [DatePipe, DecimalPipe, RouterLink, MatButtonModule, MatIconModule, TranslatePipe],
+  imports: [DateOnlyPipe, DecimalPipe, RouterLink, MatButtonModule, MatIconModule, TranslatePipe],
   templateUrl: './product-detail.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './product-detail.css',

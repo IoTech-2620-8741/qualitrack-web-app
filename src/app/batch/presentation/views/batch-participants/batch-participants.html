@@ -33,7 +33,7 @@
       @for (usage of store.traceability()?.equipment ?? []; track usage.id) {
         <tr>
           <td>{{ usage.equipmentName }}</td>
-          <td [attr.data-label]="'batch-participants.registered-at' | translate">{{ usage.registeredAt | date: 'short' }}</td>
+          <td [attr.data-label]="'batch-participants.registered-at' | translate">{{ usage.registeredAt | dateTime }}</td>
         </tr>
       } @empty {
         <tr><td colspan="2">{{ 'batch-participants.no-equipment' | translate }}</td></tr>
@@ -88,7 +88,7 @@
         <tr>
           <td>{{ participation.staffName }}</td>
           <td [attr.data-label]="'batch-participants.role' | translate">{{ participation.staffRole || '—' }}</td>
-          <td [attr.data-label]="'batch-participants.registered-at' | translate">{{ participation.registeredAt | date: 'short' }}</td>
+          <td [attr.data-label]="'batch-participants.registered-at' | translate">{{ participation.registeredAt | dateTime }}</td>
         </tr>
       } @empty {
         <tr><td colspan="3">{{ 'batch-participants.no-staff' | translate }}</td></tr>

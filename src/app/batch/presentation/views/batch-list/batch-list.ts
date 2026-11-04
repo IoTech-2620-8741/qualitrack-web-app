@@ -6,7 +6,7 @@ import {
   signal,
   ChangeDetectionStrategy,
 } from '@angular/core';
-import { DatePipe, DecimalPipe } from '@angular/common';
+import { DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
@@ -17,6 +17,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { BatchStore } from '../../../application/batch.store';
 import { BatchStatus } from '../../../domain/model/batch.entity';
 import { IamStore } from '../../../../iam/application/iam.store';
+import { DateOnlyPipe } from '../../../../shared/presentation/pipes/date-only.pipe';
 
 /**
  * Batches of every product of the laboratory, newest first.
@@ -31,7 +32,7 @@ import { IamStore } from '../../../../iam/application/iam.store';
   selector: 'app-batch-list',
   standalone: true,
   imports: [
-    DatePipe,
+    DateOnlyPipe,
     DecimalPipe,
     FormsModule,
     RouterLink,

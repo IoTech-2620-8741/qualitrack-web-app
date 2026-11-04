@@ -45,7 +45,7 @@
             @if (reading(snapshot, 'AIR_QUALITY'); as air) {
               <strong>{{ air.value | number: '1.0-2' }} <small>{{ air.unit }}</small></strong>
               @if (air.state) { <span class="state" [class]="'state ' + air.state.toLowerCase()">{{ 'tracking.states.' + air.state | translate }}</span> }
-              <small class="muted">{{ air.measuredAt | date: 'short' }}</small>
+              <small class="muted">{{ air.measuredAt | dateTime }}</small>
             } @else {
               <p class="muted">{{ 'tracking.monitoring.no-recent-reading' | translate }}</p>
             }
@@ -54,7 +54,7 @@
             <span class="label">{{ 'tracking.metrics.MOTION' | translate }}</span>
             @if (snapshot?.lastMotion; as motion) {
               <strong>{{ 'tracking.monitoring.motion-detected' | translate }}</strong>
-              <small class="muted">{{ motion.measuredAt | date: 'short' }}</small>
+              <small class="muted">{{ motion.measuredAt | dateTime }}</small>
             } @else {
               <p class="muted">{{ 'tracking.monitoring.no-motion' | translate }}</p>
             }
@@ -91,7 +91,7 @@
                   @if (reading(snapshot, metric); as value) {
                     <strong>{{ value.value | number: '1.0-2' }} <small>{{ value.unit }}</small></strong>
                     @if (value.state) { <span [class]="'state ' + value.state.toLowerCase()">{{ 'tracking.states.' + value.state | translate }}</span> }
-                    <small class="muted">{{ value.measuredAt | date: 'short' }}</small>
+                    <small class="muted">{{ value.measuredAt | dateTime }}</small>
                   } @else {
                     <p class="muted">{{ 'tracking.monitoring.no-recent-reading' | translate }}</p>
                   }
@@ -101,7 +101,7 @@
                 <span class="label">{{ 'tracking.metrics.RFID_TAG' | translate }}</span>
                 @if (reading(snapshot, 'RFID_TAG'); as tag) {
                   <strong class="tag">{{ tag.textValue }}</strong>
-                  <small class="muted">{{ tag.measuredAt | date: 'short' }}</small>
+                  <small class="muted">{{ tag.measuredAt | dateTime }}</small>
                 } @else {
                   <p class="muted">{{ 'tracking.monitoring.no-rfid' | translate }}</p>
                 }
@@ -113,7 +113,7 @@
                   @if (action.triggerMetric && action.triggerState) {
                     <small>{{ 'tracking.metrics.' + action.triggerMetric | translate }} · {{ 'tracking.states.' + action.triggerState | translate }}</small>
                   }
-                  <small class="muted">{{ action.occurredAt | date: 'short' }}</small>
+                  <small class="muted">{{ action.occurredAt | dateTime }}</small>
                 } @else {
                   <p class="muted">{{ 'tracking.monitoring.no-action' | translate }}</p>
                 }

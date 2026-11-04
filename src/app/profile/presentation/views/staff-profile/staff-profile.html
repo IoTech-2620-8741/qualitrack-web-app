@@ -18,7 +18,7 @@
         <div class="staff-profile-data">
           <h2 id="staff-profile-title">{{ 'staff.profile.title' | translate }}</h2>
           @if (staffProfile.profile.updatedAt) {
-            <p class="muted">{{ 'profile.updated-at' | translate: { date: (staffProfile.profile.updatedAt | date: 'medium') } }}</p>
+            <p class="muted">{{ 'profile.updated-at' | translate: { date: (staffProfile.profile.updatedAt | dateTime) } }}</p>
           } @else {
             <p class="muted">{{ 'staff.profile.not-completed' | translate }}</p>
           }

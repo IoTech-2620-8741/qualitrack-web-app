@@ -9,7 +9,7 @@
       <span>{{ 'batch-traceability.container' | translate }}</span>
       <strong>{{ trace.container ? (trace.container.containerName ?? '#' + trace.container.containerMonitorId) : ('batch-storage.empty' | translate) }}</strong>
       @if (trace.container) {
-        <small class="muted">{{ 'batch-storage.assigned-at' | translate }}: {{ trace.container.assignedAt | date: 'short' }}</small>
+        <small class="muted">{{ 'batch-storage.assigned-at' | translate }}: {{ trace.container.assignedAt | dateTime }}</small>
       }
     </div>
   </section>
@@ -53,7 +53,7 @@
   <h2>{{ 'batch-traceability.decision' | translate }}</h2>
   @if (trace.release; as release) {
     <p class="success">
-      {{ 'batch-traceability.released' | translate: { date: (release.signedAt | date: 'medium'), user: release.signedByUserId } }}
+      {{ 'batch-traceability.released' | translate: { date: (release.signedAt | dateTime), user: release.signedByUserId } }}
       <small class="muted">SHA-256 {{ release.signatureHash }}</small>
     </p>
   } @else if (trace.rejection; as rejection) {

@@ -1,5 +1,4 @@
 import { Component, OnInit, computed, inject, ChangeDetectionStrategy } from '@angular/core';
-import { DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 import { MatIconModule } from '@angular/material/icon';
@@ -16,6 +15,7 @@ import {
   EnvironmentalThreshold,
   ThresholdInput,
 } from '../../../domain/model/environmental-profile.entity';
+import { DateTimePipe } from '../../../../shared/presentation/pipes/date-time.pipe';
 
 /**
  * Represents stable empty collections used as default values.
@@ -51,7 +51,7 @@ const NO_METRICS: MonitoredMetric[] = [];
   selector: 'app-environmental-profiles',
   standalone: true,
   imports: [
-    DatePipe,
+    DateTimePipe,
     RouterLink,
     TranslatePipe,
     MatIconModule,
@@ -113,7 +113,7 @@ export class EnvironmentalProfiles implements OnInit {
    * its active environmental profiles.
    */
   async ngOnInit(): Promise<void> {
-    if (!this.store.environmentsLoaded()) await this.store.loadEnvironments();
+    await this.store.loadEnvironments();
     const current =
       this.store.environmentId() ??
       this.store.preferredEnvironmentId() ??

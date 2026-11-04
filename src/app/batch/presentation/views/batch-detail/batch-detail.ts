@@ -1,5 +1,5 @@
 import { Component, DestroyRef, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
-import { DatePipe, DecimalPipe } from '@angular/common';
+import { DecimalPipe } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatTabsModule } from '@angular/material/tabs';
@@ -13,6 +13,7 @@ import { RawMaterialUsageComponent } from '../raw-material-usage/raw-material-us
 import { BatchParticipants } from '../batch-participants/batch-participants';
 import { BatchTraceabilityView } from '../batch-traceability/batch-traceability';
 import { BatchStorage } from '../batch-storage/batch-storage';
+import { DateOnlyPipe } from '../../../../shared/presentation/pipes/date-only.pipe';
 
 /**
  * Detail of a product batch: its data, the raw materials it consumed, the equipment and
@@ -29,7 +30,7 @@ import { BatchStorage } from '../batch-storage/batch-storage';
   selector: 'app-batch-detail',
   standalone: true,
   imports: [
-    DatePipe,
+    DateOnlyPipe,
     DecimalPipe,
     RouterLink,
     MatTabsModule,

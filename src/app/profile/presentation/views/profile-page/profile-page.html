@@ -61,7 +61,7 @@
           }
           @if (profile.updatedAt) {
             <li class="muted"><mat-icon aria-hidden="true">history</mat-icon>
-              {{ 'profile.updated-at' | translate: { date: (profile.updatedAt | date: 'medium') } }}</li>
+              {{ 'profile.updated-at' | translate: { date: (profile.updatedAt | dateTime) } }}</li>
           }
         </ul>
       </aside>

@@ -15,6 +15,8 @@ import { DashboardTelemetry } from '../../components/dashboard-telemetry/dashboa
 import { DashboardAlerts } from '../../components/dashboard-alerts/dashboard-alerts';
 import { DashboardBatches } from '../../components/dashboard-batches/dashboard-batches';
 import { DashboardSubscription } from '../../components/dashboard-subscription/dashboard-subscription';
+import { formatDateTime } from '../../../../shared/presentation/utils/date-time-format';
+import { LABORATORY_TIME_ZONE } from '../../../../shared/presentation/utils/local-date';
 
 /**
  * Orchestrator component for the main Dashboard.
@@ -191,12 +193,13 @@ export class Dashboard {
    */
   protected formatDate(value: string | number, short = false): string {
     this.language();
-    const locale = this.translate.getCurrentLang()?.startsWith('es') ? 'es-PE' : 'en-US';
-    return new Intl.DateTimeFormat(
-      locale,
-      short
-        ? { hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }
-        : { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' },
-    ).format(new Date(value));
+    const language = this.translate.getCurrentLang() || 'en';
+    if (!short) return formatDateTime(new Date(value), language);
+    return new Intl.DateTimeFormat(language.startsWith('es') ? 'es-PE' : 'en-US', {
+      timeZone: LABORATORY_TIME_ZONE,
+      hour: '2-digit',
+      minute: '2-digit',
+      hourCycle: 'h23',
+    }).format(new Date(value));
   }
 }

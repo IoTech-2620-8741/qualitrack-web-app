@@ -1,5 +1,4 @@
 import { Component, DestroyRef, computed, inject, signal, ChangeDetectionStrategy } from '@angular/core';
-import { DatePipe } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -8,6 +7,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { RaStore } from '../../../application/ra.store';
+import { DateTimePipe } from '../../../../shared/presentation/pipes/date-time.pipe';
 
 /**
  * Records whose type has a translated name; any other type is shown as the platform sends it.
@@ -54,7 +54,7 @@ const KNOWN_ACTIONS = new Set([
 @Component({
   selector: 'app-staff-activity',
   standalone: true,
-  imports: [DatePipe, RouterLink, TranslatePipe, MatIconModule, MatFormFieldModule, MatSelectModule, MatProgressSpinnerModule],
+  imports: [DateTimePipe, RouterLink, TranslatePipe, MatIconModule, MatFormFieldModule, MatSelectModule, MatProgressSpinnerModule],
   templateUrl: './staff-activity.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './staff-activity.css',

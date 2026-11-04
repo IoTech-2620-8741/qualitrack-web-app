@@ -24,6 +24,7 @@ import { EquipmentStore } from '../../../application/equipment.store';
 import { Equipment } from '../../../domain/model/equipment.entity';
 import { EQUIPMENT_STATUSES, EquipmentStatus } from '../../../domain/model/equipment-status';
 import { notBlankValidator } from '../../../../shared/presentation/validators/not-blank.validator';
+import { DateOnlyPipe } from '../../../../shared/presentation/pipes/date-only.pipe';
 
 /**
  * Technical file of an equipment or IoT device: identity, location, operational status,
@@ -32,7 +33,7 @@ import { notBlankValidator } from '../../../../shared/presentation/validators/no
 @Component({
   selector: 'app-equipment-detail',
   standalone: true,
-  imports: [
+  imports: [DateOnlyPipe, 
     CommonModule,
     ReactiveFormsModule,
     MatTabsModule,
