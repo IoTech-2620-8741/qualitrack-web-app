@@ -1,21 +1,29 @@
 .environment-selector {
   min-width: 280px;
+  --mat-form-field-outlined-focus-outline-color: #0d9488;
+  --mat-form-field-outlined-focus-label-text-color: #0f766e;
+  --mat-form-field-focus-select-arrow-color: #0d9488;
 }
-/* The chosen environment is read in full, even when its name takes two lines. */
+
 .environment-selector ::ng-deep .mat-mdc-select-value-text,
 .environment-selector ::ng-deep .mat-mdc-select-min-line {
   white-space: normal;
 }
+
 :host(.full-width) {
   display: block;
 }
+
 :host(.full-width) .environment-selector {
   width: 100%;
   min-width: 0;
 }
+
 .usage {
-  color: #5f6368;
+  color: #64748b;
+  font-size: 12px;
 }
+
 @media (max-width: 600px) {
   .environment-selector {
     width: 100%;
