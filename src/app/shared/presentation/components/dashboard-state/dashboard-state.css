@@ -1,3 +1,46 @@
-.state { display: flex; align-items: center; justify-content: center; gap: 12px; min-height: 140px; font-size: 13px; }
-.state.error { color: #a83e48; }
-.state mat-icon, .state mat-spinner { flex-shrink: 0; }
+:host {
+  display: block;
+}
+
+.state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 140px;
+  color: #64748b;
+  font-size: 14px;
+  line-height: 1.6;
+  --mdc-circular-progress-active-indicator-color: #0d9488;
+}
+
+.state.error {
+  color: #b71c1c;
+}
+
+.state mat-icon,
+.state mat-spinner {
+  flex-shrink: 0;
+}
+
+.state button {
+  color: #64748b;
+  --mdc-icon-button-icon-color: #64748b;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.state button:hover {
+  background: #f3f4f6;
+  color: #0f766e;
+}
+
+.state button:focus-visible {
+  outline: 3px solid #0d9488;
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+  }
+}
