@@ -558,7 +558,7 @@
       "toggle-yearly": "Annually",
       "period-label": "Billing period",
       "get": "Get {{name}}",
-      "already-active": "You already have an active subscription. To change plans, go to Billing."
+      "already-active": "You already have an active subscription. To switch plans, cancel the renewal in Billing and choose another plan when the current period ends."
     },
     "billing-period": {
       "monthly": "Monthly",
@@ -604,7 +604,7 @@
       "no-active-subscription": "No active subscription",
       "no-active-subscription-desc": "Choose a plan to activate billing for your laboratory.",
       "choose-plan": "Choose Plan",
-      "change-plan": "Change Plan",
+      "change-plan": "View Plans",
       "plan": "Plan",
       "plan-id": "Plan ID",
       "status": "Status",
