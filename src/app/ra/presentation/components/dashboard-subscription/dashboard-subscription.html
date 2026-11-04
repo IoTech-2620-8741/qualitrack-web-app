@@ -7,24 +7,24 @@
 
   @if (status() === 'loading' || status() === 'error') {
     <app-dashboard-state [state]="status()" (retry)="retry.emit()" />
-  } @else if (subscription()) {
+  } @else if (subscription(); as active) {
     <div class="plan-heading">
-      <h3>{{ currentPlan()?.name || subscription().planCode }}</h3>
+      <h3>{{ currentPlan()?.name || active.planCode }}</h3>
       <span class="status ACTIVE">
-        {{ 'dashboard.overview.status.' + subscription().status | translate }}
+        {{ 'dashboard.overview.status.' + active.status | translate }}
       </span>
     </div>
     <dl class="subscription-details">
       <div>
         <dt>{{ 'dashboard.overview.cycle' | translate }}</dt>
         <dd>
-          {{ 'subscription.billing-period.' + subscription().billingCycle.toLowerCase() | translate }}
+          {{ 'subscription.billing-period.' + active.billingCycle.toLowerCase() | translate }}
         </dd>
       </div>
-      @if (subscription().currentPeriodEnd) {
+      @if (active.currentPeriodEnd; as periodEnd) {
         <div>
           <dt>{{ 'dashboard.overview.period-end' | translate }}</dt>
-          <dd>{{ formatDate()(subscription().currentPeriodEnd) }}</dd>
+          <dd>{{ formatDate()(periodEnd) }}</dd>
         </div>
       }
       @if (currentPlan(); as plan) {

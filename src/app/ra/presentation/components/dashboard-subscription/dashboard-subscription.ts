@@ -5,6 +5,8 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { DashboardState } from '../../../../shared/presentation/components/dashboard-state/dashboard-state';
+import { OverviewPlan } from '../../../domain/model/overview-plan.entity';
+import { OverviewSubscription } from '../../../domain/model/overview-subscription.entity';
 
 /**
  * Subscription section of the dashboard.
@@ -27,10 +29,10 @@ export class DashboardSubscription {
   readonly status = input.required<string>();
 
   /** The active subscription object. */
-  readonly subscription = input.required<any>();
+  readonly subscription = input.required<OverviewSubscription | null>();
 
   /** The catalog plan details associated with the subscription. */
-  readonly currentPlan = input.required<any>();
+  readonly currentPlan = input.required<OverviewPlan | null>();
 
   /** Status of the catalog plans request. */
   readonly plansStatus = input.required<string>();

@@ -11,6 +11,15 @@ import { ChartData, ChartOptions } from 'chart.js';
 
 import { DashboardState } from '../../../../shared/presentation/components/dashboard-state/dashboard-state';
 import { MatTooltip } from '@angular/material/tooltip';
+import { OverviewEquipment } from '../../../domain/model/overview-equipment.entity';
+import { OverviewReading } from '../../../domain/model/overview-reading.entity';
+
+/** Variable that a device reported. */
+interface TelemetrySeries {
+  key: string;
+  parameter: string;
+  unit: string;
+}
 
 /**
  * Telemetry section of the dashboard.
@@ -43,28 +52,28 @@ export class DashboardTelemetry {
   readonly equipmentStatus = input.required<string>();
 
   /** List of available IoT devices. */
-  readonly devices = input.required<any[]>();
+  readonly devices = input.required<OverviewEquipment[]>();
 
   /** Currently selected device ID. */
   readonly selectedDeviceId = input.required<number | null>();
 
   /** List of available parameters (series) for the selected device. */
-  readonly series = input.required<any[]>();
+  readonly series = input.required<TelemetrySeries[]>();
 
   /** The currently selected parameter (series). */
-  readonly activeSeries = input.required<any>();
+  readonly activeSeries = input.required<TelemetrySeries | null>();
 
   /** Status of the measurements request. */
   readonly measurementsStatus = input.required<string>();
 
   /** The latest reading object. */
-  readonly latestReading = input.required<any>();
+  readonly latestReading = input.required<OverviewReading | null>();
 
   /** Array of readings for the chart. */
-  readonly readings = input.required<any[]>();
+  readonly readings = input.required<OverviewReading[]>();
 
   /** Min and max values for the summary text. */
-  readonly readingRange = input.required<any>();
+  readonly readingRange = input.required<{ min: number; max: number } | null>();
 
   /** Configuration data for Chart.js. */
   readonly chartData = input.required<ChartData<'line'>>();
