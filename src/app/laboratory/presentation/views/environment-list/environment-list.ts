@@ -68,6 +68,10 @@ export class EnvironmentList implements OnInit {
     void this.store.loadEnvironments();
   }
 
+  refresh(): void {
+    void this.store.loadEnvironments();
+  }
+
   /**
    * Navigates to the environment registration form.
    */
