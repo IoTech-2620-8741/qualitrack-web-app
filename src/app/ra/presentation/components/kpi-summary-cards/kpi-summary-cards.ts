@@ -1,10 +1,11 @@
 import { Component, input, ChangeDetectionStrategy } from '@angular/core';
 import { MatIcon } from '@angular/material/icon';
-import { DatePipe, DecimalPipe } from '@angular/common';
+import { DecimalPipe } from '@angular/common';
 import { TranslatePipe } from '@ngx-translate/core';
 import { MatCard, MatCardContent, MatCardFooter, MatCardHeader, MatCardTitle } from '@angular/material/card';
 import { OverviewEnvironmentalProfile } from '../../../domain/model/overview-environmental-profile.entity';
 import { MeasurementSummary } from '../../../domain/model/kpi-dashboard.entity';
+import { DateTimePipe } from '../../../../shared/presentation/pipes/date-time.pipe';
 
 /** Possible visual states for a KPI summary card based on threshold evaluation. */
 export type SummaryState = 'NORMAL' | 'WARNING' | 'CRITICAL' | 'UNCONFIGURED';
@@ -13,15 +14,15 @@ export type SummaryState = 'NORMAL' | 'WARNING' | 'CRITICAL' | 'UNCONFIGURED';
  * Component that renders the individual KPI cards for environmental readings.
  *
  * @remarks
- * It evaluates the average of the readings against the configured thresholds
+ * It evaluates the minimum and the maximum of the readings against the configured thresholds
  * (either from the environment or the specific container monitor) to color-code
- * the cards and display their current state.
+ * the cards with the worst state of the period, because a good average can hide critical readings.
  */
 @Component({
   selector: 'app-kpi-summary-cards',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatIcon, DecimalPipe, DatePipe, TranslatePipe,
+  imports: [MatIcon, DecimalPipe, DateTimePipe, TranslatePipe,
     MatCard, MatCardHeader, MatCardTitle, MatCardContent, MatCardFooter],
   styleUrl: './kpi-summary-cards.css',
   templateUrl: './kpi-summary-cards.html',
@@ -40,11 +41,12 @@ export class KpiSummaryCards {
    * Determines the visual state of a KPI summary card.
    *
    * @remarks
-   * The average is compared with the real thresholds of the device profile (environment or container); it is
-   * `UNCONFIGURED` if there are no thresholds (e.g., RFID_TAG, MOTION) or invalid data.
+   * The minimum and the maximum are compared with the real thresholds of the device profile (environment or
+   * container), as the platform evaluates a reading; it is `UNCONFIGURED` if there are no thresholds (e.g., RFID_TAG,
+   * MOTION) or invalid data.
    *
-   * @param summary - The measurement summary containing the average and device ID.
-   * @returns The evaluated state (`NORMAL`, `WARNING`, `CRITICAL`, or `UNCONFIGURED`).
+   * @param summary - The measurement summary containing the range of the readings and device ID.
+   * @returns The worst state of the period (`NORMAL`, `WARNING`, `CRITICAL`, or `UNCONFIGURED`).
    */
   protected stateOf(summary: MeasurementSummary): SummaryState {
     const profile = this.profiles()[summary.deviceId];
@@ -52,14 +54,15 @@ export class KpiSummaryCards {
 
     if (!threshold) return 'UNCONFIGURED';
 
-    const avg = Number(summary.average);
-    if (!Number.isFinite(avg)) return 'UNCONFIGURED';
+    const minimum = Number(summary.minimum);
+    const maximum = Number(summary.maximum);
+    if (!Number.isFinite(minimum) || !Number.isFinite(maximum)) return 'UNCONFIGURED';
 
     const { normalMin, normalMax, criticalMin, criticalMax } = threshold;
-    if (criticalMin != null && avg < criticalMin) return 'CRITICAL';
-    if (criticalMax != null && avg > criticalMax) return 'CRITICAL';
-    if (normalMin != null && avg < normalMin) return 'WARNING';
-    if (normalMax != null && avg > normalMax) return 'WARNING';
+    if (criticalMin != null && minimum < criticalMin) return 'CRITICAL';
+    if (criticalMax != null && maximum > criticalMax) return 'CRITICAL';
+    if (normalMin != null && minimum < normalMin) return 'WARNING';
+    if (normalMax != null && maximum > normalMax) return 'WARNING';
     return 'NORMAL';
   }
 

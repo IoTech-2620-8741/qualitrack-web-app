@@ -46,7 +46,7 @@
 
       <mat-card-footer class="card-footer">
         <span>{{ summary.readings }} {{ 'reporting.summary.readings' | translate }}</span>
-        <span>{{ summary.lastMeasuredAt | date:'short' }}</span>
+        <span>{{ summary.lastMeasuredAt | dateTime }}</span>
       </mat-card-footer>
     </mat-card>
   }

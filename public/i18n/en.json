@@ -1332,7 +1332,7 @@
       "subtitle": "Average, minimum and maximum of the readings of each device in the period, calculated from the recorded readings.",
       "readings-title": "Readings of the period",
       "no-readings": "There are no readings in the period, so no values are calculated.",
-      "formula": "Only numeric readings are summarized; the average is rounded to two decimals.",
+      "formula": "Only numeric readings are summarized; the average is rounded to two decimals. The state of each card is the worst one the readings reached in the period.",
       "records-title": "Laboratory records",
       "records-note": "Current counts of the records of the laboratory; they do not depend on the period or the environment.",
       "no-records": "The laboratory has no equipment or batches recorded yet."
