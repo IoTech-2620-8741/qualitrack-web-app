@@ -33,7 +33,7 @@ import { DateOnlyPipe } from '../../../../shared/presentation/pipes/date-only.pi
 @Component({
   selector: 'app-equipment-detail',
   standalone: true,
-  imports: [DateOnlyPipe, 
+  imports: [DateOnlyPipe,
     CommonModule,
     ReactiveFormsModule,
     MatTabsModule,
