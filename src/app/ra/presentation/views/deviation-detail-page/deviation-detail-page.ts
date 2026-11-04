@@ -19,6 +19,14 @@ import { DeviationEvents } from '../../components/deviation-events/deviation-eve
 
 type AlertFilter = 'all' | 'WARNING' | 'CRITICAL';
 
+/**
+ * Smart component representing the detail view for a specific deviation trend.
+ *
+ * @remarks
+ * This page extracts the target equipment and parameter from the route,
+ * retrieves the corresponding trend from the store, and allows the user
+ * to filter the recorded events by date range and alert severity.
+ */
 @Component({
   selector: 'app-deviation-detail-page',
   standalone: true,
@@ -44,13 +52,28 @@ export class DeviationDetailPage implements OnInit {
   private readonly location = inject(Location);
   protected readonly store = inject(RaStore);
 
+  /** The ID of the equipment being viewed. */
   protected readonly equipmentId = signal<number | null>(null);
+
+  /** The parameter name (e.g., 'Temperature') being viewed. */
   protected readonly parameter = signal<string | null>(null);
 
+  /** Start date for filtering events. */
   protected readonly fromDate = signal<Date | null>(null);
+
+  /** End date for filtering events. */
   protected readonly toDate = signal<Date | null>(null);
+
+  /** Currently selected alert severity filter. */
   protected readonly alertFilter = signal<AlertFilter>('all');
 
+  /**
+   * Handles the selection of a date range from the calendar.
+   * Normalizes the start time to 00:00:00 and the end time to 23:59:59.999
+   * to ensure inclusive filtering for the entire selected days.
+   *
+   * @param range - The date range object emitted by the Material Datepicker.
+   */
   protected onDateRangeChange(range: { start: Date | null, end: Date | null } | null) {
     if (range && range.start && range.end) {
       const start = new Date(range.start);
@@ -65,10 +88,16 @@ export class DeviationDetailPage implements OnInit {
     }
   }
 
+  /** Resolves a device ID to its human-readable label. */
   protected deviceLabel(id: number): string {
     return this.store.deviceName(id) ?? `#${id}`;
   }
 
+  /**
+   * Computes the active deviation trend based on the route parameters.
+   * Matches by equipment ID and performs a case-insensitive comparison
+   * on the parameter name.
+   */
   protected readonly trend = computed(() => {
     const eq = this.equipmentId();
     const param = this.parameter();
@@ -87,6 +116,10 @@ export class DeviationDetailPage implements OnInit {
     );
   });
 
+  /**
+   * Computes the list of events filtered by the selected date range and alert type.
+   * Results are sorted chronologically, newest first.
+   */
   protected readonly filteredPoints = computed(() => {
     const trend = this.trend();
     if (!trend) return [];
@@ -122,6 +155,10 @@ export class DeviationDetailPage implements OnInit {
       .sort((a, b) => Date.parse(b.timestamp) - Date.parse(a.timestamp));
   });
 
+  /**
+   * Computes the total counts of events (total, warnings, criticals)
+   * based on the full unfiltered trend data.
+   */
   protected readonly counts = computed(() => {
     const devs = ((this.trend()?.dataPoints || []) as any[]).filter(
       (p) => p.state === 'WARNING' || p.state === 'CRITICAL',
@@ -133,6 +170,13 @@ export class DeviationDetailPage implements OnInit {
     };
   });
 
+  /**
+   * Initializes the component by loading necessary data and resolving route parameters.
+   *
+   * @remarks
+   * It also checks query parameters (`days` and `env`) to reload the trends
+   * with the correct context if the user lands on this page via a direct link.
+   */
   async ngOnInit() {
     this.store.loadDevices();
 
@@ -156,12 +200,14 @@ export class DeviationDetailPage implements OnInit {
     });
   }
 
+  /** Resets all active filters to their default state. */
   protected clearFilters() {
     this.fromDate.set(null);
     this.toDate.set(null);
     this.alertFilter.set('all');
   }
 
+  /** Navigates back to the previous view using the browser's history. */
   protected goBack() {
     this.location.back();
   }

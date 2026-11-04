@@ -2,7 +2,20 @@ import { ChartData, ChartOptions } from 'chart.js';
 import { TranslateService } from '@ngx-translate/core';
 import { ChartThresholds } from './deviation-chart';
 
+/**
+ * Factory class responsible for generating Chart.js configuration objects.
+ *
+ * @remarks
+ * This separates the complex visual configuration (colors, tooltips, annotations)
+ * from the component logic, keeping the component focused on state management.
+ */
 export class DeviationChartFactory {
+  /**
+   * Builds the Chart.js data object from a deviation trend.
+   *
+   * @param trend - The deviation trend containing the data points to plot.
+   * @returns A ChartData object formatted for a line chart.
+   */
   static createChartData(trend: any): ChartData<'line'> {
     if (!trend) return { datasets: [] };
 
@@ -20,6 +33,7 @@ export class DeviationChartFactory {
           borderColor: '#0f766e',
           borderWidth: 2,
           tension: 0.4,
+          // Only show points for WARNING or CRITICAL states to keep normal data clean.
           pointRadius: (ctx) => {
             const point = trend.dataPoints[ctx.dataIndex];
             return point?.state === 'CRITICAL' || point?.state === 'WARNING' ? 6 : 0;
@@ -36,6 +50,14 @@ export class DeviationChartFactory {
     };
   }
 
+  /**
+   * Builds the Chart.js options object, including scales, tooltips, and threshold annotations.
+   *
+   * @param trend - The current deviation trend (used for tooltip callbacks).
+   * @param thresholds - The min/max limits for normal, warning, and critical zones.
+   * @param translate - The translation service to localize labels and tooltips.
+   * @returns A ChartOptions object configured for the deviation line chart.
+   */
   static createChartOptions(
     trend: any,
     thresholds: ChartThresholds,
@@ -61,11 +83,13 @@ export class DeviationChartFactory {
           displayColors: false,
           cornerRadius: 8,
           callbacks: {
+            // Formats the X-axis timestamp based on the active language.
             title: (items) => {
               const value = items[0].parsed.x ?? 0;
               const locale = translate.currentLang()?.startsWith('es') ? 'es-PE' : 'en-US';
               return new Intl.DateTimeFormat(locale, { dateStyle: 'short', timeStyle: 'short' }).format(new Date(value));
             },
+            // Appends state (Warning/Critical) and limit info to the Y-axis value.
             label: (item) => {
               const point = trend?.dataPoints[item.dataIndex];
               let stateLabel = '';
@@ -83,6 +107,7 @@ export class DeviationChartFactory {
             },
           },
         },
+        // Chart.js Annotation plugin configuration for background zones and threshold lines.
         annotation: {
           annotations: {
             criticalZone: {
@@ -134,6 +159,7 @@ export class DeviationChartFactory {
           border: { display: true, color: '#e2e8f0' },
           ticks: {
             maxTicksLimit: 6, maxRotation: 0,
+            // Formats X-axis ticks (e.g., "Oct 5") based on language.
             callback: (value) => {
               const locale = translate.currentLang()?.startsWith('es') ? 'es-PE' : 'en-US';
               return new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'short' }).format(new Date(Number(value)));
