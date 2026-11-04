@@ -422,7 +422,7 @@
                 <tr>
                   <td>
                     <strong>{{ 'inventory.types.' + movement.type | translate }}</strong
-                    ><small>{{ movement.occurredAt | date: 'short' }}</small
+                    ><small>{{ movement.occurredAt | dateTime }}</small
                     ><small>{{ 'inventory.reviewer' | translate }} #{{ movement.actorId }}</small>
                   </td>
                   <td [attr.data-label]="'inventory.receiptNumber' | translate">
@@ -481,7 +481,7 @@
                       >
                     </td>
                     <td>{{ usage.quantityUsed | number: '1.0-3' }} {{ usage.unit }}</td>
-                    <td>{{ usage.usageDate | date: 'short' }}</td>
+                    <td>{{ usage.usageDate | dateTime }}</td>
                   </tr>
                 } @empty {
                   <tr>

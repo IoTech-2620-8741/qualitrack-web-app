@@ -22,7 +22,7 @@
         <div><dt>{{ 'raw-material-list.code' | translate }}</dt><dd>{{ material.code }}</dd></div>
         <div><dt>{{ 'raw-material-list.supplier' | translate }}</dt><dd>{{ material.supplier }}</dd></div>
         <div><dt>{{ 'material-history.supplier-batch' | translate }}</dt><dd>{{ material.batchNumber }}</dd></div>
-        <div><dt>{{ 'raw-material-list.expiration' | translate }}</dt><dd>{{ material.expirationDate | date:'yyyy-MM-dd' }}</dd></div>
+        <div><dt>{{ 'raw-material-list.expiration' | translate }}</dt><dd>{{ material.expirationDate | dateOnly }}</dd></div>
         <div><dt>{{ 'material-history.minimum' | translate }}</dt><dd>{{ material.minimumStock | number:'1.0-3' }} {{ material.unit }}</dd></div>
       </dl>
     </section>
@@ -37,7 +37,7 @@
             <th>{{ 'material-history.consumed' | translate }}</th><th>{{ 'material-history.before' | translate }}</th><th>{{ 'material-history.after' | translate }}</th></tr></thead>
           <tbody>@for (usage of store.legacyDetailConsumptions(); track usage.id) {
             <tr>
-              <td [attr.data-label]="'material-history.date' | translate">{{ usage.usageDate | date:'yyyy-MM-dd HH:mm' }}</td>
+              <td [attr.data-label]="'material-history.date' | translate">{{ usage.usageDate | dateTime }}</td>
               <td [attr.data-label]="'material-history.batch' | translate"><a [routerLink]="['/batches', usage.batchId]">{{ store.legacyDetailBatchLabel(usage.batchId) }}</a>
                 @if (usage.stockAfter === null) {<small>{{ 'material-history.legacy' | translate }}</small>}</td>
               <td [attr.data-label]="'material-history.consumed' | translate" class="consumed">-{{ usage.quantityUsed | number:'1.0-3' }} {{ usage.unit }}</td>

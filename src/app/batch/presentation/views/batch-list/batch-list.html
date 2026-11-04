@@ -60,7 +60,7 @@
             </td>
             <td [attr.data-label]="'batches.fields.product' | translate">{{ batch.productName }}</td>
             <td [attr.data-label]="'batches.fields.quantity' | translate">{{ batch.quantity | number: '1.0-3' }} {{ batch.unit }}</td>
-            <td [attr.data-label]="'batches.fields.date' | translate">{{ batch.startDate | date: 'mediumDate' }}</td>
+            <td [attr.data-label]="'batches.fields.date' | translate">{{ batch.startDate | dateOnly }}</td>
             <td [attr.data-label]="'batches.fields.status' | translate">
               <span class="status" [class.released]="batch.status === 'RELEASED'" [class.rejected]="batch.status === 'REJECTED'">
                 {{ 'batches.status.' + statusKey(batch.status) | translate }}

@@ -1,6 +1,6 @@
 import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -11,6 +11,7 @@ import { CaStore } from '../../../application/ca.store';
 import { AlertSeverity, AlertStatus } from '../../../domain/model/deviation-alert.entity';
 import { EnvironmentSelector } from '../../../../shared/presentation/components/environment-selector/environment-selector';
 import { AlertTable } from '../../components/alert-table/alert-table';
+import { AlertsPageHeader } from '../../components/alerts-page-header/alerts-page-header';
 
 /**
  * Every alert of an environment, including resolved ones, filtered by status and severity on the server (TS74).
@@ -20,7 +21,6 @@ import { AlertTable } from '../../components/alert-table/alert-table';
   standalone: true,
   imports: [
     FormsModule,
-    RouterLink,
     TranslatePipe,
     MatButtonModule,
     MatFormFieldModule,
@@ -28,6 +28,7 @@ import { AlertTable } from '../../components/alert-table/alert-table';
     MatSelectModule,
     EnvironmentSelector,
     AlertTable,
+    AlertsPageHeader,
   ],
   templateUrl: './alert-history.html',
   changeDetection: ChangeDetectionStrategy.Eager,
@@ -36,8 +37,11 @@ import { AlertTable } from '../../components/alert-table/alert-table';
 export class AlertHistory implements OnInit {
   /** Store that holds the alerts shown by the table. */
   protected readonly store = inject(CaStore);
-  /** Environment whose alerts are shown; `null` until one is chosen. */
+  /** Environment whose alerts are shown; `null` until one is known. */
   protected readonly environmentId = signal<number | null>(null);
+  /** Environment the person asked for, in the address or with the selector; the tabs carry it to the active alerts. */
+  protected readonly chosenEnvironmentId = signal<number | null>(null);
+  private readonly route = inject(ActivatedRoute);
   /** Statuses the person can filter by. */
   protected readonly statuses: AlertStatus[] = ['UNRESOLVED', 'ACKNOWLEDGED', 'RESOLVED'];
   /** Severities the person can filter by. */
@@ -48,19 +52,24 @@ export class AlertHistory implements OnInit {
   protected severity: AlertSeverity | '' = '';
 
   /**
-   * Clears the previous alerts and errors, loads the devices, and shows the alerts of the preferred environment.
+   * Clears the previous alerts and errors, loads the devices, and shows the alerts of the environment in the address or
+   * of the preferred one.
    *
    * @remarks
-   * Waits for the environments to load when they are not loaded yet. If there is no preferred environment,
-   * nothing is loaded.
+   * Waits for the environments to load, which can have changed. If the laboratory has none, nothing is loaded.
    */
   async ngOnInit(): Promise<void> {
     this.store.clearError();
     this.store.clearAlerts();
     this.store.loadDevices();
-    if (!this.store.environmentsLoaded()) await this.store.loadEnvironments();
+    await this.store.loadEnvironments();
+    const requested = Number(this.route.snapshot.queryParamMap.get('environmentId'));
+    if (this.store.environments().some((environment) => environment.id === requested)) {
+      this.changeEnvironment(requested);
+      return;
+    }
     const preferred = this.store.preferredEnvironmentId();
-    if (preferred !== null) this.changeEnvironment(preferred);
+    if (preferred !== null) this.show(preferred);
   }
 
   /**
@@ -69,6 +78,16 @@ export class AlertHistory implements OnInit {
    * @param environmentId - The environment chosen
    */
   protected changeEnvironment(environmentId: number): void {
+    this.chosenEnvironmentId.set(environmentId);
+    this.show(environmentId);
+  }
+
+  /**
+   * Shows the alerts of an environment and remembers it for the next visit.
+   *
+   * @param environmentId - The environment
+   */
+  private show(environmentId: number): void {
     this.store.rememberEnvironment(environmentId);
     this.environmentId.set(environmentId);
     this.search();

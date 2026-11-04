@@ -1,5 +1,5 @@
 import { Component, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
-import { CommonModule, DatePipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
@@ -12,6 +12,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { SubscriptionStore } from '../../../application/subscription.store';
 import { IamStore } from '../../../../iam/application/iam.store';
+import { DateOnlyPipe } from '../../../../shared/presentation/pipes/date-only.pipe';
+import { formatDate } from '../../../../shared/presentation/utils/date-time-format';
 
 /**
  * Component responsible for displaying subscription and payment information.
@@ -25,7 +27,7 @@ import { IamStore } from '../../../../iam/application/iam.store';
   standalone: true,
   imports: [
     CommonModule,
-    DatePipe,
+    DateOnlyPipe,
     RouterLink,
     TranslatePipe,
     MatCardModule,
@@ -87,11 +89,7 @@ export class BillingSummary implements OnInit {
     const subscription = this.store.currentSubscription();
 
     if (!subscription || subscription.cancelAtPeriodEnd) return;
-    const end = subscription.currentPeriodEnd
-      ? new Date(subscription.currentPeriodEnd).toLocaleDateString(
-          this.translate.currentLang() || 'en',
-        )
-      : '';
+    const end = formatDate(subscription.currentPeriodEnd, this.translate.currentLang() || 'en');
     if (!confirm(this.translate.instant('subscription.billing.cancel-renewal-confirm', { end })))
       return;
 

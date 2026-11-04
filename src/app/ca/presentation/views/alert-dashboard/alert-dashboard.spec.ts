@@ -196,6 +196,33 @@ describe('AlertDashboard', () => {
 
       expect(cardIds()).toEqual(['Cámara fría', 'Device 4']);
     });
+
+    it('reads the alerts again when a new environment appears', async () => {
+      const { harness } = await open();
+      api.getEnvironmentAlerts.mockClear();
+      api.getAlertEnvironments.mockReturnValue(
+        of([
+          new AlertEnvironment({ id: 1, code: 'ALM-01', name: 'Almacén', usage: null }),
+          new AlertEnvironment({ id: 2, code: 'PROD-01', name: 'Producción', usage: null }),
+          new AlertEnvironment({ id: 3, code: 'NEW-01', name: 'Nuevo', usage: null }),
+        ]),
+      );
+
+      await TestBed.inject(CaStore).loadEnvironments();
+      await harness.fixture.whenStable();
+
+      expect(api.getEnvironmentAlerts).toHaveBeenCalledTimes(3);
+    });
+
+    it('does not read the alerts again when the environments are still the same', async () => {
+      const { harness } = await open();
+      api.getEnvironmentAlerts.mockClear();
+
+      await TestBed.inject(CaStore).loadEnvironments();
+      await harness.fixture.whenStable();
+
+      expect(api.getEnvironmentAlerts).not.toHaveBeenCalled();
+    });
   });
 
   describe('summary and filters', () => {

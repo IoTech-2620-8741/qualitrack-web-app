@@ -391,6 +391,7 @@ package "ca.presentation" {
 
   class AlertHistory {
     #environmentId: Signal<number | null>
+    #chosenEnvironmentId: Signal<number | null>
     #status
     #severity
     #changeEnvironment(environmentId): void
@@ -547,6 +548,7 @@ AlertPersonApiEndpoint --> AlertPersonAssembler
 AlertPersonAssembler ..> AlertPerson
 AlertPerson ..|> BaseEntity
 CaStore --> IamStore : beforeSignOut
+AlertHistory *-- AlertsPageHeader
 AlertHistory --> CaStore
 AlertHistory ..> EnvironmentSelector
 AlertHistory *-- AlertTable
@@ -572,7 +574,7 @@ note bottom of AlertDashboard
   visible; an environment that fails is named without hiding the others. Attention
   can be undone for 5 s: nothing reaches the platform until the toast ends, the person
   moves on, signs out or leaves the page. J and K move through the list and A attends.
-  The history lists every alert with filters.
+  The history lists every alert with filters, under the same page header.
 end note
 
 

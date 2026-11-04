@@ -1,4 +1,4 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { Observable, catchError, map, of } from 'rxjs';
 import { ErrorHandlingEnabledBaseType } from '../../shared/infrastructure/error-handling-enabled-base-type';
 import { environment } from '../../../environments/environment';
@@ -236,8 +236,8 @@ export class OperationalOverviewApiEndpoint extends ErrorHandlingEnabledBaseType
       .get<OverviewEnvironmentalProfileResource>(url)
       .pipe(
         map((resource) => this.assembler.toEnvironmentalProfile(resource)),
-        catchError((error: any) =>
-          error?.status === 404
+        catchError((error: HttpErrorResponse) =>
+          error.status === 404
             ? of(null)
             : this.handleError(`Failed to fetch environmental profile of environment ${environmentId}`)(error),
         ),
@@ -266,8 +266,8 @@ export class OperationalOverviewApiEndpoint extends ErrorHandlingEnabledBaseType
       .get<OverviewEnvironmentalProfileResource>(url)
       .pipe(
         map((resource) => this.assembler.toEnvironmentalProfile(resource)),
-        catchError((error: any) =>
-          error?.status === 404
+        catchError((error: HttpErrorResponse) =>
+          error.status === 404
             ? of(null)
             : this.handleError(`Failed to fetch container monitor profile`)(error),
         ),

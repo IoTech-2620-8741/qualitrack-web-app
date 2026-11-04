@@ -1,5 +1,5 @@
 import { Component, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
-import { DatePipe, DecimalPipe } from '@angular/common';
+import { DecimalPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 import { MatButtonModule } from '@angular/material/button';
@@ -10,6 +10,7 @@ import { TrackingStore, DeviceSnapshot } from '../../../application/tracking.sto
 import { EnvironmentSelector } from '../../../../shared/presentation/components/environment-selector/environment-selector';
 import { MonitoredMetric } from '../../../domain/model/monitored-metric';
 import { Measurement } from '../../../domain/model/measurement.entity';
+import { DateTimePipe } from '../../../../shared/presentation/pipes/date-time.pipe';
 
 /**
  * Component responsible for displaying the current environmental monitoring status.
@@ -44,7 +45,7 @@ import { Measurement } from '../../../domain/model/measurement.entity';
   selector: 'app-environmental-monitoring',
   standalone: true,
   imports: [
-    DatePipe,
+    DateTimePipe,
     DecimalPipe,
     RouterLink,
     TranslatePipe,
@@ -86,7 +87,7 @@ export class EnvironmentalMonitoring implements OnInit {
    * the latest device snapshots for monitoring purposes.
    */
   async ngOnInit(): Promise<void> {
-    if (!this.store.environmentsLoaded()) await this.store.loadEnvironments();
+    await this.store.loadEnvironments();
     const current =
       this.store.environmentId() ??
       this.store.preferredEnvironmentId() ??

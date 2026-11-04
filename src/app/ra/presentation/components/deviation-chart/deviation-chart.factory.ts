@@ -3,6 +3,8 @@ import { AnnotationOptions } from 'chartjs-plugin-annotation';
 import { TranslateService } from '@ngx-translate/core';
 import { DataPoint, DeviationTrend, ReadingState } from '../../../domain/model/deviation-trend.entity';
 import { OverviewEnvironmentalThreshold } from '../../../domain/model/overview-environmental-profile.entity';
+import { formatDateTime } from '../../../../shared/presentation/utils/date-time-format';
+import { LABORATORY_TIME_ZONE } from '../../../../shared/presentation/utils/local-date';
 
 /** Limits of a variable; each side of the range is either complete or not configured. */
 type ChartThresholds = Pick<OverviewEnvironmentalThreshold, 'normalMin' | 'normalMax' | 'criticalMin' | 'criticalMax'>;
@@ -231,8 +233,7 @@ export class DeviationChartFactory {
             // Formats the X-axis timestamp based on the active language.
             title: (items) => {
               const value = items[0].parsed.x ?? 0;
-              const locale = translate.currentLang()?.startsWith('es') ? 'es-PE' : 'en-US';
-              return new Intl.DateTimeFormat(locale, { dateStyle: 'short', timeStyle: 'short' }).format(new Date(value));
+              return formatDateTime(new Date(value), translate.currentLang() || 'en');
             },
             label: (item) => `${item.parsed.y} ${unit}`,
             // Tells the state (Warning/Critical) of the reading and the limit it crossed.
@@ -258,7 +259,7 @@ export class DeviationChartFactory {
             // Formats X-axis ticks (e.g., "Oct 5") based on language.
             callback: (value) => {
               const locale = translate.currentLang()?.startsWith('es') ? 'es-PE' : 'en-US';
-              return new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'short' }).format(new Date(Number(value)));
+              return new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'short', timeZone: LABORATORY_TIME_ZONE }).format(new Date(Number(value)));
             },
             font: { size: 12 }, color: '#64748b', padding: 10,
           },
