@@ -1,6 +1,18 @@
 .environment-selector {
   min-width: 280px;
 }
+/* The chosen environment is read in full, even when its name takes two lines. */
+.environment-selector ::ng-deep .mat-mdc-select-value-text,
+.environment-selector ::ng-deep .mat-mdc-select-min-line {
+  white-space: normal;
+}
+:host(.full-width) {
+  display: block;
+}
+:host(.full-width) .environment-selector {
+  width: 100%;
+  min-width: 0;
+}
 .usage {
   color: #5f6368;
 }
