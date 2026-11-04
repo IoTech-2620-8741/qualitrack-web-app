@@ -4,6 +4,7 @@ import { MatCell, MatCellDef, MatColumnDef, MatHeaderCell, MatHeaderCellDef, Mat
 import { MatIcon } from '@angular/material/icon';
 import { TranslatePipe } from '@ngx-translate/core';
 import { DecimalPipe } from '@angular/common';
+import { DeviationTrend, TrendDirection } from '../../../domain/model/deviation-trend.entity';
 
 /**
  * Presentational component that renders a table of deviation trends.
@@ -35,19 +36,19 @@ import { DecimalPipe } from '@angular/common';
 })
 export class DeviationTable {
   /** The list of deviation trends to display in the table. */
-  readonly trends = input.required<any[]>();
+  readonly trends = input.required<DeviationTrend[]>();
 
   /** Function to resolve a device ID to its human-readable label. */
   readonly deviceLabel = input.required<(id: number) => string>();
 
   /** Function that returns the Material Icon name based on the trend direction (e.g., 'INCREASING'). */
-  readonly trendIcon = input.required<(dir: string) => string>();
+  readonly trendIcon = input.required<(direction: TrendDirection) => string>();
 
   /** Function to determine if a specific trend row is currently active/selected. */
-  readonly isActive = input.required<(trend: any) => boolean>();
+  readonly isActive = input.required<(trend: DeviationTrend) => boolean>();
 
   /** Emits the selected trend when the user clicks on a row. */
-  readonly select = output<any>();
+  readonly select = output<DeviationTrend>();
 
   /** Defines the column order and keys for the Material table. */
   protected readonly columns = ['variable', 'timeInRange', 'deviations', 'critical', 'trend'];

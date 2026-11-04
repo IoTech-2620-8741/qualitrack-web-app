@@ -4,6 +4,8 @@ import { IamStore } from '../../iam/application/iam.store';
 import { RaApi } from '../infrastructure/ra-api';
 import { AuditedStaffMember } from '../domain/model/audited-staff-member.entity';
 import { AuditLogEntry } from '../domain/model/audit-log-entry.entity';
+import { OverviewEnvironmentalProfile } from '../domain/model/overview-environmental-profile.entity';
+import { OverviewEquipment } from '../domain/model/overview-equipment.entity';
 import { RaStore } from './ra.store';
 
 const entry = (id: number, timestamp: string) => new AuditLogEntry({
@@ -106,5 +108,75 @@ describe('RaStore report preview', () => {
     expect(store.isLoading()).toBe(false);
     store.downloadPreview();
     expect(HTMLAnchorElement.prototype.click).not.toHaveBeenCalled();
+  });
+});
+
+describe('RaStore environmental profiles', () => {
+  const equipment = (id: number, deviceType: string) =>
+    new OverviewEquipment({ id, laboratoryId: 7, environmentId: 1, name: `Device ${id}`, deviceType });
+  const profile = new OverviewEnvironmentalProfile(1, 'ENVIRONMENT', 7, 1, 11, 1, [], [], null, null);
+  const api = {
+    getOverviewEquipment: vi.fn(),
+    getOverviewEnvironmentalProfile: vi.fn(),
+    getOverviewContainerMonitorProfile: vi.fn(),
+  };
+
+  function storeWithEquipment() {
+    const store = TestBed.inject(RaStore);
+    store.loadEquipment();
+    return store;
+  }
+
+  beforeEach(() => {
+    api.getOverviewEquipment.mockReset().mockReturnValue(of([equipment(11, 'ENVIRONMENTAL_DEVICE'), equipment(12, 'CONTAINER_MONITOR')]));
+    api.getOverviewEnvironmentalProfile.mockReset().mockReturnValue(of(profile));
+    api.getOverviewContainerMonitorProfile.mockReset().mockReturnValue(of(profile));
+    TestBed.configureTestingModule({ providers: [
+      { provide: IamStore, useValue: { requireLaboratoryId: () => 7, canManageQuality: () => true } },
+      { provide: RaApi, useValue: api },
+    ] });
+  });
+
+  it('reads the profile that applies to each type of device', () => {
+    const store = storeWithEquipment();
+    store.loadProfile(11, 1);
+    store.loadProfile(12, 1);
+    expect(api.getOverviewEnvironmentalProfile).toHaveBeenCalledWith(7, 1);
+    expect(api.getOverviewContainerMonitorProfile).toHaveBeenCalledWith(7, 1, 12);
+    expect(store.profiles()[12]).toBe(profile);
+  });
+
+  it('asks for a profile once, even while its answer has not arrived', () => {
+    const pending = new Subject<OverviewEnvironmentalProfile | null>();
+    api.getOverviewContainerMonitorProfile.mockReturnValue(pending);
+    const store = storeWithEquipment();
+    store.loadProfile(12, 1);
+    store.loadProfile(12, 1);
+    expect(api.getOverviewContainerMonitorProfile).toHaveBeenCalledTimes(1);
+    pending.next(profile);
+    store.loadProfile(12, 1);
+    expect(api.getOverviewContainerMonitorProfile).toHaveBeenCalledTimes(1);
+  });
+
+  it('waits for the equipment, because the type of the device decides which profile applies', () => {
+    const pending = new Subject<OverviewEquipment[]>();
+    api.getOverviewEquipment.mockReturnValue(pending);
+    const store = storeWithEquipment();
+    store.loadProfile(12, 1);
+    expect(api.getOverviewEnvironmentalProfile).not.toHaveBeenCalled();
+    expect(api.getOverviewContainerMonitorProfile).not.toHaveBeenCalled();
+    pending.next([equipment(12, 'CONTAINER_MONITOR')]);
+    store.loadProfile(12, 1);
+    expect(api.getOverviewEnvironmentalProfile).not.toHaveBeenCalled();
+    expect(api.getOverviewContainerMonitorProfile).toHaveBeenCalledTimes(1);
+  });
+
+  it('reads a profile again after forgetting them', () => {
+    const store = storeWithEquipment();
+    store.loadProfile(11, 1);
+    store.clearProfiles();
+    expect(store.profiles()).toEqual({});
+    store.loadProfile(11, 1);
+    expect(api.getOverviewEnvironmentalProfile).toHaveBeenCalledTimes(2);
   });
 });

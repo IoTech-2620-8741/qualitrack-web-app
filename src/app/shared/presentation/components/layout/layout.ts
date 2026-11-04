@@ -253,10 +253,12 @@ export class Layout {
    * Determines whether a route or route group is currently active.
    *
    * @param link - Route link to compare against the current URL
-   * @returns True when the current URL matches or belongs to the route group
+   * @returns True when the path of the current URL matches or belongs to the route group; its query parameters and
+   * fragment do not count, because they only narrow what the same page shows
    */
   protected isActive(link: string): boolean {
-    return this.router.url === link || this.router.url.startsWith(`${link}/`);
+    const path = this.router.url.split(/[?#]/)[0];
+    return path === link || path.startsWith(`${link}/`);
   }
 
   /**

@@ -9,7 +9,9 @@ import {
   MatTable
 } from '@angular/material/table';
 import { TranslatePipe } from '@ngx-translate/core';
-import { DatePipe, DecimalPipe } from '@angular/common';
+import { DecimalPipe } from '@angular/common';
+import { MeasurementSummary } from '../../../domain/model/kpi-dashboard.entity';
+import { DateTimePipe } from '../../../../shared/presentation/pipes/date-time.pipe';
 
 /**
  * Component that displays the environmental KPI summaries in a tabular format.
@@ -34,7 +36,7 @@ import { DatePipe, DecimalPipe } from '@angular/common';
     MatRowDef,
     TranslatePipe,
     DecimalPipe,
-    DatePipe
+    DateTimePipe
   ],
   selector: 'app-kpi-table',
   styleUrl: './kpi-table.css',
@@ -42,7 +44,7 @@ import { DatePipe, DecimalPipe } from '@angular/common';
 })
 export class KpiTable {
   /** The raw measurement summaries returned by the API. */
-  readonly summaries = input.required<any[]>();
+  readonly summaries = input.required<MeasurementSummary[]>();
 
   /**
    * Function provided by the parent to resolve a device's display name from its ID.

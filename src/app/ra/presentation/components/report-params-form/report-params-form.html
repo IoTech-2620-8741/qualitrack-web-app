@@ -106,12 +106,8 @@
   </div>
 </div>
 
-@if ((state.type() === 'compliance' || state.type() === 'equipment') &&
-state.form().startDate && state.form().endDate &&
-periodError(state.form().startDate, state.form().endDate, MAX_REPORT_DAYS)) {
-  <p style="color: #b91c1c; font-size: 0.85rem; margin: 8px 0 0; text-align: right;">
-    {{ 'report-generator.invalid-period' | translate }}
-  </p>
+@if (periodErrorKey(); as errorKey) {
+  <p class="period-error" role="alert">{{ errorKey | translate }}</p>
 }
 
 <div class="panel-footer">

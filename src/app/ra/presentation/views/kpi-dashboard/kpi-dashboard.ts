@@ -7,7 +7,6 @@ import {
   ChangeDetectionStrategy,
   effect
 } from '@angular/core';
-import { DatePipe } from '@angular/common';
 import { TranslatePipe } from '@ngx-translate/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
@@ -16,6 +15,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
+import { DateTimePipe } from '../../../../shared/presentation/pipes/date-time.pipe';
 import { RaStore } from '../../../application/ra.store';
 import { ALL_ENVIRONMENTS, lastDays } from '../../../domain/model/indicator-period';
 import { KpiSummaryCards } from '../../components/kpi-summary-cards/kpi-summary-cards';
@@ -39,7 +39,7 @@ const PERIOD_DAYS = [1, 7, 31] as const;
   selector: 'app-kpi-dashboard',
   standalone: true,
   imports: [
-    DatePipe,
+    DateTimePipe,
     TranslatePipe,
     MatButtonModule,
     MatButtonToggleModule,
@@ -70,6 +70,9 @@ export class KpiDashboardComponent implements OnInit {
 
   /** Selected environment, or null for all. */
   protected readonly environmentId = signal<number | null>(null);
+
+  /** Resolves the display name of a device, or null when it is unknown. */
+  protected readonly deviceName = (id: number): string | null => this.store.deviceName(id);
 
   /** Current view mode: 'cards' or 'table'. */
   protected readonly viewMode = signal<'cards' | 'table'>('cards');
@@ -111,8 +114,10 @@ export class KpiDashboardComponent implements OnInit {
   /**
    * Lifecycle hook that initializes the dashboard.
    * Loads devices, ensures environments are loaded, and triggers the first data fetch.
+   * Profiles can have changed since the last visit, so they are read again.
    */
   async ngOnInit(): Promise<void> {
+    this.store.clearProfiles();
     this.store.loadDevices();
     if (!this.store.environmentsLoaded()) await this.store.loadEnvironments();
     this.reload();

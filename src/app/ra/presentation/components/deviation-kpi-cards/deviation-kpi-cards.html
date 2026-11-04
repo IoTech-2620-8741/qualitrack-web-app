@@ -7,8 +7,11 @@
 
   <mat-card class="kpi-card">
     <span class="label">{{ 'reporting.deviations.kpi.time-in-range' | translate }}</span>
-    <strong class="value">{{ averageTimeInRange() | number:'1.0-1' }} %</strong>
-    <span class="hint">{{ 'reporting.deviations.kpi.goal' | translate }}</span>
+    @let average = averageTimeInRange();
+    <strong class="value">
+      @if (average === null) { — } @else { {{ average | number:'1.0-1' }} % }
+    </strong>
+    <span class="hint">{{ (average === null ? 'reporting.deviations.not-enough' : 'reporting.deviations.kpi.time-in-range-hint') | translate }}</span>
   </mat-card>
 
   <mat-card class="kpi-card">
