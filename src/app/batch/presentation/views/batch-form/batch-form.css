@@ -1,96 +1,209 @@
 :host {
   display: block;
   min-width: 0;
-  color: #20343c;
+  min-height: 100%;
+  background: #f3f4f6;
+  color: #0f172a;
 }
+
 .operations-page {
-  max-width: 1280px;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 24px;
+  padding: 32px 24px 48px;
 }
-.page-heading,
-.actions {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-.page-heading {
-  justify-content: space-between;
-  margin-bottom: 20px;
-}
-h1 {
-  font-size: 24px;
-  margin: 0;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-h2 {
-  font-size: 19px;
-  margin: 12px 0 18px;
-}
-h3 {
-  font-size: 16px;
-}
+
 h1,
-h2,
-h3,
 p,
 a {
   overflow-wrap: anywhere;
   letter-spacing: 0;
 }
-.actions button {
-  white-space: normal;
-  height: auto;
-  min-height: 40px;
-  padding: 8px 16px;
+
+.operations-page > a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 16px;
+  color: #0f766e;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
 }
+
+.operations-page > a::before {
+  content: '\2190';
+  content: '\2190' / '';
+}
+
+.operations-page > a:hover {
+  text-decoration: underline;
+}
+
+.operations-page > a:focus-visible {
+  outline: 3px solid #0d9488;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.page-heading {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+h1 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  color: #1a3a5c;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+h1 mat-icon {
+  flex-shrink: 0;
+  color: #0d9488;
+}
+
+.muted {
+  margin: 0 0 24px;
+  color: #64748b;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.error {
+  max-width: 880px;
+  margin: 0 0 20px;
+  padding: 16px;
+  border: 1px solid #f44336;
+  border-radius: 12px;
+  background: #ffebee;
+  color: #b71c1c;
+  font-size: 14px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
 .editor {
-  border-block: 1px solid #cbd7db;
-  padding: 16px 0;
-  margin: 16px 0;
+  max-width: 880px;
+  margin: 0;
+  padding: 24px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
 }
+
 .form-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px 20px;
+  gap: 8px 20px;
 }
-mat-form-field {
-  width: 100%;
-  min-width: 0;
-}
-a {
-  color: #006e76;
-  font-weight: 600;
-}
-.error {
-  padding: 12px 16px;
-  border-left: 4px solid;
-  overflow-wrap: anywhere;
-}
-.error {
-  background: #fff0f0;
-  color: #9d2424;
-}
-.muted {
-  color: #5c7079;
-}
+
 .full-width {
   grid-column: 1 / -1;
 }
+
+mat-form-field {
+  width: 100%;
+  min-width: 0;
+  --mat-form-field-outlined-focus-outline-color: #0d9488;
+  --mat-form-field-outlined-focus-label-text-color: #0f766e;
+  --mat-form-field-focus-select-arrow-color: #0d9488;
+}
+
+.editor input,
+.editor textarea {
+  caret-color: #0d9488;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 8px;
+  padding-top: 20px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.actions a[mat-button],
+.actions button[mat-flat-button] {
+  height: auto;
+  min-height: 48px;
+  padding: 8px 28px;
+  border-radius: 999px;
+  font-weight: 600;
+  white-space: normal;
+  text-decoration: none;
+}
+
+.actions a[mat-button] {
+  border: 1px solid #e2e8f0;
+  color: #0f172a;
+}
+
+.actions button[mat-flat-button] {
+  --mdc-filled-button-container-color: #0f766e;
+  --mdc-filled-button-label-text-color: #fff;
+  --mdc-filled-button-disabled-container-color: #e2e8f0;
+  --mdc-filled-button-disabled-label-text-color: #475569;
+  background: #0f766e;
+  color: #fff;
+}
+
+.actions button[mat-flat-button]:hover:not([disabled]) {
+  background: #115e59;
+}
+
+.actions button[mat-flat-button][disabled] {
+  background: #e2e8f0;
+  color: #475569;
+}
+
+.actions a:focus-visible,
+.actions button:focus-visible {
+  outline: 3px solid #0d9488;
+  outline-offset: 2px;
+}
+
 @media (max-width: 760px) {
   .operations-page {
-    padding: 16px 10px;
+    padding: 20px 16px 36px;
   }
+
   h1 {
-    font-size: 21px;
+    font-size: 24px;
   }
+
+  .editor {
+    padding: 16px;
+  }
+
   .form-grid {
     grid-template-columns: minmax(0, 1fr);
   }
-  .page-heading .actions {
+
+  .actions {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+
+  .actions a[mat-button],
+  .actions button[mat-flat-button] {
     width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
   }
 }
