@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Compliance & Alerts (ca): the alert history can be filtered on the client by period, severity, status, origin and text, with `filterAlertHistory`.
 - Compliance & Alerts (ca): `summarizeAlertHistory` counts the alerts of the history by severity and averages their attention and resolution times.
+- Compliance & Alerts (ca): `countAlertsByWeek` counts the alerts of the history in weeks that start on Monday in Peru, by severity, for the weekly chart.
 - 
 
 ## [2.2.0] - 2026-11-04
