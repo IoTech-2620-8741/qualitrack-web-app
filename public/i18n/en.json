@@ -772,7 +772,16 @@
     "active": {
       "title": "Active Alerts",
       "subtitle": "Open alerts of the environment and its monitored containers, with their origin and severity.",
-      "empty": "There are no active alerts in this environment."
+      "empty": "There are no active alerts in this environment.",
+      "card": {
+        "lifecycle": "Life cycle of the alert",
+        "limit": "limit {{value}} {{unit}}",
+        "opened": "Opened {{time}}",
+        "no-owner": "No one assigned",
+        "attending": "In progress {{time}}",
+        "notify": "Notify",
+        "resolve": "Resolve"
+      }
     },
     "origin": {
       "ENVIRONMENT": "Environment",

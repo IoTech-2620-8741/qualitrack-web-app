@@ -1,0 +1,172 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+
+.alert-card {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 16px 24px;
+  padding: 16px 20px;
+  border: 1px solid var(--qt-border);
+  border-left-width: 5px;
+  border-radius: var(--qt-radius-medium);
+  background: var(--qt-surface);
+}
+
+.severity-critical {
+  border-left-color: var(--qt-error);
+}
+
+.severity-warning {
+  border-left-color: var(--qt-warning);
+}
+
+.severity-low {
+  border-left-color: var(--qt-neutral-text);
+}
+
+.is-new {
+  animation: arrived 3s ease-out;
+}
+
+@keyframes arrived {
+  from {
+    background: var(--qt-primary-surface);
+    box-shadow: 0 0 0 2px var(--qt-primary);
+  }
+}
+
+.summary {
+  flex: 1 1 360px;
+  min-width: 0;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+h2 {
+  margin: 10px 0 4px;
+  color: var(--qt-text);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+p {
+  margin: 0;
+}
+
+.origin,
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 14px;
+  color: var(--qt-text-muted);
+  font-size: 13px;
+}
+
+.origin span,
+.meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.origin mat-icon,
+.meta mat-icon {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  font-size: 16px;
+}
+
+.reading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 10px;
+  margin: 10px 0;
+}
+
+.value {
+  color: var(--qt-text);
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+}
+
+.limit {
+  color: var(--qt-text-muted);
+  font-size: 13px;
+}
+
+.excess {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  color: var(--qt-error-text);
+  font-size: 13px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.excess mat-icon {
+  align-self: center;
+  flex: none;
+  width: 16px;
+  height: 16px;
+  font-size: 16px;
+}
+
+/* The same width in every card, so the steps of the life cycle line up down the list. */
+.progress {
+  display: flex;
+  flex: 0 1 420px;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 16px;
+  min-width: 0;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+@media (max-width: 600px) {
+  .alert-card {
+    padding: 14px;
+  }
+
+  .summary {
+    flex-basis: 100%;
+  }
+
+  .progress {
+    flex-basis: 100%;
+  }
+
+  .actions a,
+  .actions button {
+    flex: 1 1 auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .is-new {
+    animation: none;
+    outline: 2px solid var(--qt-primary);
+    outline-offset: -2px;
+  }
+}

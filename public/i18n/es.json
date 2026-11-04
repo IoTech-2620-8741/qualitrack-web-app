@@ -772,7 +772,16 @@
     "active": {
       "title": "Alertas activas",
       "subtitle": "Alertas abiertas del ambiente y de sus contenedores monitoreados, con su origen y severidad.",
-      "empty": "No hay alertas activas en este ambiente."
+      "empty": "No hay alertas activas en este ambiente.",
+      "card": {
+        "lifecycle": "Ciclo de vida de la alerta",
+        "limit": "límite {{value}} {{unit}}",
+        "opened": "Abierta {{time}}",
+        "no-owner": "Sin responsable",
+        "attending": "En atención {{time}}",
+        "notify": "Avisar",
+        "resolve": "Resolver"
+      }
     },
     "origin": {
       "ENVIRONMENT": "Ambiente",
