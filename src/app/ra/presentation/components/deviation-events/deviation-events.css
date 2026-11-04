@@ -1,77 +1,121 @@
+:host {
+  display: block;
+}
+
 .events-card {
-  background: white;
-  border-radius: 12px;
-  border: 1px solid #e2e8f0;
-  padding: 20px;
-  margin-bottom: 24px;
   display: flex;
   flex-direction: column;
+  margin-bottom: 24px;
+  padding: 24px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
 }
 
 h3 {
   margin: 0 0 16px;
-  font-size: 14px;
   color: #0f172a;
+  font-size: 18px;
+  font-weight: 700;
+  overflow-wrap: anywhere;
 }
 
 .events-body {
-  min-height: 416px;
   display: flex;
   flex-direction: column;
+  min-height: 416px;
 }
 
 .events-body.empty {
-  justify-content: center;
   align-items: center;
+  justify-content: center;
 }
 
 .events-body.empty .muted {
-  text-align: center;
   margin: 0;
-  font-size: 15px;
+  text-align: center;
 }
 
 .event-row {
   display: flex;
   align-items: center;
   gap: 16px;
-  padding: 12px 0;
-  border-bottom: 1px solid #f1f5f9;
   width: 100%;
+  padding: 12px 0;
+  border-bottom: 1px solid #e2e8f0;
 }
 
 .event-row:last-child {
   border-bottom: none;
 }
+
 .event-icon {
-  display: flex;
+  flex: 0 0 auto;
+  min-width: 112px;
+}
+
+.state-chip {
+  display: inline-flex;
   align-items: center;
-  gap: 8px;
-  width: 100px;
-}
-.event-icon strong {
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #fff8e1;
+  color: #7a5a00;
   font-size: 12px;
-  color: #64748b;
+  font-weight: 500;
 }
+
+.state-chip.critical {
+  background: #ffebee;
+  color: #b71c1c;
+}
+
 .dot {
-  width: 10px;
-  height: 10px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
-  background: #f59e0b;
+  background: #ffc107;
 }
-.critical-dot {
-  background: #ef4444;
+
+.state-chip.critical .dot {
+  background: #f44336;
 }
+
 .event-info {
   flex-grow: 1;
-  font-size: 13px;
-  color: #334155;
-  padding-right: 16px;
+  min-width: 0;
+  color: #0f172a;
+  font-size: 14px;
+  line-height: 1.6;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
 }
+
 .event-info small {
-  color: #94a3b8;
+  color: #64748b;
+  font-size: 12px;
 }
+
 .muted {
   color: #64748b;
-  font-size: 13px;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+@media (max-width: 760px) {
+  .events-card {
+    padding: 16px;
+  }
+
+  .events-body {
+    min-height: 0;
+  }
+
+  .event-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
 }
