@@ -12,8 +12,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { Router } from '@angular/router';
-
+import { ActivatedRoute, Router } from '@angular/router';
 import { RaStore } from '../../../application/ra.store';
 import { lastDays } from '../../../domain/model/indicator-period';
 import { EnvironmentSelector } from '../../../../shared/presentation/components/environment-selector/environment-selector';
@@ -21,7 +20,7 @@ import { EnvironmentSelector } from '../../../../shared/presentation/components/
 import { DeviationTable } from '../../components/deviation-table/deviation-table';
 import { DeviationKpiCards } from '../../components/deviation-kpi-cards/deviation-kpi-cards';
 import { ChartThresholds, DeviationChart } from '../../components/deviation-chart/deviation-chart';
-import { DeviationChartFactory } from '../../components/deviation-chart/deviation-chart.factory'; // 👈 Importas la factoría
+import { DeviationChartFactory } from '../../components/deviation-chart/deviation-chart.factory';
 
 const PERIOD_DAYS = [1, 7, 31] as const;
 
@@ -39,11 +38,12 @@ const PERIOD_DAYS = [1, 7, 31] as const;
     DeviationChart
   ],
   templateUrl: './deviation-trend-chart.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.Default,
   styleUrl: './deviation-trend-chart.css',
 })
 export class DeviationTrendChartComponent implements OnInit {
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
   protected readonly store = inject(RaStore);
   private readonly translate = inject(TranslateService);
   private readonly language = toSignal(this.translate.onLangChange, { initialValue: null });
@@ -79,7 +79,7 @@ export class DeviationTrendChartComponent implements OnInit {
   );
 
   protected readonly chartOptions = computed(() => {
-    this.language(); // Dependencia para reaccionar al cambio de idioma
+    this.language();
     return DeviationChartFactory.createChartOptions(
       this.activeTrend(),
       this.activeThresholds(),
@@ -102,19 +102,36 @@ export class DeviationTrendChartComponent implements OnInit {
   async ngOnInit() {
     this.store.loadDevices();
     if (!this.store.environmentsLoaded()) await this.store.loadEnvironments();
-    const preferred = this.store.preferredEnvironmentId();
-    if (preferred !== null) this.changeEnvironment(preferred);
+
+    this.route.queryParams.subscribe(params => {
+      const daysParam = params['days'] ? Number(params['days']) : 7;
+      const envParam = params['env'] ? Number(params['env']) : null;
+      const keyParam = params['selected'] || null;
+
+      this.days.set(daysParam);
+      if (keyParam) this.selectedKey.set(keyParam);
+
+      if (envParam) {
+        this.environmentId.set(envParam);
+        this.reload();
+      } else {
+        const preferred = this.store.preferredEnvironmentId();
+        if (preferred !== null) this.changeEnvironment(preferred);
+      }
+    });
   }
 
   protected changeEnvironment(environmentId: number) {
     this.store.rememberEnvironment(environmentId);
     this.environmentId.set(environmentId);
     this.reload();
+    this.updateUrl();
   }
 
   protected changePeriod(days: number) {
     this.days.set(days);
     this.reload();
+    this.updateUrl();
   }
 
   protected reload() {
@@ -124,6 +141,7 @@ export class DeviationTrendChartComponent implements OnInit {
 
   protected select(trend: any) {
     this.selectedKey.set(this.key(trend));
+    this.updateUrl();
   }
 
   protected isActive(trend: any) {
@@ -147,7 +165,22 @@ export class DeviationTrendChartComponent implements OnInit {
       '/reports/deviation-trends',
       trend.equipmentId,
       encodeURIComponent(trend.parameterName),
-    ]);
+    ], {
+      queryParams: { days: this.days(), env: this.environmentId() }
+    });
+  }
+
+  private updateUrl() {
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: {
+        days: this.days(),
+        env: this.environmentId(),
+        selected: this.selectedKey()
+      },
+      queryParamsHandling: 'merge',
+      replaceUrl: true
+    });
   }
 
   private key(trend: any) {
