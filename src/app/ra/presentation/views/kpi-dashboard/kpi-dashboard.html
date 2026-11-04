@@ -6,7 +6,7 @@
     </div>
   </header>
   <div class="filters-panel">
-    <mat-button-toggle-group [value]="days()" (change)="changePeriod($event.value)" [disabled]="store.isLoading()">
+    <mat-button-toggle-group [hideSingleSelectionIndicator]="true" [value]="days()" (change)="changePeriod($event.value)" [disabled]="store.isLoading()">
       @for (option of periods; track option) {
         <mat-button-toggle [value]="option">{{ 'reporting.period.days-' + option | translate }}</mat-button-toggle>
       }
@@ -34,7 +34,7 @@
   } @else if (store.dashboard()) {
     <div class="section-header">
       <h2>{{ 'reporting.summary.readings-title' | translate }} <span class="badge">{{ 'reporting.summary.filter-hint' | translate }}</span></h2>
-      <mat-button-toggle-group [value]="viewMode()" (change)="changeView($event.value)">
+      <mat-button-toggle-group [hideSingleSelectionIndicator]="true" [value]="viewMode()" (change)="changeView($event.value)">
         <mat-button-toggle value="cards">{{ 'reporting.summary.view-cards' | translate }}</mat-button-toggle>
         <mat-button-toggle value="table">{{ 'reporting.summary.view-table' | translate }}</mat-button-toggle>
       </mat-button-toggle-group>
@@ -58,7 +58,7 @@
         <mat-icon>query_stats</mat-icon>
         <h3>{{ 'reporting.summary.no-readings' | translate }}</h3>
         <p>{{ 'reporting.summary.no-readings-hint' | translate }}</p>
-        <button mat-stroked-button (click)="changePeriod(31)">{{ 'reporting.summary.view-31-days' | translate }}</button>
+        <button mat-stroked-button type="button" (click)="changePeriod(31)">{{ 'reporting.summary.view-31-days' | translate }}</button>
       </div>
     }
     <p class="muted formula">{{ 'reporting.summary.formula' | translate }}</p>
