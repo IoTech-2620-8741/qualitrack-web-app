@@ -3,13 +3,34 @@
 }
 
 .sign-out-button {
-  width: 34px !important;
-  height: 34px !important;
-  color: #006d67 !important;
+  --mdc-icon-button-icon-color: #64748b;
+  --mdc-icon-button-state-layer-size: 40px;
+  width: 40px;
+  height: 40px;
+  padding: 8px;
+  border-radius: 999px;
+  color: #64748b;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.sign-out-button:hover {
+  background: #f3f4f6;
+  color: #0f766e;
+}
+
+.sign-out-button:focus-visible {
+  outline: 3px solid #0d9488;
+  outline-offset: 2px;
 }
 
 .sign-out-button mat-icon {
-  width: 19px;
-  height: 19px;
-  font-size: 19px;
+  width: 24px;
+  height: 24px;
+  font-size: 24px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+  }
 }
