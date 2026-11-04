@@ -1,7 +1,18 @@
 import { computed, DestroyRef, effect, inject, Injectable, Signal, signal } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Observable, Subject, catchError, finalize, firstValueFrom, of, takeUntil, tap } from 'rxjs';
+import {
+  Observable,
+  Subject,
+  catchError,
+  finalize,
+  firstValueFrom,
+  forkJoin,
+  map,
+  of,
+  takeUntil,
+  tap,
+} from 'rxjs';
 
 import { DeviationAlert } from '../domain/model/deviation-alert.entity';
 import { ComplianceEvent } from '../domain/model/compliance-event.entity';
@@ -41,6 +52,13 @@ export function alertError(error: unknown): string {
 
 /** Notifications shown when the bell opens. */
 const NOTIFICATION_PANEL_SIZE = 15;
+
+/** Open alerts read from one environment; `alerts` is null when the environment could not be read. */
+interface EnvironmentAlertsReading {
+  environmentId: number;
+  alerts: DeviationAlert[] | null;
+}
+
 
 /**
  * Application store for Compliance & Alerting (CA).
@@ -85,9 +103,17 @@ export class CaStore {
   private readonly _notificationsSignal = signal<Notification[]>([]);
   private readonly _notificationsLoadingSignal = signal(false);
   private readonly _notificationsFailedSignal = signal(false);
+  private readonly _unavailableEnvironmentIdsSignal = signal<readonly number[]>([]);
+  private readonly _alertsUpdatedAtSignal = signal<Date | null>(null);
 
-  /** Alerts of the environment currently shown, newest first. */
+  /** Alerts currently shown. */
   readonly alerts = this._alertsSignal.asReadonly();
+
+  /** Environments whose open alerts could not be read in the latest load; what they showed before is kept. */
+  readonly unavailableEnvironmentIds = this._unavailableEnvironmentIdsSignal.asReadonly();
+
+  /** When the open alerts were read for the last time, or null if they were not read yet. */
+  readonly alertsUpdatedAt = this._alertsUpdatedAtSignal.asReadonly();
 
   /** Alert shown in the detail, with its related actions. */
   readonly selectedAlert = this._selectedAlertSignal.asReadonly();
@@ -347,6 +373,31 @@ export class CaStore {
   }
 
   /**
+   * Loads the open alerts of one environment or of the whole laboratory, emptying the list first.
+   *
+   * @param environmentId - The environment, or null for every environment of the laboratory
+   * @throws {Error} When the user has no laboratory set up
+   *
+   * @remarks
+   * Cancels the request in progress. An environment that fails does not hide the alerts of the others: it is named
+   * in {@link CaStore.unavailableEnvironmentIds}.
+   */
+  loadOpenAlerts(environmentId: number | null): void {
+    this.reloadAlerts.next();
+    this._alertsSignal.set([]);
+    this._unavailableEnvironmentIdsSignal.set([]);
+    this._loadingSignal.set(true);
+    this._errorSignal.set(null);
+
+    this.readOpenAlerts(environmentId)
+      .pipe(takeUntil(this.reloadAlerts), takeUntilDestroyed(this.destroyRef))
+      .subscribe((readings) => {
+        this.showOpenAlerts(readings);
+        this._loadingSignal.set(false);
+      });
+  }
+
+  /**
    * Loads an alert with its origin and the actions related to the incident (US86).
    *
    * @param alertId - The unique numeric identifier of the deviation alert.
@@ -519,6 +570,8 @@ export class CaStore {
   clearAlerts(): void {
     this.reloadAlerts.next();
     this._alertsSignal.set([]);
+    this._unavailableEnvironmentIdsSignal.set([]);
+    this._alertsUpdatedAtSignal.set(null);
     this._loadingSignal.set(false);
   }
 
@@ -580,5 +633,41 @@ export class CaStore {
     this._alertsSignal.update((alerts) =>
       alerts.map((alert) => (alert.id === updatedAlert.id ? updatedAlert : alert)),
     );
+  }
+
+  /**
+   * Reads the open alerts of each environment asked for, without letting one failure stop the others.
+   *
+   * @param environmentId - The environment, or null for every environment of the laboratory
+   * @returns Observable emitting one reading per environment; it never errors
+   */
+  private readOpenAlerts(environmentId: number | null): Observable<EnvironmentAlertsReading[]> {
+    const environmentIds =
+      environmentId === null ? this._environmentsSignal().map((environment) => environment.id) : [environmentId];
+    if (!environmentIds.length) return of([]);
+    const laboratoryId = this.iam.requireLaboratoryId();
+    return forkJoin(
+      environmentIds.map((id) =>
+        this.caApi.getEnvironmentAlerts(laboratoryId, id, { active: true }).pipe(
+          map((alerts): EnvironmentAlertsReading => ({ environmentId: id, alerts })),
+          catchError(() => of<EnvironmentAlertsReading>({ environmentId: id, alerts: null })),
+        ),
+      ),
+    );
+  }
+
+  /**
+   * Replaces the list with what was read, keeping what was shown of the environments that could not be read.
+   *
+   * @param readings - One reading per environment
+   */
+  private showOpenAlerts(readings: EnvironmentAlertsReading[]): void {
+    const unavailableIds = readings.filter(({ alerts }) => alerts === null).map(({ environmentId }) => environmentId);
+    const keptAlerts = this._alertsSignal().filter(
+      (alert) => alert.environmentId !== null && unavailableIds.includes(alert.environmentId),
+    );
+    this._alertsSignal.set([...readings.flatMap(({ alerts }) => alerts ?? []), ...keptAlerts]);
+    this._unavailableEnvironmentIdsSignal.set(unavailableIds);
+    if (unavailableIds.length < readings.length || !readings.length) this._alertsUpdatedAtSignal.set(new Date());
   }
 }
