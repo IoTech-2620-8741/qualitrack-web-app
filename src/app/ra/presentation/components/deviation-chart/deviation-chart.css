@@ -37,7 +37,7 @@ h3 {
   margin-bottom: 16px;
 }
 
-/* Leyenda Personalizada */
+/* Custom legend */
 .custom-legend {
   display: flex;
   flex-wrap: wrap;
@@ -78,7 +78,7 @@ h3 {
   background: rgba(203, 213, 225, 0.4);
 }
 
-/* Triángulo de advertencia */
+/* Warning triangle */
 .triangle-warning {
   width: 0;
   height: 0;
@@ -97,12 +97,12 @@ h3 {
   font-weight: bold;
 }
 
-/* Punto Crítico */
+/* Critical dot */
 .critical-dot {
   width: 10px;
   height: 10px;
   background: #ef4444;
   border: 2px solid white;
   border-radius: 50%;
-  box-shadow: 0 0 0 1px #ef4444; /* Borde exterior para simular el borde blanco de la gráfica */
+  box-shadow: 0 0 0 1px #ef4444; /* Outer border, like the white border of the chart points */
 }
