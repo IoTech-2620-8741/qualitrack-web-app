@@ -771,6 +771,7 @@
       },
       "open-for": "{{time}} abierta",
       "attention-after": "atención {{time}}",
+      "export": "Exportar reporte",
       "view-short": "Ver",
       "view": "Ver el detalle de la alerta de {{variable}}",
       "pages": {

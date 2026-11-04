@@ -1,7 +1,7 @@
 import { convertToParamMap } from '@angular/router';
 
 import { DEFAULT_ALERT_HISTORY_FILTER } from '../domain/model/alert-history-filter';
-import { filterFromQuery, queryFromFilter } from './alert-history-query';
+import { filterFromQuery, queryFromFilter, reportQueryOf } from './alert-history-query';
 
 describe('alert history query', () => {
   it('opens with the default filter when the address says nothing', () => {
@@ -71,5 +71,19 @@ describe('alert history query', () => {
         .map(([name, value]) => [name, String(value)]),
     );
     expect(filterFromQuery(convertToParamMap(address))).toEqual(filter);
+  });
+
+  it('exports the period and the environment as a compliance report, in days of Peru', () => {
+    const now = new Date('2026-10-10T03:00:00Z');
+
+    expect(reportQueryOf({ ...DEFAULT_ALERT_HISTORY_FILTER, period: 7 }, 3, now)).toEqual({
+      type: 'compliance',
+      environmentId: 3,
+      from: '2026-10-02',
+      to: '2026-10-09',
+    });
+    expect(
+      reportQueryOf({ ...DEFAULT_ALERT_HISTORY_FILTER, period: null, to: '2026-09-30' }, null, now),
+    ).toEqual({ type: 'compliance', environmentId: null, from: null, to: '2026-09-30' });
   });
 });
