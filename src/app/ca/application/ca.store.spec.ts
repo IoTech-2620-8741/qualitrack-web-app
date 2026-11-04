@@ -136,4 +136,68 @@ describe('CaStore', () => {
       expect(store.alerts().map((alert) => alert.id)).toEqual([20]);
     });
   });
+
+  describe('silent refresh', () => {
+    it('keeps the list on screen while it reads', async () => {
+      answer({ 1: [alertOf(10, 1)], 2: [] });
+      const store = await storeWithEnvironments();
+      store.loadOpenAlerts(null);
+      const reading = new Subject<DeviationAlert[]>();
+      api.getEnvironmentAlerts.mockReturnValue(reading);
+
+      store.refreshOpenAlerts(null);
+
+      expect(store.alerts().map((alert) => alert.id)).toEqual([10]);
+      expect(store.loading()).toBe(false);
+      expect(store.refreshing()).toBe(true);
+    });
+
+    it('tells which alerts are new', async () => {
+      answer({ 1: [alertOf(10, 1)], 2: [] });
+      const store = await storeWithEnvironments();
+      store.loadOpenAlerts(null);
+      expect(store.newAlertIds().size).toBe(0);
+
+      answer({ 1: [alertOf(10, 1), alertOf(11, 1)], 2: [] });
+      store.refreshOpenAlerts(null);
+
+      expect([...store.newAlertIds()]).toEqual([11]);
+      expect(store.refreshing()).toBe(false);
+    });
+
+    it('keeps what an environment showed when it stops answering', async () => {
+      answer({ 1: [alertOf(10, 1)], 2: [alertOf(20, 2)] });
+      const store = await storeWithEnvironments();
+      store.loadOpenAlerts(null);
+
+      answer({ 1: [] });
+      store.refreshOpenAlerts(null);
+
+      expect(store.alerts().map((alert) => alert.id)).toEqual([20]);
+      expect(store.unavailableEnvironmentIds()).toEqual([2]);
+    });
+
+    it('does not start over while another refresh is running', async () => {
+      const store = await storeWithEnvironments();
+      store.loadOpenAlerts(1);
+      api.getEnvironmentAlerts.mockClear().mockReturnValue(new Subject());
+
+      store.refreshOpenAlerts(1);
+      store.refreshOpenAlerts(1);
+
+      expect(api.getEnvironmentAlerts).toHaveBeenCalledTimes(1);
+    });
+
+    it('does not interrupt a load', async () => {
+      const store = await storeWithEnvironments();
+      api.getEnvironmentAlerts.mockReturnValue(new Subject());
+      store.loadOpenAlerts(1);
+      api.getEnvironmentAlerts.mockClear();
+
+      store.refreshOpenAlerts(1);
+
+      expect(api.getEnvironmentAlerts).not.toHaveBeenCalled();
+      expect(store.loading()).toBe(true);
+    });
+  });
 });

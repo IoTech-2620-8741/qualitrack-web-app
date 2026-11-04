@@ -8,15 +8,16 @@ import {
   signal,
   untracked,
 } from '@angular/core';
-import { DecimalPipe } from '@angular/common';
+import { DOCUMENT, DecimalPipe } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
+import { LiveAnnouncer } from '@angular/cdk/a11y';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { interval, map } from 'rxjs';
+import { filter, fromEvent, interval, map, merge, timer } from 'rxjs';
 
 import { ActionBanner } from '../../../../shared/presentation/components/action-banner/action-banner';
 import { EmptyState } from '../../../../shared/presentation/components/empty-state/empty-state';
@@ -33,6 +34,9 @@ import { DeviationAlert } from '../../../domain/model/deviation-alert.entity';
 import { alertVariableName } from '../../alert-variable';
 import { AlertCard } from '../../components/alert-card/alert-card';
 import { AlertsPageHeader } from '../../components/alerts-page-header/alerts-page-header';
+
+/** How often the open alerts are read again, the same as the bell. */
+const REFRESH_INTERVAL_MS = 30_000;
 
 /** How often the texts that tell how long ago something happened are brought up to date. */
 const CLOCK_INTERVAL_MS = 1000;
@@ -56,7 +60,8 @@ function searchable(text: string): string {
  * unless the person narrows it to one, so that a critical alert is never hidden behind a selector.
  *
  * @remarks
- * The chosen environment lives in the `environmentId` query parameter; without it, every environment is shown.
+ * The chosen environment lives in the `environmentId` query parameter; without it, every environment is shown. The list
+ * refreshes itself while the tab is visible.
  */
 @Component({
   selector: 'app-alert-dashboard',
@@ -88,6 +93,8 @@ export class AlertDashboard implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly translate = inject(TranslateService);
+  private readonly liveAnnouncer = inject(LiveAnnouncer);
+  private readonly document = inject(DOCUMENT);
 
   private readonly queryParams = toSignal(this.route.queryParamMap);
 
@@ -210,6 +217,25 @@ export class AlertDashboard implements OnInit {
       if (this.store.environmentsLoaded())
         untracked(() => this.store.loadOpenAlerts(environmentId));
     });
+
+    effect(() => {
+      const count = this.store.newAlertIds().size;
+      if (count)
+        void this.liveAnnouncer.announce(
+          this.translate.instant('ca-alerts.active.new-alerts', { count }),
+          'polite',
+        );
+    });
+
+    merge(
+      timer(REFRESH_INTERVAL_MS, REFRESH_INTERVAL_MS),
+      fromEvent(this.document, 'visibilitychange'),
+    )
+      .pipe(
+        filter(() => !this.document.hidden),
+        takeUntilDestroyed(),
+      )
+      .subscribe(() => this.refresh());
   }
 
   /**
@@ -242,7 +268,7 @@ export class AlertDashboard implements OnInit {
 
   /** Reads the alerts again, or the environments if they could not be read. */
   protected refresh(): void {
-    if (this.store.environmentsLoaded()) this.store.loadOpenAlerts(this.environmentId());
+    if (this.store.environmentsLoaded()) this.store.refreshOpenAlerts(this.environmentId());
     else void this.store.loadEnvironments();
   }
 

@@ -311,4 +311,62 @@ describe('AlertDashboard', () => {
       );
     });
   });
+
+  describe('live refresh', () => {
+    const setHidden = (hidden: boolean) =>
+      Object.defineProperty(document, 'hidden', { configurable: true, get: () => hidden });
+
+    afterEach(() => setHidden(false));
+
+    it('reads the alerts again every 30 seconds', async () => {
+      vi.useFakeTimers({
+        toFake: ['setInterval', 'clearInterval', 'setTimeout', 'clearTimeout', 'Date'],
+      });
+      const opened = open();
+      await vi.advanceTimersByTimeAsync(100);
+      await opened;
+      api.getEnvironmentAlerts.mockClear();
+
+      await vi.advanceTimersByTimeAsync(30_000);
+
+      expect(api.getEnvironmentAlerts).toHaveBeenCalledTimes(2);
+    });
+
+    it('does not read while the tab is hidden, and catches up when it comes back', async () => {
+      vi.useFakeTimers({
+        toFake: ['setInterval', 'clearInterval', 'setTimeout', 'clearTimeout', 'Date'],
+      });
+      const opened = open();
+      await vi.advanceTimersByTimeAsync(100);
+      await opened;
+      api.getEnvironmentAlerts.mockClear();
+
+      setHidden(true);
+      await vi.advanceTimersByTimeAsync(60_000);
+      expect(api.getEnvironmentAlerts).not.toHaveBeenCalled();
+
+      setHidden(false);
+      document.dispatchEvent(new Event('visibilitychange'));
+      expect(api.getEnvironmentAlerts).toHaveBeenCalledTimes(2);
+    });
+
+    it('announces the alerts that arrive', async () => {
+      const { harness, element, press } = await open();
+      answer({
+        1: [
+          newerCritical,
+          attendedCritical,
+          alertOf(5, 1, 'WARNING', 'UNRESOLVED', '2026-10-06T10:00:00Z'),
+        ],
+        2: [olderCritical, warning],
+      });
+
+      press(Array.from(element.querySelectorAll<HTMLButtonElement>('.live-status button'))[0]);
+      await harness.fixture.whenStable();
+      harness.detectChanges();
+
+      expect(liveAnnouncer.announce).toHaveBeenCalledTimes(1);
+      expect(element.querySelectorAll('.is-new')).toHaveLength(1);
+    });
+  });
 });

@@ -105,6 +105,8 @@ export class CaStore {
   private readonly _notificationsFailedSignal = signal(false);
   private readonly _unavailableEnvironmentIdsSignal = signal<readonly number[]>([]);
   private readonly _alertsUpdatedAtSignal = signal<Date | null>(null);
+  private readonly _newAlertIdsSignal = signal<ReadonlySet<number>>(new Set());
+  private readonly _refreshingSignal = signal(false);
 
   /** Alerts currently shown. */
   readonly alerts = this._alertsSignal.asReadonly();
@@ -114,6 +116,12 @@ export class CaStore {
 
   /** When the open alerts were read for the last time, or null if they were not read yet. */
   readonly alertsUpdatedAt = this._alertsUpdatedAtSignal.asReadonly();
+
+  /** Alerts that the latest refresh brought and the list did not have. */
+  readonly newAlertIds = this._newAlertIdsSignal.asReadonly();
+
+  /** Whether the open alerts are being read again while the list stays on screen. */
+  readonly refreshing = this._refreshingSignal.asReadonly();
 
   /** Alert shown in the detail, with its related actions. */
   readonly selectedAlert = this._selectedAlertSignal.asReadonly();
@@ -385,6 +393,7 @@ export class CaStore {
   loadOpenAlerts(environmentId: number | null): void {
     this.reloadAlerts.next();
     this._alertsSignal.set([]);
+    this._newAlertIdsSignal.set(new Set());
     this._unavailableEnvironmentIdsSignal.set([]);
     this._loadingSignal.set(true);
     this._errorSignal.set(null);
@@ -394,6 +403,35 @@ export class CaStore {
       .subscribe((readings) => {
         this.showOpenAlerts(readings);
         this._loadingSignal.set(false);
+      });
+  }
+
+  /**
+   * Reads the open alerts again without emptying the list or showing that something is loading.
+   *
+   * @param environmentId - The environment, or null for every environment of the laboratory
+   * @throws {Error} When the user has no laboratory set up
+   *
+   * @remarks
+   * Does nothing while a load or another refresh is running, so a slow network never starts them over. The alerts
+   * that were not in the list are kept in {@link CaStore.newAlertIds}.
+   */
+  refreshOpenAlerts(environmentId: number | null): void {
+    if (this._loadingSignal() || this._refreshingSignal()) return;
+    this._refreshingSignal.set(true);
+
+    this.readOpenAlerts(environmentId)
+      .pipe(
+        takeUntil(this.reloadAlerts),
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => this._refreshingSignal.set(false)),
+      )
+      .subscribe((readings) => {
+        const listedIds = new Set(this._alertsSignal().map((alert) => alert.id));
+        this.showOpenAlerts(readings);
+        this._newAlertIdsSignal.set(
+          new Set(this._alertsSignal().map((alert) => alert.id).filter((id) => !listedIds.has(id))),
+        );
       });
   }
 
@@ -570,6 +608,7 @@ export class CaStore {
   clearAlerts(): void {
     this.reloadAlerts.next();
     this._alertsSignal.set([]);
+    this._newAlertIdsSignal.set(new Set());
     this._unavailableEnvironmentIdsSignal.set([]);
     this._alertsUpdatedAtSignal.set(null);
     this._loadingSignal.set(false);

@@ -9,10 +9,21 @@
       (allSelected)="chooseAllEnvironments()"
     />
     <div class="live-status">
+      @if (store.alertsUpdatedAt(); as updatedAt) {
+        <span class="live" [class.partial]="store.unavailableEnvironmentIds().length">
+          <span class="live-dot" aria-hidden="true"></span>
+          {{
+            (store.unavailableEnvironmentIds().length
+              ? 'ca-alerts.active.live-partial'
+              : 'ca-alerts.active.live'
+            ) | translate: { time: (updatedAt | relativeTime: now()) }
+          }}
+        </span>
+      }
       <button
         mat-stroked-button
         type="button"
-        [disabled]="store.loading()"
+        [disabled]="store.loading() || store.refreshing()"
         (click)="refresh()"
       >
         <mat-icon aria-hidden="true">refresh</mat-icon>{{ 'common.refresh' | translate }}
@@ -214,6 +225,7 @@
                   [environmentLabel]="environmentLabelOf(alert)"
                   [canAttend]="store.canAttend()"
                   [saving]="store.saving()"
+                  [isNew]="store.newAlertIds().has(alert.id)"
                   [now]="now()"
                   (attend)="store.acknowledgeAlert(alert.id)"
                   (notify)="store.sendAlertEmailNotification(alert.id)"
