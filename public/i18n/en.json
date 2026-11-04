@@ -805,6 +805,10 @@
         "newest": "Newest",
         "environment": "Environment"
       },
+      "shortcuts": {
+        "label": "Shortcuts with the focus on the list:",
+        "move": "move"
+      },
       "card": {
         "limit": "limit {{value}} {{unit}}",
         "opened": "Opened {{time}}",

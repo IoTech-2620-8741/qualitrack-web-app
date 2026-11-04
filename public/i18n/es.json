@@ -805,6 +805,10 @@
         "newest": "Más recientes",
         "environment": "Ambiente"
       },
+      "shortcuts": {
+        "label": "Atajos con el foco en la lista:",
+        "move": "moverse"
+      },
       "card": {
         "limit": "límite {{value}} {{unit}}",
         "opened": "Abierta {{time}}",

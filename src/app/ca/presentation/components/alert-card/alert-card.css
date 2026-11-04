@@ -15,6 +15,11 @@
   background: var(--qt-surface);
 }
 
+.alert-card:focus-visible {
+  outline: 2px solid var(--qt-primary-strong);
+  outline-offset: 2px;
+}
+
 .severity-critical {
   border-left-color: var(--qt-error);
 }

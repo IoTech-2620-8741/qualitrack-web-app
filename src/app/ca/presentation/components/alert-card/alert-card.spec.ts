@@ -175,4 +175,16 @@ describe('AlertCard', () => {
       'ca-alerts.active.card.attending-by',
     );
   });
+
+  it('can take the focus and knows what is inside it', () => {
+    const { element, fixture } = create(alertOf());
+    document.body.appendChild(element);
+
+    fixture.componentInstance.focus();
+
+    expect(document.activeElement).toBe(element.querySelector('.alert-card'));
+    expect(fixture.componentInstance.contains(element.querySelector('h2')!)).toBe(true);
+    expect(fixture.componentInstance.contains(document.body)).toBe(false);
+    element.remove();
+  });
 });

@@ -81,6 +81,8 @@ export class AlertCard {
   readonly opening = output<void>();
 
   private readonly translate = inject(TranslateService);
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly card = viewChild.required<ElementRef<HTMLElement>>('card');
   private readonly primaryAction = viewChild('primaryAction', { read: ElementRef });
 
   protected readonly normalizedChip = ALERT_NORMALIZED_CHIP;
@@ -98,6 +100,21 @@ export class AlertCard {
   protected readonly originIcon = computed(() =>
     this.alert().origin === 'CONTAINER' ? 'inventory_2' : 'sensors',
   );
+
+  /** Moves the focus to the card, to go through the list with the keyboard. */
+  focus(): void {
+    this.card().nativeElement.focus();
+  }
+
+  /**
+   * Tells whether something on the page is part of this card.
+   *
+   * @param node - What to look for
+   * @returns Whether it is inside the card
+   */
+  contains(node: Node): boolean {
+    return this.host.nativeElement.contains(node);
+  }
 
   /** Moves the focus to the main action of the card, for example after it changed. */
   focusPrimaryAction(): void {

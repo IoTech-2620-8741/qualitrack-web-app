@@ -216,7 +216,19 @@
             </p>
           }
 
-          <ul class="alert-list">
+          <p class="shortcuts">
+            {{ 'ca-alerts.active.shortcuts.label' | translate }}
+            <kbd>J</kbd> <kbd>K</kbd> {{ 'ca-alerts.active.shortcuts.move' | translate }}
+            @if (store.canAttend()) {
+              · <kbd>A</kbd> {{ 'ca-alerts.actions.acknowledge' | translate }}
+            }
+          </p>
+
+          <ul
+            class="alert-list"
+            [attr.aria-keyshortcuts]="store.canAttend() ? 'J K A' : 'J K'"
+            (keydown)="handleListShortcut($event)"
+          >
             @for (alert of visibleAlerts(); track alert.id) {
               <li>
                 <app-alert-card

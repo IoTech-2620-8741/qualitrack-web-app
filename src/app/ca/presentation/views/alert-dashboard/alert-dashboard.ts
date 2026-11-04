@@ -66,7 +66,9 @@ function searchable(text: string): string {
  * @remarks
  * The chosen environment lives in the `environmentId` query parameter; without it, every environment is shown. The list
  * refreshes itself while the tab is visible. Attention registered from here can be undone for a few seconds, and the
- * toast keeps its subscription when the person moves to another view, so the attention is sent anyway.
+ * toast keeps its subscription when the person moves to another view, so the attention is sent anyway. With the focus
+ * on the list, J and K move between the cards and A attends the one that has it; they only work there so they cannot
+ * get in the way of a person using dictation or a screen reader elsewhere on the page (WCAG 2.1.4).
  */
 @Component({
   selector: 'app-alert-dashboard',
@@ -345,6 +347,32 @@ export class AlertDashboard implements OnInit {
   protected notify(alert: DeviationAlert): void {
     this.closeUndoWindow(alert);
     this.store.sendAlertEmailNotification(alert.id);
+  }
+
+  /**
+   * Moves through the list with J and K, and attends the alert that has the focus with A.
+   *
+   * @param event - The key pressed with the focus on the list
+   */
+  protected handleListShortcut(event: KeyboardEvent): void {
+    if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
+    const position = this.cards().findIndex((card) => card.contains(event.target as Node));
+    if (position < 0) return;
+    const alert = this.cards()[position].alert();
+    switch (event.key.toLowerCase()) {
+      case 'j':
+        this.cards()[position + 1]?.focus();
+        break;
+      case 'k':
+        this.cards()[position - 1]?.focus();
+        break;
+      case 'a':
+        if (this.store.canAttend() && alert.status === 'UNRESOLVED') this.attend(alert);
+        break;
+      default:
+        return;
+    }
+    event.preventDefault();
   }
 
   /**

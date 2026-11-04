@@ -1,5 +1,7 @@
 <article
+  #card
   class="alert-card"
+  tabindex="-1"
   [class]="'severity-' + alert().severity.toLowerCase()"
   [class.is-new]="isNew()"
 >

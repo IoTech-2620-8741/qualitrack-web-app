@@ -63,6 +63,28 @@
 }
 
 /* The result of an action taken far down the list must be seen without scrolling back up. */
+.shortcuts {
+  margin: 0;
+  color: var(--qt-text-muted);
+  font-size: 12px;
+}
+
+.shortcuts kbd {
+  padding: 1px 6px;
+  border: 1px solid var(--qt-border);
+  border-radius: 4px;
+  background: var(--qt-surface);
+  font: inherit;
+  font-weight: 600;
+}
+
+/* Without a physical keyboard the shortcuts mean nothing. */
+@media (hover: none) {
+  .shortcuts {
+    display: none;
+  }
+}
+
 .feedback {
   position: sticky;
   top: 8px;
