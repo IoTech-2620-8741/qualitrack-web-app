@@ -44,19 +44,19 @@ describe('alert history filter', () => {
       expect(isInPeriod(alertOf(2, '2026-10-20T10:00:00Z'), lastWeek, now)).toBe(false);
     });
 
-    it('counts the whole last day of a custom period', () => {
+    it('counts the whole last day of a custom period in Peru', () => {
       const september = filterWith({ period: null, from: '2026-09-01', to: '2026-09-30' });
 
-      expect(isInPeriod(alertOf(1, '2026-09-30T23:30:00'), september, now)).toBe(true);
-      expect(isInPeriod(alertOf(2, '2026-10-01T00:30:00'), september, now)).toBe(false);
-      expect(isInPeriod(alertOf(3, '2026-08-31T23:30:00'), september, now)).toBe(false);
+      expect(isInPeriod(alertOf(1, '2026-09-30T23:30:00-05:00'), september, now)).toBe(true);
+      expect(isInPeriod(alertOf(2, '2026-10-01T00:30:00-05:00'), september, now)).toBe(false);
+      expect(isInPeriod(alertOf(3, '2026-08-31T23:30:00-05:00'), september, now)).toBe(false);
     });
 
     it('has no limit on a side of a custom period without date', () => {
       const sinceOctober = filterWith({ period: null, from: '2026-10-01' });
 
-      expect(isInPeriod(alertOf(1, '2020-01-01T10:00:00'), sinceOctober, now)).toBe(false);
-      expect(isInPeriod(alertOf(2, '2030-01-01T10:00:00'), sinceOctober, now)).toBe(true);
+      expect(isInPeriod(alertOf(1, '2020-01-01T10:00:00-05:00'), sinceOctober, now)).toBe(false);
+      expect(isInPeriod(alertOf(2, '2030-01-01T10:00:00-05:00'), sinceOctober, now)).toBe(true);
     });
   });
 
