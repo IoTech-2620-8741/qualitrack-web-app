@@ -1,102 +1,131 @@
 :host {
   display: block;
   min-width: 0;
-  color: #20343c;
+  overflow-x: auto;
+  border: 1px solid var(--qt-border);
+  border-radius: var(--qt-radius-medium);
+  background: var(--qt-surface);
+  color: var(--qt-text);
 }
-.operations-page {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 24px;
-}
-.actions {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-h1 {
-  font-size: 24px;
-  margin: 0;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-h2 {
-  font-size: 19px;
-  margin: 12px 0 18px;
-}
-h3 {
-  font-size: 16px;
-}
-h1,
-h2,
-h3,
-p,
-a {
-  overflow-wrap: anywhere;
-  letter-spacing: 0;
-}
-.actions button {
-  white-space: normal;
-  height: auto;
-  min-height: 40px;
-  padding: 8px 16px;
-}
-mat-form-field {
-  width: 100%;
-  min-width: 0;
-}
+
 .data-table {
   width: 100%;
+  min-width: 900px;
   border-collapse: collapse;
-  table-layout: fixed;
-  font-size: 14px;
+  font-size: 13px;
 }
+
 .data-table th {
-  text-align: left;
-  color: #415a63;
-  background: #edf3f4;
+  padding: 12px 10px;
+  border-bottom: 1px solid var(--qt-border);
+  background: var(--qt-neutral-surface);
+  color: var(--qt-neutral-text);
+  font-size: 13px;
   font-weight: 600;
+  text-align: left;
 }
-.data-table td,
-.data-table th {
-  padding: 14px 12px;
-  border-bottom: 1px solid #d4dfe3;
-  overflow-wrap: anywhere;
+
+.data-table td {
+  padding: 12px 10px;
+  border-bottom: 1px solid var(--qt-border);
+  overflow-wrap: break-word;
   vertical-align: top;
 }
+
+.data-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+/* Severity is also told by the chip of the row: the border only helps to scan the table (WCAG 1.4.1). */
+.data-table tr > td:first-child {
+  border-left: 5px solid transparent;
+}
+
+.data-table .severity-critical > td:first-child {
+  border-left-color: var(--qt-error);
+}
+
+.data-table .severity-warning > td:first-child {
+  border-left-color: var(--qt-warning);
+}
+
+.data-table strong {
+  font-weight: 600;
+}
+
 .data-table small {
   display: block;
-  color: #60727a;
-  margin-top: 5px;
-}
-a {
-  color: #006e76;
-  font-weight: 600;
-}
-.status {
-  display: inline-block;
+  margin-top: 4px;
+  color: var(--qt-text-muted);
   font-size: 12px;
-  font-weight: 600;
-  color: #704f00;
-  padding: 4px 0;
 }
-.status.released {
-  color: #087957;
+
+.col-detected {
+  width: 110px;
 }
-.status.rejected {
-  color: #a12d2d;
+
+.col-notes {
+  width: 20%;
 }
+
+.col-view {
+  width: 72px;
+}
+
+.chip-cell {
+  white-space: nowrap;
+}
+
+.still-open {
+  color: var(--qt-error-text);
+}
+
+.person {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.avatar {
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--qt-primary-surface);
+  color: var(--qt-primary-strong);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.notes {
+  color: var(--qt-neutral-text);
+  font-size: 13px;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
 @media (max-width: 760px) {
-  .operations-page {
-    padding: 16px 10px;
+  :host {
+    overflow-x: visible;
   }
-  h1 {
-    font-size: 21px;
+
+  .data-table {
+    min-width: 0;
   }
+
   .data-table thead {
     display: none;
   }
+
   .data-table,
   .data-table tbody,
   .data-table tr,
@@ -104,19 +133,39 @@ a {
     display: block;
     width: auto;
   }
+
   .data-table tr {
-    border-bottom: 2px solid #bcced5;
     padding: 8px 0;
+    border-bottom: 1px solid var(--qt-border);
   }
+
+  .data-table tr > td:first-child {
+    border-left-width: 0;
+  }
+
+  .severity-critical,
+  .severity-warning {
+    border-left: 5px solid;
+  }
+
+  .severity-critical {
+    border-left-color: var(--qt-error);
+  }
+
+  .severity-warning {
+    border-left-color: var(--qt-warning);
+  }
+
   .data-table td {
+    padding: 6px 12px;
     border: 0;
-    padding: 6px 4px;
   }
+
   .data-table td[data-label]::before {
     content: attr(data-label);
     display: block;
-    font-size: 12px;
-    color: #5c7079;
     margin-bottom: 4px;
+    color: var(--qt-text-muted);
+    font-size: 12px;
   }
 }

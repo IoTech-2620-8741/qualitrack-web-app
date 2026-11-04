@@ -16,13 +16,27 @@ class Destination {}
 /**
  * A route tree of a bounded context with its real paths and order, where every view is a plain destination and the
  * Layout and guards are left out, so only the URLs are tested.
+ *
+ * @remarks
+ * A view with child routes keeps its path in front of theirs, and is a destination of its own.
  */
-const urlsOf = (routes: Routes): Routes =>
-  routes.flatMap((route) => (route.children ? urlsOf(route.children) : [
-    route.redirectTo === undefined
-      ? { path: route.path, pathMatch: route.pathMatch, component: Destination }
-      : { path: route.path, pathMatch: route.pathMatch, redirectTo: route.redirectTo },
-  ]));
+const urlsOf = (routes: Routes, parent = ''): Routes =>
+  routes.flatMap((route) => {
+    const path = [parent, route.path].filter(Boolean).join('/');
+    if (route.children) {
+      const view: Routes =
+        route.loadComponent || route.component
+          ? [{ path, pathMatch: 'full', component: Destination }]
+          : [];
+      return [...urlsOf(route.children, path), ...view];
+    }
+    return [
+      route.redirectTo === undefined
+        ? { path, pathMatch: route.pathMatch, component: Destination }
+        : { path, pathMatch: route.pathMatch, redirectTo: route.redirectTo },
+    ];
+  });
+
 
 describe('Semantic routes', () => {
   beforeEach(() => {

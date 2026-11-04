@@ -730,8 +730,56 @@
     },
     "history": {
       "title": "Historial de alertas",
-      "subtitle": "Todas las alertas del ambiente, incluidas las resueltas.",
-      "empty": "No hay alertas con estos filtros."
+      "subtitle": "Todas las alertas del periodo, incluidas las resueltas, con sus tiempos de atención.",
+      "empty": "No hay alertas con estos filtros.",
+      "none-all": "Ningún ambiente registró alertas en los últimos 90 días.",
+      "none-one": "Este ambiente no registró alertas en los últimos 90 días.",
+      "unavailable": "No se pudieron leer las alertas de: {{environments}}. El historial no las incluye.",
+      "filters": {
+        "label": "Filtros del historial",
+        "period": "Periodo",
+        "search": "Buscar dispositivo, variable o nota",
+        "from": "Desde",
+        "to": "Hasta",
+        "clear": "Limpiar filtros"
+      },
+      "periods": {
+        "days-7": "7 días",
+        "days-30": "30 días",
+        "days-90": "90 días",
+        "custom": "Personalizado"
+      },
+      "columns": {
+        "duration": "Duración",
+        "resolved-by": "Resuelta por",
+        "corrective-action": "Acción correctiva"
+      },
+      "metrics": {
+        "alerts": "Alertas",
+        "resolved": "Resueltas",
+        "percent": "{{value}} %",
+        "resolved-of": "{{resolved}} de {{total}}",
+        "attention": "T. medio de atención",
+        "attention-hint": "De la detección a la atención",
+        "resolution": "T. medio de resolución",
+        "resolution-hint": "De la detección a la resolución",
+        "no-time": "—"
+      },
+      "chart": {
+        "title": "Alertas por semana",
+        "week": "Semana del"
+      },
+      "open-for": "{{time}} abierta",
+      "attention-after": "atención {{time}}",
+      "view-short": "Ver",
+      "view": "Ver el detalle de la alerta de {{variable}}",
+      "pages": {
+        "label": "Páginas del historial",
+        "showing": "Mostrando {{first}}–{{last}} de {{total}} · 25 por página",
+        "current": "Página {{page}} de {{count}}",
+        "previous": "Página anterior",
+        "next": "Página siguiente"
+      }
     },
     "detail": {
       "alert": "Alerta",
@@ -751,9 +799,18 @@
       "corrective-action": "Acción correctiva",
       "templates": {
         "label": "Plantillas de acción correctiva",
-        "ventilation": { "label": "Ventilación ajustada", "text": "Se ajustó la ventilación del área y se verificó que la lectura volvió al rango." },
-        "filter": { "label": "Filtro reemplazado", "text": "Se reemplazó el filtro y se verificó que la lectura volvió al rango." },
-        "sensor": { "label": "Sensor recalibrado", "text": "Se recalibró el sensor y se verificó que la lectura es correcta." }
+        "ventilation": {
+          "label": "Ventilación ajustada",
+          "text": "Se ajustó la ventilación del área y se verificó que la lectura volvió al rango."
+        },
+        "filter": {
+          "label": "Filtro reemplazado",
+          "text": "Se reemplazó el filtro y se verificó que la lectura volvió al rango."
+        },
+        "sensor": {
+          "label": "Sensor recalibrado",
+          "text": "Se recalibró el sensor y se verificó que la lectura es correcta."
+        }
       },
       "actions-title": "Actuaciones relacionadas",
       "no-actions": "El monitor del contenedor no registró actuaciones para esta variable durante el incidente.",

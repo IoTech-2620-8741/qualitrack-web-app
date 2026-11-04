@@ -1,51 +1,209 @@
 <main class="operations-page qt-theme">
   <div class="context-bar">
-    <app-environment-selector [environments]="store.environments()" [selectedId]="environmentId()" (selectedChange)="changeEnvironment($event)" />
+    <app-environment-selector
+      allOptionKey="environments.all"
+      [environments]="store.environments()"
+      [selectedId]="environmentId()"
+      (selectedChange)="chooseEnvironment($event)"
+      (allSelected)="chooseAllEnvironments()"
+    />
   </div>
 
   <app-alerts-page-header
     section="history"
     subtitleKey="ca-alerts.history.subtitle"
-    [environmentId]="chosenEnvironmentId()"
+    [environmentId]="environmentId()"
   >
-    <div alertsSection>
-      @if (store.error()) {
-        <p class="error" role="alert">{{ store.error()! | translate }}</p>
+    <div alertsSection class="history">
+      @if (!detailOpen() && store.error(); as error) {
+        <app-error-banner
+          [messageKey]="error"
+          [dismissible]="true"
+          (dismiss)="store.clearError()"
+        />
       }
 
       @if (store.environmentsEmpty()) {
         <p class="notice">{{ 'ca-alerts.no-environments' | translate }}</p>
-      } @else if (environmentId() !== null) {
-        <div class="filters">
-          <mat-form-field appearance="outline" subscriptSizing="dynamic">
-            <mat-label>{{ 'common.status' | translate }}</mat-label>
-            <mat-select [(ngModel)]="status" (selectionChange)="search()">
-              <mat-option value="">{{ 'common.all' | translate }}</mat-option>
-              @for (item of statuses; track item) {
-                <mat-option [value]="item">{{ 'ca-alerts.status.' + item.toLowerCase() | translate }}</mat-option>
+      } @else if (store.environmentsLoaded()) {
+        @if (unavailableEnvironments(); as environments) {
+          <app-action-banner
+            icon="cloud_off"
+            tone="warning"
+            actionKey="ca-alerts.active.retry"
+            (action)="load()"
+          >
+            {{ 'ca-alerts.history.unavailable' | translate: { environments } }}
+          </app-action-banner>
+        }
+
+        <section class="filters" [attr.aria-label]="'ca-alerts.history.filters.label' | translate">
+          <div class="filter-row">
+            <div class="chip-group" role="group" aria-labelledby="history-period">
+              <span id="history-period" class="group-label">{{
+                  'ca-alerts.history.filters.period' | translate
+                }}</span>
+              @for (period of periods; track period) {
+                <app-filter-chip
+                  [labelKey]="
+                    period === null
+                      ? 'ca-alerts.history.periods.custom'
+                      : 'ca-alerts.history.periods.days-' + period
+                  "
+                  [icon]="period === null ? 'date_range' : null"
+                  [pressed]="filter().period === period"
+                  (toggled)="choosePeriod(period)"
+                />
               }
-            </mat-select>
-          </mat-form-field>
-          <mat-form-field appearance="outline" subscriptSizing="dynamic">
-            <mat-label>{{ 'ca-alerts.fields.severity' | translate }}</mat-label>
-            <mat-select [(ngModel)]="severity" (selectionChange)="search()">
-              <mat-option value="">{{ 'common.all' | translate }}</mat-option>
-              @for (item of severities; track item) {
-                <mat-option [value]="item">{{ 'ca-alerts.severity.' + item.toLowerCase() | translate }}</mat-option>
+            </div>
+            <mat-form-field appearance="outline" subscriptSizing="dynamic" class="search">
+              <mat-icon matPrefix aria-hidden="true">search</mat-icon>
+              <input
+                matInput
+                type="search"
+                [value]="filter().search"
+                [placeholder]="'ca-alerts.history.filters.search' | translate"
+                [attr.aria-label]="'ca-alerts.history.filters.search' | translate"
+                (input)="search($any($event.target).value)"
+              />
+            </mat-form-field>
+          </div>
+
+          @if (filter().period === null) {
+            <div class="custom-period">
+              <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                <mat-label>{{ 'ca-alerts.history.filters.from' | translate }}</mat-label>
+                <input
+                  matInput
+                  type="date"
+                  [value]="filter().from ?? ''"
+                  [max]="filter().to ?? ''"
+                  (change)="chooseDay('from', $any($event.target).value)"
+                />
+              </mat-form-field>
+              <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                <mat-label>{{ 'ca-alerts.history.filters.to' | translate }}</mat-label>
+                <input
+                  matInput
+                  type="date"
+                  [value]="filter().to ?? ''"
+                  [min]="filter().from ?? ''"
+                  (change)="chooseDay('to', $any($event.target).value)"
+                />
+              </mat-form-field>
+            </div>
+          }
+
+          <div class="filter-row">
+            <div class="chip-group" role="group" aria-labelledby="history-severity">
+              <span id="history-severity" class="group-label">{{
+                  'ca-alerts.fields.severity' | translate
+                }}</span>
+              @for (severity of severities; track severity) {
+                <app-filter-chip
+                  [labelKey]="severityChips[severity].labelKey"
+                  [icon]="severityChips[severity].icon"
+                  [count]="countWith({ severities: [severity] })"
+                  [pressed]="filter().severities.includes(severity)"
+                  (toggled)="toggleSeverity(severity)"
+                />
               }
-            </mat-select>
-          </mat-form-field>
-          <button mat-button type="button" (click)="clearFilters()" [disabled]="store.loading()">
-            {{ 'common.clear' | translate }}
-          </button>
-        </div>
+            </div>
+            <div class="chip-group" role="group" aria-labelledby="history-status">
+              <span id="history-status" class="group-label">{{ 'common.status' | translate }}</span>
+              @for (status of statuses; track status) {
+                <app-filter-chip
+                  [labelKey]="statusChips[status].labelKey"
+                  [icon]="statusChips[status].icon"
+                  [count]="countWith({ statuses: [status] })"
+                  [pressed]="filter().statuses.includes(status)"
+                  (toggled)="toggleStatus(status)"
+                />
+              }
+            </div>
+            <div class="chip-group" role="group" aria-labelledby="history-origin">
+              <span id="history-origin" class="group-label">{{
+                  'ca-alerts.fields.origin' | translate
+                }}</span>
+              @for (origin of origins; track origin) {
+                <app-filter-chip
+                  [labelKey]="'ca-alerts.origin.' + origin"
+                  [icon]="originIcons[origin]"
+                  [count]="countWith({ origins: [origin] })"
+                  [pressed]="filter().origins.includes(origin)"
+                  (toggled)="toggleOrigin(origin)"
+                />
+              }
+            </div>
+            @if (isFiltered()) {
+              <button mat-button type="button" (click)="clearFilters()">
+                {{ 'ca-alerts.history.filters.clear' | translate }}
+              </button>
+            }
+          </div>
+        </section>
 
         @if (store.loading()) {
           <p role="status">{{ 'common.status-loading' | translate }}</p>
-        } @else if (!store.error()) {
-          <app-alert-table [alerts]="store.alerts()" emptyKey="ca-alerts.history.empty" />
+        } @else if (shownAlerts().length) {
+          <div class="insights">
+            <app-alert-history-cards [alerts]="shownAlerts()" />
+            <app-alert-week-chart [weeks]="weeks()" />
+          </div>
+
+          <app-alert-table [alerts]="pageAlerts()" [now]="now()" />
+
+          <nav class="pager" [attr.aria-label]="'ca-alerts.history.pages.label' | translate">
+            <p role="status">
+              {{ 'ca-alerts.history.pages.showing' | translate: pageRange() }}
+            </p>
+            @if (pageCount() > 1) {
+              <div class="pager-buttons">
+                <button
+                  mat-icon-button
+                  type="button"
+                  [disabled]="page() === 1"
+                  [attr.aria-label]="'ca-alerts.history.pages.previous' | translate"
+                  (click)="goToPage(page() - 1)"
+                >
+                  <mat-icon aria-hidden="true">chevron_left</mat-icon>
+                </button>
+                <span>{{
+                    'ca-alerts.history.pages.current'
+                      | translate: { page: page(), count: pageCount() }
+                  }}</span>
+                <button
+                  mat-icon-button
+                  type="button"
+                  [disabled]="page() === pageCount()"
+                  [attr.aria-label]="'ca-alerts.history.pages.next' | translate"
+                  (click)="goToPage(page() + 1)"
+                >
+                  <mat-icon aria-hidden="true">chevron_right</mat-icon>
+                </button>
+              </div>
+            }
+          </nav>
+        } @else if (isFiltered()) {
+          <app-empty-state messageKey="ca-alerts.history.empty">
+            <button mat-stroked-button type="button" (click)="clearFilters()">
+              {{ 'ca-alerts.history.filters.clear' | translate }}
+            </button>
+          </app-empty-state>
+        } @else if (!store.error() && !unavailableEnvironments()) {
+          <app-empty-state
+            icon="verified"
+            [positive]="true"
+            [messageKey]="
+              environmentId() === null ? 'ca-alerts.history.none-all' : 'ca-alerts.history.none-one'
+            "
+          />
         }
+      } @else if (!store.error()) {
+        <p role="status">{{ 'common.status-loading' | translate }}</p>
       }
     </div>
   </app-alerts-page-header>
+
+  <router-outlet (activate)="detailOpen.set(true)" (deactivate)="detailOpen.set(false)" />
 </main>

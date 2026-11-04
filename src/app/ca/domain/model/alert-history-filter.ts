@@ -1,6 +1,5 @@
 import { AlertOrigin, AlertSeverity, AlertStatus, DeviationAlert } from './deviation-alert.entity';
 
-
 /** Days back that the history shows; `null` means the person chose their own dates. */
 export type AlertHistoryPeriod = 7 | 30 | 90 | null;
 
@@ -48,7 +47,7 @@ const LABORATORY_UTC_OFFSET = '-05:00';
  * @returns `true` when the incident started inside the period
  *
  * @remarks
- * A custom period counts whole days in the time zone of the browser: `to` includes its whole day.
+ * A custom period counts whole days of the laboratory, in Peru: `to` includes its whole day.
  */
 export function isInPeriod(alert: DeviationAlert, filter: AlertHistoryFilter, now: Date): boolean {
   const startedAt = Date.parse(alert.timestamp);
@@ -60,8 +59,34 @@ export function isInPeriod(alert: DeviationAlert, filter: AlertHistoryFilter, no
   return true;
 }
 
+/** First and last moment of the period of a filter. */
+export interface AlertHistoryRange {
+  /** First moment, in milliseconds since 1970, or `null` when a custom period has no first day. */
+  since: number | null;
+  /** Last moment, in milliseconds since 1970; never later than now. */
+  until: number;
+}
+
 /**
- * First moment of a day in the time zone of the browser.
+ * First and last moment of the period of the filter, which the weekly chart covers.
+ *
+ * @param filter - The filter of the history
+ * @param now - The current moment; it is a parameter so the tests can fix it
+ * @returns The range; a custom period counts whole days in Peru and does not go past now
+ */
+export function periodRangeOf(filter: AlertHistoryFilter, now: Date): AlertHistoryRange {
+  if (filter.period !== null) {
+    return { since: now.getTime() - filter.period * DAY_IN_MILLISECONDS, until: now.getTime() };
+  }
+  const lastMoment = filter.to ? startOfDay(filter.to) + DAY_IN_MILLISECONDS - 1 : now.getTime();
+  return {
+    since: filter.from ? startOfDay(filter.from) : null,
+    until: Math.min(lastMoment, now.getTime()),
+  };
+}
+
+/**
+ * First moment of a day in the laboratory, in Peru.
  *
  * @param day - The day, as `YYYY-MM-DD`
  * @returns Milliseconds since 1970 at midnight of that day
