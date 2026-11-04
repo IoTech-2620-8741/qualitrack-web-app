@@ -2,6 +2,7 @@ import { Component, computed, input } from '@angular/core';
 import { MatCard } from '@angular/material/card';
 import { DecimalPipe } from '@angular/common';
 import { TranslatePipe } from '@ngx-translate/core';
+import { DeviationTrend } from '../../../domain/model/deviation-trend.entity';
 
 /**
  * Presentational component that displays high-level KPI metrics for deviation trends.
@@ -19,7 +20,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 })
 export class DeviationKpiCards {
   /** The list of deviation trends to aggregate metrics from. */
-  readonly trends = input.required<any[]>();
+  readonly trends = input.required<DeviationTrend[]>();
 
   /** Total number of unique variables (trends) being monitored. */
   protected readonly totalVariables = computed(() => this.trends().length);
@@ -31,7 +32,7 @@ export class DeviationKpiCards {
 
   /** Total number of raw data points (readings) across all trends. */
   protected readonly totalReadings = computed(() =>
-    this.trends().reduce((acc, t) => acc + (t.dataPoints?.length || 0), 0),
+    this.trends().reduce((acc, t) => acc + t.dataPoints.length, 0),
   );
 
   /**
@@ -39,12 +40,12 @@ export class DeviationKpiCards {
    *
    * @remarks
    * Ignores trends where `timeInRangePercent` is null.
-   * Returns 0 if no valid trends are available.
+   * Returns null if no valid trends are available, because nothing can be said then.
    */
   protected readonly averageTimeInRange = computed(() => {
-    const valid = this.trends().filter((t) => t.timeInRangePercent !== null);
-    if (!valid.length) return 0;
-    return valid.reduce((acc, t) => acc + t.timeInRangePercent, 0) / valid.length;
+    const valid = this.trends().flatMap((t) => t.timeInRangePercent ?? []);
+    if (!valid.length) return null;
+    return valid.reduce((acc, percent) => acc + percent, 0) / valid.length;
   });
 
   /** Total number of deviations (warnings + criticals) across all trends. */
