@@ -12,6 +12,35 @@
   opacity: 0.5;
 }
 
+.empty-state.positive mat-icon {
+  color: var(--qt-success);
+  opacity: 1;
+}
+
+.empty-state h2 {
+  margin: 0 0 8px;
+  color: var(--qt-text);
+  font-size: 20px;
+  font-weight: 600;
+}
+
 .empty-state p {
   margin: 0;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+
+.actions:not(:empty) {
+  margin-top: 20px;
+}
+
+@media (max-width: 600px) {
+  .empty-state {
+    padding: 32px 16px;
+  }
 }

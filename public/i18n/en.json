@@ -738,10 +738,23 @@
       "no-environment": "No environment",
       "normalized": "The condition returned to normal on {{date}}; the alert stays open until someone resolves it.",
       "timeline": "Follow-up",
-      "detected": "Detected on {{date}}.",
-      "last-deviation": "Last deviation on {{date}} ({{count}} deviations in the incident).",
-      "acknowledged": "Attended by user #{{user}} on {{date}}.",
-      "resolved": "Resolved by user #{{user}} on {{date}}:",
+      "step": {
+        "detected": "Detected · {{value}} {{unit}} (limit {{limit}})",
+        "last-deviation": "Last deviation",
+        "attending": "In progress by {{name}}",
+        "resolved": "Resolved by {{name}}",
+        "later": "{{time}} later",
+        "waiting-attention": "Pending: nobody has registered attention",
+        "waiting-resolution": "Pending: the corrective action is missing"
+      },
+      "user": "user #{{id}}",
+      "corrective-action": "Corrective action",
+      "templates": {
+        "label": "Corrective action templates",
+        "ventilation": { "label": "Ventilation adjusted", "text": "The ventilation of the area was adjusted and the reading was verified back in range." },
+        "filter": { "label": "Filter replaced", "text": "The filter was replaced and the reading was verified back in range." },
+        "sensor": { "label": "Sensor recalibrated", "text": "The sensor was recalibrated and the reading was verified as correct." }
+      },
       "actions-title": "Related actions",
       "no-actions": "The container monitor registered no actions for this variable during the incident.",
       "no-actions-environment": "Actions are reported by container monitors; the environmental device does not execute any.",
@@ -762,7 +775,6 @@
     },
     "no-environments": "Alerts are listed per environment. Register an environment and its IoT devices first.",
     "normalized": "Condition normalized",
-    "acknowledged": "The attention of the alert was registered.",
     "resolved": "The alert was resolved.",
     "errors": {
       "connection": "The alerts could not be loaded. Check your connection and try again.",
@@ -771,8 +783,60 @@
     },
     "active": {
       "title": "Active Alerts",
-      "subtitle": "Open alerts of the environment and its monitored containers, with their origin and severity.",
-      "empty": "There are no active alerts in this environment."
+      "subtitle": "Open deviations of the monitored environments and containers, from the most to the least urgent.",
+      "live": "Live · updated {{time}}",
+      "live-partial": "Partial data · updated {{time}}",
+      "unavailable": "The alerts of {{environments}} could not be read. What you see of those environments may be out of date.",
+      "retry": "Try again",
+      "new-alerts": "New alerts: {{count}}.",
+      "attention-registered": "{{alert}} in progress",
+      "attended-by-another": "Another person already attended this alert.",
+      "search": "Search device or variable",
+      "results": "Showing {{shown}} of {{total}} alerts.",
+      "no-results": "There are no alerts with these filters.",
+      "critical-banner": {
+        "title-one": "1 critical alert not attended.",
+        "title-many": "{{count}} critical alerts not attended.",
+        "oldest": "The oldest: {{device}} · {{variable}} {{value}} {{unit}}.",
+        "detail": "Opened {{time}} · nobody has registered attention",
+        "action": "View unattended critical"
+      },
+      "stats": {
+        "unattended": "Not attended",
+        "environments-one": "in 1 environment",
+        "environments-many": "in {{count}} environments",
+        "warnings-one": "1 warning",
+        "warnings-many": "{{count}} warnings",
+        "oldest": "oldest: {{time}}",
+        "normalized-one": "1 already normalized",
+        "normalized-many": "{{count}} already normalized"
+      },
+      "sort": {
+        "label": "Sort by",
+        "priority": "Priority",
+        "newest": "Newest",
+        "environment": "Environment"
+      },
+      "shortcuts": {
+        "label": "Shortcuts with the focus on the list:",
+        "move": "move"
+      },
+      "card": {
+        "limit": "limit {{value}} {{unit}}",
+        "opened": "Opened {{time}}",
+        "no-owner": "No one assigned",
+        "attending": "In progress {{time}}",
+        "attending-by": "In progress by {{name}} · {{time}}",
+        "notify": "Notify",
+        "resolve": "Resolve"
+      },
+      "empty": {
+        "title": "Everything within GMP parameters",
+        "message-one": "There are no open alerts in this environment.",
+        "message-many": "There are no open alerts in the {{count}} environments.",
+        "history": "View history",
+        "monitoring": "Go to monitoring"
+      }
     },
     "origin": {
       "ENVIRONMENT": "Environment",

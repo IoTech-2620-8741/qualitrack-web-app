@@ -1,7 +1,22 @@
+import { DOCUMENT } from '@angular/common';
 import { computed, DestroyRef, effect, inject, Injectable, Signal, signal } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Observable, Subject, catchError, finalize, firstValueFrom, of, takeUntil, tap } from 'rxjs';
+import {
+  Observable,
+  ReplaySubject,
+  Subject,
+  catchError,
+  finalize,
+  firstValueFrom,
+  forkJoin,
+  fromEvent,
+  map,
+  of,
+  switchMap,
+  takeUntil,
+  tap,
+} from 'rxjs';
 
 import { DeviationAlert } from '../domain/model/deviation-alert.entity';
 import { ComplianceEvent } from '../domain/model/compliance-event.entity';
@@ -12,7 +27,7 @@ import { AlertFilters } from '../infrastructure/alert-api-endpoint';
 import { UpdateNotificationPreferenceRequest } from '../infrastructure/notification-preference.request';
 import { ResolveAlertRequest } from '../infrastructure/resolve-alert.request';
 import { IamStore } from '../../iam/application/iam.store';
-import { ApiError } from '../../shared/infrastructure/api-error';
+import { ApiError, errorStatus } from '../../shared/infrastructure/api-error';
 import { EnvironmentPreference } from '../../shared/infrastructure/environment-preference';
 import { AlertDevice } from '../domain/model/alert-device.entity';
 import { AlertEnvironment } from '../domain/model/alert-environment.entity';
@@ -42,6 +57,23 @@ export function alertError(error: unknown): string {
 /** Notifications shown when the bell opens. */
 const NOTIFICATION_PANEL_SIZE = 15;
 
+/** Conflict answered by the platform when the alert is no longer waiting for attention. */
+const HTTP_CONFLICT = 409;
+
+/** Open alerts read from one environment; `alerts` is null when the environment could not be read. */
+interface EnvironmentAlertsReading {
+  environmentId: number;
+  alerts: DeviationAlert[] | null;
+}
+
+/** Attention the person already sees on an alert, while the platform has not registered it. */
+interface PendingAttention {
+  /** When the person registered it. */
+  acknowledgedAt: string;
+  /** Emits once the request finished, whatever its outcome; null while it can still be undone. */
+  settled: Observable<void> | null;
+}
+
 /**
  * Application store for Compliance & Alerting (CA).
  *
@@ -56,6 +88,10 @@ const NOTIFICATION_PANEL_SIZE = 15;
  * Every load replaces the previous state of what it loads, and a new request cancels the one in progress for the
  * same data. Failures are kept in {@link CaStore.error} as a translation key or a server detail.
  *
+ * Registering attention from the inbox can be undone for a few seconds: {@link CaStore.startAttention} shows the
+ * alert as attended right away and nothing reaches the platform until {@link CaStore.confirmAttention}. The attention
+ * is also sent when the page goes away or the person signs out, so it is never lost.
+ *
  * @example
  * ```typescript
  * const store = inject(CaStore);
@@ -63,7 +99,7 @@ const NOTIFICATION_PANEL_SIZE = 15;
  * store.loadEnvironmentAlerts(environmentId, { active: true });
  * console.log(store.openAlertsCount());
  *
- * store.acknowledgeAlert(alertId);
+ * store.startAttention(alertId);
  * ```
  */
 @Injectable({ providedIn: 'root' })
@@ -85,9 +121,37 @@ export class CaStore {
   private readonly _notificationsSignal = signal<Notification[]>([]);
   private readonly _notificationsLoadingSignal = signal(false);
   private readonly _notificationsFailedSignal = signal(false);
+  private readonly _unavailableEnvironmentIdsSignal = signal<readonly number[]>([]);
+  private readonly _alertsUpdatedAtSignal = signal<Date | null>(null);
+  private readonly _newAlertIdsSignal = signal<ReadonlySet<number>>(new Set());
+  private readonly _refreshingSignal = signal(false);
+  private readonly _pendingAttentionsSignal = signal<ReadonlyMap<number, PendingAttention>>(new Map());
+  private readonly _selectedAlertLoadingSignal = signal(false);
+  private readonly _peopleSignal = signal<ReadonlyMap<number, string>>(new Map());
 
-  /** Alerts of the environment currently shown, newest first. */
-  readonly alerts = this._alertsSignal.asReadonly();
+  /** Alerts shown, with the attention that is still waiting to reach the platform already applied. */
+  readonly alerts = computed(() => {
+    const pendingAttentions = this._pendingAttentionsSignal();
+    const alerts = this._alertsSignal();
+    return pendingAttentions.size
+      ? alerts.map((alert) => this.withPendingAttention(alert, pendingAttentions.get(alert.id)))
+      : alerts;
+  });
+
+  /** Whether the detail of an alert is being read; the list behind it stays as it is. */
+  readonly selectedAlertLoading = this._selectedAlertLoadingSignal.asReadonly();
+
+  /** Environments whose open alerts could not be read in the latest load; what they showed before is kept. */
+  readonly unavailableEnvironmentIds = this._unavailableEnvironmentIdsSignal.asReadonly();
+
+  /** When the open alerts were read for the last time, or null if they were not read yet. */
+  readonly alertsUpdatedAt = this._alertsUpdatedAtSignal.asReadonly();
+
+  /** Alerts that the latest refresh brought and the list did not have. */
+  readonly newAlertIds = this._newAlertIdsSignal.asReadonly();
+
+  /** Whether the open alerts are being read again while the list stays on screen. */
+  readonly refreshing = this._refreshingSignal.asReadonly();
 
   /** Alert shown in the detail, with its related actions. */
   readonly selectedAlert = this._selectedAlertSignal.asReadonly();
@@ -160,6 +224,8 @@ export class CaStore {
   private readonly iam = inject(IamStore);
   private readonly reloadAlerts = new Subject<void>();
   private readonly reloadAlert = new Subject<void>();
+  /** Stops a refresh that started before an alert changed, because it would bring the alert back as it was. */
+  private readonly discardRefresh = new Subject<void>();
   /** Environment opened last time in the monitoring views of this browser, shared with Tracking. */
   private readonly environmentPreference = new EnvironmentPreference('tracking');
 
@@ -178,7 +244,12 @@ export class CaStore {
       this.iam.currentUserId();
       this._unreadNotificationsSignal.set(0);
       this._notificationsSignal.set([]);
+      this._peopleSignal.set(new Map());
     });
+    this.iam.beforeSignOut(() => this.sendPendingAttentions());
+    fromEvent(inject(DOCUMENT).defaultView!, 'pagehide')
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.sendPendingAttentions());
   }
 
   /**
@@ -251,7 +322,7 @@ export class CaStore {
       const selectedAlert = this.selectedAlert();
 
       return selectedAlert?.id === id
-        ? selectedAlert
+        ? this.withPendingAttention(selectedAlert, this._pendingAttentionsSignal().get(id))
         : this.alerts().find((alert) => alert.id === id);
     });
   }
@@ -280,6 +351,31 @@ export class CaStore {
       .getAlertDevices(this.iam.requireLaboratoryId())
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({ next: (devices) => this._devicesSignal.set(devices), error: () => this._devicesSignal.set([]) });
+  }
+
+  /**
+   * Name of a person of the laboratory, or null while it is unknown.
+   *
+   * @param userId - The account of the person
+   * @returns The name, or `null` when there is no account or it is not among the loaded people
+   */
+  personName(userId: number | null): string | null {
+    return userId === null ? null : (this._peopleSignal().get(userId) ?? null);
+  }
+
+  /**
+   * Reads the people of the laboratory, so that alerts can name who attended or resolved them.
+   *
+   * @remarks
+   * People join and leave, so it reads them every time it is asked. What was known is kept until the answer arrives.
+   */
+  loadPeople(): void {
+    this.caApi
+      .getAlertPeople(this.iam.requireLaboratoryId())
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((people) =>
+        this._peopleSignal.set(new Map(people.map((person) => [person.id, person.name]))),
+      );
   }
 
   /**
@@ -347,47 +443,159 @@ export class CaStore {
   }
 
   /**
+   * Loads the open alerts of one environment or of the whole laboratory, emptying the list first.
+   *
+   * @param environmentId - The environment, or null for every environment of the laboratory
+   * @throws {Error} When the user has no laboratory set up
+   *
+   * @remarks
+   * Cancels the request in progress. An environment that fails does not hide the alerts of the others: it is named
+   * in {@link CaStore.unavailableEnvironmentIds}.
+   */
+  loadOpenAlerts(environmentId: number | null): void {
+    this.reloadAlerts.next();
+    this._alertsSignal.set([]);
+    this._newAlertIdsSignal.set(new Set());
+    this._unavailableEnvironmentIdsSignal.set([]);
+    this._loadingSignal.set(true);
+    this._errorSignal.set(null);
+
+    this.readOpenAlerts(environmentId)
+      .pipe(takeUntil(this.reloadAlerts), takeUntilDestroyed(this.destroyRef))
+      .subscribe((readings) => {
+        this.showOpenAlerts(readings);
+        this._loadingSignal.set(false);
+      });
+  }
+
+  /**
+   * Reads the open alerts again without emptying the list or showing that something is loading.
+   *
+   * @param environmentId - The environment, or null for every environment of the laboratory
+   * @throws {Error} When the user has no laboratory set up
+   *
+   * @remarks
+   * Does nothing while a load or another refresh is running, so a slow network never starts them over. The alerts
+   * that were not in the list are kept in {@link CaStore.newAlertIds}.
+   */
+  refreshOpenAlerts(environmentId: number | null): void {
+    if (this._loadingSignal() || this._refreshingSignal()) return;
+    this._refreshingSignal.set(true);
+
+    this.readOpenAlerts(environmentId)
+      .pipe(
+        takeUntil(this.reloadAlerts),
+        takeUntil(this.discardRefresh),
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => this._refreshingSignal.set(false)),
+      )
+      .subscribe((readings) => {
+        const listedIds = new Set(this._alertsSignal().map((alert) => alert.id));
+        this.showOpenAlerts(readings);
+        this._newAlertIdsSignal.set(
+          new Set(this._alertsSignal().map((alert) => alert.id).filter((id) => !listedIds.has(id))),
+        );
+      });
+  }
+
+  /**
+   * Shows an alert as attended by the signed-in user, without telling the platform yet (US87).
+   *
+   * @param alertId - The unique numeric identifier of the deviation alert.
+   *
+   * @remarks
+   * Follow it with {@link CaStore.confirmAttention} or {@link CaStore.undoAttention}. Ignored when the listed alert
+   * is not waiting for attention.
+   */
+  startAttention(alertId: number): void {
+    if (this.getAlertById(alertId)()?.status !== 'UNRESOLVED') return;
+    this._errorSignal.set(null);
+    this._noticeSignal.set(null);
+    this.setPendingAttention(alertId, { acknowledgedAt: new Date().toISOString(), settled: null });
+  }
+
+  /**
+   * Forgets an attention that did not reach the platform.
+   *
+   * @param alertId - The unique numeric identifier of the deviation alert.
+   *
+   * @remarks
+   * An attention that was already sent can no longer be undone, so the alert stays as attended.
+   */
+  undoAttention(alertId: number): void {
+    if (this._pendingAttentionsSignal().get(alertId)?.settled === null) this.forgetPendingAttention(alertId);
+  }
+
+  /**
+   * Registers on the platform the attention started on an alert.
+   *
+   * @param alertId - The unique numeric identifier of the deviation alert.
+   *
+   * @remarks
+   * Calling it again does nothing. If the platform refuses, the alert goes back to how it was and the reason stays in
+   * {@link CaStore.error}; a conflict means another person got there first, so the alert is read again.
+   */
+  confirmAttention(alertId: number): void {
+    this.sendAttention(alertId);
+  }
+
+  /**
+   * Whether an attention started on an alert has not reached the platform.
+   *
+   * @param alertId - The unique numeric identifier of the deviation alert.
+   * @returns `true` from {@link CaStore.startAttention} until the platform answers or the attention is undone
+   */
+  hasPendingAttention(alertId: number): boolean {
+    return this._pendingAttentionsSignal().has(alertId);
+  }
+
+  /**
    * Loads an alert with its origin and the actions related to the incident (US86).
    *
    * @param alertId - The unique numeric identifier of the deviation alert.
    *
    * @remarks
    * Does nothing for an empty id. Cancels the request in progress, clears the selected alert and the latest
-   * confirmation, and when the alert arrives it also replaces the one of the list.
+   * confirmation, and when the alert arrives it also replaces the one of the list. An attention waiting on this alert
+   * is sent first, so the detail never shows the alert as it was before it.
    */
   loadAlertById(alertId: number): void {
     if (!alertId) return;
     this.reloadAlert.next();
     this._selectedAlertSignal.set(null);
-    this._loadingSignal.set(true);
+    this._selectedAlertLoadingSignal.set(true);
     this._errorSignal.set(null);
     this._noticeSignal.set(null);
 
-    this.caApi
-      .getAlertById(alertId)
-      .pipe(takeUntil(this.reloadAlert), takeUntilDestroyed(this.destroyRef))
+    this.sendAttention(alertId)
+      .pipe(
+        switchMap(() => this.caApi.getAlertById(alertId)),
+        takeUntil(this.reloadAlert),
+        takeUntilDestroyed(this.destroyRef),
+      )
       .subscribe({
         next: (alert) => {
           this.replaceAlert(alert);
-          this._loadingSignal.set(false);
+          this._selectedAlertLoadingSignal.set(false);
         },
         error: (err) => {
           this._errorSignal.set(alertError(err));
-          this._loadingSignal.set(false);
+          this._selectedAlertLoadingSignal.set(false);
         },
       });
   }
 
   /**
-   * Registers that the authenticated user attends the alert (US87).
-   *
-   * @param alertId - The unique numeric identifier of the deviation alert.
+   * Forgets the alert whose detail was open, stopping its reading if it did not finish.
    *
    * @remarks
-   * Confirms with `ca-alerts.acknowledged`. Ignored while another acknowledgement or resolution is being saved.
+   * Its failures go with it, but a confirmation stays, because it tells what just happened to whoever is back on the list.
    */
-  acknowledgeAlert(alertId: number): void {
-    this.attend(alertId, this.caApi.acknowledgeAlert(alertId), 'ca-alerts.acknowledged');
+  clearSelectedAlert(): void {
+    this.reloadAlert.next();
+    this._selectedAlertSignal.set(null);
+    this._selectedAlertLoadingSignal.set(false);
+    this._errorSignal.set(null);
   }
 
   /**
@@ -400,7 +608,11 @@ export class CaStore {
    * Confirms with `ca-alerts.resolved`. Ignored while another acknowledgement or resolution is being saved.
    */
   resolveAlert(alertId: number, request: ResolveAlertRequest): void {
-    this.attend(alertId, this.caApi.resolveAlert(alertId, request), 'ca-alerts.resolved');
+    this.attend(
+      alertId,
+      this.sendAttention(alertId).pipe(switchMap(() => this.caApi.resolveAlert(alertId, request))),
+      'ca-alerts.resolved',
+    );
   }
 
   /**
@@ -411,13 +623,14 @@ export class CaStore {
    * @remarks
    * Confirms with `ca-alerts.email.sent`, or with `ca-alerts.email.no-recipients` when nobody enabled e-mail
    * notices; the number of people is kept in {@link CaStore.noticeParams} as `count`. A 502 answer is reported as
-   * `ca-alerts.email.failed`. Ignored while something is being saved.
+   * `ca-alerts.email.failed`. Ignored while something is being saved. An attention waiting on this alert is sent too.
    */
   sendAlertEmailNotification(alertId: number): void {
     if (!alertId || this._savingSignal()) return;
     this._savingSignal.set(true);
     this._errorSignal.set(null);
     this._noticeSignal.set(null);
+    this.sendAttention(alertId);
 
     this.caApi.sendAlertEmailNotification(alertId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (delivery) => {
@@ -519,6 +732,9 @@ export class CaStore {
   clearAlerts(): void {
     this.reloadAlerts.next();
     this._alertsSignal.set([]);
+    this._newAlertIdsSignal.set(new Set());
+    this._unavailableEnvironmentIdsSignal.set([]);
+    this._alertsUpdatedAtSignal.set(null);
     this._loadingSignal.set(false);
   }
 
@@ -577,8 +793,154 @@ export class CaStore {
    */
   private replaceAlert(updatedAlert: DeviationAlert): void {
     this._selectedAlertSignal.set(updatedAlert);
+    this.replaceListedAlert(updatedAlert);
+  }
+
+  /**
+   * Replaces an alert in the local collection, leaving the selected alert as it is.
+   *
+   * @param updatedAlert - The latest version of the deviation alert.
+   */
+  private replaceListedAlert(updatedAlert: DeviationAlert): void {
+    this.discardRefresh.next();
     this._alertsSignal.update((alerts) =>
       alerts.map((alert) => (alert.id === updatedAlert.id ? updatedAlert : alert)),
     );
+  }
+
+  /**
+   * Reads the open alerts of each environment asked for, without letting one failure stop the others.
+   *
+   * @param environmentId - The environment, or null for every environment of the laboratory
+   * @returns Observable emitting one reading per environment; it never errors
+   */
+  private readOpenAlerts(environmentId: number | null): Observable<EnvironmentAlertsReading[]> {
+    const environmentIds =
+      environmentId === null ? this._environmentsSignal().map((environment) => environment.id) : [environmentId];
+    if (!environmentIds.length) return of([]);
+    const laboratoryId = this.iam.requireLaboratoryId();
+    return forkJoin(
+      environmentIds.map((id) =>
+        this.caApi.getEnvironmentAlerts(laboratoryId, id, { active: true }).pipe(
+          map((alerts): EnvironmentAlertsReading => ({ environmentId: id, alerts })),
+          catchError(() => of<EnvironmentAlertsReading>({ environmentId: id, alerts: null })),
+        ),
+      ),
+    );
+  }
+
+  /**
+   * Replaces the list with what was read, keeping what was shown of the environments that could not be read.
+   *
+   * @param readings - One reading per environment
+   */
+  private showOpenAlerts(readings: EnvironmentAlertsReading[]): void {
+    const unavailableIds = readings.filter(({ alerts }) => alerts === null).map(({ environmentId }) => environmentId);
+    const keptAlerts = this._alertsSignal().filter(
+      (alert) => alert.environmentId !== null && unavailableIds.includes(alert.environmentId),
+    );
+    this._alertsSignal.set([...readings.flatMap(({ alerts }) => alerts ?? []), ...keptAlerts]);
+    this._unavailableEnvironmentIdsSignal.set(unavailableIds);
+    if (unavailableIds.length < readings.length || !readings.length) this._alertsUpdatedAtSignal.set(new Date());
+  }
+
+  /**
+   * Shows an alert as attended while its attention has not reached the platform.
+   *
+   * @param alert - The alert as the platform last sent it
+   * @param pendingAttention - The attention waiting on the alert, if any
+   * @returns The alert to show
+   *
+   * @remarks
+   * If the alert is no longer waiting for attention, what the platform says wins.
+   */
+  private withPendingAttention(alert: DeviationAlert, pendingAttention?: PendingAttention): DeviationAlert {
+    if (!pendingAttention || alert.status !== 'UNRESOLVED') return alert;
+    return new DeviationAlert({
+      ...alert,
+      status: 'ACKNOWLEDGED',
+      acknowledgedBy: this.iam.currentUserId(),
+      acknowledgedAt: pendingAttention.acknowledgedAt,
+    });
+  }
+
+  /** Sends every attention that is still waiting, while the session and the page are alive. */
+  private sendPendingAttentions(): void {
+    for (const alertId of this._pendingAttentionsSignal().keys()) this.sendAttention(alertId);
+  }
+
+  /**
+   * Sends the attention waiting on an alert, once.
+   *
+   * @param alertId - The unique numeric identifier of the deviation alert.
+   * @returns Observable emitting when the request finished, whatever its outcome, or right away if nothing is waiting
+   *
+   * @remarks
+   * The request starts here, without waiting for anybody to subscribe, so it is sent even if the caller goes away.
+   */
+  private sendAttention(alertId: number): Observable<void> {
+    const pendingAttention = this._pendingAttentionsSignal().get(alertId);
+    if (!pendingAttention) return of(undefined);
+    if (pendingAttention.settled) return pendingAttention.settled;
+
+    const settled = new ReplaySubject<void>(1);
+    this.setPendingAttention(alertId, { ...pendingAttention, settled });
+    this.caApi
+      .acknowledgeAlert(alertId)
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => {
+          this.forgetPendingAttention(alertId);
+          settled.next();
+          settled.complete();
+        }),
+      )
+      .subscribe({
+        next: (updatedAlert) => {
+          const selectedAlert = this._selectedAlertSignal();
+          if (selectedAlert?.id === updatedAlert.id) {
+            updatedAlert.relatedActuations = selectedAlert.relatedActuations;
+            this._selectedAlertSignal.set(updatedAlert);
+          }
+          this.replaceListedAlert(updatedAlert);
+        },
+        error: (error) => this.handleRefusedAttention(alertId, error),
+      });
+    return settled;
+  }
+
+  /**
+   * Explains why the platform refused an attention.
+   *
+   * @param alertId - The unique numeric identifier of the deviation alert.
+   * @param error - The failure raised by the API facade
+   */
+  private handleRefusedAttention(alertId: number, error: unknown): void {
+    if (errorStatus(error) !== HTTP_CONFLICT) {
+      this._errorSignal.set(alertError(error));
+      return;
+    }
+    this._errorSignal.set('ca-alerts.active.attended-by-another');
+    this.caApi
+      .getAlertById(alertId)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (alert) => {
+          if (this._selectedAlertSignal()?.id === alert.id) this._selectedAlertSignal.set(alert);
+          this.replaceListedAlert(alert);
+        },
+      });
+  }
+
+  private setPendingAttention(alertId: number, pendingAttention: PendingAttention): void {
+    this._pendingAttentionsSignal.update((current) => new Map(current).set(alertId, pendingAttention));
+  }
+
+  private forgetPendingAttention(alertId: number): void {
+    this._pendingAttentionsSignal.update((current) => {
+      const remaining = new Map(current);
+      remaining.delete(alertId);
+      return remaining;
+    });
   }
 }

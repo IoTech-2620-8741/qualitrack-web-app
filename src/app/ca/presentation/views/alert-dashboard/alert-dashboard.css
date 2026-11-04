@@ -2,69 +2,216 @@
   display: block;
   min-width: 0;
 }
+
 .operations-page {
   max-width: 1280px;
   margin: 0 auto;
   padding: 24px;
 }
-mat-form-field {
-  width: 100%;
-  min-width: 0;
-}
-.summary-strip {
+
+.context-bar {
   display: flex;
-  gap: 32px;
   flex-wrap: wrap;
-  border-block: 1px solid #cfdbdf;
-  padding: 18px 0;
-  margin: 20px 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 24px;
+  margin-bottom: 16px;
 }
-.summary-strip span {
-  display: block;
+
+.context-bar app-environment-selector {
+  flex: 1 1 420px;
+  min-width: 0;
+  max-width: 520px;
+}
+
+.live-status {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+}
+
+.live {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--qt-text-muted);
   font-size: 13px;
-  color: #4b6068;
 }
-.summary-strip strong {
-  display: block;
-  font-size: 23px;
-  margin-top: 6px;
+
+.live-dot {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--qt-success);
 }
-a {
-  color: #006e76;
+
+.live.partial .live-dot {
+  background: var(--qt-warning);
+}
+
+.inbox {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.inbox p {
+  margin: 0;
+}
+
+/* The result of an action taken far down the list must be seen without scrolling back up. */
+.shortcuts {
+  margin: 0;
+  color: var(--qt-text-muted);
+  font-size: 12px;
+}
+
+.shortcuts kbd {
+  padding: 1px 6px;
+  border: 1px solid var(--qt-border);
+  border-radius: 4px;
+  background: var(--qt-surface);
+  font: inherit;
   font-weight: 600;
 }
-.error,
-.notice {
+
+/* Without a physical keyboard the shortcuts mean nothing. */
+@media (hover: none) {
+  .shortcuts {
+    display: none;
+  }
+}
+
+.feedback {
+  position: sticky;
+  top: 8px;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.notice,
+.no-environments {
   padding: 12px 16px;
   border-left: 4px solid;
+  border-radius: var(--qt-radius-small);
   overflow-wrap: anywhere;
 }
-.error {
-  background: #fff0f0;
-  color: #9d2424;
-}
+
 .notice {
-  background: #fff6df;
-  color: #704f00;
+  background: var(--qt-success-surface);
+  color: var(--qt-success-text);
 }
-.status {
-  display: inline-block;
-  font-size: 12px;
+
+.no-environments {
+  background: var(--qt-warning-surface);
+  color: var(--qt-warning-text);
+}
+
+.banner-detail {
+  display: block;
+  font-size: 13px;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 24px;
+}
+
+.sort {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  color: var(--qt-text-muted);
+  font-size: 13px;
+}
+
+.sort-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 32px;
+  padding: 4px 12px;
+  border: 1px solid var(--qt-border);
+  border-radius: var(--qt-radius-pill);
+  background: var(--qt-surface);
+  color: var(--qt-text);
+  font: inherit;
+  cursor: pointer;
+}
+
+.sort-pill:hover {
+  border-color: var(--qt-primary);
+}
+
+.sort-pill:focus-visible {
+  outline: 2px solid var(--qt-primary-strong);
+  outline-offset: 2px;
+}
+
+.sort-pill.selected {
+  border-color: var(--qt-primary-strong);
+  background: var(--qt-primary-surface);
+  color: var(--qt-primary-strong);
   font-weight: 600;
-  color: #704f00;
-  padding: 4px 0;
 }
-.muted {
-  color: #5c7079;
+
+.sort-pill mat-icon {
+  width: 16px;
+  height: 16px;
+  font-size: 16px;
 }
+
+.search {
+  flex: 0 1 320px;
+  min-width: 0;
+}
+
+.result-count {
+  color: var(--qt-text-muted);
+  font-size: 13px;
+}
+
+.alert-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (max-width: 960px) {
+  .stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 @media (max-width: 760px) {
   .operations-page {
     padding: 16px 10px;
   }
-  .summary-strip {
-    gap: 18px;
+
+  .search {
+    flex-basis: 100%;
   }
-  .summary-strip strong {
-    font-size: 20px;
+
+  .live-status {
+    width: 100%;
+    justify-content: space-between;
   }
 }

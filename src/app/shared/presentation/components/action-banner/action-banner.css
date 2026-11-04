@@ -1,0 +1,57 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+
+.action-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border: 1px solid;
+  border-left-width: 5px;
+  border-radius: var(--qt-radius-medium);
+}
+
+.tone-danger {
+  border-color: var(--qt-error);
+  background: var(--qt-error-surface);
+  color: var(--qt-error-text);
+}
+
+.tone-warning {
+  border-color: var(--qt-warning);
+  background: var(--qt-warning-surface);
+  color: var(--qt-warning-text);
+}
+
+.action-banner > mat-icon {
+  flex: none;
+}
+
+.message {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+button {
+  flex: none;
+  --mat-button-outlined-label-text-color: currentColor;
+  --mat-button-outlined-outline-color: currentColor;
+  color: inherit;
+}
+
+@media (max-width: 600px) {
+  .action-banner {
+    flex-wrap: wrap;
+  }
+
+  .message {
+    flex-basis: calc(100% - 36px);
+  }
+
+  button {
+    width: 100%;
+  }
+}
