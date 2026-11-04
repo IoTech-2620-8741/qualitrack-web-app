@@ -1,52 +1,122 @@
 :host {
   display: block;
   min-width: 0;
+  min-height: 100%;
+  background: #f3f4f6;
+  color: #0f172a;
 }
 
 .operations-page {
+  width: 100%;
   max-width: 1280px;
   margin: 0 auto;
   padding: 24px;
+  box-sizing: border-box;
+}
+
+p,
+a {
+  overflow-wrap: anywhere;
+  letter-spacing: 0;
 }
 
 .context-bar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
   margin-bottom: 16px;
 }
 
 .context-bar app-environment-selector {
   display: block;
+  width: 100%;
   max-width: 520px;
 }
 
+/* Contenido proyectado en el encabezado */
 .history {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  padding-top: 16px;
+  gap: 24px;
+  min-width: 0;
+  margin-top: 24px;
 }
 
+.history p {
+  margin: 0;
+}
+
+.history > p[role='status'] {
+  padding: 32px 0;
+  color: #64748b;
+  font-size: 14px;
+  text-align: center;
+}
+
+.error,
+.notice {
+  padding: 16px;
+  border: 1px solid;
+  border-radius: 12px;
+  font-size: 14px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.error {
+  background: #ffebee;
+  border-color: #f44336;
+  color: #b71c1c;
+}
+
+.notice {
+  background: #fff8e1;
+  border-color: #ffc107;
+  color: #7a5a00;
+}
+
+/* Botones proyectados (exportar, limpiar en estado vacío) */
+.operations-page a[mat-stroked-button],
+app-empty-state button[mat-stroked-button] {
+  min-height: 40px;
+  height: auto;
+  padding: 8px 16px;
+  border-color: #e2e8f0;
+  border-radius: 999px;
+  color: #0f172a;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  --mdc-outlined-button-outline-color: #e2e8f0;
+  --mdc-outlined-button-label-text-color: #0f172a;
+}
+
+.operations-page a[mat-stroked-button]:focus-visible,
+app-empty-state button:focus-visible {
+  outline: 3px solid #0d9488;
+  outline-offset: 2px;
+}
+
+/* Filtros (tarjeta) */
 .filters {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding: 16px;
-  border: 1px solid var(--qt-border);
-  border-radius: var(--qt-radius-medium);
-  background: var(--qt-surface);
-}
-
-.insights {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 16px;
+  min-width: 0;
+  padding: 24px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
 }
 
 .filter-row {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px 24px;
+  gap: 16px 24px;
+  min-width: 0;
 }
 
 .chip-group {
@@ -54,68 +124,206 @@
   flex-wrap: wrap;
   align-items: center;
   gap: 8px;
+  min-width: 0;
 }
 
 .group-label {
-  color: var(--qt-text-muted);
-  font-size: 13px;
+  flex: 0 0 100%;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.5;
+  text-transform: uppercase;
 }
 
 .search {
-  flex: 0 1 320px;
+  flex: 1 1 240px;
+  min-width: 200px;
+  max-width: 360px;
+}
+
+mat-form-field {
+  width: 100%;
   min-width: 0;
+  --mat-form-field-outlined-focus-outline-color: #0d9488;
+  --mat-form-field-outlined-focus-label-text-color: #0f766e;
+  --mat-form-field-focus-select-arrow-color: #0d9488;
+}
+
+.filters mat-form-field {
+  margin: 0;
+}
+
+input {
+  caret-color: #0d9488;
+}
+
+mat-icon[matPrefix] {
+  margin-left: 12px;
+  color: #64748b;
 }
 
 .custom-period {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
+  align-items: center;
+  gap: 16px;
 }
 
 .custom-period mat-form-field {
-  flex: 0 1 200px;
+  flex: 1 1 180px;
+  max-width: 240px;
 }
 
-.notice {
-  padding: 12px 16px;
-  border-left: 4px solid;
-  background: var(--qt-warning-surface);
-  color: var(--qt-warning-text);
-  overflow-wrap: anywhere;
+.filters button[mat-button] {
+  min-height: 40px;
+  padding: 8px 16px;
+  border: 1px solid #e2e8f0;
+  border-radius: 999px;
+  color: #0f172a;
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  --mdc-text-button-label-text-color: #0f172a;
 }
 
+.filters button[mat-button]:focus-visible {
+  outline: 3px solid #0d9488;
+  outline-offset: 2px;
+}
+
+/* Métricas y gráfico */
+.insights {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: stretch;
+  gap: 16px;
+  min-width: 0;
+}
+
+.insights > * {
+  min-width: 0;
+}
+
+/* Paginador (tarjeta) */
 .pager {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
-  color: var(--qt-text-muted);
-  font-size: 13px;
+  gap: 12px;
+  padding: 16px 24px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
 }
 
 .pager p {
-  margin: 0;
+  padding: 0;
+  color: #64748b;
+  font-size: 14px;
+  text-align: left;
 }
 
 .pager-buttons {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 8px;
 }
 
-@media (max-width: 960px) {
+.pager-buttons span {
+  color: #0f172a;
+  font-size: 14px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.pager-buttons button {
+  color: #64748b;
+  --mdc-icon-button-icon-color: #64748b;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.pager-buttons button:hover:not(:disabled) {
+  background: #f3f4f6;
+  color: #0f766e;
+}
+
+.pager-buttons button:disabled {
+  color: #94a3b8;
+}
+
+.pager-buttons button:focus-visible {
+  outline: 3px solid #0d9488;
+  outline-offset: 2px;
+}
+
+@media (max-width: 900px) {
   .insights {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  .search {
+    flex: 1 1 100%;
+    max-width: none;
   }
 }
 
 @media (max-width: 760px) {
   .operations-page {
-    padding: 16px 10px;
+    padding: 16px;
+  }
+
+  .history {
+    gap: 16px;
+  }
+
+  .context-bar app-environment-selector {
+    max-width: none;
+  }
+
+  .filters {
+    padding: 16px;
+  }
+
+  .filter-row {
+    flex-direction: column;
+    align-items: stretch;
   }
 
   .search {
-    flex-basis: 100%;
+    flex-basis: auto;
+    min-width: 0;
+    max-width: none;
+  }
+
+  .custom-period {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .custom-period mat-form-field {
+    max-width: none;
+  }
+
+  .filters button[mat-button] {
+    width: 100%;
+  }
+
+  .pager {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 16px;
+  }
+
+  .pager-buttons {
+    justify-content: space-between;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
   }
 }
