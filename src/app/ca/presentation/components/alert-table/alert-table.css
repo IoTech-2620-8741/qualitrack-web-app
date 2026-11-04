@@ -1,75 +1,95 @@
 :host {
   display: block;
   min-width: 0;
-  overflow-x: auto;
-  border: 1px solid var(--qt-border);
-  border-radius: var(--qt-radius-medium);
-  background: var(--qt-surface);
-  color: var(--qt-text);
+  color: #0f172a;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 .data-table {
   width: 100%;
-  min-width: 900px;
-  border-collapse: collapse;
-  font-size: 13px;
+  table-layout: fixed;
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+  font-size: 14px;
 }
 
 .data-table th {
-  padding: 12px 10px;
-  border-bottom: 1px solid var(--qt-border);
-  background: var(--qt-neutral-surface);
-  color: var(--qt-neutral-text);
-  font-size: 13px;
-  font-weight: 600;
+  background: #fff;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 500;
   text-align: left;
+  text-transform: uppercase;
 }
 
-.data-table td {
-  padding: 12px 10px;
-  border-bottom: 1px solid var(--qt-border);
-  overflow-wrap: break-word;
+.data-table td,
+.data-table th {
+  padding: 16px 20px;
+  border-bottom: 1px solid #e2e8f0;
+  overflow-wrap: anywhere;
   vertical-align: top;
 }
 
+.data-table td {
+  color: #0f172a;
+  font-variant-numeric: tabular-nums;
+}
+
+.data-table tbody tr {
+  transition: background-color 0.2s ease;
+}
+
 .data-table tbody tr:last-child td {
-  border-bottom: 0;
+  border-bottom: none;
 }
 
-/* Severity is also told by the chip of the row: the border only helps to scan the table (WCAG 1.4.1). */
-.data-table tr > td:first-child {
-  border-left: 5px solid transparent;
+.data-table tbody tr:hover {
+  background: #f3f4f6;
 }
 
-.data-table .severity-critical > td:first-child {
-  border-left-color: var(--qt-error);
+.data-table tr.severity-critical td:first-child {
+  box-shadow: inset 3px 0 0 #f44336;
 }
 
-.data-table .severity-warning > td:first-child {
-  border-left-color: var(--qt-warning);
-}
-
-.data-table strong {
+.data-table td strong {
+  display: block;
+  color: #0f172a;
   font-weight: 600;
 }
 
 .data-table small {
   display: block;
   margin-top: 4px;
-  color: var(--qt-text-muted);
+  color: #64748b;
   font-size: 12px;
+  line-height: 1.5;
 }
 
-.col-detected {
-  width: 110px;
-}
+.col-detected { width: 150px; }
+.col-notes    { width: 200px; }
+.col-view     { width: 96px; }
 
-.col-notes {
-  width: 20%;
-}
-
-.col-view {
-  width: 72px;
+.data-table th:last-child,
+.data-table td:last-child {
+  padding-left: 8px;
+  padding-right: 12px;
+  text-align: right;
 }
 
 .chip-cell {
@@ -77,49 +97,74 @@
 }
 
 .still-open {
-  color: var(--qt-error-text);
+  color: #7a5a00;
 }
 
 .person {
   display: inline-flex;
   align-items: center;
   gap: 8px;
+  font-weight: 500;
 }
 
 .avatar {
   display: inline-grid;
-  flex: none;
+  flex-shrink: 0;
   place-items: center;
   width: 28px;
   height: 28px;
+  background: #0f766e;
   border-radius: 50%;
-  background: var(--qt-primary-surface);
-  color: var(--qt-primary-strong);
-  font-size: 11px;
-  font-weight: 700;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
 }
 
 .notes {
-  color: var(--qt-neutral-text);
-  font-size: 13px;
-}
-
-.visually-hidden {
-  position: absolute;
-  width: 1px;
-  height: 1px;
+  display: -webkit-box;
   overflow: hidden;
-  clip: rect(0 0 0 0);
-  white-space: nowrap;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
 }
 
-@media (max-width: 760px) {
+.data-table a[mat-button] {
+  min-height: 40px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  color: #0f766e;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  --mdc-text-button-label-text-color: #0f766e;
+  transition: background-color 0.2s ease;
+}
+
+.data-table a[mat-button]:hover {
+  background: #f0fdfa;
+}
+
+.data-table a[mat-button]:focus-visible {
+  outline: 3px solid #0d9488;
+  outline-offset: 2px;
+}
+
+@media (min-width: 761px) and (max-width: 1100px) {
   :host {
-    overflow-x: visible;
+    overflow-x: auto;
   }
 
   .data-table {
-    min-width: 0;
+    min-width: 1000px;
+  }
+}
+
+@media (max-width: 760px) {
+  .data-table {
+    overflow: visible;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
   }
 
   .data-table thead {
@@ -135,37 +180,49 @@
   }
 
   .data-table tr {
-    padding: 8px 0;
-    border-bottom: 1px solid var(--qt-border);
+    margin-bottom: 12px;
+    padding: 8px 12px;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
   }
 
-  .data-table tr > td:first-child {
-    border-left-width: 0;
+  .data-table tr.severity-critical {
+    border-left: 4px solid #f44336;
   }
 
-  .severity-critical,
-  .severity-warning {
-    border-left: 5px solid;
+  .data-table tr.severity-critical td:first-child {
+    box-shadow: none;
   }
 
-  .severity-critical {
-    border-left-color: var(--qt-error);
-  }
-
-  .severity-warning {
-    border-left-color: var(--qt-warning);
+  .data-table tbody tr:hover {
+    background: #fff;
   }
 
   .data-table td {
-    padding: 6px 12px;
+    padding: 8px 0;
     border: 0;
+  }
+
+  .data-table td:last-child {
+    padding: 4px 0 0;
+    text-align: right;
   }
 
   .data-table td[data-label]::before {
     content: attr(data-label);
     display: block;
     margin-bottom: 4px;
-    color: var(--qt-text-muted);
+    color: #64748b;
     font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
   }
 }
