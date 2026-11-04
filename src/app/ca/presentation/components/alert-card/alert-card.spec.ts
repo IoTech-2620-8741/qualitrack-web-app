@@ -66,6 +66,16 @@ describe('AlertCard', () => {
     expect(element.querySelector('article')?.classList).toContain('severity-critical');
   });
 
+  it('tells how serious the alert is and in which step of its life cycle it is', () => {
+    const { element } = create(alertOf({ status: 'ACKNOWLEDGED' }));
+    const chips = Array.from(element.querySelectorAll('app-status-chip')).map((chip) =>
+      chip.textContent?.trim(),
+    );
+
+    expect(chips.some((chip) => chip?.includes('ca-alerts.severity.critical'))).toBe(true);
+    expect(chips.some((chip) => chip?.includes('ca-alerts.status.acknowledged'))).toBe(true);
+  });
+
   it('names the device by its id while its name is unknown', () => {
     const { fixture, element } = create(alertOf());
 
@@ -101,7 +111,9 @@ describe('AlertCard', () => {
 
     expect(actions()).toContain('ca-alerts.active.card.resolve');
     expect(actions()).not.toContain('ca-alerts.actions.acknowledge');
-    expect(element.querySelector('[mat-flat-button]')?.getAttribute('href')).toBe('/alerts/7');
+    expect(element.querySelector('[mat-flat-button]')?.getAttribute('href')).toBe(
+      '/alerts/7?panel=resolve',
+    );
   });
 
   it('only offers the e-mail for critical alerts', () => {
@@ -149,5 +161,32 @@ describe('AlertCard', () => {
     expect(element.querySelector('[mat-flat-button]')?.getAttribute('aria-label')).toBe(
       'ca-alerts.actions.acknowledge: AIR_QUALITY · Monitor PROD',
     );
+  });
+
+  it('names who attends the alert when it is known', () => {
+    const { element, fixture } = create(alertOf({ status: 'ACKNOWLEDGED' }));
+    expect(element.querySelector('.meta')?.textContent).toContain(
+      'ca-alerts.active.card.attending',
+    );
+    expect(element.querySelector('.meta')?.textContent).not.toContain('attending-by');
+
+    fixture.componentRef.setInput('attendedBy', 'Billy Ruiz');
+    fixture.detectChanges();
+
+    expect(element.querySelector('.meta')?.textContent).toContain(
+      'ca-alerts.active.card.attending-by',
+    );
+  });
+
+  it('can take the focus and knows what is inside it', () => {
+    const { element, fixture } = create(alertOf());
+    document.body.appendChild(element);
+
+    fixture.componentInstance.focus();
+
+    expect(document.activeElement).toBe(element.querySelector('.alert-card'));
+    expect(fixture.componentInstance.contains(element.querySelector('h2')!)).toBe(true);
+    expect(fixture.componentInstance.contains(document.body)).toBe(false);
+    element.remove();
   });
 });

@@ -27,25 +27,31 @@ const alerts = () => ({
   2: [alertOf(102, 2, 12, { origin: 'CONTAINER', parameterName: 'TEMPERATURE', recordedValue: 12.5,
     thresholdValue: 8, unit: '°C', timestamp: '2026-10-04T19:04:00Z' })],
   3: [alertOf(103, 3, 13, { status: 'ACKNOWLEDGED', recordedValue: 935, deviationCount: 4,
-    timestamp: '2026-10-03T14:00:00Z', acknowledgedBy: 27, acknowledgedAt: '2026-10-03T14:14:00Z',
+    timestamp: '2026-10-03T14:00:00Z', acknowledgedBy: 12, acknowledgedAt: '2026-10-03T14:14:00Z',
     normalizedAt: '2026-10-05T05:15:00Z' }),
   alertOf(104, 3, 13, { severity: 'WARNING', parameterName: 'HUMIDITY', recordedValue: 71, thresholdValue: 65,
     unit: '%', timestamp: '2026-10-08T14:00:00Z' })],
 });
 
-const newPlatformState = () => ({ alerts: alerts(), failing: new Set(), acknowledgements: [], acknowledgeStatus: 200 });
+const resolvedAlert = alertOf(105, 3, 13, { status: 'RESOLVED', timestamp: '2026-10-03T14:00:00Z', acknowledgedBy: 12, acknowledgedAt: '2026-10-03T14:14:00Z',
+  resolvedBy: 27, resolvedAt: '2026-10-03T18:00:00Z', resolutionNotes: 'Se reemplazó el filtro HEPA del almacén.' });
+
+const newPlatformState = () => ({ alerts: alerts(), failing: new Set(), acknowledgements: [], acknowledgeStatus: 200, resolutions: [] });
 
 /** What the platform of the fixture answers to a request. */
-function answerOf(state, method, path) {
+function answerOf(state, method, path, requestBody) {
   let body = [];
   let status = 200;
   const environmentAlerts = path.match(/environments\/(\d+)\/deviation-alerts$/);
   const acknowledgement = path.match(/deviation-alerts\/(\d+)\/acknowledgements$/);
+  const resolution = path.match(/deviation-alerts\/(\d+)\/resolutions$/);
   const alertDetail = path.match(/deviation-alerts\/(\d+)$/);
   if (path.endsWith('/users/me/onboarding')) body = { userId: 27, laboratoryId: 42, subscriptionId: 73, subscriptionStatus: 'ACTIVE', nextStep: 'READY' };
   else if (path.endsWith('/users/me/profile')) body = { userId: 27, staffId: null, username: 'fixture', email: null, roles: [], fullName: 'Alerts Fixture', dni: null, phoneNumber: null, location: null, position: null, hasPhoto: false };
   else if (path.endsWith('/laboratories/42')) body = { id: 42, name: 'Multilab', ownerId: 27 };
   else if (path.endsWith('/laboratories/42/environments')) body = environments;
+  else if (path.endsWith('/laboratories/42/staff')) body = [{ fullName: 'Billy Ruiz', userId: 12 }];
+  else if (path.endsWith('/api/v1/users')) body = [{ id: 12, username: 'billy@lab.pe' }, { id: 27, username: 'fixture@lab.pe' }];
   else if (path.endsWith('/equipments')) body = devices;
   else if (environmentAlerts) {
     const environmentId = Number(environmentAlerts[1]);
@@ -62,8 +68,13 @@ function answerOf(state, method, path) {
     } else {
       body = { details: 'Already attended' };
     }
+  } else if (resolution && method === 'POST') {
+    const alertId = Number(resolution[1]);
+    state.resolutions.push({ alertId, notes: requestBody?.resolutionNotes });
+    body = Object.values(state.alerts).flat().find((item) => item.id === alertId);
+    Object.assign(body, { status: 'RESOLVED', resolvedBy: 27, resolvedAt: new Date().toISOString(), resolutionNotes: requestBody?.resolutionNotes });
   } else if (alertDetail) {
-    body = Object.values(state.alerts).flat().find((item) => item.id === Number(alertDetail[1]));
+    body = [...Object.values(state.alerts).flat(), resolvedAlert].find((item) => item.id === Number(alertDetail[1]));
   }
   return { status, body };
 }
@@ -81,7 +92,7 @@ async function openInbox(browser, { width = 1280, height = 900, roles = '["ROLE_
   if (intercepted) {
     await context.route('**/api/v1/**', async (route) => {
       const request = route.request();
-      const { status, body } = answerOf(state, request.method(), new URL(request.url()).pathname);
+      const { status, body } = answerOf(state, request.method(), new URL(request.url()).pathname, request.postDataJSON());
       await route.fulfill({ status, contentType: 'application/json', body: JSON.stringify(body) });
     });
   }
@@ -98,8 +109,8 @@ async function openInbox(browser, { width = 1280, height = 900, roles = '["ROLE_
 const titles = (page) => page.locator('app-alert-card h2').allInnerTexts();
 const cardsShown = (page, count) =>
   page.waitForFunction((expected) => document.querySelectorAll('app-alert-card').length === expected, count);
-const stepShown = (page, device, step) =>
-  page.locator('app-alert-card', { hasText: device }).locator('[aria-current="step"]', { hasText: step }).waitFor();
+const statusShown = (page, device, status) =>
+  page.locator('app-alert-card', { hasText: device }).locator('app-status-chip', { hasText: status }).waitFor();
 const attendButton = (page, device) =>
   page.locator('app-alert-card', { hasText: device }).getByRole('button', { name: /Registrar atención/ });
 /** Elements of the inbox past the right edge of the page, which the scrolling container hides; the tabs scroll by themselves. */
@@ -167,20 +178,20 @@ try {
   {
     const { context, page, state, errors } = await openInbox(browser);
     await attendButton(page, 'Refrigerador').click();
-    await stepShown(page, 'Refrigerador', 'En atención');
+    await statusShown(page, 'Refrigerador', 'En atención');
     assert.deepEqual(state.acknowledgements, []);
     await page.screenshot({ path: `${directory}/undo-window.png` });
     await page.waitForFunction(() => /^Resolver: .*Refrigerador/.test(document.activeElement?.getAttribute('aria-label') ?? ''));
     await page.getByRole('button', { name: 'Deshacer' }).click();
     await page.locator('app-undo-toast').waitFor({ state: 'detached' });
-    await stepShown(page, 'Refrigerador', 'Abierta');
+    await statusShown(page, 'Refrigerador', 'Abierta');
     await page.waitForTimeout(5500);
     assert.deepEqual(state.acknowledgements, [], 'Undone attention must never reach the platform');
 
     await attendButton(page, 'Refrigerador').click();
     await page.locator('app-undo-toast').waitFor({ state: 'detached', timeout: 7000 });
     assert.deepEqual(state.acknowledgements, [102]);
-    await stepShown(page, 'Refrigerador', 'En atención');
+    await statusShown(page, 'Refrigerador', 'En atención');
     assert.deepEqual(errors, []);
     await context.close();
   }
@@ -237,7 +248,7 @@ try {
     await attendButton(page, 'Refrigerador').click();
     await page.locator('app-alert-card', { hasText: 'Refrigerador' }).getByRole('link', { name: /Ver detalle/ }).click();
     await page.waitForURL('**/alerts/102');
-    await page.getByRole('heading', { level: 1 }).waitFor();
+    await page.getByRole('dialog').waitFor();
     assert.deepEqual(state.acknowledgements, [102]);
     await context.close();
   }
@@ -255,7 +266,7 @@ try {
       const banner = document.querySelector('app-error-banner').getBoundingClientRect();
       return banner.top >= 0 && banner.bottom <= window.innerHeight;
     });
-    await stepShown(page, 'Refrigerador', 'En atención');
+    await statusShown(page, 'Refrigerador', 'En atención');
     await context.close();
   }
 
@@ -317,6 +328,189 @@ try {
     );
     await page.waitForTimeout(300);
     await page.screenshot({ path: `${directory}/one-environment.png` });
+    await context.close();
+  }
+
+  // The detail opens over the list, keeps the focus and gives it back.
+  {
+    const { context, page, errors } = await openInbox(browser, { height: 500 });
+    await page.getByRole('searchbox').fill('alm-mp');
+    const details = page.locator('app-alert-card', { hasText: 'ALM-MP' }).first().getByRole('link', { name: /Ver detalle/ });
+    await details.focus();
+    await details.click();
+    await page.waitForURL('**/alerts/103');
+    const dialog = page.getByRole('dialog');
+    await dialog.getByText('En atención por Billy Ruiz').first().waitFor();
+    assert.equal(await page.getByRole('searchbox').inputValue(), 'alm-mp', 'The list stays as it was');
+    assert.ok(await page.locator('app-alert-card').count(), 'The list stays behind');
+    await page.waitForFunction(() => document.activeElement?.classList.contains('title'));
+    assert.match(await dialog.getAttribute('aria-labelledby'), /side-panel-title/);
+    assert.match(await page.evaluate(() => document.activeElement.textContent), /ALM-MP/);
+
+    const toolbarIsCovered = await page.evaluate(() => {
+      const bell = document.querySelector('app-notification-bell').getBoundingClientRect();
+      return !document.elementFromPoint(bell.x + bell.width / 2, bell.y + bell.height / 2).closest('.toolbar');
+    });
+    assert.ok(toolbarIsCovered, 'Nothing behind the panel can be used');
+
+    for (let press = 0; press < 25; press++) {
+      await page.keyboard.press('Tab');
+      assert.ok(await page.evaluate(() => Boolean(document.activeElement.closest('[role="dialog"]'))), 'The focus stays in the panel');
+    }
+    await page.screenshot({ path: `${directory}/panel-1280.png` });
+
+    await page.keyboard.press('Escape');
+    await page.waitForURL('**/alerts');
+    await dialog.waitFor({ state: 'detached' });
+    await page.waitForFunction(() => /Ver detalle/.test(document.activeElement?.textContent ?? ''));
+    assert.deepEqual(errors, []);
+    await context.close();
+  }
+
+  // Resolving with a template, without leaving the list.
+  {
+    const { context, page, state, errors } = await openInbox(browser);
+    await page.locator('app-alert-card', { hasText: 'ALM-MP' }).first().getByRole('link', { name: /^Resolver/ }).click();
+    await page.waitForURL('**/alerts/103?panel=resolve');
+    await page.waitForFunction(() => document.activeElement?.tagName === 'TEXTAREA');
+    const notes = page.getByRole('dialog').locator('textarea');
+
+    await notes.fill('Corto');
+    await page.getByRole('dialog').getByRole('button', { name: 'Resolver' }).click();
+    await page.getByText('Escribe entre 10 y 500 caracteres.').waitFor();
+    assert.deepEqual(state.resolutions, []);
+
+    await notes.fill('');
+    await page.getByRole('button', { name: 'Filtro reemplazado' }).click();
+    assert.match(await notes.inputValue(), /Se reemplazó el filtro/);
+    await page.getByRole('button', { name: 'Sensor recalibrado' }).click();
+    assert.match(await notes.inputValue(), /filtro.*recalibró el sensor/, 'A template never loses what is written');
+    await page.screenshot({ path: `${directory}/panel-resolve.png` });
+    await page.getByRole('dialog').getByRole('button', { name: 'Resolver' }).click();
+
+    await page.getByRole('dialog').waitFor({ state: 'detached' });
+    await page.waitForURL('**/alerts');
+    assert.equal(state.resolutions[0].alertId, 103);
+    await page.getByText('La alerta quedó resuelta.').waitFor();
+    await cardsShown(page, 3);
+    await page.waitForFunction(() => document.activeElement?.classList.contains('alert-card'));
+    assert.deepEqual(errors, []);
+    await context.close();
+  }
+
+  // Attention registered in the panel can be undone there too, and the toast can be reached.
+  {
+    const { context, page, state } = await openInbox(browser, { width: 375, height: 700 });
+    await page.locator('app-alert-card', { hasText: 'Refrigerador' }).getByRole('link', { name: /Ver detalle/ }).click();
+    const dialog = page.getByRole('dialog');
+    await dialog.getByText(/Pendiente: nadie/).waitFor();
+    await page.waitForTimeout(300); // The panel finishes sliding in.
+    assert.equal(Math.round((await dialog.boundingBox()).width), 375, 'The panel takes the whole width of a phone');
+    assert.deepEqual(await page.evaluate(() =>
+      [...document.querySelectorAll('[role="dialog"] *')].filter((element) => element.getBoundingClientRect().right > innerWidth + 1).map((element) => element.tagName)), []);
+    await page.screenshot({ path: `${directory}/panel-375.png` });
+
+    await dialog.getByRole('button', { name: /Registrar atención/ }).click();
+    await dialog.getByText('En atención por Alerts Fixture').waitFor();
+    await page.locator('app-undo-toast').waitFor();
+    const toastOnTop = await page.evaluate(() => {
+      const toast = document.querySelector('app-undo-toast .undo-action').getBoundingClientRect();
+      return Boolean(document.elementFromPoint(toast.x + toast.width / 2, toast.y + toast.height / 2).closest('app-undo-toast'));
+    });
+    assert.ok(toastOnTop, 'The toast is not hidden behind the panel');
+    let reached = false;
+    for (let press = 0; press < 40 && !reached; press++) {
+      await page.keyboard.press('Tab');
+      reached = await page.evaluate(() => Boolean(document.activeElement.closest('app-undo-toast')));
+    }
+    assert.ok(reached, 'The undo button can be reached with the keyboard');
+    await page.keyboard.press('Enter');
+    await dialog.getByRole('button', { name: /Registrar atención/ }).waitFor();
+    assert.deepEqual(state.acknowledgements, []);
+    await context.close();
+  }
+
+  // A link from outside opens the detail over the list; a resolved alert only reads and closes back to where it came from.
+  // Loading the page again goes back to English, and the language can no longer be changed from behind the panel.
+  {
+    const { context, page, errors } = await openInbox(browser);
+    await page.goto(origin + '/alerts/105');
+    const dialog = page.getByRole('dialog');
+    await dialog.getByText('Resolved by Alerts Fixture').waitFor();
+    await dialog.getByText('Se reemplazó el filtro HEPA del almacén.').waitFor();
+    await dialog.getByText('In progress by Billy Ruiz').waitFor();
+    assert.equal(await dialog.locator('form').count(), 0);
+    assert.equal(await dialog.getByRole('button', { name: /attention/i }).count(), 0);
+    await page.locator('app-alert-card').first().waitFor();
+    await dialog.getByRole('button', { name: 'Close' }).click();
+    await page.waitForURL('**/alerts');
+    await dialog.waitFor({ state: 'detached' });
+    await page.locator('app-alert-card').first().waitFor();
+
+    await page.getByRole('tab', { name: /History/ }).click();
+    await page.waitForURL('**/alerts/history');
+    await page.locator('app-environment-selector mat-select').click();
+    await page.getByRole('option', { name: /CAD-FRIO-01/ }).click();
+    await page.locator('app-alert-table a[href*="/alerts/102"]').click();
+    await page.waitForURL('**/alerts/102');
+    await dialog.waitFor();
+    await dialog.getByRole('button', { name: 'Close' }).click();
+    await page.waitForURL('**/alerts/history**');
+    await dialog.waitFor({ state: 'detached' });
+
+    await page.goto(origin + '/alerts/deviation-detail/103');
+    await page.waitForURL('**/alerts/103');
+    await dialog.waitFor();
+    assert.deepEqual(errors, []);
+    await context.close();
+  }
+
+  // An alert that does not exist says so, and the list is still there.
+  {
+    const { context, page } = await openInbox(browser, { api: async () => {} });
+    await context.route('**/deviation-alerts/999', (route) => route.fulfill({ status: 404, contentType: 'application/json', body: '{}' }));
+    await page.goto(origin + '/alerts/999');
+    await page.getByRole('dialog').getByRole('alert').waitFor();
+    await page.locator('app-alert-card').first().waitFor();
+    await page.keyboard.press('Escape');
+    await page.waitForURL('**/alerts');
+    assert.equal(await page.locator('.feedback').count(), 0, 'The failure goes away with the panel');
+    await context.close();
+  }
+
+  // The environment chosen survives opening and closing the detail.
+  {
+    const { context, page, state } = await openInbox(browser);
+    await page.goto(origin + '/alerts?environmentId=2');
+    await cardsShown(page, 1);
+    await page.locator('app-alert-card .actions a').first().click();
+    await page.waitForURL('**/alerts/102?environmentId=2');
+    await page.keyboard.press('Escape');
+    await page.waitForURL('**/alerts?environmentId=2');
+    await cardsShown(page, 1);
+    assert.equal(state.resolutions.length, 0);
+    await context.close();
+  }
+
+  // With the focus on the list, the keyboard goes through the cards and attends.
+  {
+    const { context, page, state } = await openInbox(browser);
+    const focusedCard = () => page.evaluate(() => document.activeElement.closest('app-alert-card')?.querySelector('h2').textContent);
+    await page.keyboard.press('j');
+    assert.equal(await focusedCard(), undefined, 'Nothing happens away from the list');
+    await page.locator('app-alert-card').first().getByRole('link', { name: /Ver detalle/ }).focus();
+    assert.match(await focusedCard(), /Refrigerador/);
+    await page.keyboard.press('j');
+    assert.match(await focusedCard(), /PROD-SOL/);
+    await page.keyboard.press('k');
+    assert.match(await focusedCard(), /Refrigerador/);
+    await page.keyboard.press('a');
+    await statusShown(page, 'Refrigerador', 'En atención');
+    await page.locator('app-undo-toast').waitFor();
+    assert.deepEqual(state.acknowledgements, []);
+    await page.getByRole('searchbox').focus();
+    await page.keyboard.type('aj');
+    assert.equal(await page.getByRole('searchbox').inputValue(), 'aj', 'Typing is typing');
     await context.close();
   }
 

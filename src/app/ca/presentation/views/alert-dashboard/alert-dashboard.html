@@ -38,7 +38,7 @@
     [environmentId]="environmentId()"
   >
     <div alertsSection class="inbox">
-      @if (store.error() || store.notice()) {
+      @if ((store.error() || store.notice()) && !detailOpen()) {
         <div class="feedback">
           @if (store.error(); as error) {
             <app-error-banner
@@ -216,13 +216,26 @@
             </p>
           }
 
-          <ul class="alert-list">
+          <p class="shortcuts">
+            {{ 'ca-alerts.active.shortcuts.label' | translate }}
+            <kbd>J</kbd> <kbd>K</kbd> {{ 'ca-alerts.active.shortcuts.move' | translate }}
+            @if (store.canAttend()) {
+              · <kbd>A</kbd> {{ 'ca-alerts.actions.acknowledge' | translate }}
+            }
+          </p>
+
+          <ul
+            class="alert-list"
+            [attr.aria-keyshortcuts]="store.canAttend() ? 'J K A' : 'J K'"
+            (keydown)="handleListShortcut($event)"
+          >
             @for (alert of visibleAlerts(); track alert.id) {
               <li>
                 <app-alert-card
                   [alert]="alert"
                   [deviceName]="store.deviceName(alert.equipmentId)"
                   [environmentLabel]="environmentLabelOf(alert)"
+                  [attendedBy]="attendedByOf(alert)"
                   [canAttend]="store.canAttend()"
                   [saving]="store.saving()"
                   [isNew]="store.newAlertIds().has(alert.id)"
@@ -248,4 +261,6 @@
       }
     </div>
   </app-alerts-page-header>
+
+  <router-outlet (activate)="detailOpen.set(true)" (deactivate)="detailClosed()" />
 </main>

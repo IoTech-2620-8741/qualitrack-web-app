@@ -1,5 +1,7 @@
 <article
+  #card
   class="alert-card"
+  tabindex="-1"
   [class]="'severity-' + alert().severity.toLowerCase()"
   [class.is-new]="isNew()"
 >
@@ -83,63 +85,66 @@
         <span>
           <mat-icon aria-hidden="true">pan_tool</mat-icon>
           {{
-            'ca-alerts.active.card.attending'
-              | translate: { time: (alert().acknowledgedAt | relativeTime: now()) }
+            (attendedBy()
+              ? 'ca-alerts.active.card.attending-by'
+              : 'ca-alerts.active.card.attending'
+            )
+              | translate
+                : { name: attendedBy(), time: (alert().acknowledgedAt | relativeTime: now()) }
           }}
         </span>
       }
     </p>
   </div>
 
-  <div class="progress">
-    <app-alert-lifecycle [status]="alert().status" />
-
-    <div class="actions">
-      <a
-        mat-button
-        [routerLink]="['/alerts', alert().id]"
-        [attr.aria-label]="('ca-alerts.actions.view-details' | translate) + ': ' + title()"
-        (click)="opening.emit()"
-      >
-        {{ 'ca-alerts.actions.view-details' | translate }}
-      </a>
-      @if (canAttend()) {
-        @if (alert().isOpen && alert().severity === 'CRITICAL') {
-          <button
-            mat-stroked-button
-            type="button"
-            [disabled]="saving()"
-            [attr.aria-label]="('ca-alerts.active.card.notify' | translate) + ': ' + title()"
-            (click)="notify.emit()"
-          >
-            <mat-icon aria-hidden="true">forward_to_inbox</mat-icon>
-            {{ 'ca-alerts.active.card.notify' | translate }}
-          </button>
-        }
-        @if (alert().status === 'UNRESOLVED') {
-          <button
-            #primaryAction
-            mat-flat-button
-            type="button"
-            [attr.aria-label]="('ca-alerts.actions.acknowledge' | translate) + ': ' + title()"
-            (click)="attend.emit()"
-          >
-            <mat-icon aria-hidden="true">pan_tool</mat-icon>
-            {{ 'ca-alerts.actions.acknowledge' | translate }}
-          </button>
-        } @else {
-          <a
-            #primaryAction
-            mat-flat-button
-            [routerLink]="['/alerts', alert().id]"
-            [attr.aria-label]="('ca-alerts.active.card.resolve' | translate) + ': ' + title()"
-            (click)="opening.emit()"
-          >
-            <mat-icon aria-hidden="true">task_alt</mat-icon>
-            {{ 'ca-alerts.active.card.resolve' | translate }}
-          </a>
-        }
+  <div class="actions">
+    <a
+      mat-button
+      [routerLink]="['/alerts', alert().id]"
+      queryParamsHandling="preserve"
+      [attr.aria-label]="('ca-alerts.actions.view-details' | translate) + ': ' + title()"
+      (click)="opening.emit()"
+    >
+      {{ 'ca-alerts.actions.view-details' | translate }}
+    </a>
+    @if (canAttend()) {
+      @if (alert().isOpen && alert().severity === 'CRITICAL') {
+        <button
+          mat-stroked-button
+          type="button"
+          [disabled]="saving()"
+          [attr.aria-label]="('ca-alerts.active.card.notify' | translate) + ': ' + title()"
+          (click)="notify.emit()"
+        >
+          <mat-icon aria-hidden="true">forward_to_inbox</mat-icon>
+          {{ 'ca-alerts.active.card.notify' | translate }}
+        </button>
       }
-    </div>
+      @if (alert().status === 'UNRESOLVED') {
+        <button
+          #primaryAction
+          mat-flat-button
+          type="button"
+          [attr.aria-label]="('ca-alerts.actions.acknowledge' | translate) + ': ' + title()"
+          (click)="attend.emit()"
+        >
+          <mat-icon aria-hidden="true">pan_tool</mat-icon>
+          {{ 'ca-alerts.actions.acknowledge' | translate }}
+        </button>
+      } @else {
+        <a
+          #primaryAction
+          mat-flat-button
+          [routerLink]="['/alerts', alert().id]"
+          [queryParams]="{ panel: 'resolve' }"
+          queryParamsHandling="merge"
+          [attr.aria-label]="('ca-alerts.active.card.resolve' | translate) + ': ' + title()"
+          (click)="opening.emit()"
+        >
+          <mat-icon aria-hidden="true">task_alt</mat-icon>
+          {{ 'ca-alerts.active.card.resolve' | translate }}
+        </a>
+      }
+    }
   </div>
 </article>

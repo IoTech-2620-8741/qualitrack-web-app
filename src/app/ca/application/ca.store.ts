@@ -99,7 +99,7 @@ interface PendingAttention {
  * store.loadEnvironmentAlerts(environmentId, { active: true });
  * console.log(store.openAlertsCount());
  *
- * store.acknowledgeAlert(alertId);
+ * store.startAttention(alertId);
  * ```
  */
 @Injectable({ providedIn: 'root' })
@@ -126,6 +126,8 @@ export class CaStore {
   private readonly _newAlertIdsSignal = signal<ReadonlySet<number>>(new Set());
   private readonly _refreshingSignal = signal(false);
   private readonly _pendingAttentionsSignal = signal<ReadonlyMap<number, PendingAttention>>(new Map());
+  private readonly _selectedAlertLoadingSignal = signal(false);
+  private readonly _peopleSignal = signal<ReadonlyMap<number, string>>(new Map());
 
   /** Alerts shown, with the attention that is still waiting to reach the platform already applied. */
   readonly alerts = computed(() => {
@@ -135,6 +137,9 @@ export class CaStore {
       ? alerts.map((alert) => this.withPendingAttention(alert, pendingAttentions.get(alert.id)))
       : alerts;
   });
+
+  /** Whether the detail of an alert is being read; the list behind it stays as it is. */
+  readonly selectedAlertLoading = this._selectedAlertLoadingSignal.asReadonly();
 
   /** Environments whose open alerts could not be read in the latest load; what they showed before is kept. */
   readonly unavailableEnvironmentIds = this._unavailableEnvironmentIdsSignal.asReadonly();
@@ -239,6 +244,7 @@ export class CaStore {
       this.iam.currentUserId();
       this._unreadNotificationsSignal.set(0);
       this._notificationsSignal.set([]);
+      this._peopleSignal.set(new Map());
     });
     this.iam.beforeSignOut(() => this.sendPendingAttentions());
     fromEvent(inject(DOCUMENT).defaultView!, 'pagehide')
@@ -316,7 +322,7 @@ export class CaStore {
       const selectedAlert = this.selectedAlert();
 
       return selectedAlert?.id === id
-        ? selectedAlert
+        ? this.withPendingAttention(selectedAlert, this._pendingAttentionsSignal().get(id))
         : this.alerts().find((alert) => alert.id === id);
     });
   }
@@ -345,6 +351,31 @@ export class CaStore {
       .getAlertDevices(this.iam.requireLaboratoryId())
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({ next: (devices) => this._devicesSignal.set(devices), error: () => this._devicesSignal.set([]) });
+  }
+
+  /**
+   * Name of a person of the laboratory, or null while it is unknown.
+   *
+   * @param userId - The account of the person
+   * @returns The name, or `null` when there is no account or it is not among the loaded people
+   */
+  personName(userId: number | null): string | null {
+    return userId === null ? null : (this._peopleSignal().get(userId) ?? null);
+  }
+
+  /**
+   * Reads the people of the laboratory, so that alerts can name who attended or resolved them.
+   *
+   * @remarks
+   * People join and leave, so it reads them every time it is asked. What was known is kept until the answer arrives.
+   */
+  loadPeople(): void {
+    this.caApi
+      .getAlertPeople(this.iam.requireLaboratoryId())
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((people) =>
+        this._peopleSignal.set(new Map(people.map((person) => [person.id, person.name]))),
+      );
   }
 
   /**
@@ -477,8 +508,7 @@ export class CaStore {
    * is not waiting for attention.
    */
   startAttention(alertId: number): void {
-    const isWaiting = this.alerts().some((alert) => alert.id === alertId && alert.status === 'UNRESOLVED');
-    if (!isWaiting) return;
+    if (this.getAlertById(alertId)()?.status !== 'UNRESOLVED') return;
     this._errorSignal.set(null);
     this._noticeSignal.set(null);
     this.setPendingAttention(alertId, { acknowledgedAt: new Date().toISOString(), settled: null });
@@ -533,7 +563,7 @@ export class CaStore {
     if (!alertId) return;
     this.reloadAlert.next();
     this._selectedAlertSignal.set(null);
-    this._loadingSignal.set(true);
+    this._selectedAlertLoadingSignal.set(true);
     this._errorSignal.set(null);
     this._noticeSignal.set(null);
 
@@ -546,25 +576,26 @@ export class CaStore {
       .subscribe({
         next: (alert) => {
           this.replaceAlert(alert);
-          this._loadingSignal.set(false);
+          this._selectedAlertLoadingSignal.set(false);
         },
         error: (err) => {
           this._errorSignal.set(alertError(err));
-          this._loadingSignal.set(false);
+          this._selectedAlertLoadingSignal.set(false);
         },
       });
   }
 
   /**
-   * Registers that the authenticated user attends the alert (US87).
-   *
-   * @param alertId - The unique numeric identifier of the deviation alert.
+   * Forgets the alert whose detail was open, stopping its reading if it did not finish.
    *
    * @remarks
-   * Confirms with `ca-alerts.acknowledged`. Ignored while another acknowledgement or resolution is being saved.
+   * Its failures go with it, but a confirmation stays, because it tells what just happened to whoever is back on the list.
    */
-  acknowledgeAlert(alertId: number): void {
-    this.attend(alertId, this.caApi.acknowledgeAlert(alertId), 'ca-alerts.acknowledged');
+  clearSelectedAlert(): void {
+    this.reloadAlert.next();
+    this._selectedAlertSignal.set(null);
+    this._selectedAlertLoadingSignal.set(false);
+    this._errorSignal.set(null);
   }
 
   /**
@@ -577,7 +608,11 @@ export class CaStore {
    * Confirms with `ca-alerts.resolved`. Ignored while another acknowledgement or resolution is being saved.
    */
   resolveAlert(alertId: number, request: ResolveAlertRequest): void {
-    this.attend(alertId, this.caApi.resolveAlert(alertId, request), 'ca-alerts.resolved');
+    this.attend(
+      alertId,
+      this.sendAttention(alertId).pipe(switchMap(() => this.caApi.resolveAlert(alertId, request))),
+      'ca-alerts.resolved',
+    );
   }
 
   /**
@@ -861,7 +896,14 @@ export class CaStore {
         }),
       )
       .subscribe({
-        next: (updatedAlert) => this.replaceListedAlert(updatedAlert),
+        next: (updatedAlert) => {
+          const selectedAlert = this._selectedAlertSignal();
+          if (selectedAlert?.id === updatedAlert.id) {
+            updatedAlert.relatedActuations = selectedAlert.relatedActuations;
+            this._selectedAlertSignal.set(updatedAlert);
+          }
+          this.replaceListedAlert(updatedAlert);
+        },
         error: (error) => this.handleRefusedAttention(alertId, error),
       });
     return settled;
@@ -882,7 +924,12 @@ export class CaStore {
     this.caApi
       .getAlertById(alertId)
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({ next: (alert) => this.replaceListedAlert(alert) });
+      .subscribe({
+        next: (alert) => {
+          if (this._selectedAlertSignal()?.id === alert.id) this._selectedAlertSignal.set(alert);
+          this.replaceListedAlert(alert);
+        },
+      });
   }
 
   private setPendingAttention(alertId: number, pendingAttention: PendingAttention): void {

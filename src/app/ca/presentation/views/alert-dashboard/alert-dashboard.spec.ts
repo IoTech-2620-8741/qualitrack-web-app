@@ -13,11 +13,13 @@ import {
 } from '../../../../shared/presentation/components/undo-toast/undo-toast';
 import { AlertDevice } from '../../../domain/model/alert-device.entity';
 import { AlertEnvironment } from '../../../domain/model/alert-environment.entity';
+import { AlertPerson } from '../../../domain/model/alert-person.entity';
 import {
   AlertSeverity,
   AlertStatus,
   DeviationAlert,
 } from '../../../domain/model/deviation-alert.entity';
+import { CaStore } from '../../../application/ca.store';
 import { CaApi } from '../../../infrastructure/ca-api';
 import { AlertDashboard } from './alert-dashboard';
 
@@ -57,13 +59,14 @@ const attendedCritical = alertOf(
 );
 const warning = alertOf(4, 2, 'WARNING', 'UNRESOLVED', '2026-10-01T10:00:00Z');
 
-@Component({ template: '' })
+@Component({ template: '<p class="detail-page"></p>' })
 class AlertDetailPage {}
 
 describe('AlertDashboard', () => {
   const api = {
     getAlertEnvironments: vi.fn(),
     getAlertDevices: vi.fn(),
+    getAlertPeople: vi.fn(),
     getEnvironmentAlerts: vi.fn(),
     acknowledgeAlert: vi.fn(),
     getAlertById: vi.fn(),
@@ -95,6 +98,9 @@ describe('AlertDashboard', () => {
           ),
         ),
       );
+    api.getAlertPeople
+      .mockReset()
+      .mockReturnValue(of([new AlertPerson({ id: 12, name: 'Billy Ruiz' })]));
     answer({ 1: [newerCritical, attendedCritical], 2: [olderCritical, warning] });
     api.acknowledgeAlert.mockReset();
     api.getAlertById.mockReset();
@@ -105,8 +111,11 @@ describe('AlertDashboard', () => {
     TestBed.configureTestingModule({
       providers: [
         provideRouter([
-          { path: 'alerts', component: AlertDashboard },
-          { path: 'alerts/:alertId', component: AlertDetailPage },
+          {
+            path: 'alerts',
+            component: AlertDashboard,
+            children: [{ path: ':alertId', component: AlertDetailPage }],
+          },
         ]),
         provideTranslateService(),
         { provide: CaApi, useValue: api },
@@ -454,6 +463,139 @@ describe('AlertDashboard', () => {
 
       expect(liveAnnouncer.announce).toHaveBeenCalledTimes(1);
       expect(element.querySelectorAll('.is-new')).toHaveLength(1);
+    });
+  });
+
+  describe('detail over the list', () => {
+    it('opens over the list, which is not read again and keeps its environment', async () => {
+      const { harness, element } = await open('/alerts?environmentId=1');
+      api.getEnvironmentAlerts.mockClear();
+      const card = element.querySelector('app-alert-card')!;
+
+      card.querySelector<HTMLAnchorElement>('.actions a')!.click();
+      await harness.fixture.whenStable();
+      harness.detectChanges();
+
+      expect(TestBed.inject(Router).url).toMatch(/^\/alerts\/\d+\?environmentId=1$/);
+      expect(element.querySelector('.detail-page')).not.toBeNull();
+      expect(element.querySelector('app-alert-card')).toBe(card);
+      expect(api.getEnvironmentAlerts).not.toHaveBeenCalled();
+    });
+
+    it('leaves the messages to the detail while it is open', async () => {
+      const { harness, element } = await open('/alerts/2');
+      TestBed.inject(CaStore).setError('ca-alerts.errors.failed');
+      harness.detectChanges();
+      expect(element.querySelector('.feedback')).toBeNull();
+
+      await TestBed.inject(Router).navigateByUrl('/alerts');
+      await harness.fixture.whenStable();
+      harness.detectChanges();
+      expect(element.querySelector('.feedback')).not.toBeNull();
+    });
+  });
+
+  describe('people', () => {
+    it('names who attends each alert', async () => {
+      answer({
+        1: [new DeviationAlert({ ...attendedCritical, acknowledgedBy: 12 })],
+        2: [],
+      });
+      const { element } = await open();
+      expect(api.getAlertPeople).toHaveBeenCalledWith(42);
+      expect(element.querySelector('app-alert-card .meta')?.textContent).toContain(
+        'ca-alerts.active.card.attending-by',
+      );
+    });
+  });
+
+  describe('keyboard shortcuts', () => {
+    async function openAttached() {
+      const opened = await open();
+      document.body.appendChild(opened.element);
+      const articles = () =>
+        Array.from(opened.element.querySelectorAll<HTMLElement>('app-alert-card article'));
+      const press = (target: Element, key: string, init: KeyboardEventInit = {}) => {
+        const event = new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true, ...init });
+        target.dispatchEvent(event);
+        opened.harness.detectChanges();
+        return event;
+      };
+      return { ...opened, articles, pressKey: press };
+    }
+
+    afterEach(() => document.body.querySelectorAll('app-alert-dashboard').forEach((item) => item.remove()));
+
+    it('moves between the cards with J and K, without leaving the list', async () => {
+      const { articles, pressKey } = await openAttached();
+      const [first, second] = articles();
+
+      expect(pressKey(first, 'j').defaultPrevented).toBe(true);
+      expect(document.activeElement).toBe(second);
+      pressKey(second, 'k');
+      expect(document.activeElement).toBe(first);
+
+      pressKey(first, 'k');
+      expect(document.activeElement).toBe(first);
+      const last = articles().at(-1)!;
+      last.focus();
+      pressKey(last, 'j');
+      expect(document.activeElement).toBe(last);
+    });
+
+    it('understands the keys with capital letters', async () => {
+      const { articles, pressKey } = await openAttached();
+      pressKey(articles()[0], 'J');
+      expect(document.activeElement).toBe(articles()[1]);
+    });
+
+    it('attends the alert that has the focus with A, which can be undone', async () => {
+      const { articles, pressKey, statCard } = await openAttached();
+
+      pressKey(articles()[0], 'a');
+
+      expect(undoToast.open).toHaveBeenCalledTimes(1);
+      expect(statCard('ca-alerts.kpi.attending').querySelector('.value')?.textContent).toBe('2');
+      expect(api.acknowledgeAlert).not.toHaveBeenCalled();
+    });
+
+    it('does not attend an alert somebody already attends', async () => {
+      const { articles, pressKey, element } = await openAttached();
+      const attended = articles().find((article) =>
+        article.textContent?.includes('ca-alerts.active.card.resolve'),
+      )!;
+      expect(element.contains(attended)).toBe(true);
+
+      pressKey(attended, 'a');
+
+      expect(undoToast.open).not.toHaveBeenCalled();
+    });
+
+    it('does not attend for who cannot do it', async () => {
+      canOperate.set(false);
+      const { articles, pressKey } = await openAttached();
+
+      pressKey(articles()[0], 'a');
+
+      expect(undoToast.open).not.toHaveBeenCalled();
+    });
+
+    it('leaves alone the keys of the browser and any other key', async () => {
+      const { articles, pressKey } = await openAttached();
+      const [first] = articles();
+
+      expect(pressKey(first, 'j', { ctrlKey: true }).defaultPrevented).toBe(false);
+      expect(pressKey(first, 'a', { metaKey: true }).defaultPrevented).toBe(false);
+      expect(pressKey(first, 'x').defaultPrevented).toBe(false);
+      expect(undoToast.open).not.toHaveBeenCalled();
+    });
+
+    it('does nothing outside the list, for example while searching', async () => {
+      const { element, pressKey } = await openAttached();
+
+      pressKey(element.querySelector('input')!, 'a');
+
+      expect(undoToast.open).not.toHaveBeenCalled();
     });
   });
 });

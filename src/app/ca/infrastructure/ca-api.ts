@@ -9,6 +9,7 @@ import { NotificationPreferenceApiEndpoint } from './notification-preference-api
 import { NotificationApiEndpoint } from './notification-api-endpoint';
 import { AlertDeviceApiEndpoint } from './alert-device-api-endpoint';
 import { AlertEnvironmentApiEndpoint } from './alert-environment-api-endpoint';
+import { AlertPersonApiEndpoint } from './alert-person-api-endpoint';
 import { AlertEmailNotificationResource } from './notification-response';
 
 import { DeviationAlert } from '../domain/model/deviation-alert.entity';
@@ -17,6 +18,7 @@ import { NotificationPreference } from '../domain/model/notification-preference.
 import { Notification } from '../domain/model/notification.entity';
 import { AlertDevice } from '../domain/model/alert-device.entity';
 import { AlertEnvironment } from '../domain/model/alert-environment.entity';
+import { AlertPerson } from '../domain/model/alert-person.entity';
 import { UpdateNotificationPreferenceRequest } from './notification-preference.request';
 import { ResolveAlertRequest } from './resolve-alert.request';
 
@@ -75,6 +77,12 @@ export class CaApi extends BaseApi {
   private readonly _environmentEndpoint: AlertEnvironmentApiEndpoint;
 
   /**
+   * Endpoint client for the people that alerts name.
+   * @private
+   */
+  private readonly _personEndpoint: AlertPersonApiEndpoint;
+
+  /**
    * Creates an instance of CaApi.
    *
    * @param http - Angular HttpClient for making HTTP requests
@@ -92,6 +100,7 @@ export class CaApi extends BaseApi {
     this._notificationEndpoint = new NotificationApiEndpoint(http);
     this._deviceEndpoint = new AlertDeviceApiEndpoint(http);
     this._environmentEndpoint = new AlertEnvironmentApiEndpoint(http);
+    this._personEndpoint = new AlertPersonApiEndpoint(http);
   }
 
   /**
@@ -253,5 +262,15 @@ export class CaApi extends BaseApi {
    */
   getAlertEnvironments(laboratoryId: number): Observable<AlertEnvironment[]> {
     return this._environmentEndpoint.getEnvironments(laboratoryId);
+  }
+
+  /**
+   * Retrieves the people of a laboratory that alerts can name.
+   *
+   * @param laboratoryId - The numeric identifier of the laboratory
+   * @returns Observable emitting the people whose name is known. It never errors.
+   */
+  getAlertPeople(laboratoryId: number): Observable<AlertPerson[]> {
+    return this._personEndpoint.getPeople(laboratoryId);
   }
 }
