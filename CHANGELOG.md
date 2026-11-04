@@ -7,11 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.2.0] - 2026-11-04
+
 ### Added
 
 - Shared (shared): the `dateOnly` pipe shows a day in the single date format of the application; a calendar day stays as it is, whatever the time zone (#75).
 
 ### Changed
+
+- Release: package and lockfile versions are now 2.2.0.
 
 - Compliance & Alerts (ca): the alert history uses `AlertsPageHeader`, with the same tabs as the active alerts, and opens the environment of the address (#75).
 
