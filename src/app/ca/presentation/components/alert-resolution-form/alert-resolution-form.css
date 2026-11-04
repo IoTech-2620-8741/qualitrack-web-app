@@ -1,47 +1,126 @@
 :host {
   display: block;
+  min-width: 0;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
 }
 
 h3 {
-  margin: 0 0 8px;
-  font-size: 15px;
-  font-weight: 600;
+  margin: 0;
+  color: #0f172a;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.4;
 }
 
 .templates {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   gap: 8px;
-  margin-bottom: 12px;
 }
 
 .template {
-  min-height: 32px;
-  padding: 4px 12px;
-  border: 1px solid var(--qt-border);
-  border-radius: var(--qt-radius-pill);
-  background: var(--qt-surface);
-  color: var(--qt-primary-strong);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 0 16px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 999px;
+  color: #0f172a;
   font: inherit;
-  font-size: 13px;
+  font-size: 14px;
+  font-weight: 500;
   cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
 .template:hover {
-  background: var(--qt-primary-surface);
+  background: #f3f4f6;
 }
 
 .template:focus-visible {
-  outline: 2px solid var(--qt-primary-strong);
+  outline: 3px solid #0d9488;
   outline-offset: 2px;
 }
 
 .notes {
+  display: block;
   width: 100%;
+  min-width: 0;
+  --mat-form-field-outlined-focus-outline-color: #0d9488;
+  --mat-form-field-outlined-focus-label-text-color: #0f766e;
+  --mat-form-field-focus-select-arrow-color: #0d9488;
+}
+
+.notes textarea {
+  caret-color: #0d9488;
+  line-height: 1.6;
 }
 
 .actions {
   display: flex;
+  align-items: center;
   justify-content: flex-end;
-  margin-top: 8px;
+  gap: 12px;
+  padding-top: 20px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.actions button {
+  min-height: 48px;
+  height: auto;
+  padding: 8px 24px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+  white-space: normal;
+}
+
+.primary-btn {
+  --mdc-filled-button-container-color: #0f766e;
+  --mdc-filled-button-label-text-color: #fff;
+  --mdc-filled-button-disabled-container-color: #e2e8f0;
+  --mdc-filled-button-disabled-label-text-color: #475569;
+  background: #0f766e;
+  color: #fff;
+  transition: background-color 0.2s ease;
+}
+
+.primary-btn:hover:not(:disabled) {
+  background: #115e59;
+}
+
+.primary-btn:disabled {
+  background: #e2e8f0;
+  color: #475569;
+}
+
+.actions button:focus-visible {
+  outline: 3px solid #0d9488;
+  outline-offset: 2px;
+}
+
+@media (max-width: 760px) {
+  .actions {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+
+  .actions button {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+  }
 }
