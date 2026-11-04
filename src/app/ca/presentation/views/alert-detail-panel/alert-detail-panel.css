@@ -1,0 +1,111 @@
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.panel-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+section {
+  margin-top: 20px;
+}
+
+h3 {
+  margin: 0 0 12px;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.reading {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 32px;
+  margin: 0;
+}
+
+.reading dt {
+  color: var(--qt-text-muted);
+  font-size: 12px;
+}
+
+.reading dd {
+  margin: 2px 0 0;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.reading .value {
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.message {
+  margin: 0 0 12px;
+  padding: 10px 12px;
+  border-radius: var(--qt-radius-small);
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+
+.reading + .message {
+  margin: 12px 0 0;
+}
+
+.error {
+  background: var(--qt-error-surface);
+  color: var(--qt-error-text);
+}
+
+.notice {
+  background: var(--qt-success-surface);
+  color: var(--qt-success-text);
+}
+
+.normalized {
+  background: var(--qt-info-surface);
+  color: var(--qt-info-text);
+}
+
+.muted {
+  color: var(--qt-text-muted);
+  font-size: 13px;
+}
+
+.actuations {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.actuations li + li {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--qt-border);
+}
+
+.actuations strong {
+  margin-right: 8px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.result {
+  color: var(--qt-success-text);
+  font-size: 12px;
+}
+
+.result.failed {
+  color: var(--qt-error-text);
+}
+
+.actuations small {
+  display: block;
+  margin-top: 2px;
+  color: var(--qt-text-muted);
+  font-size: 12px;
+}

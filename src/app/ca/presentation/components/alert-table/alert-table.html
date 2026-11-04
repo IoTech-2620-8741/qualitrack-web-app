@@ -40,8 +40,10 @@
           }
         </td>
         <td>
-          <a [routerLink]="['/alerts/deviation-detail', alert.id]">
-            <mat-icon aria-hidden="true">visibility</mat-icon>{{ 'ca-alerts.actions.view-details' | translate }}
+          <a mat-icon-button [routerLink]="['/alerts', alert.id]"
+             [attr.aria-label]="'ca-alerts.actions.view-details' | translate"
+             [matTooltip]="'ca-alerts.actions.view-details' | translate">
+            <mat-icon aria-hidden="true">visibility</mat-icon>
           </a>
         </td>
       </tr>

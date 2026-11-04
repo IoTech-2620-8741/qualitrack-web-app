@@ -50,7 +50,7 @@
         <h2>{{ 'inventory.affectedBatches' | translate }}</h2>
         @for (id of store.affectedBatches(); track id) {
           <p>
-            <a [routerLink]="['/batches/batch-detail', id]"
+            <a [routerLink]="['/batches', id]"
               >{{ 'inventory.productBatch' | translate }} #{{ id }}</a
             >
           </p>
@@ -295,7 +295,7 @@
         } @else {
           <p class="notice">{{ 'inventory.noContainers' | translate }}</p>
           <div class="actions">
-            <a mat-stroked-button routerLink="/equipments/equipment-list"
+            <a mat-stroked-button routerLink="/equipments"
               ><mat-icon>sensors</mat-icon>{{ 'inventory.manageContainers' | translate }}</a
             ><button mat-button type="button" (click)="storing.set(null)">
               {{ 'inventory.cancel' | translate }}
@@ -439,7 +439,7 @@
                   </td>
                   <td [attr.data-label]="'inventory.traceability' | translate">
                     @if (movement.productBatchId) {
-                      <a [routerLink]="['/batches/batch-detail', movement.productBatchId]"
+                      <a [routerLink]="['/batches', movement.productBatchId]"
                         >{{ 'inventory.productBatch' | translate }} #{{
                           movement.productBatchId
                         }}</a
@@ -476,7 +476,7 @@
                 @for (usage of store.legacyHistory(); track usage.id) {
                   <tr>
                     <td>
-                      <a [routerLink]="['/batches/batch-detail', usage.batchId]"
+                      <a [routerLink]="['/batches', usage.batchId]"
                         >#{{ usage.batchId }}</a
                       >
                     </td>

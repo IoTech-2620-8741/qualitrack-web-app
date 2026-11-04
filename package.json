@@ -3,7 +3,7 @@
   "author": "IoTech",
   "description": "QualiTrack Web Application by IoTech",
   "license": "SEE LICENSE IN LICENSE.md",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -25,6 +25,7 @@
     "@ngx-translate/core": "^18.1.0",
     "@ngx-translate/http-loader": "^18.1.0",
     "chart.js": "^4.3.0",
+    "chartjs-plugin-annotation": "^3.1.0",
     "ng2-charts": "^10.0.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",

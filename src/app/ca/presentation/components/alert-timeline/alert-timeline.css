@@ -1,0 +1,89 @@
+:host {
+  display: block;
+}
+
+.timeline {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+li {
+  position: relative;
+  display: flex;
+  gap: 12px;
+  padding-bottom: 16px;
+}
+
+li:last-child {
+  padding-bottom: 0;
+}
+
+li:not(:last-child)::before {
+  content: '';
+  position: absolute;
+  top: 28px;
+  bottom: 0;
+  left: 13px;
+  width: 2px;
+  background: var(--qt-border);
+}
+
+.marker {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--qt-primary-surface);
+  color: var(--qt-primary-strong);
+}
+
+.marker mat-icon {
+  width: 16px;
+  height: 16px;
+  font-size: 16px;
+}
+
+.pending .marker {
+  background: var(--qt-surface);
+  border: 2px dashed var(--qt-border);
+}
+
+.pending strong {
+  color: var(--qt-neutral-text);
+  font-weight: 500;
+}
+
+.event {
+  min-width: 0;
+  padding-top: 3px;
+  overflow-wrap: anywhere;
+}
+
+strong,
+small {
+  display: block;
+}
+
+strong {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+small {
+  margin-top: 2px;
+  color: var(--qt-text-muted);
+  font-size: 12px;
+}
+
+.notes {
+  margin: 6px 0 0;
+  padding: 8px 12px;
+  border-radius: var(--qt-radius-small);
+  background: var(--qt-neutral-surface);
+  font-size: 13px;
+  white-space: pre-line;
+}

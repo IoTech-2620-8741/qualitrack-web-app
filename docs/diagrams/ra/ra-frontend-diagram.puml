@@ -34,6 +34,17 @@ package "shared.infrastructure" {
 }
 
 package "ra.domain.model" {
+  class OverviewEnvironmentalProfile {
+    +id / scope / laboratoryId
+    +environmentId / deviceId / version
+    +thresholds: OverviewEnvironmentalThreshold[]
+    +threshold(metric): OverviewEnvironmentalThreshold | undefined
+  }
+  interface OverviewEnvironmentalThreshold {
+    +metric: string
+    +normalMin / normalMax: number | null
+    +criticalMin / criticalMax: number | null
+  }
   class AuditedStaffMember {
     +id: number
     +fullName: string
@@ -139,6 +150,11 @@ package "ra.domain.model" {
     +startDate: string
     +endDate: string
     +format: "PDF | CSV"
+  }
+
+  class ReportOrder <<type>> {
+    +type: "batch | compliance | inventory | equipment"
+    +command: the command of that type
   }
 
   class OverviewLaboratory {
@@ -363,6 +379,9 @@ package "ra.infrastructure" {
 
 package "ra.application" {
   class RaStore {
+    +profiles
+    +loadProfile(deviceId, environmentId): void
+    +clearProfiles(): void
     +staffActivity
     +auditedStaffMember
     +staffActivityLoading
@@ -394,6 +413,10 @@ package "ra.application" {
     +generateComplianceReport(command: GenerateComplianceReportCommand): void
     +generateInventoryReport(command: GenerateInventoryReportCommand): void
     +exportEquipmentLog(command: ExportEquipmentLogCommand): void
+    +generateReport(order: ReportOrder): void
+    +previewReport(order: ReportOrder): Promise<Blob | null>
+    +downloadPreview(): void
+    +clearReportPreview(): void
     +clearMessages(): void
 
     +environments: Signal<OverviewEnvironment[]>
@@ -442,14 +465,31 @@ package "ra.presentation" {
     +ngOnInit(): Promise<void>
     +changePeriod(days: number): void
     +changeEnvironment(environmentId: number): void
+    +changeView(mode): void
     +reload(): void
+  }
+
+  class KpiSummaryCards <<component>> {
+    +summaries / deviceNameFn / profiles
+    #stateOf(summary): SummaryState
+    #dotPosition(summary): number
+  }
+
+  class KpiTable <<component>> {
+    +summaries / deviceNameFn
+  }
+
+  class KpiRecords <<component>> {
+    +metrics
   }
 
   note bottom of KpiDashboardComponent
     Environmental summary (US93): average, minimum and maximum
     per environment, device and variable of the last 24 hours,
-    7 or 31 days; every environment or one. Without readings
-    it states that nothing is calculated.
+    7 or 31 days; every environment or one, as cards or a table. Each
+    card shows the worst state of the period, comparing the minimum and
+    the maximum with the thresholds of the device profile.
+    Without readings it states that nothing is calculated.
   end note
 
   class DeviationTrendChartComponent {
@@ -457,29 +497,91 @@ package "ra.presentation" {
     +days
     +environmentId
     +activeTrend
+    +activeThresholds
+    +thresholdsPending
     +chartData
     +chartOptions
     +ngOnInit(): Promise<void>
     +changeEnvironment(environmentId: number): void
     +changePeriod(days: number): void
     +select(trend: DeviationTrend): void
+    +openDetail(trend: DeviationTrend): void
   }
 
   note bottom of DeviationTrendChartComponent
     Deviation indicators (US94): time in range, deviations and
     critical deviations per device and variable, with the readings
-    of the selected one colored by condition.
+    of the selected one colored by condition. Environment, period and
+    variable live in the address (?env=&days=&selected=); the trends
+    are read again only when the environment or the period change.
   end note
 
+  class DeviationKpiCards <<component>> {
+    +trends
+    #averageTimeInRange: Signal<number | null>
+  }
+
+  class DeviationTable <<component>> {
+    +trends / deviceLabel / trendIcon / isActive
+    +select: output<DeviationTrend>
+  }
+
+  class DeviationChart <<component>> {
+    +trend / chartData / chartOptions
+    +thresholds / thresholdsPending
+    +openDetail: output<void>
+    #legend
+  }
+
+  class DeviationChartFactory {
+    +{static} createChartData(trend): ChartData
+    +{static} createChartOptions(trend, thresholds, translate): ChartOptions
+    +{static} createLegend(thresholds, unit): LegendEntry[]
+    +{static} createAnnotations(thresholds, unit, translate)
+  }
+
+  note bottom of DeviationChartFactory
+    Zones and lines of the configured limits on both sides, as the platform
+    evaluates them; nothing is drawn for a variable without limits.
+    The axis follows the readings, which can be below zero.
+  end note
+
+  class DeviationDetailPage {
+    #trend
+    #filteredPoints / counts
+    #fromDate / toDate / alertFilter
+    #clearFilters(): void
+    #goBack(): void
+  }
+
+  class DeviationEvents <<component>> {
+    +trend / points / thresholds
+    #limitOf(point): number | null
+  }
+
   class ReportGeneratorComponent {
-    +batchForm
-    +complianceForm
-    +inventoryForm
-    +equipmentForm
-    +onGenerateBatchReport(): void
-    +onGenerateComplianceReport(): void
-    +onGenerateInventoryReport(): void
-    +onExportEquipmentLog(): void
+    +ngOnInit(): void
+    +ngOnDestroy(): void
+  }
+
+  class ReportGeneratorState <<view state>> {
+    +type: Signal<ReportType>
+    +form: Signal<ReportConfig>
+    +setType(type): void
+    +updateForm(partial): void
+  }
+
+  class ReportTypeSelector <<component>>
+
+  class ReportParamsForm <<component>> {
+    #onPreview(): Promise<void>
+    #onGenerate(): void
+    -order(): ReportOrder | null
+  }
+
+  class ReportPreviewDialog <<component>> {
+    #download(): void
+    #close(): void
   }
 
   class AuditLogViewerComponent {
@@ -580,20 +682,50 @@ AuditLogAssembler ..> AuditLogEntryResource
 
 KpiDashboardComponent --> RaStore
 KpiDashboardComponent ..> LastDays
+KpiDashboardComponent *-- KpiSummaryCards
+KpiDashboardComponent *-- KpiTable
+KpiDashboardComponent *-- KpiRecords
+KpiSummaryCards ..> OverviewEnvironmentalProfile
+OverviewEnvironmentalProfile *-- OverviewEnvironmentalThreshold
+OverviewEnvironmentalProfile ..|> BaseEntity
+RaStore ..> OverviewEnvironmentalProfile
 
+DeviationTrendChartComponent *-- DeviationKpiCards
+DeviationTrendChartComponent *-- DeviationTable
+DeviationTrendChartComponent *-- DeviationChart
+DeviationTrendChartComponent ..> DeviationChartFactory
+DeviationChart ..> DeviationChartFactory : legend
+DeviationChartFactory ..> OverviewEnvironmentalThreshold
+DeviationDetailPage --> RaStore
+DeviationDetailPage *-- DeviationEvents
+DeviationEvents ..> DeviationChartFactory : limit crossed
 DeviationTrendChartComponent --> RaStore
 DeviationTrendChartComponent --> EnvironmentSelector
 DeviationTrendChartComponent ..> LastDays
 
-ReportGeneratorComponent --> RaStore
-ReportGeneratorComponent --> IamStore
 ReportGeneratorComponent --> RaStore : loadEquipment(), loadBatches()
-ReportGeneratorComponent ..> LocalIsoDate : report days
+ReportGeneratorComponent *-- ReportGeneratorState : provides
+ReportGeneratorComponent *-- ReportTypeSelector
+ReportGeneratorComponent *-- ReportParamsForm
+ReportTypeSelector --> ReportGeneratorState
+ReportParamsForm --> ReportGeneratorState
+ReportParamsForm --> RaStore
+ReportParamsForm --> IamStore
+ReportParamsForm ..> ReportOrder
+ReportParamsForm ..> LocalIsoDate : report days
+ReportParamsForm ..> ReportPreviewDialog : opens
+ReportPreviewDialog --> RaStore : downloadPreview()
+note bottom of ReportPreviewDialog
+  The platform stores every generated report: the preview generates it once,
+  and downloading it (from the dialog or with the same parameters) reuses
+  that file until the parameters change or the view closes.
+end note
 
 AuditLogViewerComponent --> RaStore
 
 RaRoutes ..> KpiDashboardComponent
 RaRoutes ..> DeviationTrendChartComponent
+RaRoutes ..> DeviationDetailPage : deviation-trends/:equipmentId/:parameter
 RaRoutes ..> ReportGeneratorComponent
 RaRoutes ..> AuditLogViewerComponent
 
@@ -607,7 +739,7 @@ RaStore ..> AuditedStaffMember
 StaffActivity --> RaStore
 RaRoutes ..> StaffActivity : staffActivityGuard
 note bottom of StaffActivity
-  /reports/staff-activity/:staffId: newest activity first, type filter,
+  /reports/staff/:staffId/activity: newest activity first, type filter,
   latest activity and a link back to the Laboratory staff detail.
   RA reads the staff identity through its own Laboratory ACL:
   GET /laboratories/{lab}/staff/{staffId}.

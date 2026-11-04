@@ -1,9 +1,9 @@
 import { Routes } from '@angular/router';
 import { Home } from './shared/presentation/views/home/home';
-import { Layout } from './shared/presentation/components/layout/layout';
 import { iamGuard } from './iam/infrastructure/iam-guard';
 import { onboardingGuard } from './iam/infrastructure/onboarding-guard';
 import { qualityManagerGuard } from './iam/infrastructure/role-guards';
+import { AuthenticationSection } from './iam/presentation/components/authentication-section/authentication-section';
 
 const about = () => import('./shared/presentation/views/about/about').then((m) => m.About);
 
@@ -39,14 +39,12 @@ const subscriptionRoutes = () =>
 const baseTitle = 'QualiTrack';
 
 export const routes: Routes = [
-  { path: 'home', component: Home, title: `Home - ${baseTitle}` },
+  // Home is in shared and cannot import IAM: the route hands it the authentication section to render.
+  { path: 'home', component: Home, data: { authComponent: AuthenticationSection }, title: `Home - ${baseTitle}` },
   { path: 'about', loadComponent: about, title: `About - ${baseTitle}` },
-  {
-    path: 'dashboard',
-    component: Layout,
-    canActivate: [onboardingGuard],
-    children: [{ path: '', loadComponent: dashboard, title: `Dashboard - ${baseTitle}` }],
-  },
+
+  // The Layout wraps every page from app.html, so no route declares it.
+  { path: 'dashboard', loadComponent: dashboard, canActivate: [onboardingGuard], title: `Dashboard - ${baseTitle}` },
   { path: 'iam', loadChildren: iamRoutes },
   { path: 'inventory', loadChildren: () => import('./inventory/presentation/inventory.routes').then(m => m.inventoryRoutes), canActivate: [onboardingGuard], canActivateChild: [onboardingGuard] },
   { path: 'laboratories', loadChildren: laboratoryRoutes, canActivate: [iamGuard] },

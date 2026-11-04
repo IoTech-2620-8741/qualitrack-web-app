@@ -1,5 +1,4 @@
 import { Routes } from '@angular/router';
-import { Layout } from '../../shared/presentation/components/layout/layout';
 
 /** Lazy loader of the view of the active alerts. */
 const alertDashboard = () =>
@@ -9,9 +8,9 @@ const alertDashboard = () =>
 const alertHistory = () =>
   import('./views/alert-history/alert-history').then((m) => m.AlertHistory);
 
-/** Lazy loader of the detail of a deviation alert. */
-const deviationDetail = () =>
-  import('./views/deviation-detail/deviation-detail').then((m) => m.DeviationDetail);
+/** Lazy loader of the detail of a deviation alert, which opens over the active alerts. */
+const alertDetailPanel = () =>
+  import('./views/alert-detail-panel/alert-detail-panel').then((m) => m.AlertDetailPanel);
 
 const notificationSettings = () =>
   import('./views/notification-settings/notification-settings').then((m) => m.NotificationSettings);
@@ -20,24 +19,27 @@ const notificationSettings = () =>
  * Route tree of Compliance & Alerting (CA).
  *
  * @remarks
- * All the views are children of the shared {@link Layout} and load lazily:
- * - `alert-dashboard`: active alerts of an environment (US85).
- * - `alert-history`: every alert of an environment, filtered by status and severity (TS74).
- * - `deviation-detail/:id`: detail of the deviation alert with that numeric id (US86).
+ * All the views load lazily and are addressed by resource:
+ * - empty path: active alerts of an environment (US85).
+ * - `history`: every alert of an environment, filtered by status and severity (TS74).
  * - `notification-settings`: notification preferences of the signed-in user.
- * - empty path: redirects to `alert-dashboard`.
+ * - `:alertId`: detail of the deviation alert with that numeric id, in a panel over the active alerts (US86).
+ *
+ * The view-named paths used before semantic routes redirect to their new address; e-mails sent by the
+ * platform still link to `deviation-detail/:id`.
  */
 const caRoutes: Routes = [
+  { path: 'history', loadComponent: alertHistory },
+  { path: 'notification-settings', loadComponent: notificationSettings, title: 'Notification preferences - QualiTrack' },
+  // View-named paths used before semantic routes, declared before the identifier so they are not read as one.
+  { path: 'alert-dashboard', redirectTo: '/alerts', pathMatch: 'full' },
+  { path: 'alert-history', redirectTo: '/alerts/history', pathMatch: 'full' },
+  { path: 'deviation-detail/:id', redirectTo: '/alerts/:id' },
+  // Declared last because its empty path would read every other address as the identifier of an alert.
   {
     path: '',
-    component: Layout,
-    children: [
-      { path: 'alert-dashboard', loadComponent: alertDashboard },
-      { path: 'alert-history', loadComponent: alertHistory },
-      { path: 'deviation-detail/:id', loadComponent: deviationDetail },
-      { path: 'notification-settings', loadComponent: notificationSettings, title: 'Notification preferences - QualiTrack' },
-      { path: '', redirectTo: 'alert-dashboard', pathMatch: 'full' },
-    ],
+    loadComponent: alertDashboard,
+    children: [{ path: ':alertId', loadComponent: alertDetailPanel }],
   },
 ];
 

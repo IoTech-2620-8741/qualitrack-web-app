@@ -2,7 +2,6 @@ import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { IamStore } from '../../../../iam/application/iam.store';
-import { Toolbar } from '../../../../shared/presentation/components/toolbar/toolbar';
 import { TranslatePipe } from '@ngx-translate/core';
 
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -44,7 +43,6 @@ import { rucValidator } from '../../../../shared/presentation/validators/ruc.val
     MatProgressSpinnerModule,
     MatCardModule,
     MatIconModule,
-    Toolbar,
     DigitsOnly,
     PhoneInput,
   ],

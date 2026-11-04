@@ -9,6 +9,11 @@ package "external bounded contexts" <<External>> {
   class AuthenticationSection
 }
 
+package "app (composition root)" <<External>> {
+  class App
+  class appConfig <<providers>>
+}
+
 package "shared" {
 
   package "domain.model" {
@@ -69,7 +74,9 @@ package "shared" {
     class EnvironmentSelector {
       +environments: InputSignal<EnvironmentOption[]>
       +selectedId: InputSignal<number | null>
+      +allOptionKey: InputSignal<string | null>
       +selectedChange: OutputEmitterRef<number>
+      +allSelected: OutputEmitterRef<void>
     }
 
     interface EnvironmentOption {
@@ -87,20 +94,57 @@ package "shared" {
       +useLanguage(language: string): void
     }
 
-    class Toolbar {
-      -iam: IamStore
+    class Layout {
+      +isSignedIn: InputSignal<boolean>
+      +hasOperationalAccess: InputSignal<boolean>
+      +canManageQuality: InputSignal<boolean>
       #brandLink: Signal<string>
       #brandLabel: Signal<string>
-    }
-
-    class Layout {
       -router: Router
       #sidenavMode: 'side' | 'over'
       #sidenavOpened: boolean
-      -options: NavigationOption[]
-      #visibleOptions: Signal<NavigationOption[]>
+      -sections: NavigationSection[]
+      #visibleSections: Signal<NavigationSection[]>
       #navigateTo(link: string): void
       #isActive(link: string): boolean
+      #activeChildLink(option): string | undefined
+    }
+
+    class EmptyState {
+      +messageKey / titleKey / icon
+      +positive: InputSignal<boolean>
+    }
+    class ErrorBanner
+    class DashboardState
+    class StatusChip {
+      +tone / icon / labelKey
+    }
+    class StatFilterCard {
+      +icon / labelKey / value
+      +hintKey / hintParams / pressed
+      +toggled: OutputEmitterRef<void>
+    }
+    class ActionBanner {
+      +icon / tone / actionKey
+      +action: OutputEmitterRef<void>
+    }
+    class SidePanel {
+      +titleText / subtitle
+      +trapFocus / focusTitleOnOpen
+      +closed: OutputEmitterRef<void>
+      +focusTitle(): void
+    }
+    class UndoToast {
+      #paused / secondsLeft
+      #undo(): void
+    }
+    class UndoToastOpener <<service>> {
+      +open(data): Observable<UndoToastOutcome>
+      +confirmNow(): void
+    }
+    class NavigationSection <<type>> {
+      +title?: string
+      +options: NavigationOption[]
     }
 
     class NavigationOption <<type>> {
@@ -122,6 +166,13 @@ package "shared" {
     end note
   }
 
+  package "presentation.pipes" {
+    class DateTimePipe
+    class RelativeTimePipe
+    class ElapsedTimePipe
+    class "date-time-format" as DateTimeFormat <<functions>>
+  }
+
   package "presentation.views" {
     class Home {
     }
@@ -131,11 +182,15 @@ package "shared" {
 
     class PageNotFound {
       #invalidPath: string
-      -route: ActivatedRoute
+      #isSignedIn: Signal<boolean>
       -router: Router
       +ngOnInit(): void
-      #navigateToHome(): void
+      #goBack(): void
     }
+  }
+
+  package "presentation.tokens" {
+    class SIGNED_IN <<InjectionToken<Signal<boolean>>>>
   }
 }
 
@@ -168,32 +223,53 @@ package "ca.presentation.components" <<External>> {
   class NotificationBell
 }
 
-Toolbar --> LanguageSwitcher
 Layout --> LanguageSwitcher
-Layout --> UserProfileBadge
-Layout --> UserSessionSection
-Layout --> NotificationBell : with operational access
-Layout *-- NavigationOption
-Toolbar --> IamStore
-note bottom of Toolbar
-  Pages before signing in (home, about, sign-in, sign-up) and onboarding pages.
-  The logo and the name lead to /home without a session and to /dashboard with one.
+Layout *-- NavigationSection
+NavigationSection *-- NavigationOption
+UndoToastOpener ..> UndoToast : opens
+DateTimePipe ..> DateTimeFormat
+RelativeTimePipe ..> DateTimeFormat
+ElapsedTimePipe ..> DateTimeFormat
+App *-- Layout
+App --> IamStore
+App ..> UserProfileBadge : projected into Layout
+App ..> UserSessionSection : projected into Layout
+App ..> NotificationBell : projected into Layout
+appConfig ..> SIGNED_IN : provides IamStore.isSignedIn
+appConfig ..> IamStore
+note bottom of SidePanel
+  Modal panel in an overlay: keeps the focus inside, closes with Escape, the close
+  button or a click outside, and gives the focus back. The view decides what closing means.
+end note
+note bottom of UndoToast
+  A few seconds to undo an action; the time stops under the pointer or the focus.
+  Opening another toast closes the previous one, which ends as confirmed.
+end note
+note bottom of DateTimePipe
+  Every date in the chosen language and the time zone of the laboratories.
 end note
 note bottom of Layout
-  The logo and the name lead to /dashboard. Menu labels only use nav.* keys:
+  Wraps every page from app.html. The side menu only shows with operational
+  access. Its options are grouped by how often the laboratory uses them, and an
+  option stays active whatever the query parameters of the address. The logo and the name lead to /home without a session and to
+  /dashboard with one. Menu labels only use nav.* keys:
   English Title Case, Spanish sentence case, "Catalog" spelling.
-  The toolbar composes the notification bell (ca), profile badge (profile)
-  and sign-out action (iam). The badge photo and name open the profile.
+  App projects the notification bell (ca), profile badge (profile)
+  and sign-out action (iam) into its slots, so shared imports no context.
+  The badge photo and name open the profile.
   The layout keeps both user widgets inside one capsule. Up to 720px the brand is hidden
   so the user section stays complete; up to 480px the language switcher is
   compact (no check mark).
 end note
 NavigationOption *-- NavigationChild
 
-Home --> Toolbar
-Home --> AuthenticationSection
+Home ..> AuthenticationSection : route data, NgComponentOutlet
 PageNotFound --> Router
-PageNotFound --> ActivatedRoute
+PageNotFound --> SIGNED_IN
+note bottom of SIGNED_IN
+  Whether a user is signed in, read by shared views without importing IAM;
+  false unless the composition root provides it.
+end note
 
 EnvironmentSelector ..> EnvironmentOption
 note bottom of EnvironmentSelector

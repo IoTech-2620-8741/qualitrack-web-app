@@ -1,5 +1,5 @@
 <section class="operations-page" [attr.aria-busy]="loading()">
-  <a class="back-link" routerLink="/laboratories/staff-list">
+  <a class="back-link" routerLink="/laboratories/staff">
     <mat-icon aria-hidden="true">arrow_back</mat-icon>
     {{ 'staff-list.title' | translate }}
   </a>
@@ -37,7 +37,7 @@
           <mat-icon>person</mat-icon>{{ 'staff.detail.view-profile' | translate }}
         </a>
       }
-      <a mat-stroked-button [routerLink]="['/reports/staff-activity', current.id]">
+      <a mat-stroked-button [routerLink]="['/reports/staff', current.id, 'activity']">
         <mat-icon>history</mat-icon>{{ 'staff.detail.view-activity' | translate }}
       </a>
     </div>

@@ -1,0 +1,27 @@
+:host { display: block; container-type: inline-size; }
+.section-title { display: flex; align-items: center; gap: 12px; font-size: 1.1rem; color: #1a3a5c; margin-bottom: 16px; }
+.badge { display: flex; align-items: center; justify-content: center; width: 24px; height: 24px; background: #1a3a5c; color: white; border-radius: 50%; font-size: 0.85rem; }
+.form-and-info { display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: 32px; align-items: stretch; }
+@container (max-width: 640px) {
+  .form-and-info { grid-template-columns: minmax(0, 1fr); }
+}
+.form-column { display: flex; flex-direction: column; gap: 20px;}
+.w-full { width: 100%; }
+.input-label { display: block; font-weight: 600; font-size: 0.9rem; color: #1e293b; margin-bottom: 12px; }
+.quick-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+.chip { background: white; border: 1px solid #cbd5e1; padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; color: #475569; cursor: pointer; transition: background 0.2s ease;}
+.chip:hover {background: #f8fafc;}
+.hint {font-size: 0.75rem;color: #64748b;}
+.info-column {padding-top: 4px;height: 100%;}
+.info-box {background: #f8fafc;border: 1px solid #e2e8f0;border-radius: 12px;padding: 24px;position: relative;height: 100%;display: flex;flex-direction: column;}
+.info-box h4 {margin: 0 0 20px;font-size: 0.95rem;font-weight: 700;color: #1a3a5c;letter-spacing: 0.02em;display: flex;align-items: center;gap: 10px;}
+.info-box h4::before { content: 'info'; font-family: 'Material Icons', serif; font-size: 20px; color: #3b82f6;}
+.info-box ul {list-style: none;padding: 0;margin: 0;display: flex;flex-direction: column;gap: 16px;}
+.info-box li {display: flex;align-items: flex-start;gap: 12px;font-size: 0.85rem;color: #334155;line-height: 1.5;}
+.info-box mat-icon {color: #10b981;font-size: 18px;width: 20px;height: 20px;margin-top: 2px;flex-shrink: 0;}
+.period-error {margin: 8px 0 0;color: #b91c1c;font-size: 0.85rem;text-align: right;}
+.panel-footer {display: flex;justify-content: flex-end;align-items: center;margin-top: 32px;padding-top: 24px;border-top: 1px solid #e2e8f0;}
+.actions {display: flex;gap: 12px;}
+.format-section {margin-top: 8px;}
+mat-button-toggle-group.w-full {width: 100%;display: flex;border-radius: 24px;border: 1px solid #cbd5e1;overflow: hidden;}
+mat-button-toggle {flex: 1 1 50%;display: flex;justify-content: center;border: none !important;}

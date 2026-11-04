@@ -1,204 +1,198 @@
 :host {
   display: block;
   min-width: 0;
-  color: #20343c;
+  color: #0f172a;
 }
+
 .operations-page {
-  max-width: 1280px;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 24px;
+  padding: 32px 24px;
 }
-.page-heading,
-.actions {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-}
+
+/* Header */
 .page-heading {
+  display: flex;
   justify-content: space-between;
-  margin-bottom: 20px;
+  align-items: flex-start;
+  margin-bottom: 24px;
 }
+
 h1 {
-  font-size: 24px;
+  font-size: 26px;
   margin: 0;
   display: flex;
   align-items: center;
   gap: 10px;
+  font-weight: 700;
+  color: #0f172a;
 }
+
 h2 {
-  font-size: 19px;
-  margin: 12px 0 18px;
-}
-h3 {
-  font-size: 16px;
-}
-h1,
-h2,
-h3,
-p,
-a {
-  overflow-wrap: anywhere;
-  letter-spacing: 0;
-}
-.actions button {
-  white-space: normal;
-  height: auto;
-  min-height: 40px;
-  padding: 8px 16px;
-}
-mat-form-field {
-  width: 100%;
-  min-width: 0;
-}
-.summary-strip {
+  font-size: 18px;
+  margin: 0;
   display: flex;
-  gap: 32px;
-  flex-wrap: wrap;
-  border-block: 1px solid #cfdbdf;
-  padding: 18px 0;
-  margin: 20px 0;
+  align-items: center;
+  gap: 12px;
+  color: #0f172a;
 }
-.summary-strip span {
-  display: block;
-  font-size: 13px;
-  color: #4b6068;
-}
-.summary-strip strong {
-  display: block;
-  font-size: 23px;
-  margin-top: 6px;
-}
-.data-table {
-  width: 100%;
-  border-collapse: collapse;
-  table-layout: fixed;
+
+h3 {
   font-size: 14px;
-}
-.data-table th {
-  text-align: left;
-  color: #415a63;
-  background: #edf3f4;
+  color: #64748b;
+  margin: 24px 0 16px;
   font-weight: 600;
 }
-.data-table td,
-.data-table th {
-  padding: 14px 12px;
-  border-bottom: 1px solid #d4dfe3;
-  overflow-wrap: anywhere;
-  vertical-align: top;
-}
-.data-table small {
-  display: block;
-  color: #60727a;
-  margin-top: 5px;
-}
-a {
-  color: #006e76;
-  font-weight: 600;
-}
-.error,
-.notice {
+
+/* Filters panel */
+.filters-panel {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: white;
   padding: 12px 16px;
-  border-left: 4px solid;
-  overflow-wrap: anywhere;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+  /* Minimum height so everything stays centered */
+  min-height: 64px;
 }
-.error {
-  background: #fff0f0;
-  color: #9d2424;
+
+/* Environment selector */
+.scope-select {
+  width: 260px;
+  margin-bottom: 0;
 }
-.notice {
-  background: #fff6df;
-  color: #704f00;
+
+.scope-select ::ng-deep .mat-mdc-text-field-wrapper {
+  height: 40px !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
 }
-.status {
-  display: inline-block;
+
+.scope-select ::ng-deep .mat-mdc-form-field-flex {
+  height: 40px !important;
+  align-items: center !important;
+}
+
+.scope-select ::ng-deep .mat-mdc-form-field-infix {
+  padding-top: 8px !important;
+  padding-bottom: 8px !important;
+  min-height: 40px !important;
+}
+
+.date-range {
+  margin-left: auto;
   font-size: 12px;
-  font-weight: 600;
-  color: #704f00;
-  padding: 4px 0;
+  color: #64748b;
 }
-.muted {
-  color: #5c7079;
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 32px 0 16px;
 }
-@media (max-width: 760px) {
-  .operations-page {
-    padding: 16px 10px;
-  }
-  h1 {
-    font-size: 21px;
-  }
-  .summary-strip {
-    gap: 18px;
-  }
-  .summary-strip strong {
-    font-size: 20px;
-  }
-  .data-table thead {
-    display: none;
-  }
-  .data-table,
-  .data-table tbody,
-  .data-table tr,
-  .data-table td {
-    display: block;
-    width: auto;
-  }
-  .data-table tr {
-    border-bottom: 2px solid #bcced5;
-    padding: 8px 0;
-  }
-  .data-table td {
-    border: 0;
-    padding: 6px 4px;
-  }
-  .data-table td[data-label]::before {
-    content: attr(data-label);
-    display: block;
-    font-size: 12px;
-    color: #5c7079;
-    margin-bottom: 4px;
-  }
-  .page-heading .actions {
-    width: 100%;
-  }
+
+.badge {
+  font-size: 11px;
+  background: #f0fdf4;
+  color: #047857;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-weight: 500;
+  margin-left: 8px;
+}
+
+.formula {
+  font-size: 12px;
+  color: #94a3b8;
+  margin-top: 12px;
+}
+
+.empty-state {
+  border: 2px dashed #e2e8f0;
+  border-radius: 12px;
+  padding: 250px 48px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #f8fafc;
+  margin-bottom: 20px;
+}
+
+.empty-state mat-icon {
+  font-size: 40px;
+  width: 40px;
+  height: 40px;
+  color: #94a3b8;
+  margin-bottom: 16px;
+}
+
+.empty-state h3 {
+  margin: 0 0 8px;
+  color: #1e293b;
+}
+
+.empty-state p {
+  color: #64748b;
+  margin: 0 0 24px;
+  font-size: 14px;
 }
 
 .loading {
   display: flex;
   justify-content: center;
-  padding: 32px 0;
+  padding: 48px 0;
 }
-.period-line {
-  font-weight: 600;
-  color: #33515a;
-  margin: 0 0 8px;
+
+.error {
+  color: #b91c1c;
+  padding: 16px;
+  background: #fee2e2;
+  border-radius: 8px;
 }
-.scope-select {
-  min-width: 260px;
+
+.muted {
+  color: #64748b;
 }
-.data-table {
-  margin-bottom: 12px;
-}
-.data-table .numeric {
-  text-align: right;
-}
-.formula {
-  font-size: 13px;
-  margin: 8px 0 20px;
-}
+
+/* Responsive */
 @media (max-width: 760px) {
-  .scope-select {
-    width: 100%;
+  .page-heading {
+    flex-direction: column;
+    gap: 16px;
+  }
+  .filters-panel {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .filters-panel mat-button-toggle-group {
+    display: flex;
+  }
+  .filters-panel mat-button-toggle {
+    flex: 1 1 0;
     min-width: 0;
   }
-  .data-table .numeric {
-    text-align: left;
+  .filters-panel ::ng-deep .mat-button-toggle-label-content {
+    padding: 0 8px;
+    white-space: normal;
+    line-height: 1.2;
   }
-  mat-button-toggle-group {
+  .scope-select {
     width: 100%;
   }
-  mat-button-toggle {
-    flex: 1;
+  .date-range {
+    margin-left: 0;
+    text-align: center;
+    margin-top: 8px;
+  }
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
   }
 }

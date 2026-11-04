@@ -4,89 +4,67 @@
       <h1><mat-icon aria-hidden="true">insights</mat-icon>{{ 'reporting.summary.title' | translate }}</h1>
       <p class="muted">{{ 'reporting.summary.subtitle' | translate }}</p>
     </div>
-    <div class="actions">
-      <mat-button-toggle-group [value]="days()" (change)="changePeriod($event.value)" [disabled]="store.isLoading()"
-                               [attr.aria-label]="'reporting.period.label' | translate">
-        @for (option of periods; track option) {
-          <mat-button-toggle [value]="option">{{ 'reporting.period.days-' + option | translate }}</mat-button-toggle>
-        }
-      </mat-button-toggle-group>
-      @if (!store.environmentsEmpty()) {
-        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="scope-select">
-          <mat-label>{{ 'environments.selector' | translate }}</mat-label>
-          <mat-icon matPrefix aria-hidden="true">meeting_room</mat-icon>
-          <mat-select [value]="environmentId() ?? ALL_ENVIRONMENTS" (selectionChange)="changeEnvironment($event.value)">
-            <mat-option [value]="ALL_ENVIRONMENTS">{{ 'reporting.all-environments' | translate }}</mat-option>
-            @for (environment of store.environments(); track environment.id) {
-              <mat-option [value]="environment.id">{{ environment.code }} · {{ environment.name }}</mat-option>
-            }
-          </mat-select>
-        </mat-form-field>
-      }
-    </div>
   </header>
-
-  @if (store.error(); as error) {
-    <p class="error" role="alert">{{ error | translate }}</p>
-  }
-
-  @if (store.environmentsEmpty()) {
-    <p class="notice">{{ 'reporting.no-environments' | translate }}</p>
-  } @else if (store.isLoading()) {
-    <div class="loading" role="status"><mat-spinner diameter="40" [attr.aria-label]="'onboarding.loading-data' | translate" /></div>
-  } @else if (store.dashboard(); as dashboard) {
-    @if (dashboard.from && dashboard.to) {
-      <p class="period-line">
-        {{ 'reporting.period.range' | translate: { from: (dashboard.from | date:'short'), to: (dashboard.to | date:'short') } }}
-      </p>
+  <div class="filters-panel">
+    <mat-button-toggle-group [value]="days()" (change)="changePeriod($event.value)" [disabled]="store.isLoading()">
+      @for (option of periods; track option) {
+        <mat-button-toggle [value]="option">{{ 'reporting.period.days-' + option | translate }}</mat-button-toggle>
+      }
+    </mat-button-toggle-group>
+    @if (!store.environmentsEmpty()) {
+      <mat-form-field appearance="outline" subscriptSizing="dynamic" class="scope-select">
+        <mat-select [value]="environmentId() ?? ALL_ENVIRONMENTS" (selectionChange)="changeEnvironment($event.value)">
+          <mat-option [value]="ALL_ENVIRONMENTS">{{ 'reporting.all-environments' | translate }}</mat-option>
+          @for (environment of store.environments(); track environment.id) {
+            <mat-option [value]="environment.id">{{ environment.code }} · {{ environment.name }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
     }
-
-    <h2>{{ 'reporting.summary.readings-title' | translate }}</h2>
+    @if (store.dashboard()?.from && store.dashboard()?.to) {
+      <span class="date-range">
+        {{ store.dashboard()!.from | dateTime }} - {{ store.dashboard()!.to | dateTime }}
+      </span>
+    }
+  </div>
+  @if (store.error()) {
+    <p class="error" role="alert">{{ store.error() | translate }}</p>
+  } @else if (store.isLoading()) {
+    <div class="loading"><mat-spinner diameter="40" /></div>
+  } @else if (store.dashboard()) {
+    <div class="section-header">
+      <h2>{{ 'reporting.summary.readings-title' | translate }} <span class="badge">{{ 'reporting.summary.filter-hint' | translate }}</span></h2>
+      <mat-button-toggle-group [value]="viewMode()" (change)="changeView($event.value)">
+        <mat-button-toggle value="cards">{{ 'reporting.summary.view-cards' | translate }}</mat-button-toggle>
+        <mat-button-toggle value="table">{{ 'reporting.summary.view-table' | translate }}</mat-button-toggle>
+      </mat-button-toggle-group>
+    </div>
     @for (group of groups(); track group.environment.id) {
       <h3>{{ group.environment.code }} · {{ group.environment.name }}</h3>
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>{{ 'reporting.fields.device' | translate }}</th>
-            <th>{{ 'reporting.fields.variable' | translate }}</th>
-            <th class="numeric">{{ 'reporting.fields.readings' | translate }}</th>
-            <th class="numeric">{{ 'reporting.fields.average' | translate }}</th>
-            <th class="numeric">{{ 'reporting.fields.minimum' | translate }}</th>
-            <th class="numeric">{{ 'reporting.fields.maximum' | translate }}</th>
-            <th>{{ 'reporting.fields.last-reading' | translate }}</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (summary of group.summaries; track summary.deviceId + summary.metric + summary.unit) {
-            <tr>
-              <td [attr.data-label]="'reporting.fields.device' | translate">{{ deviceLabel(summary.deviceId) }}</td>
-              <td [attr.data-label]="'reporting.fields.variable' | translate">{{ 'tracking.metrics.' + summary.metric | translate }}</td>
-              <td class="numeric" [attr.data-label]="'reporting.fields.readings' | translate">{{ summary.readings | number }}</td>
-              <td class="numeric" [attr.data-label]="'reporting.fields.average' | translate">{{ summary.average | number:'1.0-2' }} {{ summary.unit }}</td>
-              <td class="numeric" [attr.data-label]="'reporting.fields.minimum' | translate">{{ summary.minimum | number:'1.0-2' }} {{ summary.unit }}</td>
-              <td class="numeric" [attr.data-label]="'reporting.fields.maximum' | translate">{{ summary.maximum | number:'1.0-2' }} {{ summary.unit }}</td>
-              <td [attr.data-label]="'reporting.fields.last-reading' | translate">{{ summary.lastMeasuredAt | date:'short' }}</td>
-            </tr>
-          }
-        </tbody>
-      </table>
-    } @empty {
-      <p class="notice">{{ 'reporting.summary.no-readings' | translate }}</p>
-    }
-    @if (groups().length) {
-      <p class="muted formula">{{ 'reporting.summary.formula' | translate }}</p>
-    }
 
-    <h2>{{ 'reporting.summary.records-title' | translate }}</h2>
-    @if (dashboard.metrics.length) {
-      <div class="summary-strip">
-        @for (metric of dashboard.metrics; track metric.name) {
-          <div><span>{{ 'operational-metrics.' + metric.name | translate }}</span><strong>{{ metric.value | number }}</strong></div>
-        }
+      @if (viewMode() === 'cards') {
+        <app-kpi-summary-cards
+          [summaries]="group.summaries"
+          [deviceNameFn]="deviceName"
+          [profiles]="store.profiles()" />
+      } @else {
+        <app-kpi-table
+          [summaries]="group.summaries"
+          [deviceNameFn]="deviceName"
+        />
+      }
+    } @empty {
+      <div class="empty-state">
+        <mat-icon>query_stats</mat-icon>
+        <h3>{{ 'reporting.summary.no-readings' | translate }}</h3>
+        <p>{{ 'reporting.summary.no-readings-hint' | translate }}</p>
+        <button mat-stroked-button (click)="changePeriod(31)">{{ 'reporting.summary.view-31-days' | translate }}</button>
       </div>
-      <p class="muted">{{ 'reporting.summary.records-note' | translate }}</p>
-    } @else {
-      <p class="muted">{{ 'reporting.summary.no-records' | translate }}</p>
     }
+    <p class="muted formula">{{ 'reporting.summary.formula' | translate }}</p>
+    <div class="section-header">
+      <h2>{{ 'reporting.summary.records-title' | translate }} <span class="badge">{{ 'reporting.summary.records-hint' | translate }}</span></h2>
+    </div>
+    <app-kpi-records [metrics]="store.dashboard()!.metrics" />
   }
 </main>

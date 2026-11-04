@@ -1,5 +1,4 @@
 import { Routes } from '@angular/router';
-import { Layout } from '../../shared/presentation/components/layout/layout';
 import { operatorGuard } from '../../iam/infrastructure/role-guards';
 
 // Lazy loaders of the views of the bounded context.
@@ -34,9 +33,11 @@ const batch = `${product}/batches/:batchId`;
  * Routing of Product Batch Management.
  *
  * @remarks
- * Products and batches are addressed inside an environment, mirroring
+ * `/batches` lists every batch of the laboratory and `/batches/environments` opens the production environment
+ * whose products are shown. Products and batches are addressed inside an environment, mirroring
  * /api/v1/laboratories/{laboratoryId}/environments/{environmentId}/products/{productId}/batches.
- * The laboratory-wide list and the batch-detail/:id link used by other modules resolve the full path.
+ * Links that only know the batch id (`/batches/:batchId`) resolve the full path. The view-named paths used
+ * before semantic routes redirect to their new address.
  *
  * Registering a batch is guarded by the operator guard; releasing and rejecting are restricted to quality
  * managers inside their own views.
@@ -44,24 +45,21 @@ const batch = `${product}/batches/:batchId`;
  * @author Qualitrack
  */
 export const batchRoutes: Routes = [
-  {
-    path: '',
-    component: Layout,
-    children: [
-      { path: '', loadComponent: batchHome, pathMatch: 'full' },
-      { path: 'batch-list', loadComponent: batchList },
-      { path: 'environments/:environmentId/products', loadComponent: productCatalog },
-      { path: 'environments/:environmentId/products/new', loadComponent: productForm },
-      { path: product, loadComponent: productDetail },
-      { path: `${product}/batches/new`, loadComponent: batchForm, canActivate: [operatorGuard] },
-      { path: batch, loadComponent: batchDetail },
-      { path: `${batch}/release`, loadComponent: batchReleaseForm },
-      { path: `${batch}/reject`, loadComponent: batchRejectForm },
-      // Links that only know the batch id (dashboard, inventory, reports) are resolved to the full path.
-      { path: 'batch-detail/:id', loadComponent: batchRedirect },
-      { path: 'batch-release-form/:id', redirectTo: 'batch-detail/:id' },
-      { path: 'batch-reject-form/:id', redirectTo: 'batch-detail/:id' },
-      { path: 'batch-form', redirectTo: '', pathMatch: 'full' },
-    ],
-  },
+  { path: '', loadComponent: batchList, pathMatch: 'full' },
+  { path: 'environments', loadComponent: batchHome, pathMatch: 'full' },
+  { path: 'environments/:environmentId/products', loadComponent: productCatalog },
+  { path: 'environments/:environmentId/products/new', loadComponent: productForm },
+  { path: product, loadComponent: productDetail },
+  { path: `${product}/batches/new`, loadComponent: batchForm, canActivate: [operatorGuard] },
+  { path: batch, loadComponent: batchDetail },
+  { path: `${batch}/release`, loadComponent: batchReleaseForm },
+  { path: `${batch}/reject`, loadComponent: batchRejectForm },
+  // View-named paths used before semantic routes.
+  { path: 'batch-list', redirectTo: '/batches', pathMatch: 'full' },
+  { path: 'batch-form', redirectTo: '/batches/environments', pathMatch: 'full' },
+  { path: 'batch-detail/:id', redirectTo: '/batches/:id' },
+  { path: 'batch-release-form/:id', redirectTo: '/batches/:id' },
+  { path: 'batch-reject-form/:id', redirectTo: '/batches/:id' },
+  // Links that only know the batch id (dashboard, inventory, reports) are resolved to the full path.
+  { path: ':batchId', loadComponent: batchRedirect },
 ];

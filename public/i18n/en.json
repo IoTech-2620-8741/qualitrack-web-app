@@ -37,7 +37,7 @@
     "receiptNumber": "Supplier lot",
     "amount": "Received quantity",
     "receivedOn": "Received on",
-    "expiresOn": "Expires on", 
+    "expiresOn": "Expires on",
     "quarantineNotice": "This receipt will remain in quarantine until quality review.",
     "review": "Review",
     "decision": "Decision",
@@ -128,7 +128,7 @@
     "heroImageAlt": "Two female pharmacy professionals reviewing inventory"
   },
   "language-switcher": {
-  "aria-label": "Preferred language"
+    "aria-label": "Preferred language"
   },
   "auth": {
     "already-have-account": "Already have an account?",
@@ -340,6 +340,7 @@
     "clear": "Clear Filters",
     "refresh": "Refresh",
     "download": "Download",
+    "close": "Close",
     "export": "Export",
     "format": "Format",
     "date-range": "Date Range",
@@ -358,7 +359,9 @@
       "register": "Register",
       "search": "Search",
       "refresh": "Refresh"
-    }
+    },
+    "undo": "Undo",
+    "breadcrumb": "Breadcrumb"
   },
   "status": {
     "ON_TRACK": "On Track",
@@ -405,7 +408,12 @@
     "tracking-profiles": "Environmental Profiles",
     "subscription": "Subscription & Billing",
     "billing-summary": "Billing Summary",
-    "subscription-plans": "Subscription Plans"
+    "subscription-plans": "Subscription Plans",
+    "section": {
+      "operation": "Operation",
+      "quality": "Quality",
+      "administration": "Administration"
+    }
   },
   "dashboard": {
     "overview": {
@@ -545,7 +553,12 @@
       "select": "Select Plan",
       "selected": "Selected",
       "continue": "Continue to Checkout",
-      "empty": "No subscription plans are currently available."
+      "empty": "No subscription plans are currently available.",
+      "toggle-monthly": "Monthly",
+      "toggle-yearly": "Annually",
+      "period-label": "Billing period",
+      "get": "Get {{name}}",
+      "already-active": "You already have an active subscription. To change plans, go to Billing."
     },
     "billing-period": {
       "monthly": "Monthly",
@@ -676,7 +689,7 @@
     "kpi": {
       "critical": "Critical",
       "open": "Open alerts",
-      "attending": "Being attended"
+      "attending": "In progress"
     },
     "fields": {
       "parameter": "Variable",
@@ -704,7 +717,7 @@
     },
     "status": {
       "unresolved": "Open",
-      "acknowledged": "Being attended",
+      "acknowledged": "In progress",
       "resolved": "Resolved",
       "ignored": "Ignored"
     },
@@ -725,10 +738,23 @@
       "no-environment": "No environment",
       "normalized": "The condition returned to normal on {{date}}; the alert stays open until someone resolves it.",
       "timeline": "Follow-up",
-      "detected": "Detected on {{date}}.",
-      "last-deviation": "Last deviation on {{date}} ({{count}} deviations in the incident).",
-      "acknowledged": "Attended by user #{{user}} on {{date}}.",
-      "resolved": "Resolved by user #{{user}} on {{date}}:",
+      "step": {
+        "detected": "Detected · {{value}} {{unit}} (limit {{limit}})",
+        "last-deviation": "Last deviation",
+        "attending": "In progress by {{name}}",
+        "resolved": "Resolved by {{name}}",
+        "later": "{{time}} later",
+        "waiting-attention": "Pending: nobody has registered attention",
+        "waiting-resolution": "Pending: the corrective action is missing"
+      },
+      "user": "user #{{id}}",
+      "corrective-action": "Corrective action",
+      "templates": {
+        "label": "Corrective action templates",
+        "ventilation": { "label": "Ventilation adjusted", "text": "The ventilation of the area was adjusted and the reading was verified back in range." },
+        "filter": { "label": "Filter replaced", "text": "The filter was replaced and the reading was verified back in range." },
+        "sensor": { "label": "Sensor recalibrated", "text": "The sensor was recalibrated and the reading was verified as correct." }
+      },
       "actions-title": "Related actions",
       "no-actions": "The container monitor registered no actions for this variable during the incident.",
       "no-actions-environment": "Actions are reported by container monitors; the environmental device does not execute any.",
@@ -748,8 +774,7 @@
       "saved": "Notification preferences saved."
     },
     "no-environments": "Alerts are listed per environment. Register an environment and its IoT devices first.",
-    "normalized": "Condition back to normal",
-    "acknowledged": "The attention of the alert was registered.",
+    "normalized": "Condition normalized",
     "resolved": "The alert was resolved.",
     "errors": {
       "connection": "The alerts could not be loaded. Check your connection and try again.",
@@ -758,8 +783,60 @@
     },
     "active": {
       "title": "Active Alerts",
-      "subtitle": "Open alerts of the environment and its monitored containers, with their origin and severity.",
-      "empty": "There are no active alerts in this environment."
+      "subtitle": "Open deviations of the monitored environments and containers, from the most to the least urgent.",
+      "live": "Live · updated {{time}}",
+      "live-partial": "Partial data · updated {{time}}",
+      "unavailable": "The alerts of {{environments}} could not be read. What you see of those environments may be out of date.",
+      "retry": "Try again",
+      "new-alerts": "New alerts: {{count}}.",
+      "attention-registered": "{{alert}} in progress",
+      "attended-by-another": "Another person already attended this alert.",
+      "search": "Search device or variable",
+      "results": "Showing {{shown}} of {{total}} alerts.",
+      "no-results": "There are no alerts with these filters.",
+      "critical-banner": {
+        "title-one": "1 critical alert not attended.",
+        "title-many": "{{count}} critical alerts not attended.",
+        "oldest": "The oldest: {{device}} · {{variable}} {{value}} {{unit}}.",
+        "detail": "Opened {{time}} · nobody has registered attention",
+        "action": "View unattended critical"
+      },
+      "stats": {
+        "unattended": "Not attended",
+        "environments-one": "in 1 environment",
+        "environments-many": "in {{count}} environments",
+        "warnings-one": "1 warning",
+        "warnings-many": "{{count}} warnings",
+        "oldest": "oldest: {{time}}",
+        "normalized-one": "1 already normalized",
+        "normalized-many": "{{count}} already normalized"
+      },
+      "sort": {
+        "label": "Sort by",
+        "priority": "Priority",
+        "newest": "Newest",
+        "environment": "Environment"
+      },
+      "shortcuts": {
+        "label": "Shortcuts with the focus on the list:",
+        "move": "move"
+      },
+      "card": {
+        "limit": "limit {{value}} {{unit}}",
+        "opened": "Opened {{time}}",
+        "no-owner": "No one assigned",
+        "attending": "In progress {{time}}",
+        "attending-by": "In progress by {{name}} · {{time}}",
+        "notify": "Notify",
+        "resolve": "Resolve"
+      },
+      "empty": {
+        "title": "Everything within GMP parameters",
+        "message-one": "There are no open alerts in this environment.",
+        "message-many": "There are no open alerts in the {{count}} environments.",
+        "history": "View history",
+        "monitoring": "Go to monitoring"
+      }
     },
     "origin": {
       "ENVIRONMENT": "Environment",
@@ -770,6 +847,15 @@
       "sent": "The alert was e-mailed to {{count}} person(s).",
       "no-recipients": "Nobody else in the laboratory has e-mail notices enabled.",
       "failed": "The e-mail could not be sent. Check that e-mail is configured on the platform."
+    },
+    "page": {
+      "title": "Compliance alerts",
+      "preferences": "Notification preferences",
+      "sections": "Alert sections"
+    },
+    "tabs": {
+      "active": "Active",
+      "history": "History"
     }
   },
   "notifications": {
@@ -1224,17 +1310,75 @@
       "trend": "Trend"
     },
     "summary": {
+      "state-normal":       "Normal",
+      "state-warning":      "Warning",
+      "state-critical":     "Critical",
+      "state-unconfigured": "No threshold",
+      "min": "min",
+      "max": "max",
+      "filter-hint": "Changes with filter",
+      "view-cards": "Cards",
+      "view-table": "Table",
+      "no-readings-hint": "Devices in this environment sent no data. Extend the period to search further back.",
+      "view-31-days": "View last 31 days",
+      "records-hint": "Current totals · do not depend on the filter",
+      "link-equipment": "View equipment",
+      "link-alerts": "View alerts",
+      "link-batches": "View batches",
+      "recent": "Recent",
+      "readings": "readings",
+      "average": "average",
       "title": "Environmental summary",
       "subtitle": "Average, minimum and maximum of the readings of each device in the period, calculated from the recorded readings.",
       "readings-title": "Readings of the period",
       "no-readings": "There are no readings in the period, so no values are calculated.",
-      "formula": "Only numeric readings are summarized; the average is rounded to two decimals.",
+      "formula": "Only numeric readings are summarized; the average is rounded to two decimals. The state of each card is the worst one the readings reached in the period.",
       "records-title": "Laboratory records",
       "records-note": "Current counts of the records of the laboratory; they do not depend on the period or the environment.",
       "no-records": "The laboratory has no equipment or batches recorded yet."
     },
     "deviations": {
+      "detail-title": "Deviation Detail",
+      "back-to-chart": "Back to chart",
+      "all-events": "All events",
+      "readings": "readings",
+      "view-detail": "View detail",
+      "alert-type": "Alert type",
+      "all-alerts": "All alerts",
+      "clear-filters": "Clear filters",
+      "legend-reading": "Reading",
+      "legend-normal": "Normal range ({{min}} - {{max}} {{unit}})",
+      "legend-normal-up-to": "Normal range (up to {{max}} {{unit}})",
+      "legend-normal-from": "Normal range (from {{min}} {{unit}})",
+      "legend-warning": "Warning ({{min}} - {{max}} {{unit}})",
+      "legend-critical": "Critical > {{limit}} {{unit}}",
+      "legend-critical-below": "Critical < {{limit}} {{unit}}",
+      "no-thresholds": "This variable has no configured limits, so no ranges are shown.",
+      "tooltip-critical": "Critical · Limit {{limit}} {{unit}}",
+      "tooltip-warning": "Warning · Limit {{limit}} {{unit}}",
+      "date-range-label": "Date Range",
+      "date-start-placeholder": "Start",
+      "date-end-placeholder": "End",
+
+      "empty-title": "No indicators calculated",
+      "empty-desc": "There are no numeric readings for this environment in the selected period. Try changing the period or selecting another environment.",
       "title": "Deviation indicators",
+      "kpi": {
+        "variables": "Evaluated variables",
+        "time-in-range": "Time in range (avg.)",
+        "time-in-range-hint": "Time in normal condition",
+        "deviations": "Deviations",
+        "worse-readings": "Readings worse than the previous one",
+        "critical": "Critical",
+        "critical-events": "Critical events"
+      },
+      "view-chart": "Chart",
+      "view-table": "Table",
+      "events-title": "Period events",
+      "view-alert": "View alert",
+      "critical-label": "critical",
+      "limit": "limit",
+      "no-events": "No critical or warning events recorded in this period.",
       "subtitle": "Time in range and deviations of each variable of the environment in the period, calculated from the condition of the readings.",
       "not-enough": "Not enough readings",
       "formula": "Each evaluated reading keeps its condition until the next one; the time in range is the time in normal condition over the time between the first and the last evaluated reading. A deviation is a reading whose condition is worse than the previous one; it is critical when it enters the critical condition. Readings of variables without thresholds are not evaluated.",
@@ -1245,9 +1389,57 @@
   },
   "report-generator": {
     "title": "Report & Document Generator",
-    "generating": "Generating document",
+    "subtitle": "Traceability and compliance documents ready for DIGEMID audit.",
+    "generating": "Generating report...",
     "loading-options": "Loading records...",
+    "breadcrumbs": "Reports & KPIs / Report Generator",
     "retry": "Try again",
+    "format": "Format",
+    "step-1": "Report type",
+    "step-2": "Parameters",
+    "select-environment": "Environment",
+    "all-environments": "All environments",
+    "select-batch": "Select Batch",
+    "select-equipment": "Select Equipment",
+    "generate-excel": "Generate Excel",
+    "period": "Period",
+    "last-7-days": "Last 7 days",
+    "last-30-days": "Last 30 days",
+    "max-days-hint": "Maximum 366 days per report.",
+    "format-hint": "PDF for audit · CSV for Excel analysis",
+    "report-content": "Report content",
+    "preview": "Preview",
+    "generate-pdf": "Generate PDF",
+    "contents": {
+      "batch": {
+        "general": "General batch and product data",
+        "traceability": "Traceability of materials and batches used",
+        "equipment": "Equipment and personnel involved",
+        "storage": "Storage and quality decision",
+        "deviations": "Deviation review and SHA-256 signature"
+      },
+      "compliance": {
+        "summary": "Period summary and method",
+        "readings": "Readings by variable and environment (averages, min, max)",
+        "time-in-range": "Time in range and deviations",
+        "alerts": "Detected alerts and their resolution",
+        "actions": "Executed automatic actions (e.g., ventilation)"
+      },
+      "inventory": {
+        "date": "Business date and scope",
+        "environment": "Breakdown by environment",
+        "stock": "Physical stock vs. usable stock",
+        "expiration": "Batches with stock and expiration evaluation",
+        "author": "Authorship note and export date"
+      },
+      "equipment": {
+        "general": "Equipment data and activity period",
+        "limits": "Current configured limits",
+        "maintenance": "Maintenance record",
+        "audit": "Audit entries (actors and actions)",
+        "scope": "Scope note (without telemetry or certifications)"
+      }
+    },
     "errors": {
       "resource-unavailable": "The selected record is not available to your account. Reload this page and select an available record.",
       "session-expired": "Your session has expired. Sign in again.",
@@ -1540,7 +1732,8 @@
       "usage-edit-hint": "Change the usage from the environment list.",
       "max-length": "Use at most {{max}} characters."
     },
-    "selector": "Environment"
+    "selector": "Environment",
+    "all": "All environments ({{count}})"
   },
   "environment-usage": {
     "LABORATORY": "Laboratory",

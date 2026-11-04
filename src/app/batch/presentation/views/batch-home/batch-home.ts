@@ -25,7 +25,7 @@ import { BatchStore } from '../../../application/batch.store';
         <h1>
           <mat-icon aria-hidden="true">factory</mat-icon>{{ 'product-catalog.title' | translate }}
         </h1>
-        <a mat-stroked-button routerLink="/batches/batch-list">
+        <a mat-stroked-button routerLink="/batches">
           <mat-icon>list_alt</mat-icon>{{ 'batches.title' | translate }}
         </a>
       </header>

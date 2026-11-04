@@ -19,11 +19,8 @@ import { OverviewAlert } from '../domain/model/overview-alert.entity';
 import { OverviewReading } from '../domain/model/overview-reading.entity';
 import { OverviewSubscription } from '../domain/model/overview-subscription.entity';
 import { OverviewPlan } from '../domain/model/overview-plan.entity';
-
-import { GenerateBatchReportCommand } from '../domain/model/generate-batch-report.command';
-import { GenerateComplianceReportCommand } from '../domain/model/generate-compliance-report.command';
-import { GenerateInventoryReportCommand } from '../domain/model/generate-inventory-report.command';
-import { ExportEquipmentLogCommand } from '../domain/model/export-equipment-log.command';
+import { ReportOrder } from '../domain/model/report-order';
+import { OverviewEnvironmentalProfile } from '../domain/model/overview-environmental-profile.entity';
 
 /** State of one part of the operational overview: what is being read and what was read. */
 type OverviewState<T> = { status: 'idle' | 'loading' | 'ready' | 'error'; data: T | null };
@@ -68,6 +65,9 @@ export class RaStore {
   private readonly _auditedStaffMember = signal<AuditedStaffMember | null>(null);
   private readonly _staffActivityLoading = signal(false);
   private readonly _staffActivityError = signal<string | null>(null);
+  private readonly _profiles = signal<Record<number, OverviewEnvironmentalProfile | null>>({});
+  /** Devices whose profile was already asked for, so that it is requested once. */
+  private readonly requestedProfiles = new Set<number>();
 
   /** Activity of the selected staff member, newest first. */
   readonly staffActivity = this._staffActivity.asReadonly();
@@ -75,6 +75,8 @@ export class RaStore {
   readonly auditedStaffMember = this._auditedStaffMember.asReadonly();
   readonly staffActivityLoading = this._staffActivityLoading.asReadonly();
   readonly staffActivityError = this._staffActivityError.asReadonly();
+  /** Environmental profile by device; null if it does not exist, and no entry until it has been read. */
+  readonly profiles = this._profiles.asReadonly();
 
   /** Cancels the previous request and releases state when the activity route changes or is left. */
   clearStaffActivity(): void {
@@ -139,6 +141,11 @@ export class RaStore {
    * Latest confirmation as a translation key.
    */
   private readonly _successMsg = signal<string | null>(null);
+
+  /**
+   * Report generated for the preview: its file, the key of its parameters and how it is downloaded.
+   */
+  private readonly _reportPreview = signal<{ key: string; file: Blob; filename: string; success: string } | null>(null);
 
   /**
    * Read-only signal for the indicators of the laboratory.
@@ -338,6 +345,7 @@ export class RaStore {
   reloadOverview(): void {
     const preferredDevice = this._overviewDeviceId();
     const laboratoryId = this.iam.requireLaboratoryId();
+    this.clearProfiles();
     this.overviewRequests.forEach((request) => request.unsubscribe());
     this.overviewRequests.clear();
     this._overviewDeviceId.set(null);
@@ -558,49 +566,69 @@ export class RaStore {
   }
 
   /**
-   * Generates and downloads the traceability report of a batch (US96).
+   * Generates and downloads a report.
    *
-   * @param command - Batch, deviation section and format
+   * @remarks
+   * The platform stores every report it generates, so a report already generated for the preview with the same
+   * parameters is downloaded again instead of generating another one.
+   *
+   * @param order - Type and parameters of the report
    */
-  generateBatchReport(command: GenerateBatchReportCommand): void {
-    this.download(this.api.generateBatchReport(command),
-      `Batch_Report_${command.batchId}.${command.format.toLowerCase()}`, 'report-generator.success.batch',
-      'report-generator.errors.batch');
+  generateReport(order: ReportOrder): void {
+    const report = this.describeReport(order);
+    const preview = this._reportPreview();
+    if (preview?.key === report.key) {
+      this.downloadPreview();
+      return;
+    }
+    this.download(report.request(), report.filename, report.success, report.fallback);
   }
 
   /**
-   * Generates and downloads the environmental report of a period (US95).
+   * Generates a report to show it before downloading it, without downloading it.
    *
-   * @param command - Laboratory, optional environment, calendar days and format
+   * @remarks
+   * The file is kept until {@link RaStore.clearReportPreview}, so downloading it afterwards does not generate the
+   * report again. On failure the reason is exposed through {@link RaStore.error}.
+   *
+   * @param order - Type and parameters of the report
+   * @returns The file, or null when it could not be generated
    */
-  generateComplianceReport(command: GenerateComplianceReportCommand): void {
-    const scope = command.environmentId ?? command.laboratoryId;
-    this.download(this.api.generateComplianceReport(command),
-      `Environmental_Report_${scope}_${command.startDate}_${command.endDate}.${command.format.toLowerCase()}`,
-      'report-generator.success.compliance', 'report-generator.errors.compliance');
+  async previewReport(order: ReportOrder): Promise<Blob | null> {
+    const report = this.describeReport(order);
+    const preview = this._reportPreview();
+    if (preview?.key === report.key) return preview.file;
+    this._isLoading.set(true);
+    this._error.set(null);
+    this._successMsg.set(null);
+    try {
+      const file = await firstValueFrom(report.request());
+      this._reportPreview.set({ key: report.key, file, filename: report.filename, success: report.success });
+      return file;
+    } catch (error) {
+      this._error.set(this.formatError(error, report.fallback));
+      return null;
+    } finally {
+      this._isLoading.set(false);
+    }
   }
 
   /**
-   * Generates and downloads the inventory report of the laboratory or of one environment (US97).
-   *
-   * @param command - Laboratory, optional environment and format
+   * Downloads the report generated for the preview.
    */
-  generateInventoryReport(command: GenerateInventoryReportCommand): void {
-    const scope = command.environmentId ?? command.laboratoryId;
-    this.download(this.api.generateInventoryReport(command),
-      `Inventory_Report_${scope}.${command.format.toLowerCase()}`, 'report-generator.success.inventory',
-      'report-generator.errors.inventory');
+  downloadPreview(): void {
+    const preview = this._reportPreview();
+    if (!preview) return;
+    this._error.set(null);
+    this.downloadFile(preview.file, preview.filename);
+    this._successMsg.set(preview.success);
   }
 
   /**
-   * Exports and downloads the maintenance and operation log of an equipment (US98).
-   *
-   * @param command - Command containing equipment log export parameters
+   * Forgets the report generated for the preview, so the next download generates a new one.
    */
-  exportEquipmentLog(command: ExportEquipmentLogCommand): void {
-    this.download(this.api.exportEquipmentLog(command),
-      `Equipment_Log_${command.equipmentId}.${command.format.toLowerCase()}`, 'report-generator.success.equipment',
-      'report-generator.errors.equipment');
+  clearReportPreview(): void {
+    this._reportPreview.set(null);
   }
 
   /**
@@ -706,4 +734,91 @@ export class RaStore {
       }),
     );
   }
+
+  /**
+   * Reads the environmental profile of one device (environment or container monitor) so KPI cards can be colored.
+   *
+   * @remarks
+   * It dynamically chooses the correct endpoint based on the equipment type, so it waits until the equipment is known:
+   * call it from an effect, which runs again when the equipment arrives. Each profile is requested once.
+   * A 404 (not configured) resolves to null; other failures are silent.
+   *
+   * @param deviceId - The device whose profile is required.
+   * @param environmentId - The environment where the device is located.
+   */
+  loadProfile(deviceId: number, environmentId: number): void {
+    const equipment = this._overviewEquipment();
+    if (equipment.status !== 'ready' || this.requestedProfiles.has(deviceId)) return;
+    this.requestedProfiles.add(deviceId);
+    const laboratoryId = this.iam.requireLaboratoryId();
+    const isContainer = equipment.data?.find(e => e.id === deviceId)?.isContainerMonitor === true;
+    const request$ = isContainer
+      ? this.api.getOverviewContainerMonitorProfile(laboratoryId, environmentId, deviceId)
+      : this.api.getOverviewEnvironmentalProfile(laboratoryId, environmentId);
+    request$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (profile) => this._profiles.update((map) => ({ ...map, [deviceId]: profile })),
+        error: () => this._profiles.update((map) => ({ ...map, [deviceId]: null })),
+      });
+  }
+
+  /**
+   * Forgets the profiles read, forcing a new fetch next time they are needed.
+   *
+   * @remarks
+   * Useful when changing laboratories or manually reloading the dashboard.
+   */
+  clearProfiles(): void {
+    this.requestedProfiles.clear();
+    this._profiles.set({});
+  }
+
+  /**
+   * Request, file name and messages of a report.
+   *
+   * @param order - Type and parameters of the report
+   * @returns The key that identifies the report by its parameters, the request that generates it, its file name and
+   *   the translation keys of its success and failure
+   */
+  private describeReport(order: ReportOrder): ReportDescription {
+    const key = JSON.stringify(order);
+    const extension = order.command.format.toLowerCase();
+    switch (order.type) {
+      case 'batch':
+        return { key, request: () => this.api.generateBatchReport(order.command),
+          filename: `Batch_Report_${order.command.batchId}.${extension}`,
+          success: 'report-generator.success.batch', fallback: 'report-generator.errors.batch' };
+      case 'compliance': {
+        const { environmentId, laboratoryId, startDate, endDate } = order.command;
+        return { key, request: () => this.api.generateComplianceReport(order.command),
+          filename: `Environmental_Report_${environmentId ?? laboratoryId}_${startDate}_${endDate}.${extension}`,
+          success: 'report-generator.success.compliance', fallback: 'report-generator.errors.compliance' };
+      }
+      case 'inventory':
+        return { key, request: () => this.api.generateInventoryReport(order.command),
+          filename: `Inventory_Report_${order.command.environmentId ?? order.command.laboratoryId}.${extension}`,
+          success: 'report-generator.success.inventory', fallback: 'report-generator.errors.inventory' };
+      case 'equipment':
+        return { key, request: () => this.api.exportEquipmentLog(order.command),
+          filename: `Equipment_Log_${order.command.equipmentId}.${extension}`,
+          success: 'report-generator.success.equipment', fallback: 'report-generator.errors.equipment' };
+    }
+  }
+}
+
+/**
+ * How a report is generated and delivered.
+ */
+interface ReportDescription {
+  /** Identifies the report by its type and parameters. */
+  key: string;
+  /** Generates the report and reads its file. */
+  request: () => Observable<Blob>;
+  /** Name of the downloaded file. */
+  filename: string;
+  /** Translation key shown once the file is downloaded. */
+  success: string;
+  /** Translation key shown when the report cannot be generated. */
+  fallback: string;
 }

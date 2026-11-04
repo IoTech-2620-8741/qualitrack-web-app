@@ -1,0 +1,21 @@
+:host {display: block; color: #233b47; border-top: 1px solid #d5e0e5; padding-top: 16px; min-width: 0;}
+.section-header { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 18px; min-height: 40px; }
+h2 { font-size: 17px; margin: 0; display: flex; align-items: center; gap: 9px;}
+h2 mat-icon { color: #43766d; flex-shrink: 0; }
+.batches-section { min-width: 0; border-top: 1px solid #d5e0e5; padding-top: 16px; }
+.distribution-row { display: grid; grid-template-columns: 95px minmax(0, 1fr) 24px; align-items: center; gap: 10px; font-size: 12px; margin-bottom: 12px; }
+.distribution-row strong { text-align: right; }
+meter { width: 100%; height: 13px; }
+meter::-webkit-meter-bar { border: 0; background: #e3e9ec; }
+meter::-webkit-meter-optimum-value { background: #298c82; }
+meter.REJECTED::-webkit-meter-optimum-value { background: #c85058; }
+meter.PENDING::-webkit-meter-optimum-value { background: #c99a39; }
+meter.IN_PROGRESS::-webkit-meter-optimum-value { background: #3883bb; }
+.batch-row { padding: 12px 0; }
+.record-row { display: flex; align-items: center; gap: 12px; padding: 15px 0; border-bottom: 1px solid #dce4e9; text-decoration: none; color: inherit; }
+.record-row:hover { background: #eaf1f4; }
+.record-main { min-width: 0; flex: 1; }
+.record-main strong, .record-main span, .record-main small, .record-status small { display: block; overflow-wrap: anywhere; }
+.record-main strong { font-size: 13px; margin-bottom: 4px; }
+.record-main span { font-size: 12px; }
+.record-main small, .record-status small { font-size: 11px; color: #637680; margin-top: 5px; }

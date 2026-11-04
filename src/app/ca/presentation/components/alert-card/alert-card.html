@@ -1,0 +1,150 @@
+<article
+  #card
+  class="alert-card"
+  tabindex="-1"
+  [class]="'severity-' + alert().severity.toLowerCase()"
+  [class.is-new]="isNew()"
+>
+  <div class="summary">
+    <div class="chips">
+      <app-status-chip
+        [tone]="severityChip().tone"
+        [icon]="severityChip().icon"
+        [labelKey]="severityChip().labelKey"
+      />
+      <app-status-chip
+        [tone]="statusChip().tone"
+        [icon]="statusChip().icon"
+        [labelKey]="statusChip().labelKey"
+      />
+      @if (alert().isNormalized) {
+        <app-status-chip
+          [tone]="normalizedChip.tone"
+          [icon]="normalizedChip.icon"
+          [labelKey]="normalizedChip.labelKey"
+        />
+      }
+    </div>
+
+    <h2>{{ title() }}</h2>
+
+    <p class="origin">
+      @if (environmentLabel(); as environmentLabel) {
+        <span><mat-icon aria-hidden="true">apartment</mat-icon>{{ environmentLabel }}</span>
+      }
+      <span>
+        <mat-icon aria-hidden="true">{{ originIcon() }}</mat-icon>
+        {{
+          (alert().origin ? 'ca-alerts.origin.' + alert().origin : 'ca-alerts.origin.EQUIPMENT')
+            | translate
+        }}
+      </span>
+    </p>
+
+    <p class="reading">
+      <strong class="value"
+        >{{ alert().recordedValue | number: '1.0-2' }} {{ alert().unit }}</strong
+      >
+      <span class="limit">
+        {{
+          'ca-alerts.active.card.limit'
+            | translate: { value: (alert().thresholdValue | number: '1.0-2'), unit: alert().unit }
+        }}
+      </span>
+      @if (alert().thresholdExcess; as excess) {
+        <span class="excess">
+          <mat-icon aria-hidden="true">{{
+            excess.direction === 'above' ? 'arrow_upward' : 'arrow_downward'
+          }}</mat-icon>
+          {{ excess.direction === 'above' ? '+' : '−' }}{{ excess.amount | number: '1.0-1' }}
+          {{ excess.measure === 'percent' ? '%' : alert().unit }}
+        </span>
+      }
+      @if (alert().deviationCount > 1) {
+        <span class="limit">
+          · {{ 'ca-alerts.fields.deviations' | translate: { count: alert().deviationCount } }}
+        </span>
+      }
+    </p>
+
+    <p class="meta">
+      <span>
+        <mat-icon aria-hidden="true">schedule</mat-icon>
+        {{
+          'ca-alerts.active.card.opened'
+            | translate: { time: (alert().timestamp | relativeTime: now()) }
+        }}
+        · {{ alert().timestamp | dateTime }}
+      </span>
+      @if (alert().status === 'UNRESOLVED') {
+        <span
+          ><mat-icon aria-hidden="true">person_off</mat-icon
+          >{{ 'ca-alerts.active.card.no-owner' | translate }}</span
+        >
+      } @else {
+        <span>
+          <mat-icon aria-hidden="true">pan_tool</mat-icon>
+          {{
+            (attendedBy()
+              ? 'ca-alerts.active.card.attending-by'
+              : 'ca-alerts.active.card.attending'
+            )
+              | translate
+                : { name: attendedBy(), time: (alert().acknowledgedAt | relativeTime: now()) }
+          }}
+        </span>
+      }
+    </p>
+  </div>
+
+  <div class="actions">
+    <a
+      mat-button
+      [routerLink]="['/alerts', alert().id]"
+      queryParamsHandling="preserve"
+      [attr.aria-label]="('ca-alerts.actions.view-details' | translate) + ': ' + title()"
+      (click)="opening.emit()"
+    >
+      {{ 'ca-alerts.actions.view-details' | translate }}
+    </a>
+    @if (canAttend()) {
+      @if (alert().isOpen && alert().severity === 'CRITICAL') {
+        <button
+          mat-stroked-button
+          type="button"
+          [disabled]="saving()"
+          [attr.aria-label]="('ca-alerts.active.card.notify' | translate) + ': ' + title()"
+          (click)="notify.emit()"
+        >
+          <mat-icon aria-hidden="true">forward_to_inbox</mat-icon>
+          {{ 'ca-alerts.active.card.notify' | translate }}
+        </button>
+      }
+      @if (alert().status === 'UNRESOLVED') {
+        <button
+          #primaryAction
+          mat-flat-button
+          type="button"
+          [attr.aria-label]="('ca-alerts.actions.acknowledge' | translate) + ': ' + title()"
+          (click)="attend.emit()"
+        >
+          <mat-icon aria-hidden="true">pan_tool</mat-icon>
+          {{ 'ca-alerts.actions.acknowledge' | translate }}
+        </button>
+      } @else {
+        <a
+          #primaryAction
+          mat-flat-button
+          [routerLink]="['/alerts', alert().id]"
+          [queryParams]="{ panel: 'resolve' }"
+          queryParamsHandling="merge"
+          [attr.aria-label]="('ca-alerts.active.card.resolve' | translate) + ': ' + title()"
+          (click)="opening.emit()"
+        >
+          <mat-icon aria-hidden="true">task_alt</mat-icon>
+          {{ 'ca-alerts.active.card.resolve' | translate }}
+        </a>
+      }
+    }
+  </div>
+</article>

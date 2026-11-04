@@ -14,7 +14,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { IamStore, errorStatus } from '../../../application/iam.store';
-import { Toolbar } from '../../../../shared/presentation/components/toolbar/toolbar';
 
 /** Password fields of the form whose visibility can be toggled. */
 type PasswordField = 'currentPassword' | 'newPassword' | 'confirmPassword';
@@ -31,7 +30,7 @@ type PasswordField = 'currentPassword' | 'newPassword' | 'confirmPassword';
 @Component({
   selector: 'app-change-password-form',
   standalone: true,
-  imports: [ReactiveFormsModule, TranslatePipe, MatIconModule, MatProgressSpinnerModule, Toolbar],
+  imports: [ReactiveFormsModule, TranslatePipe, MatIconModule, MatProgressSpinnerModule],
   templateUrl: './change-password-form.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './change-password-form.css',

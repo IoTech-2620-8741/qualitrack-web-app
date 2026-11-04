@@ -123,9 +123,9 @@
     "subscription-paused": "Tu laboratorio no tiene una suscripción activa. Pide a tu QA Manager que la renueve e inténtalo nuevamente."
   },
   "home": {
-  "title": "Nos preocupamos por la precisión, aseguramos la calidad.",
-  "content": "Gestión avanzada de datos para entornos operativos de alto riesgo. Asegure el cumplimiento normativo total y la precisión a nivel de laboratorio.",
-  "heroImageAlt": "Dos profesionales farmacéuticas revisando el inventario"
+    "title": "Nos preocupamos por la precisión, aseguramos la calidad.",
+    "content": "Gestión avanzada de datos para entornos operativos de alto riesgo. Asegure el cumplimiento normativo total y la precisión a nivel de laboratorio.",
+    "heroImageAlt": "Dos profesionales farmacéuticas revisando el inventario"
   },
   "language-switcher": {
     "aria-label": "Idioma preferido"
@@ -340,6 +340,7 @@
     "clear": "Limpiar Filtros",
     "refresh": "Actualizar",
     "download": "Descargar",
+    "close": "Cerrar",
     "export": "Exportar",
     "format": "Formato",
     "date-range": "Rango de Fechas",
@@ -358,7 +359,9 @@
       "register": "Registrar",
       "search": "Buscar",
       "refresh": "Actualizar"
-    }
+    },
+    "undo": "Deshacer",
+    "breadcrumb": "Ruta de navegación"
   },
   "status": {
     "ON_TRACK": "En Camino",
@@ -405,7 +408,12 @@
     "tracking-profiles": "Perfiles ambientales",
     "subscription": "Suscripción y facturación",
     "billing-summary": "Resumen de facturación",
-    "subscription-plans": "Planes de suscripción"
+    "subscription-plans": "Planes de suscripción",
+    "section": {
+      "operation": "Operación",
+      "quality": "Calidad",
+      "administration": "Administración"
+    }
   },
   "dashboard": {
     "overview": {
@@ -545,7 +553,12 @@
       "select": "Seleccionar Plan",
       "selected": "Seleccionado",
       "continue": "Continuar al Pago",
-      "empty": "No hay planes de suscripción disponibles actualmente."
+      "empty": "No hay planes de suscripción disponibles actualmente.",
+      "toggle-monthly": "Mensual",
+      "toggle-yearly": "Anual",
+      "period-label": "Periodo de facturación",
+      "get": "Obtener {{name}}",
+      "already-active": "Ya tienes una suscripción activa. Para cambiar de plan, ve a Facturación."
     },
     "billing-period": {
       "monthly": "Mensual",
@@ -700,7 +713,7 @@
       "low": "Baja",
       "info": "Informativo",
       "warning": "Advertencia",
-      "critical": "Crítico"
+      "critical": "Crítica"
     },
     "status": {
       "unresolved": "Abierta",
@@ -725,10 +738,23 @@
       "no-environment": "Sin ambiente",
       "normalized": "La condición volvió a la normalidad el {{date}}; la alerta sigue abierta hasta que alguien la resuelva.",
       "timeline": "Seguimiento",
-      "detected": "Detectada el {{date}}.",
-      "last-deviation": "Última desviación el {{date}} ({{count}} desviaciones en el incidente).",
-      "acknowledged": "Atendida por el usuario #{{user}} el {{date}}.",
-      "resolved": "Resuelta por el usuario #{{user}} el {{date}}:",
+      "step": {
+        "detected": "Detectada · {{value}} {{unit}} (límite {{limit}})",
+        "last-deviation": "Última desviación",
+        "attending": "En atención por {{name}}",
+        "resolved": "Resuelta por {{name}}",
+        "later": "{{time}} después",
+        "waiting-attention": "Pendiente: nadie ha registrado atención",
+        "waiting-resolution": "Pendiente: falta registrar la acción correctiva"
+      },
+      "user": "usuario #{{id}}",
+      "corrective-action": "Acción correctiva",
+      "templates": {
+        "label": "Plantillas de acción correctiva",
+        "ventilation": { "label": "Ventilación ajustada", "text": "Se ajustó la ventilación del área y se verificó que la lectura volvió al rango." },
+        "filter": { "label": "Filtro reemplazado", "text": "Se reemplazó el filtro y se verificó que la lectura volvió al rango." },
+        "sensor": { "label": "Sensor recalibrado", "text": "Se recalibró el sensor y se verificó que la lectura es correcta." }
+      },
       "actions-title": "Actuaciones relacionadas",
       "no-actions": "El monitor del contenedor no registró actuaciones para esta variable durante el incidente.",
       "no-actions-environment": "Las actuaciones las informan los monitores de contenedor; el dispositivo ambiental no ejecuta acciones.",
@@ -749,7 +775,6 @@
     },
     "no-environments": "Las alertas se consultan por ambiente. Registra primero un ambiente y sus dispositivos IoT.",
     "normalized": "Condición normalizada",
-    "acknowledged": "Se registró la atención de la alerta.",
     "resolved": "La alerta quedó resuelta.",
     "errors": {
       "connection": "No se pudieron cargar las alertas. Revisa tu conexión e inténtalo de nuevo.",
@@ -758,8 +783,60 @@
     },
     "active": {
       "title": "Alertas activas",
-      "subtitle": "Alertas abiertas del ambiente y de sus contenedores monitoreados, con su origen y severidad.",
-      "empty": "No hay alertas activas en este ambiente."
+      "subtitle": "Desviaciones abiertas de los ambientes y contenedores monitoreados, de la más urgente a la menos urgente.",
+      "live": "En vivo · actualizado {{time}}",
+      "live-partial": "Datos parciales · actualizado {{time}}",
+      "unavailable": "No se pudieron leer las alertas de: {{environments}}. Lo que ves de esos ambientes puede no estar al día.",
+      "retry": "Reintentar",
+      "new-alerts": "Alertas nuevas: {{count}}.",
+      "attention-registered": "{{alert}} en atención",
+      "attended-by-another": "Otra persona ya atendió esta alerta.",
+      "search": "Buscar dispositivo o variable",
+      "results": "Se muestran {{shown}} de {{total}} alertas.",
+      "no-results": "No hay alertas con estos filtros.",
+      "critical-banner": {
+        "title-one": "1 alerta crítica sin atender.",
+        "title-many": "{{count}} alertas críticas sin atender.",
+        "oldest": "La más antigua: {{device}} · {{variable}} {{value}} {{unit}}.",
+        "detail": "Abierta {{time}} · nadie la ha registrado en atención",
+        "action": "Ver críticas sin atender"
+      },
+      "stats": {
+        "unattended": "Sin atender",
+        "environments-one": "en 1 ambiente",
+        "environments-many": "en {{count}} ambientes",
+        "warnings-one": "1 advertencia",
+        "warnings-many": "{{count}} advertencias",
+        "oldest": "más antigua: {{time}}",
+        "normalized-one": "1 ya normalizada",
+        "normalized-many": "{{count}} ya normalizadas"
+      },
+      "sort": {
+        "label": "Ordenar por",
+        "priority": "Prioridad",
+        "newest": "Más recientes",
+        "environment": "Ambiente"
+      },
+      "shortcuts": {
+        "label": "Atajos con el foco en la lista:",
+        "move": "moverse"
+      },
+      "card": {
+        "limit": "límite {{value}} {{unit}}",
+        "opened": "Abierta {{time}}",
+        "no-owner": "Sin responsable",
+        "attending": "En atención {{time}}",
+        "attending-by": "En atención por {{name}} · {{time}}",
+        "notify": "Avisar",
+        "resolve": "Resolver"
+      },
+      "empty": {
+        "title": "Todo dentro de los parámetros BPM",
+        "message-one": "No hay alertas abiertas en este ambiente.",
+        "message-many": "No hay alertas abiertas en los {{count}} ambientes.",
+        "history": "Ver historial",
+        "monitoring": "Ir a monitoreo"
+      }
     },
     "origin": {
       "ENVIRONMENT": "Ambiente",
@@ -770,6 +847,15 @@
       "sent": "Se avisó por correo a {{count}} persona(s).",
       "no-recipients": "Nadie más del laboratorio tiene activados los avisos por correo.",
       "failed": "No se pudo enviar el correo. Revisa que el envío de correos esté configurado en la plataforma."
+    },
+    "page": {
+      "title": "Alertas de cumplimiento",
+      "preferences": "Preferencias de aviso",
+      "sections": "Secciones de alertas"
+    },
+    "tabs": {
+      "active": "Activas",
+      "history": "Historial"
     }
   },
   "notifications": {
@@ -1224,18 +1310,75 @@
       "trend": "Tendencia"
     },
     "summary": {
+      "state-normal":       "Normal",
+      "state-warning":      "Advertencia",
+      "state-critical":     "Crítico",
+      "state-unconfigured": "Sin umbral",
+      "min": "mín",
+      "max": "máx",
+      "filter-hint": "Cambia con el filtro",
+      "view-cards": "Tarjetas",
+      "view-table": "Tabla",
+      "no-readings-hint": "Los dispositivos de este ambiente no enviaron datos. Amplía el periodo para buscar más atrás.",
+      "view-31-days": "Ver últimos 31 días",
+      "records-hint": "Totales actuales · no dependen del filtro",
+      "link-equipment": "Ver equipos",
+      "link-alerts": "Ver alertas",
+      "link-batches": "Ver lotes",
+      "recent": "Reciente",
+      "readings": "lecturas",
+      "average": "promedio",
       "title": "Resumen ambiental",
       "subtitle": "Promedio, mínimo y máximo de las lecturas de cada dispositivo en el periodo, calculados a partir de las lecturas registradas.",
       "readings-title": "Lecturas del periodo",
       "no-readings": "No hay lecturas en el periodo, por lo que no se calcula ningún valor.",
-      "formula": "Solo se resumen las lecturas numéricas; el promedio se redondea a dos decimales.",
+      "formula": "Solo se resumen las lecturas numéricas; el promedio se redondea a dos decimales. El estado de cada tarjeta es el peor que alcanzaron las lecturas en el periodo.",
       "records-title": "Registros del laboratorio",
       "records-note": "Conteos actuales de los registros del laboratorio; no dependen del periodo ni del ambiente.",
       "no-records": "El laboratorio aún no tiene equipos ni lotes registrados."
     },
     "deviations": {
+      "detail-title": "Detalle de Desviación",
+      "back-to-chart": "Volver al gráfico",
+      "all-events": "Todos los eventos",
+      "readings": "lecturas",
+      "view-detail": "Ver detalle",
+      "alert-type": "Tipo de alerta",
+      "all-alerts": "Todas las alertas",
+      "clear-filters": "Limpiar filtros",
+      "legend-reading": "Lectura",
+      "legend-normal": "Rango normal ({{min}} - {{max}} {{unit}})",
+      "legend-normal-up-to": "Rango normal (hasta {{max}} {{unit}})",
+      "legend-normal-from": "Rango normal (desde {{min}} {{unit}})",
+      "legend-warning": "Advertencia ({{min}} - {{max}} {{unit}})",
+      "legend-critical": "Crítica > {{limit}} {{unit}}",
+      "legend-critical-below": "Crítica < {{limit}} {{unit}}",
+      "no-thresholds": "Esta variable no tiene límites configurados, por eso no se muestran rangos.",
+      "tooltip-critical": "Crítica · Límite {{limit}} {{unit}}",
+      "tooltip-warning": "Advertencia · Límite {{limit}} {{unit}}",
+      "date-range-label": "Rango de fechas",
+      "date-start-placeholder": "Inicio",
+      "date-end-placeholder": "Fin",
       "title": "Indicadores de desviación",
+      "empty-title": "Sin indicadores calculados",
+      "empty-desc": "No hay lecturas numéricas de este ambiente en el periodo seleccionado. Intenta cambiar el periodo o seleccionar otro ambiente.",
       "subtitle": "Tiempo en rango y desviaciones de cada variable del ambiente en el periodo, calculados a partir de la condición de las lecturas.",
+      "kpi": {
+        "variables": "Variables evaluadas",
+        "time-in-range": "Tiempo en rango (prom.)",
+        "time-in-range-hint": "Tiempo en condición normal",
+        "deviations": "Desviaciones",
+        "worse-readings": "Lecturas peores que la anterior",
+        "critical": "Críticas",
+        "critical-events": "Eventos críticos"
+      },
+      "view-chart": "Gráfico",
+      "view-table": "Tabla",
+      "events-title": "Eventos del periodo",
+      "view-alert": "Ver alerta",
+      "critical-label": "crítica",
+      "limit": "límite",
+      "no-events": "No se registraron eventos críticos o de advertencia en este periodo.",
       "not-enough": "Lecturas insuficientes",
       "formula": "Cada lectura evaluada mantiene su condición hasta la siguiente; el tiempo en rango es el tiempo en condición normal sobre el tiempo entre la primera y la última lectura evaluada. Una desviación es una lectura cuya condición es peor que la anterior; es crítica cuando entra en condición crítica. Las lecturas de variables sin umbrales no se evalúan.",
       "chart": "Lecturas del periodo",
@@ -1245,9 +1388,57 @@
   },
   "report-generator": {
     "title": "Generador de Reportes y Documentos",
-    "generating": "Generando documento",
+    "subtitle": "Documentos de trazabilidad y cumplimiento listos para auditoría DIGEMID.",
+    "generating": "Generando reporte...",
     "loading-options": "Cargando registros...",
+    "breadcrumbs": "Reportes y KPIs / Generador de reportes",
     "retry": "Reintentar",
+    "format": "Formato",
+    "step-1": "Tipo de reporte",
+    "step-2": "Parámetros",
+    "select-environment": "Ambiente",
+    "all-environments": "Todos los ambientes",
+    "select-batch": "Seleccionar Lote",
+    "select-equipment": "Seleccionar Equipo",
+    "generate-excel": "Generar Excel",
+    "period": "Periodo",
+    "last-7-days": "Últimos 7 días",
+    "last-30-days": "Últimos 30 días",
+    "max-days-hint": "Máximo 366 días por reporte.",
+    "format-hint": "PDF para auditoría · CSV para análisis en Excel",
+    "report-content": "Contenido del reporte",
+    "preview": "Vista previa",
+    "generate-pdf": "Generar PDF",
+    "contents": {
+      "batch": {
+        "general": "Datos generales del lote y producto",
+        "traceability": "Trazabilidad de materiales y lotes usados",
+        "equipment": "Equipos y personal involucrado",
+        "storage": "Almacenamiento y decisión de calidad",
+        "deviations": "Revisión de desviaciones y firma SHA-256"
+      },
+      "compliance": {
+        "summary": "Resumen del periodo y método",
+        "readings": "Lecturas por variable y ambiente (promedios, mínimos, máximos)",
+        "time-in-range": "Tiempo en rango y desviaciones",
+        "alerts": "Alertas detectadas y su resolución",
+        "actions": "Acciones automáticas ejecutadas (ej. ventilación)"
+      },
+      "inventory": {
+        "date": "Fecha de negocio y alcance",
+        "environment": "Desglose por ambiente",
+        "stock": "Stock físico vs. stock usable",
+        "expiration": "Lotes con stock y evaluación de vencimiento",
+        "author": "Nota de autoría y fecha de exportación"
+      },
+      "equipment": {
+        "general": "Datos del equipo y periodo de actividad",
+        "limits": "Límites configurados actuales",
+        "maintenance": "Registro de mantenimiento",
+        "audit": "Entradas de auditoría (actores y acciones)",
+        "scope": "Nota de alcance (sin telemetría ni certificaciones)"
+      }
+    },
     "errors": {
       "resource-unavailable": "El registro seleccionado no está disponible para tu cuenta. Recarga esta página y selecciona un registro disponible.",
       "session-expired": "Tu sesión ha vencido. Inicia sesión nuevamente.",
@@ -1540,7 +1731,8 @@
       "usage-edit-hint": "Cambia el uso desde la lista de ambientes.",
       "max-length": "Usa como máximo {{max}} caracteres."
     },
-    "selector": "Ambiente"
+    "selector": "Ambiente",
+    "all": "Todos los ambientes ({{count}})"
   },
   "environment-usage": {
     "LABORATORY": "Laboratorio",

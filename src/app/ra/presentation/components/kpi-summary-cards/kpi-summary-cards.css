@@ -1,0 +1,147 @@
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.kpi-card {
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  /* Green border on the left, as in the design */
+  border-left: 4px solid #10b981 !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+  border-radius: 12px !important;
+}
+
+.kpi-card--warning      { border-left-color: #f59e0b !important; }
+.kpi-card--critical     { border-left-color: #ef4444 !important; }
+.kpi-card--unconfigured { border-left-color: #94a3b8 !important; }
+
+/* Ajustes al header de Material */
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 20px 20px 0 20px;
+  margin-bottom: 0;
+}
+
+.variable {
+  font-size: 13px !important;
+  color: #64748b;
+  font-weight: 500;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.status-badge {
+  background: #d1fae5;
+  color: #047857;
+  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.status-badge--warning  { background: #fef3c7; color: #b45309; }
+.status-badge--critical { background: #fee2e2; color: #b91c1c; }
+
+.status-badge mat-icon {
+  font-size: 14px;
+  width: 14px;
+  height: 14px;
+}
+
+/* Contenido de la tarjeta */
+.card-content {
+  padding: 16px 20px !important;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex-grow: 1;
+}
+
+.card-value {
+  display: flex;
+  align-items: baseline;
+}
+
+.card-value strong {
+  font-size: 32px;
+  color: #0f172a;
+}
+
+.card-value .unit {
+  font-size: 14px;
+  color: #64748b;
+  margin-left: 8px;
+}
+
+/* Range bar */
+.range-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.range-track {
+  height: 6px;
+  background: #e2e8f0;
+  border-radius: 3px;
+  position: relative;
+}
+
+
+.range-fill {
+  height: 100%;
+  background: #10b981;
+  border-radius: 3px;
+  opacity: 0.5;
+  position: absolute;
+}
+
+.range-fill--warning    { background: #f59e0b; }
+.range-fill--critical   { background: #ef4444; }
+
+.range-dot {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 12px;
+  height: 12px;
+  background: #047857;
+  border: 2px solid white;
+  border-radius: 50%;
+}
+
+.range-dot--warning     { background: #b45309; }
+.range-dot--critical    { background: #b91c1c; }
+
+.range-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: #64748b;
+}
+
+/* Footer de la tarjeta */
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #94a3b8;
+  padding: 12px 20px 20px 20px;
+  border-top: 1px solid #f1f5f9;
+  margin-top: auto;
+}
+
+.kpi-card, .status-badge, .range-fill, .range-dot {
+  transition: background-color .2s ease, border-color .2s ease;
+}

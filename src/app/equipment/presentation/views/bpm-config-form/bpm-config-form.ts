@@ -156,7 +156,7 @@ export class BpmConfigForm implements OnInit {
    * so it can later be used when building the BPM configuration command.
    */
   ngOnInit(): void {
-    const idParam = this.route.snapshot.paramMap.get('id');
+    const idParam = this.route.snapshot.paramMap.get('equipmentId');
 
     if (idParam) {
       this.equipmentId.set(Number(idParam));
@@ -192,6 +192,6 @@ export class BpmConfigForm implements OnInit {
     };
 
     this.store.configureBpm(command);
-    this.router.navigate(['/equipments/equipment-detail', equipmentId]).then();
+    this.router.navigate(['/equipments', equipmentId]).then();
   }
 }
