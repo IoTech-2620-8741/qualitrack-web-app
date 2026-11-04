@@ -23,9 +23,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Compliance & Alerts (ca): registering attention from the inbox can be undone for 5 seconds. The request is sent when that time ends, when the person moves on with the alert, signs out or leaves the page.
 
+- Shared (shared): `SidePanel` opens a modal panel over the whole application, keeps the focus inside, closes with Escape and gives the focus back; the `elapsedTime` pipe tells how long passed between two instants.
+
+- Compliance & Alerts (ca): `AlertTimeline` tells what happened to an alert in order and what is still missing; `AlertResolutionForm` closes it with a corrective action, with templates that can be edited. Alerts name who attended and resolved them instead of their account number.
+
+- Compliance & Alerts (ca): with the focus on the inbox, J and K move between the cards and A registers attention, which can be undone.
+
 ### Changed
 
 - Shared (shared): `EnvironmentSelector` shows the whole name of the chosen environment, in two lines if needed.
+
+- Compliance & Alerts (ca): the detail of an alert is a panel over the inbox, which stays as it was; `/alerts/:alertId` opens it and closing goes back to where the person came from. Attention registered in the panel can be undone too, and a resolved alert only reads.
 
 - Compliance & Alerts (ca): the active alerts page uses `AlertsPageHeader`. In Spanish the critical severity reads "Crítica"; in English "Being attended" becomes "In progress" and "Condition back to normal" becomes "Condition normalized".
 
