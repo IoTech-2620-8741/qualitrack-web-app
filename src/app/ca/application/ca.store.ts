@@ -43,7 +43,12 @@ import { AlertEnvironment } from '../domain/model/alert-environment.entity';
  * `ApiError` or of an `HttpErrorResponse`, and finally the generic failure key.
  */
 export function alertError(error: unknown): string {
-  const status = error instanceof ApiError ? error.status : error instanceof HttpErrorResponse ? error.status : null;
+  const status =
+    error instanceof ApiError
+      ? error.status
+      : error instanceof HttpErrorResponse
+        ? error.status
+        : null;
   if (status === 0) return 'ca-alerts.errors.connection';
   if (status === 403) return 'ca-alerts.errors.forbidden';
   if (status === 404) return 'ca-alerts.not-found';
@@ -60,7 +65,7 @@ const NOTIFICATION_PANEL_SIZE = 15;
 /** Conflict answered by the platform when the alert is no longer waiting for attention. */
 const HTTP_CONFLICT = 409;
 
-/** Open alerts read from one environment; `alerts` is null when the environment could not be read. */
+/** Alerts read from one environment; `alerts` is null when the environment could not be read. */
 interface EnvironmentAlertsReading {
   environmentId: number;
   alerts: DeviationAlert[] | null;
@@ -509,7 +514,7 @@ export class CaStore {
       )
       .subscribe((readings) => {
         const listedIds = new Set(this._alertsSignal().map((alert) => alert.id));
-        this.showOpenAlerts(readings);
+        this.showAlerts(readings);
         this._newAlertIdsSignal.set(
           new Set(
             this._alertsSignal()
@@ -867,7 +872,7 @@ export class CaStore {
     this.readAlerts(environmentId, filters)
       .pipe(takeUntil(this.reloadAlerts), takeUntilDestroyed(this.destroyRef))
       .subscribe((readings) => {
-        this.showOpenAlerts(readings);
+        this.showAlerts(readings);
         this._loadingSignal.set(false);
       });
   }
@@ -904,7 +909,7 @@ export class CaStore {
    *
    * @param readings - One reading per environment
    */
-  private showOpenAlerts(readings: EnvironmentAlertsReading[]): void {
+  private showAlerts(readings: EnvironmentAlertsReading[]): void {
     const unavailableIds = readings
       .filter(({ alerts }) => alerts === null)
       .map(({ environmentId }) => environmentId);

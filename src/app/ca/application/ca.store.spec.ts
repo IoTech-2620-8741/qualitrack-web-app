@@ -172,7 +172,6 @@ describe('CaStore', () => {
     });
   });
 
-
   describe('silent refresh', () => {
     it('keeps the list on screen while it reads', async () => {
       answer({ 1: [alertOf(10, 1)], 2: [] });
@@ -483,7 +482,9 @@ describe('CaStore', () => {
     });
 
     it('keeps the actions of the detail when the attention reaches the platform', async () => {
-      const actuations = [{ id: 1, action: 'FAN_ON', triggerState: null, result: 'EXECUTED', occurredAt: '' }];
+      const actuations = [
+        { id: 1, action: 'FAN_ON', triggerState: null, result: 'EXECUTED', occurredAt: '' },
+      ];
       api.getAlertById.mockReturnValue(
         of(new DeviationAlert({ ...alertOf(10, 1), relatedActuations: actuations })),
       );

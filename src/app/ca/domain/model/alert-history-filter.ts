@@ -1,6 +1,5 @@
 import { AlertOrigin, AlertSeverity, AlertStatus, DeviationAlert } from './deviation-alert.entity';
 
-
 /** Days back that the history shows; `null` means the person chose their own dates. */
 export type AlertHistoryPeriod = 7 | 30 | 90 | null;
 
@@ -48,7 +47,7 @@ const LABORATORY_UTC_OFFSET = '-05:00';
  * @returns `true` when the incident started inside the period
  *
  * @remarks
- * A custom period counts whole days in the time zone of the browser: `to` includes its whole day.
+ * A custom period counts whole days of the laboratory, in Peru: `to` includes its whole day.
  */
 export function isInPeriod(alert: DeviationAlert, filter: AlertHistoryFilter, now: Date): boolean {
   const startedAt = Date.parse(alert.timestamp);
@@ -61,7 +60,7 @@ export function isInPeriod(alert: DeviationAlert, filter: AlertHistoryFilter, no
 }
 
 /**
- * First moment of a day in the time zone of the browser.
+ * First moment of a day in the laboratory, in Peru.
  *
  * @param day - The day, as `YYYY-MM-DD`
  * @returns Milliseconds since 1970 at midnight of that day

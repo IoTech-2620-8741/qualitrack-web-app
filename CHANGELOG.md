@@ -13,7 +13,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Compliance & Alerts (ca): `summarizeAlertHistory` counts the alerts of the history by severity and averages their attention and resolution times.
 - Compliance & Alerts (ca): `countAlertsByWeek` counts the alerts of the history in weeks that start on Monday in Peru, by severity, for the weekly chart.
 - Compliance & Alerts (ca): `CaStore.loadAlertHistory` reads every alert, open or resolved, of one environment or of the whole laboratory; an environment that fails does not hide the others.
-- 
 
 ## [2.2.0] - 2026-11-04
 
