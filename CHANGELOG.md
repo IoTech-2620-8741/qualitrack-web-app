@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Compliance & Alerts (ca): the alert history can be filtered on the client by period, severity, status, origin and text, with `filterAlertHistory`.
+
+
 ## [2.2.0] - 2026-11-04
 
 ### Added
