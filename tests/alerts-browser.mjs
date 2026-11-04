@@ -451,8 +451,8 @@ try {
     await page.waitForURL('**/alerts/history');
     await page.locator('app-environment-selector mat-select').click();
     await page.getByRole('option', { name: /CAD-FRIO-01/ }).click();
-    await page.locator('app-alert-table a[href*="/alerts/102"]').click();
-    await page.waitForURL('**/alerts/102');
+    await page.locator('app-alert-table a[href*="/alerts/history/102"]').click();
+    await page.waitForURL('**/alerts/history/102**');
     await dialog.waitFor();
     await dialog.getByRole('button', { name: 'Close' }).click();
     await page.waitForURL('**/alerts/history**');
