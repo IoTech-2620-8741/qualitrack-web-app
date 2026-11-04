@@ -3,7 +3,7 @@
     <div>
       <h3>{{ deviceLabel()(trend().equipmentId) }} · {{ 'tracking.metrics.' + trend().parameterName | translate }}</h3>
       <p class="chart-subtitle">
-        {{ trend().dataPoints?.length || 0 }} {{ 'reporting.deviations.readings' | translate }}
+        {{ trend().dataPoints.length }} {{ 'reporting.deviations.readings' | translate }}
       </p>
     </div>
     <button mat-stroked-button color="primary" (click)="openDetail.emit()">
@@ -22,17 +22,15 @@
 
   <div class="custom-legend">
     <span class="legend-item"><span class="line-legend"></span> {{ 'reporting.deviations.legend-reading' | translate }}</span>
-    <span class="legend-item">
-      <span class="box-legend normal-bg"></span>
-      {{ 'reporting.deviations.legend-normal' | translate:{ min: thresholds().normalMin, max: thresholds().warningMax, unit: thresholds().unit } }}
-    </span>
-    <span class="legend-item">
-      <span class="triangle-warning"></span>
-      {{ 'reporting.deviations.legend-warning' | translate:{ max: thresholds().warningMax, critical: thresholds().criticalMax, unit: thresholds().unit } }}
-    </span>
-    <span class="legend-item">
-      <span class="critical-dot"></span>
-      {{ 'reporting.deviations.legend-critical' | translate:{ critical: thresholds().criticalMax, unit: thresholds().unit } }}
-    </span>
+    @for (entry of legend(); track $index) {
+      <span class="legend-item">
+        <span [class]="entry.marker"></span>
+        {{ entry.key | translate: entry.params }}
+      </span>
+    } @empty {
+      @if (!thresholdsPending()) {
+        <span class="legend-item">{{ 'reporting.deviations.no-thresholds' | translate }}</span>
+      }
+    }
   </div>
 </div>

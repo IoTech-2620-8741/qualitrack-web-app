@@ -27,9 +27,9 @@
 
       <app-deviation-table
         [trends]="store.deviationTrends()"
-        [deviceLabel]="deviceLabel.bind(this)"
-        [trendIcon]="trendIcon.bind(this)"
-        [isActive]="isActive.bind(this)"
+        [deviceLabel]="deviceLabel"
+        [trendIcon]="trendIcon"
+        [isActive]="isActive"
         (select)="select($event)"
       />
 
@@ -39,16 +39,17 @@
           [chartData]="chartData()"
           [chartOptions]="chartOptions()"
           [thresholds]="activeThresholds()"
-          [deviceLabel]="deviceLabel.bind(this)"
+          [thresholdsPending]="thresholdsPending()"
+          [deviceLabel]="deviceLabel"
           (openDetail)="openDetail(trend)"
         />
-
       }
     } @else {
       <div class="empty-state">
         <mat-icon>query_stats</mat-icon>
         <h3>{{ 'reporting.deviations.empty-title' | translate }}</h3>
         <p>{{ 'reporting.deviations.empty-desc' | translate }}</p>
-      </div>    }
+      </div>
+    }
   }
 </main>
