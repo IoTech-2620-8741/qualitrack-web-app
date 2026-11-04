@@ -1,5 +1,6 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Location } from '@angular/common';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
@@ -40,7 +41,7 @@ type AlertFilter = 'all' | 'WARNING' | 'CRITICAL';
 })
 export class DeviationDetailPage implements OnInit {
   private readonly route = inject(ActivatedRoute);
-  private readonly router = inject(Router);
+  private readonly location = inject(Location);
   protected readonly store = inject(RaStore);
 
   protected readonly equipmentId = signal<number | null>(null);
@@ -50,17 +51,12 @@ export class DeviationDetailPage implements OnInit {
   protected readonly toDate = signal<Date | null>(null);
   protected readonly alertFilter = signal<AlertFilter>('all');
 
-  // Método corregido que recibe el valor directo del picker
   protected onDateRangeChange(range: { start: Date | null, end: Date | null } | null) {
     if (range && range.start && range.end) {
       const start = new Date(range.start);
       const end = new Date(range.end);
-
-      // Forzamos inicio del día
       start.setHours(0, 0, 0, 0);
-      // Forzamos fin del día para incluir todos los eventos de la fecha elegida
       end.setHours(23, 59, 59, 999);
-
       this.fromDate.set(start);
       this.toDate.set(end);
     } else {
@@ -91,7 +87,6 @@ export class DeviationDetailPage implements OnInit {
     );
   });
 
-  // Lógica de filtrado simplificada para mayor seguridad
   protected readonly filteredPoints = computed(() => {
     const trend = this.trend();
     if (!trend) return [];
@@ -150,10 +145,14 @@ export class DeviationDetailPage implements OnInit {
       this.equipmentId.set(Number.isFinite(eq) ? eq : null);
       this.parameter.set(params.get('parameter'));
 
-      const envId = this.store.preferredEnvironmentId();
-      if (envId !== null && !this.store.deviationTrends().length) {
-        this.store.loadDeviationTrends(envId, lastDays(7));
-      }
+      this.route.queryParams.subscribe(query => {
+        const days = query['days'] ? Number(query['days']) : 7;
+        const envId = query['env'] ? Number(query['env']) : this.store.preferredEnvironmentId();
+
+        if (envId !== null && !this.store.deviationTrends().length) {
+          this.store.loadDeviationTrends(envId, lastDays(days));
+        }
+      });
     });
   }
 
@@ -164,6 +163,6 @@ export class DeviationDetailPage implements OnInit {
   }
 
   protected goBack() {
-    this.router.navigate(['/reports/deviation-trends']);
+    this.location.back();
   }
 }
