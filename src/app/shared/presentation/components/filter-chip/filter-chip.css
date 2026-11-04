@@ -5,31 +5,33 @@
 .filter-chip {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  min-height: 32px;
-  padding: 4px 12px;
-  border: 1px solid var(--qt-border);
-  border-radius: var(--qt-radius-pill);
-  background: var(--qt-surface);
-  color: var(--qt-text);
+  gap: 6px;
+  min-height: 40px;
+  padding: 0 16px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 999px;
+  color: #0f172a;
   font: inherit;
-  font-size: 13px;
+  font-size: 14px;
+  font-weight: 500;
   cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
 .filter-chip:hover {
-  border-color: var(--qt-primary);
+  background: #f3f4f6;
 }
 
 .filter-chip:focus-visible {
-  outline: 2px solid var(--qt-primary-strong);
+  outline: 3px solid #0d9488;
   outline-offset: 2px;
 }
 
 .filter-chip.pressed {
-  border-color: var(--qt-primary-strong);
-  background: var(--qt-primary-surface);
-  color: var(--qt-primary-strong);
+  background: #f0fdfa;
+  border-color: #0d9488;
+  color: #0f766e;
   font-weight: 600;
 }
 
@@ -40,10 +42,17 @@ mat-icon {
 }
 
 .count {
-  color: var(--qt-text-muted);
+  color: #64748b;
+  font-size: 12px;
   font-variant-numeric: tabular-nums;
 }
 
 .pressed .count {
   color: inherit;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+  }
 }
