@@ -11,35 +11,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Shared (shared): `EmptyState`, `ErrorBanner` and `DashboardState` show empty lists, failures with a retry and the loading state of each part of a page (#59, #60).
 
-- Shared (shared): design tokens of the style guide (`--qt-*`) and the `.qt-theme` class for the pages that adopt them; `StatusChip` shows a status with color, icon and text; `UndoToast` gives a few seconds to undo an action, with a progress bar that stops under the pointer or the focus; the `dateTime` and `relativeTime` pipes format every date the same way, in the chosen language and the time zone of the laboratories; `EnvironmentSelector` can offer an option for every environment. (#68)
+- Shared (shared): design tokens of the style guide (`--qt-*`) and the `.qt-theme` class for the pages that adopt them; `StatusChip` shows a status with color, icon and text; `UndoToast` gives a few seconds to undo an action, with a progress bar that stops under the pointer or the focus; the `dateTime` and `relativeTime` pipes format every date the same way, in the chosen language and the time zone of the laboratories; `EnvironmentSelector` can offer an option for every environment (#68).
 
-- Shared (shared): `StatFilterCard` is a summary figure that works as a filter; `ActionBanner` tells what needs attention and offers the way to deal with it; `EmptyState` can have a title, a positive tone and actions. (#70)
+- Shared (shared): `StatFilterCard` is a summary figure that works as a filter; `ActionBanner` tells what needs attention and offers the way to deal with it; `EmptyState` can have a title, a positive tone and actions (#70).
 
-- Compliance & Alerts (ca): `AlertsPageHeader` with the breadcrumb, the notification preferences and the Active and History tabs, and `alert-chips` with the chip of each severity and status. (#68)
+- Compliance & Alerts (ca): `AlertsPageHeader` with the breadcrumb, the notification preferences and the Active and History tabs, and `alert-chips` with the chip of each severity and status (#68).
 
-- Compliance & Alerts (ca): the active alerts are a prioritized inbox across every environment, with `AlertCard`, a banner for the critical alerts nobody attends, summary figures that filter, search, three orders and a positive empty state. An environment can be chosen through `?environmentId=`, and one that cannot be read is named without hiding the others. (#70)
+- Compliance & Alerts (ca): the active alerts are a prioritized inbox across every environment, with `AlertCard`, a banner for the critical alerts nobody attends, summary figures that filter, search, three orders and a positive empty state. An environment can be chosen through `?environmentId=`, and one that cannot be read is named without hiding the others (#70).
 
-- Compliance & Alerts (ca): the inbox refreshes itself every 30 seconds while the tab is visible and announces the alerts that arrive. (#70)
+- Compliance & Alerts (ca): the inbox refreshes itself every 30 seconds while the tab is visible and announces the alerts that arrive (#70).
 
-- Compliance & Alerts (ca): registering attention from the inbox can be undone for 5 seconds. The request is sent when that time ends, when the person moves on with the alert, signs out or leaves the page. (#70)
+- Compliance & Alerts (ca): registering attention from the inbox can be undone for 5 seconds. The request is sent when that time ends, when the person moves on with the alert, signs out or leaves the page (#70).
 
-- Shared (shared): `SidePanel` opens a modal panel over the whole application, keeps the focus inside, closes with Escape and gives the focus back; the `elapsedTime` pipe tells how long passed between two instants. (#71)
+- Shared (shared): `SidePanel` opens a modal panel over the whole application, keeps the focus inside, closes with Escape and gives the focus back; the `elapsedTime` pipe tells how long passed between two instants (#71).
 
-- Compliance & Alerts (ca): `AlertTimeline` tells what happened to an alert in order and what is still missing; `AlertResolutionForm` closes it with a corrective action, with templates that can be edited. Alerts name who attended and resolved them instead of their account number. (#71)
+- Compliance & Alerts (ca): `AlertTimeline` tells what happened to an alert in order and what is still missing; `AlertResolutionForm` closes it with a corrective action, with templates that can be edited. Alerts name who attended and resolved them instead of their account number (#71).
 
 - Reporting & Audit (ra): the environmental summary evaluates each card against the thresholds of its device, with a state and the range of the readings, and can be seen as a table (#65).
 
 - Reporting & Audit (ra): the deviation indicators have a detail page for each variable, `/reports/deviation-trends/:equipmentId/:parameter`, with its events filtered by date and condition. The environment, the period and the variable chosen stay in the address (#69).
 
-- Compliance & Alerts (ca): with the focus on the inbox, J and K move between the cards and A registers attention, which can be undone. (#71)
+- Compliance & Alerts (ca): with the focus on the inbox, J and K move between the cards and A registers attention, which can be undone (#71).
 
 ### Changed
 
-- Shared (shared): `EnvironmentSelector` shows the whole name of the chosen environment, in two lines if needed. (#70)
+- Shared (shared): `EnvironmentSelector` shows the whole name of the chosen environment, in two lines if needed (#70).
 
-- Compliance & Alerts (ca): the detail of an alert is a panel over the inbox, which stays as it was; `/alerts/:alertId` opens it and closing goes back to where the person came from. Attention registered in the panel can be undone too, and a resolved alert only reads. (#71)
+- Compliance & Alerts (ca): the detail of an alert is a panel over the inbox, which stays as it was; `/alerts/:alertId` opens it and closing goes back to where the person came from. Attention registered in the panel can be undone too, and a resolved alert only reads (#71).
 
-- Compliance & Alerts (ca): the active alerts page uses `AlertsPageHeader`. In Spanish the critical severity reads "Crítica"; in English "Being attended" becomes "In progress" and "Condition back to normal" becomes "Condition normalized". (#68)
+- Compliance & Alerts (ca): the active alerts page uses `AlertsPageHeader`. In Spanish the critical severity reads "Crítica"; in English "Being attended" becomes "In progress" and "Condition back to normal" becomes "Condition normalized" (#68).
 
 - Shared (shared): the side menu groups its options by how often the laboratory uses them: operation, quality and administration (#67).
 
