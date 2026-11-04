@@ -1,35 +1,34 @@
-<main class="operations-page">
-  <header class="page-heading">
-    <div>
-      <h1>{{ 'ca-alerts.active.title' | translate }}</h1>
-      <p class="muted">{{ 'ca-alerts.active.subtitle' | translate }}</p>
+<main class="operations-page qt-theme">
+  <app-alerts-page-header
+    section="active"
+    subtitleKey="ca-alerts.active.subtitle"
+    [activeCount]="store.openAlertsCount()"
+    [environmentId]="environmentId()"
+  >
+    <app-environment-selector [environments]="store.environments()" [selectedId]="environmentId()" (selectedChange)="changeEnvironment($event)" />
+    <button mat-stroked-button type="button" (click)="refresh()" [disabled]="store.loading() || environmentId() === null">
+      <mat-icon>refresh</mat-icon>{{ 'common.refresh' | translate }}
+    </button>
+    <div alertsSection>
+      @if (store.error()) {
+        <p class="error" role="alert">{{ store.error()! | translate }}</p>
+      }
+
+      @if (store.environmentsEmpty()) {
+        <p class="notice">{{ 'ca-alerts.no-environments' | translate }}</p>
+      } @else if (environmentId() !== null) {
+        <section class="summary-strip" [attr.aria-label]="'ca-alerts.active.title' | translate">
+          <div><span>{{ 'ca-alerts.kpi.open' | translate }}</span><strong>{{ store.openAlertsCount() }}</strong></div>
+          <div><span>{{ 'ca-alerts.kpi.critical' | translate }}</span><strong>{{ store.criticalAlertsCount() }}</strong></div>
+          <div><span>{{ 'ca-alerts.kpi.attending' | translate }}</span><strong>{{ store.acknowledgedAlertsCount() }}</strong></div>
+        </section>
+
+        @if (store.loading()) {
+          <p role="status">{{ 'common.status-loading' | translate }}</p>
+        } @else if (!store.error()) {
+          <app-alert-table [alerts]="store.alerts()" emptyKey="ca-alerts.active.empty" />
+        }
+      }
     </div>
-    <div class="actions">
-      <app-environment-selector [environments]="store.environments()" [selectedId]="environmentId()" (selectedChange)="changeEnvironment($event)" />
-      <button mat-stroked-button type="button" (click)="refresh()" [disabled]="store.loading() || environmentId() === null">
-        <mat-icon>refresh</mat-icon>{{ 'common.refresh' | translate }}
-      </button>
-      <a mat-stroked-button routerLink="/alerts/history"><mat-icon>history</mat-icon>{{ 'nav.alert-history' | translate }}</a>
-    </div>
-  </header>
-
-  @if (store.error()) {
-    <p class="error" role="alert">{{ store.error()! | translate }}</p>
-  }
-
-  @if (store.environmentsEmpty()) {
-    <p class="notice">{{ 'ca-alerts.no-environments' | translate }}</p>
-  } @else if (environmentId() !== null) {
-    <section class="summary-strip" [attr.aria-label]="'ca-alerts.active.title' | translate">
-      <div><span>{{ 'ca-alerts.kpi.open' | translate }}</span><strong>{{ store.openAlertsCount() }}</strong></div>
-      <div><span>{{ 'ca-alerts.kpi.critical' | translate }}</span><strong>{{ store.criticalAlertsCount() }}</strong></div>
-      <div><span>{{ 'ca-alerts.kpi.attending' | translate }}</span><strong>{{ store.acknowledgedAlertsCount() }}</strong></div>
-    </section>
-
-    @if (store.loading()) {
-      <p role="status">{{ 'common.status-loading' | translate }}</p>
-    } @else if (!store.error()) {
-      <app-alert-table [alerts]="store.alerts()" emptyKey="ca-alerts.active.empty" />
-    }
-  }
+  </app-alerts-page-header>
 </main>

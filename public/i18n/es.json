@@ -359,7 +359,9 @@
       "register": "Registrar",
       "search": "Buscar",
       "refresh": "Actualizar"
-    }
+    },
+    "undo": "Deshacer",
+    "breadcrumb": "Ruta de navegación"
   },
   "status": {
     "ON_TRACK": "En Camino",
@@ -711,7 +713,7 @@
       "low": "Baja",
       "info": "Informativo",
       "warning": "Advertencia",
-      "critical": "Crítico"
+      "critical": "Crítica"
     },
     "status": {
       "unresolved": "Abierta",
@@ -781,6 +783,15 @@
       "sent": "Se avisó por correo a {{count}} persona(s).",
       "no-recipients": "Nadie más del laboratorio tiene activados los avisos por correo.",
       "failed": "No se pudo enviar el correo. Revisa que el envío de correos esté configurado en la plataforma."
+    },
+    "page": {
+      "title": "Alertas de cumplimiento",
+      "preferences": "Preferencias de aviso",
+      "sections": "Secciones de alertas"
+    },
+    "tabs": {
+      "active": "Activas",
+      "history": "Historial"
     }
   },
   "notifications": {
@@ -1615,7 +1626,8 @@
       "usage-edit-hint": "Cambia el uso desde la lista de ambientes.",
       "max-length": "Usa como máximo {{max}} caracteres."
     },
-    "selector": "Ambiente"
+    "selector": "Ambiente",
+    "all": "Todos los ambientes ({{count}})"
   },
   "environment-usage": {
     "LABORATORY": "Laboratorio",

@@ -359,7 +359,9 @@
       "register": "Register",
       "search": "Search",
       "refresh": "Refresh"
-    }
+    },
+    "undo": "Undo",
+    "breadcrumb": "Breadcrumb"
   },
   "status": {
     "ON_TRACK": "On Track",
@@ -687,7 +689,7 @@
     "kpi": {
       "critical": "Critical",
       "open": "Open alerts",
-      "attending": "Being attended"
+      "attending": "In progress"
     },
     "fields": {
       "parameter": "Variable",
@@ -715,7 +717,7 @@
     },
     "status": {
       "unresolved": "Open",
-      "acknowledged": "Being attended",
+      "acknowledged": "In progress",
       "resolved": "Resolved",
       "ignored": "Ignored"
     },
@@ -759,7 +761,7 @@
       "saved": "Notification preferences saved."
     },
     "no-environments": "Alerts are listed per environment. Register an environment and its IoT devices first.",
-    "normalized": "Condition back to normal",
+    "normalized": "Condition normalized",
     "acknowledged": "The attention of the alert was registered.",
     "resolved": "The alert was resolved.",
     "errors": {
@@ -781,6 +783,15 @@
       "sent": "The alert was e-mailed to {{count}} person(s).",
       "no-recipients": "Nobody else in the laboratory has e-mail notices enabled.",
       "failed": "The e-mail could not be sent. Check that e-mail is configured on the platform."
+    },
+    "page": {
+      "title": "Compliance alerts",
+      "preferences": "Notification preferences",
+      "sections": "Alert sections"
+    },
+    "tabs": {
+      "active": "Active",
+      "history": "History"
     }
   },
   "notifications": {
@@ -1615,7 +1626,8 @@
       "usage-edit-hint": "Change the usage from the environment list.",
       "max-length": "Use at most {{max}} characters."
     },
-    "selector": "Environment"
+    "selector": "Environment",
+    "all": "All environments ({{count}})"
   },
   "environment-usage": {
     "LABORATORY": "Laboratory",
