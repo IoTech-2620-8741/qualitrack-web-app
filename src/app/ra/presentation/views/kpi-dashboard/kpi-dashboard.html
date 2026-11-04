@@ -23,7 +23,7 @@
     }
     @if (store.dashboard()?.from && store.dashboard()?.to) {
       <span class="date-range">
-        {{ store.dashboard()!.from | date:'short' }} - {{ store.dashboard()!.to | date:'short' }}
+        {{ store.dashboard()!.from | dateTime }} - {{ store.dashboard()!.to | dateTime }}
       </span>
     }
   </div>

@@ -1,8 +1,9 @@
 import { Component, computed, input } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
-import { DatePipe, DecimalPipe } from '@angular/common';
+import { DecimalPipe } from '@angular/common';
 import { DataPoint, DeviationTrend } from '../../../domain/model/deviation-trend.entity';
 import { OverviewEnvironmentalThreshold } from '../../../domain/model/overview-environmental-profile.entity';
+import { DateTimePipe } from '../../../../shared/presentation/pipes/date-time.pipe';
 import { crossedLimit } from '../deviation-chart/deviation-chart.factory';
 
 /**
@@ -14,7 +15,7 @@ import { crossedLimit } from '../deviation-chart/deviation-chart.factory';
  * list of points provided by a parent component.
  */
 @Component({
-  imports: [TranslatePipe, DatePipe, DecimalPipe],
+  imports: [TranslatePipe, DateTimePipe, DecimalPipe],
   selector: 'app-deviation-events',
   styleUrl: './deviation-events.css',
   templateUrl: './deviation-events.html',

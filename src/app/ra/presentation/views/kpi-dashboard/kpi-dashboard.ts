@@ -7,7 +7,6 @@ import {
   ChangeDetectionStrategy,
   effect
 } from '@angular/core';
-import { DatePipe } from '@angular/common';
 import { TranslatePipe } from '@ngx-translate/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
@@ -16,6 +15,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
+import { DateTimePipe } from '../../../../shared/presentation/pipes/date-time.pipe';
 import { RaStore } from '../../../application/ra.store';
 import { ALL_ENVIRONMENTS, lastDays } from '../../../domain/model/indicator-period';
 import { KpiSummaryCards } from '../../components/kpi-summary-cards/kpi-summary-cards';
@@ -39,7 +39,7 @@ const PERIOD_DAYS = [1, 7, 31] as const;
   selector: 'app-kpi-dashboard',
   standalone: true,
   imports: [
-    DatePipe,
+    DateTimePipe,
     TranslatePipe,
     MatButtonModule,
     MatButtonToggleModule,

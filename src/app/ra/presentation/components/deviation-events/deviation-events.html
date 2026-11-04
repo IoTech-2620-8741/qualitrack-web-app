@@ -9,7 +9,7 @@
           <strong>{{ 'tracking.states.' + point.state | translate }}</strong>
         </div>
         <div class="event-info">
-              <span>{{ point.timestamp | date:'short' }} - {{ 'tracking.metrics.' + trend().parameterName | translate }} {{ point.recordedValue | number:'1.0-2' }} {{ trend().unit }}
+              <span>{{ point.timestamp | dateTime }} - {{ 'tracking.metrics.' + trend().parameterName | translate }} {{ point.recordedValue | number:'1.0-2' }} {{ trend().unit }}
                 @if (limitOf(point) !== null) {
                   <small>({{ 'reporting.deviations.limit' | translate }} {{ limitOf(point) }} {{ trend().unit }})</small>
                 }
