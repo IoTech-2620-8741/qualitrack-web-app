@@ -738,6 +738,15 @@
       "no-environment": "No environment",
       "normalized": "The condition returned to normal on {{date}}; the alert stays open until someone resolves it.",
       "timeline": "Follow-up",
+      "step": {
+        "detected": "Detected · {{value}} {{unit}} (limit {{limit}})",
+        "last-deviation": "Last deviation",
+        "attending": "In progress by {{name}}",
+        "resolved": "Resolved by {{name}}",
+        "later": "{{time}} later",
+        "waiting-attention": "Pending: nobody has registered attention",
+        "waiting-resolution": "Pending: the corrective action is missing"
+      },
       "detected": "Detected on {{date}}.",
       "last-deviation": "Last deviation on {{date}} ({{count}} deviations in the incident).",
       "acknowledged": "Attended by user #{{user}} on {{date}}.",

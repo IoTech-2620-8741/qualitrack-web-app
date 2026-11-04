@@ -738,6 +738,15 @@
       "no-environment": "Sin ambiente",
       "normalized": "La condición volvió a la normalidad el {{date}}; la alerta sigue abierta hasta que alguien la resuelva.",
       "timeline": "Seguimiento",
+      "step": {
+        "detected": "Detectada · {{value}} {{unit}} (límite {{limit}})",
+        "last-deviation": "Última desviación",
+        "attending": "En atención por {{name}}",
+        "resolved": "Resuelta por {{name}}",
+        "later": "{{time}} después",
+        "waiting-attention": "Pendiente: nadie ha registrado atención",
+        "waiting-resolution": "Pendiente: falta registrar la acción correctiva"
+      },
       "detected": "Detectada el {{date}}.",
       "last-deviation": "Última desviación el {{date}} ({{count}} desviaciones en el incidente).",
       "acknowledged": "Atendida por el usuario #{{user}} el {{date}}.",
