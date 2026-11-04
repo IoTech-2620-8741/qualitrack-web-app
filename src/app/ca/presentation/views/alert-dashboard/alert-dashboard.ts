@@ -117,6 +117,14 @@ export class AlertDashboard implements OnInit {
       : null;
   });
 
+  /** What the inbox reads: the environment chosen or, without one, every environment that exists. */
+  private readonly scope = computed(() => {
+    const environmentId = this.environmentId();
+    return environmentId === null
+      ? `all:${this.store.environments().map((environment) => environment.id).join()}`
+      : `one:${environmentId}`;
+  });
+
   /** Current time, to tell how long ago things happened. */
   protected readonly now = toSignal(interval(CLOCK_INTERVAL_MS).pipe(map(() => new Date())), {
     initialValue: new Date(),
@@ -227,9 +235,9 @@ export class AlertDashboard implements OnInit {
 
   constructor() {
     effect(() => {
-      const environmentId = this.environmentId();
+      this.scope();
       if (this.store.environmentsLoaded())
-        untracked(() => this.store.loadOpenAlerts(environmentId));
+        untracked(() => this.store.loadOpenAlerts(this.environmentId()));
     });
 
     effect(() => {
@@ -253,17 +261,18 @@ export class AlertDashboard implements OnInit {
   }
 
   /**
-   * Clears what a previous view left and loads the devices and the environments when needed.
+   * Clears what a previous view left and loads the devices and the environments.
    *
    * @remarks
-   * The alerts follow the environment chosen as soon as the environments are known.
+   * The environments are read every time, because one can be created while the application is open. The alerts follow
+   * the environment chosen as soon as the environments are known, and are read again if a new environment appears.
    */
   async ngOnInit(): Promise<void> {
     this.store.clearError();
     this.store.clearAlerts();
     this.store.loadDevices();
     this.store.loadPeople();
-    if (!this.store.environmentsLoaded()) await this.store.loadEnvironments();
+    await this.store.loadEnvironments();
   }
 
   /**
