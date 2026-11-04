@@ -6,7 +6,7 @@ import {
   signal,
   ChangeDetectionStrategy,
 } from '@angular/core';
-import { DatePipe, DecimalPipe } from '@angular/common';
+import { DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -28,6 +28,7 @@ import {
   metricDefinition,
   metricsOf,
 } from '../../../domain/model/monitored-metric';
+import { DateTimePipe } from '../../../../shared/presentation/pipes/date-time.pipe';
 
 /** Earliest moment the history can be asked for, as a datetime-local value. */
 export const MIN_HISTORY_START = '2020-01-01T00:00';
@@ -53,7 +54,7 @@ export const MIN_HISTORY_START = '2020-01-01T00:00';
   selector: 'app-telemetry-history',
   standalone: true,
   imports: [
-    DatePipe,
+    DateTimePipe,
     DecimalPipe,
     FormsModule,
     TranslatePipe,
@@ -228,7 +229,7 @@ export class TelemetryHistory implements OnInit {
    * when available, otherwise uses the preferred environment.
    */
   async ngOnInit(): Promise<void> {
-    if (!this.store.environmentsLoaded()) await this.store.loadEnvironments();
+    await this.store.loadEnvironments();
     const query = this.route.snapshot.queryParamMap;
     const requested = Number(query.get('environmentId'));
     const requestedDevice = Number(query.get('deviceId'));

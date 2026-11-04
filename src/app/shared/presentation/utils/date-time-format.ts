@@ -4,8 +4,12 @@ const SECONDS_PER_MINUTE = 60;
 const SECONDS_PER_HOUR = 3_600;
 const SECONDS_PER_DAY = 86_400;
 
+/** A date without time, as the platform sends the days of the calendar. */
+const CALENDAR_DAY = /^\d{4}-\d{2}-\d{2}$/;
+
 /** Formatters by locale; building an `Intl` formatter is expensive and these run on every change detection. */
 const dateTimeFormatters = new Map<string, Intl.DateTimeFormat>();
+const dateFormatters = new Map<string, Intl.DateTimeFormat>();
 const relativeTimeFormatters = new Map<string, Intl.RelativeTimeFormat>();
 const elapsedTimeFormatters = new Map<string, Intl.NumberFormat>();
 
@@ -45,6 +49,31 @@ export function formatDateTime(value: string | Date | null | undefined, language
       hourCycle: 'h23',
     });
     dateTimeFormatters.set(locale, formatter);
+  }
+  return formatter.format(instant).replace('.', '');
+}
+
+/**
+ * Formats a calendar day the same way everywhere, without the time.
+ *
+ * @param value - The instant, or a `yyyy-MM-dd` calendar day
+ * @param language - The language of the application
+ * @returns For example `3 oct 2026` or `Oct 3, 2026`; an empty text when there is no valid date
+ *
+ * @remarks
+ * A calendar day has no time zone: it is shown as it is, while an instant shows its day in the time zone of the
+ * laboratories.
+ */
+export function formatDate(value: string | Date | null | undefined, language: string): string {
+  const instant = toValidDate(value);
+  if (!instant) return '';
+  const timeZone = typeof value === 'string' && CALENDAR_DAY.test(value) ? 'UTC' : LABORATORY_TIME_ZONE;
+  const locale = localeOf(language);
+  const key = `${locale}|${timeZone}`;
+  let formatter = dateFormatters.get(key);
+  if (!formatter) {
+    formatter = new Intl.DateTimeFormat(locale, { timeZone, day: 'numeric', month: 'short', year: 'numeric' });
+    dateFormatters.set(key, formatter);
   }
   return formatter.format(instant).replace('.', '');
 }

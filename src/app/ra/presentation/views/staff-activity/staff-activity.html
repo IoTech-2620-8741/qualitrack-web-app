@@ -15,7 +15,7 @@
       </div>
       <div>
         <span>{{ 'staff.detail.last-activity' | translate }}</span>
-        <strong>{{ lastActivity() ? (lastActivity() | date: 'medium') : '—' }}</strong>
+        <strong>{{ lastActivity() ? (lastActivity() | dateTime) : '—' }}</strong>
       </div>
     </div>
 
@@ -47,7 +47,7 @@
         <tbody>
           @for (entry of visibleActivity(); track entry.id) {
             <tr>
-              <td [attr.data-label]="'audit-log.table.timestamp' | translate">{{ entry.timestamp | date: 'medium' }}</td>
+              <td [attr.data-label]="'audit-log.table.timestamp' | translate">{{ entry.timestamp | dateTime }}</td>
               <td [attr.data-label]="'audit-log.table.action' | translate">
                 @if (actionKey(entry.action); as key) { {{ key | translate }} } @else { {{ entry.action }} }
               </td>

@@ -5,6 +5,7 @@ import { MatIconButton } from '@angular/material/button';
 import { RouterLink } from '@angular/router';
 import { MatTooltip } from '@angular/material/tooltip';
 import { DashboardState } from '../../../../shared/presentation/components/dashboard-state/dashboard-state';
+import { OverviewBatch } from '../../../domain/model/overview-batch.entity';
 
 /**
  * Batch production section of the dashboard.
@@ -34,10 +35,10 @@ export class DashboardBatches {
   readonly totalBatches = input.required<number>();
 
   /** Array of batch statuses and their counts. */
-  readonly distribution = input.required<any[]>();
+  readonly distribution = input.required<{ status: string; count: number }[]>();
 
   /** Array of the most recent batches. */
-  readonly recentBatches = input.required<any[]>();
+  readonly recentBatches = input.required<OverviewBatch[]>();
 
   /** Emits when the user clicks retry. */
   readonly retry = output<void>();

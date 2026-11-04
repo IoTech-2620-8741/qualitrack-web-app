@@ -558,7 +558,7 @@
       "toggle-yearly": "Anual",
       "period-label": "Periodo de facturación",
       "get": "Obtener {{name}}",
-      "already-active": "Ya tienes una suscripción activa. Para cambiar de plan, ve a Facturación."
+      "already-active": "Ya tienes una suscripción activa. Para cambiar de plan, cancela la renovación en Facturación y elige otro plan cuando termine el periodo actual."
     },
     "billing-period": {
       "monthly": "Mensual",
@@ -604,7 +604,7 @@
       "no-active-subscription": "No hay una suscripción activa",
       "no-active-subscription-desc": "Elige un plan para activar la facturación de tu laboratorio.",
       "choose-plan": "Elegir Plan",
-      "change-plan": "Cambiar Plan",
+      "change-plan": "Ver Planes",
       "plan": "Plan",
       "plan-id": "ID del Plan",
       "status": "Estado",

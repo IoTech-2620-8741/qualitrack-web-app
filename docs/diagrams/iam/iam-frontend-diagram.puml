@@ -165,6 +165,7 @@ package "iam.infrastructure" {
     + currentPassword: string
   }
   class iamGuard <<CanActivateFn>>
+  class visitorGuard <<CanActivateFn>>
   class onboardingGuard <<CanActivateFn>>
   class laboratorySetupGuard <<CanActivateFn>>
   class subscriptionGuard <<CanActivateFn>>
@@ -305,6 +306,11 @@ authenticationInterceptor ..|> HttpInterceptorFn
 authenticationInterceptor --> IamStore
 IamApi ..> ChangePasswordRequest
 iamGuard --> IamStore
+visitorGuard --> IamStore
+note bottom of visitorGuard
+  /home, sign-in, sign-up and password recovery are for visitors. A session survives
+  closing the browser, so whoever still has one goes to /dashboard.
+end note
 onboardingGuard --> IamStore
 laboratorySetupGuard --> IamStore
 subscriptionGuard --> IamStore

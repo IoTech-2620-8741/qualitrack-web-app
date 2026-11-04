@@ -1,5 +1,5 @@
 import { Component, OnInit, effect, inject, input, ChangeDetectionStrategy } from '@angular/core';
-import { DatePipe, DecimalPipe } from '@angular/common';
+import { DecimalPipe } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
@@ -13,6 +13,7 @@ import { BatchPath } from '../../../domain/model/batch-path';
 import { TracedRawMaterialUsage } from '../../../domain/model/batch-traceability.entity';
 import { EnvironmentSelector } from '../../../../shared/presentation/components/environment-selector/environment-selector';
 import { stockQuantityValidator } from '../../../../shared/presentation/validators/stock-quantity.validator';
+import { DateTimePipe } from '../../../../shared/presentation/pipes/date-time.pipe';
 
 /**
  * Raw material lots consumed by a batch, with the consumption form while the batch is open.
@@ -28,7 +29,7 @@ import { stockQuantityValidator } from '../../../../shared/presentation/validato
   selector: 'app-raw-material-usage',
   standalone: true,
   imports: [
-    DatePipe,
+    DateTimePipe,
     DecimalPipe,
     ReactiveFormsModule,
     RouterLink,
@@ -93,7 +94,7 @@ export class RawMaterialUsageComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     this.store.clearConsumption();
     if (!this.open()) return;
-    if (!this.store.environmentsLoaded()) await this.store.loadEnvironments();
+    await this.store.loadEnvironments();
     const storage = this.store.preferredStorageEnvironment();
     if (storage) await this.changeEnvironment(storage.id);
   }

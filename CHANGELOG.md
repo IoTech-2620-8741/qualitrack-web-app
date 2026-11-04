@@ -7,6 +7,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.2.0] - 2026-11-04
+
+### Added
+
+- Shared (shared): the `dateOnly` pipe shows a day in the single date format of the application; a calendar day stays as it is, whatever the time zone (#75).
+
+### Changed
+
+- Release: package and lockfile versions are now 2.2.0.
+
+- Compliance & Alerts (ca): the alert history uses `AlertsPageHeader`, with the same tabs as the active alerts, and opens the environment of the address (#75).
+
+- Subscription (subscription): the plans explain how to switch plans, by canceling the renewal and choosing another one when the period ends, and the button of the billing summary reads "View Plans" (#75).
+
+- Reporting & Audit (ra): the components of the dashboard use the models of the context instead of `any` (#75).
+
+- Tests: the browser checks follow the current screens and endpoints; the ones that create accounts through the real API only run with `LOCAL_API=1` (#75).
+
+### Removed
+
+- Documentation: the README section about a system test that is not in the repository (#75).
+
+### Fixed
+
+- IAM (iam): the home page, sign-in, sign-up and password recovery are only for visitors. Whoever still has a session goes to the dashboard, instead of seeing the signed-in user next to the sign-in button (#75).
+
+- Internationalization: every date follows the chosen language and the time zone of the laboratories, instead of the US format and the time zone of the browser (#75).
+
+- Environments: the views read the environments every time they open, so a new one appears without reloading the page, and the inbox reads its alerts as soon as it appears (#75).
+
+- Reporting & Audit (ra): the period buttons of the deviation indicators fit on small phones (#75).
+
 ## [2.1.0] - 2026-11-04
 
 ### Added

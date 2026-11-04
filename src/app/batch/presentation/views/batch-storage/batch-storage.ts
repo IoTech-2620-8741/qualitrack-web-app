@@ -7,7 +7,6 @@ import {
   signal,
   ChangeDetectionStrategy,
 } from '@angular/core';
-import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
@@ -19,6 +18,7 @@ import { BatchPath } from '../../../domain/model/batch-path';
 import { ProductionEquipment } from '../../../domain/model/production-equipment.entity';
 import { ProductionEnvironment } from '../../../domain/model/production-environment.entity';
 import { IamStore } from '../../../../iam/application/iam.store';
+import { DateTimePipe } from '../../../../shared/presentation/pipes/date-time.pipe';
 
 /**
  * Operational container monitors of one product storage environment.
@@ -52,7 +52,7 @@ interface StorageArea {
   selector: 'app-batch-storage',
   standalone: true,
   imports: [
-    DatePipe,
+    DateTimePipe,
     FormsModule,
     RouterLink,
     MatButtonModule,
@@ -108,7 +108,7 @@ export class BatchStorage implements OnInit {
    */
   async ngOnInit(): Promise<void> {
     try {
-      if (!this.store.environmentsLoaded()) await this.store.loadEnvironments();
+      await this.store.loadEnvironments();
       if (this.editable()) this.equipment.set(await this.store.loadProductionEquipment());
     } catch (error) {
       this.loadError.set(batchError(error));

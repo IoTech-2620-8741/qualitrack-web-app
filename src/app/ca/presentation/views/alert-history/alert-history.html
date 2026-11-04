@@ -1,50 +1,51 @@
-<main class="operations-page">
-  <a routerLink="/alerts">{{ 'ca-alerts.active.title' | translate }}</a>
-  <header class="page-heading">
-    <div>
-      <h1>{{ 'ca-alerts.history.title' | translate }}</h1>
-      <p class="muted">{{ 'ca-alerts.history.subtitle' | translate }}</p>
-    </div>
-    <div class="actions">
-      <app-environment-selector [environments]="store.environments()" [selectedId]="environmentId()" (selectedChange)="changeEnvironment($event)" />
-    </div>
-  </header>
+<main class="operations-page qt-theme">
+  <div class="context-bar">
+    <app-environment-selector [environments]="store.environments()" [selectedId]="environmentId()" (selectedChange)="changeEnvironment($event)" />
+  </div>
 
-  @if (store.error()) {
-    <p class="error" role="alert">{{ store.error()! | translate }}</p>
-  }
+  <app-alerts-page-header
+    section="history"
+    subtitleKey="ca-alerts.history.subtitle"
+    [environmentId]="chosenEnvironmentId()"
+  >
+    <div alertsSection>
+      @if (store.error()) {
+        <p class="error" role="alert">{{ store.error()! | translate }}</p>
+      }
 
-  @if (store.environmentsEmpty()) {
-    <p class="notice">{{ 'ca-alerts.no-environments' | translate }}</p>
-  } @else if (environmentId() !== null) {
-    <div class="filters">
-      <mat-form-field appearance="outline" subscriptSizing="dynamic">
-        <mat-label>{{ 'common.status' | translate }}</mat-label>
-        <mat-select [(ngModel)]="status" (selectionChange)="search()">
-          <mat-option value="">{{ 'common.all' | translate }}</mat-option>
-          @for (item of statuses; track item) {
-            <mat-option [value]="item">{{ 'ca-alerts.status.' + item.toLowerCase() | translate }}</mat-option>
-          }
-        </mat-select>
-      </mat-form-field>
-      <mat-form-field appearance="outline" subscriptSizing="dynamic">
-        <mat-label>{{ 'ca-alerts.fields.severity' | translate }}</mat-label>
-        <mat-select [(ngModel)]="severity" (selectionChange)="search()">
-          <mat-option value="">{{ 'common.all' | translate }}</mat-option>
-          @for (item of severities; track item) {
-            <mat-option [value]="item">{{ 'ca-alerts.severity.' + item.toLowerCase() | translate }}</mat-option>
-          }
-        </mat-select>
-      </mat-form-field>
-      <button mat-button type="button" (click)="clearFilters()" [disabled]="store.loading()">
-        {{ 'common.clear' | translate }}
-      </button>
+      @if (store.environmentsEmpty()) {
+        <p class="notice">{{ 'ca-alerts.no-environments' | translate }}</p>
+      } @else if (environmentId() !== null) {
+        <div class="filters">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic">
+            <mat-label>{{ 'common.status' | translate }}</mat-label>
+            <mat-select [(ngModel)]="status" (selectionChange)="search()">
+              <mat-option value="">{{ 'common.all' | translate }}</mat-option>
+              @for (item of statuses; track item) {
+                <mat-option [value]="item">{{ 'ca-alerts.status.' + item.toLowerCase() | translate }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field appearance="outline" subscriptSizing="dynamic">
+            <mat-label>{{ 'ca-alerts.fields.severity' | translate }}</mat-label>
+            <mat-select [(ngModel)]="severity" (selectionChange)="search()">
+              <mat-option value="">{{ 'common.all' | translate }}</mat-option>
+              @for (item of severities; track item) {
+                <mat-option [value]="item">{{ 'ca-alerts.severity.' + item.toLowerCase() | translate }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+          <button mat-button type="button" (click)="clearFilters()" [disabled]="store.loading()">
+            {{ 'common.clear' | translate }}
+          </button>
+        </div>
+
+        @if (store.loading()) {
+          <p role="status">{{ 'common.status-loading' | translate }}</p>
+        } @else if (!store.error()) {
+          <app-alert-table [alerts]="store.alerts()" emptyKey="ca-alerts.history.empty" />
+        }
+      }
     </div>
-
-    @if (store.loading()) {
-      <p role="status">{{ 'common.status-loading' | translate }}</p>
-    } @else if (!store.error()) {
-      <app-alert-table [alerts]="store.alerts()" emptyKey="ca-alerts.history.empty" />
-    }
-  }
+  </app-alerts-page-header>
 </main>

@@ -1,8 +1,9 @@
 import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
-import { DatePipe, DecimalPipe } from '@angular/common';
+import { DecimalPipe } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { TranslatePipe } from '@ngx-translate/core';
 import { BatchStore } from '../../../application/batch.store';
+import { DateTimePipe } from '../../../../shared/presentation/pipes/date-time.pipe';
 
 /**
  * Consolidated traceability of the selected batch: what it consumed, which equipment and staff
@@ -16,7 +17,7 @@ import { BatchStore } from '../../../application/batch.store';
 @Component({
   selector: 'app-batch-traceability',
   standalone: true,
-  imports: [DatePipe, DecimalPipe, MatIconModule, TranslatePipe],
+  imports: [DateTimePipe, DecimalPipe, MatIconModule, TranslatePipe],
   templateUrl: './batch-traceability.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './batch-traceability.css',

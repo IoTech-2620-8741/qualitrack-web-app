@@ -170,6 +170,7 @@ package "shared" {
     class DateTimePipe
     class RelativeTimePipe
     class ElapsedTimePipe
+    class DateOnlyPipe
     class "date-time-format" as DateTimeFormat <<functions>>
   }
 
@@ -230,6 +231,7 @@ UndoToastOpener ..> UndoToast : opens
 DateTimePipe ..> DateTimeFormat
 RelativeTimePipe ..> DateTimeFormat
 ElapsedTimePipe ..> DateTimeFormat
+DateOnlyPipe ..> DateTimeFormat
 App *-- Layout
 App --> IamStore
 App ..> UserProfileBadge : projected into Layout
@@ -247,6 +249,7 @@ note bottom of UndoToast
 end note
 note bottom of DateTimePipe
   Every date in the chosen language and the time zone of the laboratories.
+  dateOnly shows a day; a calendar day (yyyy-MM-dd) stays as it is.
 end note
 note bottom of Layout
   Wraps every page from app.html. The side menu only shows with operational

@@ -52,12 +52,12 @@
 
           <div>
             <span class="label">{{ 'subscription.billing.started-at' | translate }}</span>
-            <strong>{{ subscription.currentPeriodStart | date:'mediumDate' }}</strong>
+            <strong>{{ subscription.currentPeriodStart | dateOnly }}</strong>
           </div>
 
           <div>
             <span class="label">{{ (subscription.cancelAtPeriodEnd ? 'subscription.billing.access-until' : 'subscription.billing.renews-on') | translate }}</span>
-            <strong>{{ subscription.currentPeriodEnd | date:'mediumDate' }}</strong>
+            <strong>{{ subscription.currentPeriodEnd | dateOnly }}</strong>
           </div>
         </div>
 
@@ -71,7 +71,7 @@
         @if (subscription.cancelAtPeriodEnd) {
           <p class="renewal-notice" role="status">
             <mat-icon aria-hidden="true">event_busy</mat-icon>
-            {{ 'subscription.billing.renewal-cancelled' | translate: { date: (subscription.currentPeriodEnd | date:'mediumDate') } }}
+            {{ 'subscription.billing.renewal-cancelled' | translate: { date: (subscription.currentPeriodEnd | dateOnly) } }}
           </p>
         } @else if (subscription.status === 'ACTIVE') {
           <div class="subscription-actions">
@@ -107,7 +107,7 @@
               {{ 'subscription.payments.date' | translate }}
             </th>
             <td mat-cell *matCellDef="let payment">
-              {{ payment.paidAt | date:'mediumDate' }}
+              {{ payment.paidAt | dateOnly }}
             </td>
           </ng-container>
 

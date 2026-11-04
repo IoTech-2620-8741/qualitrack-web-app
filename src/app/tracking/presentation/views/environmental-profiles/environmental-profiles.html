@@ -33,7 +33,7 @@
           <span class="profile-version">
             @if (store.environmentProfile(); as profile) {
               {{ 'tracking.profiles.version' | translate: { version: profile.version } }}
-              @if (profile.updatedAt) { · {{ profile.updatedAt | date: 'short' }} }
+              @if (profile.updatedAt) { · {{ profile.updatedAt | dateTime }} }
             } @else {
               {{ 'tracking.profiles.not-configured' | translate }}
             }
@@ -63,7 +63,7 @@
           <span class="profile-version">
             @if (profile) {
               {{ 'tracking.profiles.version' | translate: { version: profile.version } }}
-              @if (profile.updatedAt) { · {{ profile.updatedAt | date: 'short' }} }
+              @if (profile.updatedAt) { · {{ profile.updatedAt | dateTime }} }
             } @else {
               {{ 'tracking.profiles.not-configured' | translate }}
             }
