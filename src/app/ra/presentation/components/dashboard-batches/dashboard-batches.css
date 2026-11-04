@@ -1,21 +1,227 @@
-:host {display: block; color: #233b47; border-top: 1px solid #d5e0e5; padding-top: 16px; min-width: 0;}
-.section-header { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 18px; min-height: 40px; }
-h2 { font-size: 17px; margin: 0; display: flex; align-items: center; gap: 9px;}
-h2 mat-icon { color: #43766d; flex-shrink: 0; }
-.batches-section { min-width: 0; border-top: 1px solid #d5e0e5; padding-top: 16px; }
-.distribution-row { display: grid; grid-template-columns: 95px minmax(0, 1fr) 24px; align-items: center; gap: 10px; font-size: 12px; margin-bottom: 12px; }
-.distribution-row strong { text-align: right; }
-meter { width: 100%; height: 13px; }
-meter::-webkit-meter-bar { border: 0; background: #e3e9ec; }
-meter::-webkit-meter-optimum-value { background: #298c82; }
-meter.REJECTED::-webkit-meter-optimum-value { background: #c85058; }
-meter.PENDING::-webkit-meter-optimum-value { background: #c99a39; }
-meter.IN_PROGRESS::-webkit-meter-optimum-value { background: #3883bb; }
-.batch-row { padding: 12px 0; }
-.record-row { display: flex; align-items: center; gap: 12px; padding: 15px 0; border-bottom: 1px solid #dce4e9; text-decoration: none; color: inherit; }
-.record-row:hover { background: #eaf1f4; }
-.record-main { min-width: 0; flex: 1; }
-.record-main strong, .record-main span, .record-main small, .record-status small { display: block; overflow-wrap: anywhere; }
-.record-main strong { font-size: 13px; margin-bottom: 4px; }
-.record-main span { font-size: 12px; }
-.record-main small, .record-status small { font-size: 11px; color: #637680; margin-top: 5px; }
+/* ==========================================================================
+   Dashboard batches section
+   The host element is the card, so it matches the rest of the dashboard.
+   Colors are plain hex values.
+   ========================================================================== */
+
+:host {
+  display: block;
+  min-width: 0;
+  padding: 24px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+  color: #0f172a;
+}
+
+.batches-section {
+  min-width: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Section header
+   -------------------------------------------------------------------------- */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  min-height: 40px;
+  margin-bottom: 16px;
+}
+
+h2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  color: #0f172a;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+h2 mat-icon {
+  flex-shrink: 0;
+  color: #0d9488;
+}
+
+/* Link to the batches view (icon button) */
+.section-header a {
+  color: #0f172a;
+}
+
+.section-header a:focus-visible {
+  outline: 3px solid #0d9488;
+  outline-offset: 2px;
+}
+
+/* --------------------------------------------------------------------------
+   Batch distribution bars
+   -------------------------------------------------------------------------- */
+.batch-distribution {
+  margin-bottom: 8px;
+}
+
+.distribution-row {
+  display: grid;
+  grid-template-columns: 110px minmax(0, 1fr) 28px;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+  color: #0f172a;
+  font-size: 13px;
+}
+
+.distribution-row strong {
+  text-align: right;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+meter {
+  width: 100%;
+  height: 10px;
+  border: 0;
+  border-radius: 999px;
+  appearance: none;
+  -webkit-appearance: none;
+  background: #e2e8f0;
+}
+
+/* WebKit / Blink */
+meter::-webkit-meter-bar {
+  border: 0;
+  border-radius: 999px;
+  background: #e2e8f0;
+}
+
+meter::-webkit-meter-optimum-value {
+  border-radius: 999px;
+  background: #0d9488;
+}
+
+meter.REJECTED::-webkit-meter-optimum-value {
+  background: #f44336;
+}
+
+meter.PENDING::-webkit-meter-optimum-value {
+  background: #ffc107;
+}
+
+meter.IN_PROGRESS::-webkit-meter-optimum-value {
+  background: #3883bb;
+}
+
+/* Firefox */
+meter::-moz-meter-bar {
+  border-radius: 999px;
+  background: #0d9488;
+}
+
+meter.REJECTED::-moz-meter-bar {
+  background: #f44336;
+}
+
+meter.PENDING::-moz-meter-bar {
+  background: #ffc107;
+}
+
+meter.IN_PROGRESS::-moz-meter-bar {
+  background: #3883bb;
+}
+
+/* --------------------------------------------------------------------------
+   Recent batch rows
+   -------------------------------------------------------------------------- */
+.record-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 -8px;
+  padding: 12px 8px;
+  border-bottom: 1px solid #e2e8f0;
+  border-radius: 8px;
+  text-decoration: none;
+  color: inherit;
+  transition: background 0.2s ease;
+}
+
+.record-row:hover {
+  background: #f3f4f6;
+}
+
+.record-row:focus-visible {
+  outline: 3px solid #0d9488;
+  outline-offset: 2px;
+}
+
+.record-row mat-icon {
+  flex-shrink: 0;
+  color: #64748b;
+}
+
+.record-main {
+  min-width: 0;
+  flex: 1;
+}
+
+.record-main strong,
+.record-main span,
+.record-main small,
+.record-status small {
+  display: block;
+  overflow-wrap: anywhere;
+}
+
+.record-main strong {
+  margin-bottom: 4px;
+  color: #0f172a;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.record-main span {
+  color: #64748b;
+  font-size: 12px;
+}
+
+.record-main small,
+.record-status small {
+  margin-top: 4px;
+  color: #64748b;
+  font-size: 12px;
+}
+
+/* --------------------------------------------------------------------------
+   Empty state
+   -------------------------------------------------------------------------- */
+.empty {
+  margin: 0;
+  padding: 24px 0;
+  color: #64748b;
+  font-size: 14px;
+  line-height: 1.6;
+  text-align: center;
+}
+
+/* --------------------------------------------------------------------------
+   Responsive
+   -------------------------------------------------------------------------- */
+@media (max-width: 760px) {
+  :host {
+    padding: 20px 16px;
+  }
+}
+
+@media (max-width: 420px) {
+  h2 {
+    font-size: 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .record-row {
+    transition: none;
+  }
+}
