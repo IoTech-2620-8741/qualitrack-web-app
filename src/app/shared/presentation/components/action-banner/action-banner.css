@@ -7,22 +7,24 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 12px 16px;
+  padding: 16px;
   border: 1px solid;
-  border-left-width: 5px;
-  border-radius: var(--qt-radius-medium);
+  border-left-width: 4px;
+  border-radius: 12px;
+  font-size: 14px;
+  line-height: 1.6;
 }
 
 .tone-danger {
-  border-color: var(--qt-error);
-  background: var(--qt-error-surface);
-  color: var(--qt-error-text);
+  background: #ffebee;
+  border-color: #f44336;
+  color: #b71c1c;
 }
 
 .tone-warning {
-  border-color: var(--qt-warning);
-  background: var(--qt-warning-surface);
-  color: var(--qt-warning-text);
+  background: #fff8e1;
+  border-color: #ffc107;
+  color: #7a5a00;
 }
 
 .action-banner > mat-icon {
@@ -37,9 +39,22 @@
 
 button {
   flex: none;
+  min-height: 40px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  color: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
   --mat-button-outlined-label-text-color: currentColor;
   --mat-button-outlined-outline-color: currentColor;
-  color: inherit;
+  --mdc-outlined-button-label-text-color: currentColor;
+  --mdc-outlined-button-outline-color: currentColor;
+}
+
+button:focus-visible {
+  outline: 3px solid #0d9488;
+  outline-offset: 2px;
 }
 
 @media (max-width: 600px) {
