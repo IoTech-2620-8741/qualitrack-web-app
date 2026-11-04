@@ -83,8 +83,12 @@
         <span>
           <mat-icon aria-hidden="true">pan_tool</mat-icon>
           {{
-            'ca-alerts.active.card.attending'
-              | translate: { time: (alert().acknowledgedAt | relativeTime: now()) }
+            (attendedBy()
+              ? 'ca-alerts.active.card.attending-by'
+              : 'ca-alerts.active.card.attending'
+            )
+              | translate
+                : { name: attendedBy(), time: (alert().acknowledgedAt | relativeTime: now()) }
           }}
         </span>
       }

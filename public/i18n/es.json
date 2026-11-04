@@ -810,6 +810,7 @@
         "opened": "Abierta {{time}}",
         "no-owner": "Sin responsable",
         "attending": "En atención {{time}}",
+        "attending-by": "En atención por {{name}} · {{time}}",
         "notify": "Avisar",
         "resolve": "Resolver"
       },

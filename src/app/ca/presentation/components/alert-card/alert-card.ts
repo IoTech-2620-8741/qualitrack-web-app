@@ -56,6 +56,9 @@ export class AlertCard {
   /** Code and name of the environment of the alert, or null when it is unknown. */
   readonly environmentLabel = input<string | null>(null);
 
+  /** Name of the person attending the alert, or null while it is unknown. */
+  readonly attendedBy = input<string | null>(null);
+
   /** Whether the person can attend alerts; otherwise only the detail is offered. */
   readonly canAttend = input(false);
 

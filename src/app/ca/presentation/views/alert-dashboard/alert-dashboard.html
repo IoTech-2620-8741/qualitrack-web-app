@@ -223,6 +223,7 @@
                   [alert]="alert"
                   [deviceName]="store.deviceName(alert.equipmentId)"
                   [environmentLabel]="environmentLabelOf(alert)"
+                  [attendedBy]="attendedByOf(alert)"
                   [canAttend]="store.canAttend()"
                   [saving]="store.saving()"
                   [isNew]="store.newAlertIds().has(alert.id)"

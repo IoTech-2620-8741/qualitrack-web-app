@@ -13,6 +13,7 @@ import {
 } from '../../../../shared/presentation/components/undo-toast/undo-toast';
 import { AlertDevice } from '../../../domain/model/alert-device.entity';
 import { AlertEnvironment } from '../../../domain/model/alert-environment.entity';
+import { AlertPerson } from '../../../domain/model/alert-person.entity';
 import {
   AlertSeverity,
   AlertStatus,
@@ -64,6 +65,7 @@ describe('AlertDashboard', () => {
   const api = {
     getAlertEnvironments: vi.fn(),
     getAlertDevices: vi.fn(),
+    getAlertPeople: vi.fn(),
     getEnvironmentAlerts: vi.fn(),
     acknowledgeAlert: vi.fn(),
     getAlertById: vi.fn(),
@@ -95,6 +97,9 @@ describe('AlertDashboard', () => {
           ),
         ),
       );
+    api.getAlertPeople
+      .mockReset()
+      .mockReturnValue(of([new AlertPerson({ id: 12, name: 'Billy Ruiz' })]));
     answer({ 1: [newerCritical, attendedCritical], 2: [olderCritical, warning] });
     api.acknowledgeAlert.mockReset();
     api.getAlertById.mockReset();
@@ -454,6 +459,20 @@ describe('AlertDashboard', () => {
 
       expect(liveAnnouncer.announce).toHaveBeenCalledTimes(1);
       expect(element.querySelectorAll('.is-new')).toHaveLength(1);
+    });
+  });
+
+  describe('people', () => {
+    it('names who attends each alert', async () => {
+      answer({
+        1: [new DeviationAlert({ ...attendedCritical, acknowledgedBy: 12 })],
+        2: [],
+      });
+      const { element } = await open();
+      expect(api.getAlertPeople).toHaveBeenCalledWith(42);
+      expect(element.querySelector('app-alert-card .meta')?.textContent).toContain(
+        'ca-alerts.active.card.attending-by',
+      );
     });
   });
 });

@@ -160,4 +160,19 @@ describe('AlertCard', () => {
       'ca-alerts.actions.acknowledge: AIR_QUALITY · Monitor PROD',
     );
   });
+
+  it('names who attends the alert when it is known', () => {
+    const { element, fixture } = create(alertOf({ status: 'ACKNOWLEDGED' }));
+    expect(element.querySelector('.meta')?.textContent).toContain(
+      'ca-alerts.active.card.attending',
+    );
+    expect(element.querySelector('.meta')?.textContent).not.toContain('attending-by');
+
+    fixture.componentRef.setInput('attendedBy', 'Billy Ruiz');
+    fixture.detectChanges();
+
+    expect(element.querySelector('.meta')?.textContent).toContain(
+      'ca-alerts.active.card.attending-by',
+    );
+  });
 });

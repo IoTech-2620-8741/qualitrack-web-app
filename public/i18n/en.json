@@ -810,6 +810,7 @@
         "opened": "Opened {{time}}",
         "no-owner": "No one assigned",
         "attending": "In progress {{time}}",
+        "attending-by": "In progress by {{name}} · {{time}}",
         "notify": "Notify",
         "resolve": "Resolve"
       },

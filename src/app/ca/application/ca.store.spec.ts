@@ -4,6 +4,7 @@ import { of, Subject, throwError } from 'rxjs';
 import { IamStore } from '../../iam/application/iam.store';
 import { ApiError } from '../../shared/infrastructure/api-error';
 import { AlertEnvironment } from '../domain/model/alert-environment.entity';
+import { AlertPerson } from '../domain/model/alert-person.entity';
 import { AlertStatus, DeviationAlert } from '../domain/model/deviation-alert.entity';
 import { CaApi } from '../infrastructure/ca-api';
 import { CaStore } from './ca.store';
@@ -30,6 +31,7 @@ const conflict = () => new ApiError('Already attended', 409);
 describe('CaStore', () => {
   const api = {
     getAlertEnvironments: vi.fn(),
+    getAlertPeople: vi.fn(),
     getEnvironmentAlerts: vi.fn(),
     acknowledgeAlert: vi.fn(),
     getAlertById: vi.fn(),
@@ -41,6 +43,7 @@ describe('CaStore', () => {
     signOutTasks = [];
     api.getAlertEnvironments.mockReset().mockReturnValue(of([environmentOf(1), environmentOf(2)]));
     api.getEnvironmentAlerts.mockReset().mockReturnValue(of([]));
+    api.getAlertPeople.mockReset();
     api.acknowledgeAlert.mockReset();
     api.getAlertById.mockReset();
     api.sendAlertEmailNotification.mockReset();
@@ -390,6 +393,21 @@ describe('CaStore', () => {
       store.confirmAttention(10);
 
       expect(store.selectedAlert()?.id).toBe(99);
+    });
+  });
+
+  describe('people', () => {
+    it('names the people of the laboratory once they are read', () => {
+      api.getAlertPeople.mockReturnValue(of([new AlertPerson({ id: 12, name: 'Billy Ruiz' })]));
+      const store = TestBed.inject(CaStore);
+      expect(store.personName(12)).toBeNull();
+
+      store.loadPeople();
+
+      expect(api.getAlertPeople).toHaveBeenCalledWith(42);
+      expect(store.personName(12)).toBe('Billy Ruiz');
+      expect(store.personName(13)).toBeNull();
+      expect(store.personName(null)).toBeNull();
     });
   });
 });

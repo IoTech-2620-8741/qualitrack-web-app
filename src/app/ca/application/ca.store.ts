@@ -126,6 +126,7 @@ export class CaStore {
   private readonly _newAlertIdsSignal = signal<ReadonlySet<number>>(new Set());
   private readonly _refreshingSignal = signal(false);
   private readonly _pendingAttentionsSignal = signal<ReadonlyMap<number, PendingAttention>>(new Map());
+  private readonly _peopleSignal = signal<ReadonlyMap<number, string>>(new Map());
 
   /** Alerts shown, with the attention that is still waiting to reach the platform already applied. */
   readonly alerts = computed(() => {
@@ -239,6 +240,7 @@ export class CaStore {
       this.iam.currentUserId();
       this._unreadNotificationsSignal.set(0);
       this._notificationsSignal.set([]);
+      this._peopleSignal.set(new Map());
     });
     this.iam.beforeSignOut(() => this.sendPendingAttentions());
     fromEvent(inject(DOCUMENT).defaultView!, 'pagehide')
@@ -345,6 +347,31 @@ export class CaStore {
       .getAlertDevices(this.iam.requireLaboratoryId())
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({ next: (devices) => this._devicesSignal.set(devices), error: () => this._devicesSignal.set([]) });
+  }
+
+  /**
+   * Name of a person of the laboratory, or null while it is unknown.
+   *
+   * @param userId - The account of the person
+   * @returns The name, or `null` when there is no account or it is not among the loaded people
+   */
+  personName(userId: number | null): string | null {
+    return userId === null ? null : (this._peopleSignal().get(userId) ?? null);
+  }
+
+  /**
+   * Reads the people of the laboratory, so that alerts can name who attended or resolved them.
+   *
+   * @remarks
+   * People join and leave, so it reads them every time it is asked. What was known is kept until the answer arrives.
+   */
+  loadPeople(): void {
+    this.caApi
+      .getAlertPeople(this.iam.requireLaboratoryId())
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((people) =>
+        this._peopleSignal.set(new Map(people.map((person) => [person.id, person.name]))),
+      );
   }
 
   /**

@@ -256,6 +256,7 @@ export class AlertDashboard implements OnInit {
     this.store.clearError();
     this.store.clearAlerts();
     this.store.loadDevices();
+    this.store.loadPeople();
     if (!this.store.environmentsLoaded()) await this.store.loadEnvironments();
   }
 
@@ -344,6 +345,16 @@ export class AlertDashboard implements OnInit {
   protected notify(alert: DeviationAlert): void {
     this.closeUndoWindow(alert);
     this.store.sendAlertEmailNotification(alert.id);
+  }
+
+  /**
+   * Name of the person attending an alert.
+   *
+   * @param alert - The alert
+   * @returns The name, or null while it is unknown
+   */
+  protected attendedByOf(alert: DeviationAlert): string | null {
+    return this.store.personName(alert.acknowledgedBy);
   }
 
   /**
