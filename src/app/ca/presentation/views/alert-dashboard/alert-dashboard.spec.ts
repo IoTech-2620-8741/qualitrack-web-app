@@ -19,6 +19,7 @@ import {
   AlertStatus,
   DeviationAlert,
 } from '../../../domain/model/deviation-alert.entity';
+import { CaStore } from '../../../application/ca.store';
 import { CaApi } from '../../../infrastructure/ca-api';
 import { AlertDashboard } from './alert-dashboard';
 
@@ -58,7 +59,7 @@ const attendedCritical = alertOf(
 );
 const warning = alertOf(4, 2, 'WARNING', 'UNRESOLVED', '2026-10-01T10:00:00Z');
 
-@Component({ template: '' })
+@Component({ template: '<p class="detail-page"></p>' })
 class AlertDetailPage {}
 
 describe('AlertDashboard', () => {
@@ -110,8 +111,11 @@ describe('AlertDashboard', () => {
     TestBed.configureTestingModule({
       providers: [
         provideRouter([
-          { path: 'alerts', component: AlertDashboard },
-          { path: 'alerts/:alertId', component: AlertDetailPage },
+          {
+            path: 'alerts',
+            component: AlertDashboard,
+            children: [{ path: ':alertId', component: AlertDetailPage }],
+          },
         ]),
         provideTranslateService(),
         { provide: CaApi, useValue: api },
@@ -459,6 +463,35 @@ describe('AlertDashboard', () => {
 
       expect(liveAnnouncer.announce).toHaveBeenCalledTimes(1);
       expect(element.querySelectorAll('.is-new')).toHaveLength(1);
+    });
+  });
+
+  describe('detail over the list', () => {
+    it('opens over the list, which is not read again and keeps its environment', async () => {
+      const { harness, element } = await open('/alerts?environmentId=1');
+      api.getEnvironmentAlerts.mockClear();
+      const card = element.querySelector('app-alert-card')!;
+
+      card.querySelector<HTMLAnchorElement>('.actions a')!.click();
+      await harness.fixture.whenStable();
+      harness.detectChanges();
+
+      expect(TestBed.inject(Router).url).toMatch(/^\/alerts\/\d+\?environmentId=1$/);
+      expect(element.querySelector('.detail-page')).not.toBeNull();
+      expect(element.querySelector('app-alert-card')).toBe(card);
+      expect(api.getEnvironmentAlerts).not.toHaveBeenCalled();
+    });
+
+    it('leaves the messages to the detail while it is open', async () => {
+      const { harness, element } = await open('/alerts/2');
+      TestBed.inject(CaStore).setError('ca-alerts.errors.failed');
+      harness.detectChanges();
+      expect(element.querySelector('.feedback')).toBeNull();
+
+      await TestBed.inject(Router).navigateByUrl('/alerts');
+      await harness.fixture.whenStable();
+      harness.detectChanges();
+      expect(element.querySelector('.feedback')).not.toBeNull();
     });
   });
 

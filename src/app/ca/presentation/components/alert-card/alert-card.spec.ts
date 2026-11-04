@@ -111,7 +111,9 @@ describe('AlertCard', () => {
 
     expect(actions()).toContain('ca-alerts.active.card.resolve');
     expect(actions()).not.toContain('ca-alerts.actions.acknowledge');
-    expect(element.querySelector('[mat-flat-button]')?.getAttribute('href')).toBe('/alerts/7');
+    expect(element.querySelector('[mat-flat-button]')?.getAttribute('href')).toBe(
+      '/alerts/7?panel=resolve',
+    );
   });
 
   it('only offers the e-mail for critical alerts', () => {

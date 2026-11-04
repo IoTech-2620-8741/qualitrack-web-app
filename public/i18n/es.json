@@ -747,6 +747,7 @@
         "waiting-attention": "Pendiente: nadie ha registrado atención",
         "waiting-resolution": "Pendiente: falta registrar la acción correctiva"
       },
+      "user": "usuario #{{id}}",
       "corrective-action": "Acción correctiva",
       "templates": {
         "label": "Plantillas de acción correctiva",
@@ -754,10 +755,6 @@
         "filter": { "label": "Filtro reemplazado", "text": "Se reemplazó el filtro y se verificó que la lectura volvió al rango." },
         "sensor": { "label": "Sensor recalibrado", "text": "Se recalibró el sensor y se verificó que la lectura es correcta." }
       },
-      "detected": "Detectada el {{date}}.",
-      "last-deviation": "Última desviación el {{date}} ({{count}} desviaciones en el incidente).",
-      "acknowledged": "Atendida por el usuario #{{user}} el {{date}}.",
-      "resolved": "Resuelta por el usuario #{{user}} el {{date}}:",
       "actions-title": "Actuaciones relacionadas",
       "no-actions": "El monitor del contenedor no registró actuaciones para esta variable durante el incidente.",
       "no-actions-environment": "Las actuaciones las informan los monitores de contenedor; el dispositivo ambiental no ejecuta acciones.",
@@ -778,7 +775,6 @@
     },
     "no-environments": "Las alertas se consultan por ambiente. Registra primero un ambiente y sus dispositivos IoT.",
     "normalized": "Condición normalizada",
-    "acknowledged": "Se registró la atención de la alerta.",
     "resolved": "La alerta quedó resuelta.",
     "errors": {
       "connection": "No se pudieron cargar las alertas. Revisa tu conexión e inténtalo de nuevo.",

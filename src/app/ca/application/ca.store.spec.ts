@@ -34,6 +34,7 @@ describe('CaStore', () => {
     getAlertPeople: vi.fn(),
     getEnvironmentAlerts: vi.fn(),
     acknowledgeAlert: vi.fn(),
+    resolveAlert: vi.fn(),
     getAlertById: vi.fn(),
     sendAlertEmailNotification: vi.fn(),
   };
@@ -45,6 +46,7 @@ describe('CaStore', () => {
     api.getEnvironmentAlerts.mockReset().mockReturnValue(of([]));
     api.getAlertPeople.mockReset();
     api.acknowledgeAlert.mockReset();
+    api.resolveAlert.mockReset();
     api.getAlertById.mockReset();
     api.sendAlertEmailNotification.mockReset();
     TestBed.configureTestingModule({
@@ -408,6 +410,103 @@ describe('CaStore', () => {
       expect(store.personName(12)).toBe('Billy Ruiz');
       expect(store.personName(13)).toBeNull();
       expect(store.personName(null)).toBeNull();
+    });
+  });
+
+  describe('detail of an alert', () => {
+    it('leaves the list on screen while the detail is read', async () => {
+      const detail = new Subject<DeviationAlert>();
+      api.getAlertById.mockReturnValue(detail);
+      answer({ 1: [alertOf(10, 1)], 2: [] });
+      const store = await storeWithEnvironments();
+      store.loadOpenAlerts(null);
+
+      store.loadAlertById(10);
+
+      expect(store.loading()).toBe(false);
+      expect(store.selectedAlertLoading()).toBe(true);
+      expect(store.alerts().map((alert) => alert.id)).toEqual([10]);
+      expect(store.getAlertById(10)()?.id).toBe(10);
+
+      detail.next(alertOf(10, 1));
+      expect(store.selectedAlertLoading()).toBe(false);
+    });
+
+    it('forgets the alert and stops reading it when the detail closes', async () => {
+      const detail = new Subject<DeviationAlert>();
+      api.getAlertById.mockReturnValue(detail);
+      const store = await storeWithEnvironments();
+      store.loadAlertById(10);
+
+      store.clearSelectedAlert();
+      detail.next(alertOf(10, 1));
+
+      expect(store.selectedAlert()).toBeNull();
+      expect(store.selectedAlertLoading()).toBe(false);
+    });
+
+    it('registers attention on an alert only known by its detail, as when it comes from a link', async () => {
+      api.getAlertById.mockReturnValue(of(alertOf(10, 1)));
+      const store = await storeWithEnvironments();
+      store.loadAlertById(10);
+
+      store.startAttention(10);
+
+      expect(store.getAlertById(10)()?.status).toBe('ACKNOWLEDGED');
+      expect(store.getAlertById(10)()?.acknowledgedBy).toBe(27);
+      expect(api.acknowledgeAlert).not.toHaveBeenCalled();
+    });
+
+    it('keeps the actions of the detail when the attention reaches the platform', async () => {
+      const actuations = [{ id: 1, action: 'FAN_ON', triggerState: null, result: 'EXECUTED', occurredAt: '' }];
+      api.getAlertById.mockReturnValue(
+        of(new DeviationAlert({ ...alertOf(10, 1), relatedActuations: actuations })),
+      );
+      api.acknowledgeAlert.mockReturnValue(of(alertOf(10, 1, 'ACKNOWLEDGED')));
+      const store = await storeWithEnvironments();
+      store.loadAlertById(10);
+      store.startAttention(10);
+
+      store.confirmAttention(10);
+
+      expect(store.getAlertById(10)()?.status).toBe('ACKNOWLEDGED');
+      expect(store.getAlertById(10)()?.relatedActuations).toEqual(actuations);
+    });
+
+    it('shows the detail as it is when another person got there first', async () => {
+      api.getAlertById.mockReturnValue(of(alertOf(10, 1)));
+      api.acknowledgeAlert.mockReturnValue(throwError(conflict));
+      const store = await storeWithEnvironments();
+      store.loadAlertById(10);
+      store.startAttention(10);
+      api.getAlertById.mockReturnValue(of(alertOf(10, 1, 'ACKNOWLEDGED')));
+
+      store.confirmAttention(10);
+
+      expect(store.error()).toBe('ca-alerts.active.attended-by-another');
+      expect(store.getAlertById(10)()?.status).toBe('ACKNOWLEDGED');
+    });
+
+    it('resolves only after the attention waiting on the alert was answered', async () => {
+      const attention = new Subject<DeviationAlert>();
+      api.getAlertById.mockReturnValue(of(alertOf(10, 1)));
+      api.acknowledgeAlert.mockReturnValue(attention);
+      api.resolveAlert.mockReturnValue(of(alertOf(10, 1, 'RESOLVED')));
+      const store = await storeWithEnvironments();
+      store.loadAlertById(10);
+      store.startAttention(10);
+
+      store.resolveAlert(10, { resolutionNotes: 'Filter replaced' });
+      expect(api.resolveAlert).not.toHaveBeenCalled();
+      expect(store.saving()).toBe(true);
+
+      attention.next(alertOf(10, 1, 'ACKNOWLEDGED'));
+      attention.complete();
+
+      expect(api.resolveAlert).toHaveBeenCalledWith(10, { resolutionNotes: 'Filter replaced' });
+      expect(store.getAlertById(10)()?.status).toBe('RESOLVED');
+      expect(store.notice()).toBe('ca-alerts.resolved');
+      expect(store.saving()).toBe(false);
     });
   });
 });

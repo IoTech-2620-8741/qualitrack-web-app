@@ -38,7 +38,7 @@
     [environmentId]="environmentId()"
   >
     <div alertsSection class="inbox">
-      @if (store.error() || store.notice()) {
+      @if ((store.error() || store.notice()) && !detailOpen()) {
         <div class="feedback">
           @if (store.error(); as error) {
             <app-error-banner
@@ -261,4 +261,6 @@
       }
     </div>
   </app-alerts-page-header>
+
+  <router-outlet (activate)="detailOpen.set(true)" (deactivate)="detailClosed()" />
 </main>

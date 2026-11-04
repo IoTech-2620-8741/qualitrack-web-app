@@ -101,6 +101,7 @@
     <a
       mat-button
       [routerLink]="['/alerts', alert().id]"
+      queryParamsHandling="preserve"
       [attr.aria-label]="('ca-alerts.actions.view-details' | translate) + ': ' + title()"
       (click)="opening.emit()"
     >
@@ -135,6 +136,8 @@
           #primaryAction
           mat-flat-button
           [routerLink]="['/alerts', alert().id]"
+          [queryParams]="{ panel: 'resolve' }"
+          queryParamsHandling="merge"
           [attr.aria-label]="('ca-alerts.active.card.resolve' | translate) + ': ' + title()"
           (click)="opening.emit()"
         >

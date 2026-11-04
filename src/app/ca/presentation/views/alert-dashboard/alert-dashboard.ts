@@ -12,7 +12,7 @@ import {
   viewChildren,
 } from '@angular/core';
 import { DOCUMENT, DecimalPipe } from '@angular/common';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink, RouterOutlet } from '@angular/router';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { LiveAnnouncer } from '@angular/cdk/a11y';
 import { MatButtonModule } from '@angular/material/button';
@@ -27,7 +27,6 @@ import { EmptyState } from '../../../../shared/presentation/components/empty-sta
 import { EnvironmentSelector } from '../../../../shared/presentation/components/environment-selector/environment-selector';
 import { ErrorBanner } from '../../../../shared/presentation/components/error-banner/error-banner';
 import { StatFilterCard } from '../../../../shared/presentation/components/stat-filter-card/stat-filter-card';
-import { UndoToastOpener } from '../../../../shared/presentation/components/undo-toast/undo-toast';
 import { RelativeTimePipe } from '../../../../shared/presentation/pipes/relative-time.pipe';
 import { CaStore } from '../../../application/ca.store';
 import {
@@ -35,6 +34,7 @@ import {
   compareAlertsByPriority,
 } from '../../../domain/model/alert-priority';
 import { DeviationAlert } from '../../../domain/model/deviation-alert.entity';
+import { AlertAttentionFlow } from '../../alert-attention-flow';
 import { alertVariableName } from '../../alert-variable';
 import { AlertCard } from '../../components/alert-card/alert-card';
 import { AlertsPageHeader } from '../../components/alerts-page-header/alerts-page-header';
@@ -65,10 +65,10 @@ function searchable(text: string): string {
  *
  * @remarks
  * The chosen environment lives in the `environmentId` query parameter; without it, every environment is shown. The list
- * refreshes itself while the tab is visible. Attention registered from here can be undone for a few seconds, and the
- * toast keeps its subscription when the person moves to another view, so the attention is sent anyway. With the focus
- * on the list, J and K move between the cards and A attends the one that has it; they only work there so they cannot
- * get in the way of a person using dictation or a screen reader elsewhere on the page (WCAG 2.1.4).
+ * refreshes itself while the tab is visible and attention registered from here can be undone for a few seconds. The
+ * detail of an alert opens in a panel over the list, which stays as it was. With the focus on the list, J and K move
+ * between the cards and A attends the one that has it; they only work there so they cannot get in the way of a person
+ * using dictation or a screen reader elsewhere on the page (WCAG 2.1.4).
  */
 @Component({
   selector: 'app-alert-dashboard',
@@ -76,6 +76,7 @@ function searchable(text: string): string {
   imports: [
     DecimalPipe,
     RouterLink,
+    RouterOutlet,
     TranslatePipe,
     MatButtonModule,
     MatFormFieldModule,
@@ -100,7 +101,7 @@ export class AlertDashboard implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly translate = inject(TranslateService);
-  private readonly undoToast = inject(UndoToastOpener);
+  private readonly attentionFlow = inject(AlertAttentionFlow);
   private readonly liveAnnouncer = inject(LiveAnnouncer);
   private readonly injector = inject(Injector);
   private readonly document = inject(DOCUMENT);
@@ -136,6 +137,9 @@ export class AlertDashboard implements OnInit {
   protected readonly criticalOnly = signal(false);
   protected readonly attentionFilter = signal<AttentionFilter | null>(null);
   protected readonly searchTerm = signal('');
+
+  /** Whether the detail of an alert is open over the list; it shows its own messages then. */
+  protected readonly detailOpen = signal(false);
 
   /** Open alerts of the scope: an alert resolved from here is still in the list until the next refresh. */
   private readonly openAlerts = computed(() => this.store.alerts().filter((alert) => alert.isOpen));
@@ -311,23 +315,10 @@ export class AlertDashboard implements OnInit {
    * Registers that the person attends an alert, giving a few seconds to undo it.
    *
    * @param alert - The alert
-   *
-   * @remarks
-   * The subscription is not tied to this view on purpose: the attention must be sent or undone even if the person
-   * moved to another page in the meantime.
    */
   protected attend(alert: DeviationAlert): void {
-    this.store.startAttention(alert.id);
+    this.attentionFlow.attend(alert);
     this.focusPrimaryActionOf(alert);
-    this.undoToast
-      .open({
-        messageKey: 'ca-alerts.active.attention-registered',
-        messageParams: { alert: this.titleOf(alert) },
-      })
-      .subscribe((outcome) => {
-        if (outcome === 'undone') this.store.undoAttention(alert.id);
-        else this.store.confirmAttention(alert.id);
-      });
   }
 
   /**
@@ -336,7 +327,7 @@ export class AlertDashboard implements OnInit {
    * @param alert - The alert the person is working with
    */
   protected closeUndoWindow(alert: DeviationAlert): void {
-    if (this.store.hasPendingAttention(alert.id)) this.undoToast.confirmNow();
+    this.attentionFlow.closeUndoWindow(alert.id);
   }
 
   /**
@@ -373,6 +364,17 @@ export class AlertDashboard implements OnInit {
         return;
     }
     event.preventDefault();
+  }
+
+  /** The panel closed: if what had the focus before it is gone, such as the card of a resolved alert, the list takes it. */
+  protected detailClosed(): void {
+    this.detailOpen.set(false);
+    afterNextRender(
+      () => {
+        if (this.document.activeElement === this.document.body) this.cards()[0]?.focus();
+      },
+      { injector: this.injector },
+    );
   }
 
   /**

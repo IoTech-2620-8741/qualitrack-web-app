@@ -1,0 +1,139 @@
+<app-side-panel
+  [titleText]="title()"
+  [subtitle]="subtitle()"
+  [trapFocus]="!canReachUndoToast()"
+  [focusTitleOnOpen]="!openedToResolve"
+  (closed)="close()"
+>
+  @if (alert(); as alert) {
+    <div sidePanelOverline class="chips">
+      <app-status-chip
+        [tone]="severityChip()!.tone"
+        [icon]="severityChip()!.icon"
+        [labelKey]="severityChip()!.labelKey"
+      />
+      <app-status-chip
+        [tone]="statusChip()!.tone"
+        [icon]="statusChip()!.icon"
+        [labelKey]="statusChip()!.labelKey"
+      />
+      @if (alert.isNormalized) {
+        <app-status-chip
+          [tone]="normalizedChip.tone"
+          [icon]="normalizedChip.icon"
+          [labelKey]="normalizedChip.labelKey"
+        />
+      }
+    </div>
+  }
+
+  @if (store.error(); as error) {
+    <p class="message error" role="alert">{{ error | translate }}</p>
+  }
+  @if (store.notice(); as notice) {
+    <p class="message notice" role="status">{{ notice | translate: store.noticeParams() }}</p>
+  }
+
+  @if (alert(); as alert) {
+    <dl class="reading">
+      <div>
+        <dt>{{ 'ca-alerts.fields.recorded' | translate }}</dt>
+        <dd class="value">{{ alert.recordedValue | number: '1.0-2' }} {{ alert.unit }}</dd>
+      </div>
+      <div>
+        <dt>{{ 'ca-alerts.fields.threshold' | translate }}</dt>
+        <dd>{{ alert.thresholdValue | number: '1.0-2' }} {{ alert.unit }}</dd>
+      </div>
+      <div>
+        <dt>{{ 'ca-alerts.fields.deviations-label' | translate }}</dt>
+        <dd>{{ alert.deviationCount }}</dd>
+      </div>
+    </dl>
+
+    @if (alert.isOpen && alert.isNormalized) {
+      <p class="message normalized" role="status">
+        {{ 'ca-alerts.detail.normalized' | translate: { date: (alert.normalizedAt | dateTime) } }}
+      </p>
+    }
+
+    <section>
+      <h3>{{ 'ca-alerts.detail.timeline' | translate }}</h3>
+      <app-alert-timeline
+        [alert]="alert"
+        [deviceName]="deviceLabel()"
+        [attendedBy]="attendedBy()"
+        [resolvedBy]="resolvedBy()"
+      />
+    </section>
+
+    <section>
+      <h3>{{ 'ca-alerts.detail.actions-title' | translate }}</h3>
+      @if (store.selectedAlertLoading()) {
+        <p class="muted" role="status">{{ 'common.status-loading' | translate }}</p>
+      } @else {
+        <ul class="actuations">
+          @for (action of alert.relatedActuations; track action.id) {
+            <li>
+              <strong>{{ 'tracking.actions.' + action.action | translate }}</strong>
+              <span class="result" [class.failed]="action.result === 'FAILED'">
+                {{ 'tracking.results.' + action.result | translate }}
+              </span>
+              <small>
+                @if (action.triggerState) {
+                  {{ 'tracking.states.' + action.triggerState | translate }} ·
+                }
+                {{ action.occurredAt | dateTime }}
+              </small>
+            </li>
+          } @empty {
+            <li class="muted">
+              {{
+                (alert.origin === 'CONTAINER'
+                  ? 'ca-alerts.detail.no-actions'
+                  : 'ca-alerts.detail.no-actions-environment'
+                ) | translate
+              }}
+            </li>
+          }
+        </ul>
+      }
+    </section>
+
+    @if (alert.isOpen && store.canAttend()) {
+      <section>
+        <app-alert-resolution-form [saving]="store.saving()" (resolve)="resolve($event)" />
+      </section>
+    }
+  } @else if (store.selectedAlertLoading()) {
+    <p class="muted" role="status">{{ 'common.status-loading' | translate }}</p>
+  }
+
+  @if (alert(); as alert) {
+    <div sidePanelActions class="panel-actions">
+      @if (alert.environmentId !== null && alert.origin) {
+        <a
+          mat-button
+          [routerLink]="['/tracking/history']"
+          [queryParams]="{ environmentId: alert.environmentId, deviceId: alert.equipmentId }"
+        >
+          <mat-icon aria-hidden="true">open_in_new</mat-icon>
+          {{ 'ca-alerts.actions.view-conditions' | translate }}
+        </a>
+      }
+      @if (store.canAttend()) {
+        @if (alert.isOpen && alert.severity === 'CRITICAL') {
+          <button mat-stroked-button type="button" [disabled]="store.saving()" (click)="notify()">
+            <mat-icon aria-hidden="true">forward_to_inbox</mat-icon>
+            {{ 'ca-alerts.active.card.notify' | translate }}
+          </button>
+        }
+        @if (alert.status === 'UNRESOLVED') {
+          <button mat-flat-button type="button" [disabled]="store.saving()" (click)="attend()">
+            <mat-icon aria-hidden="true">pan_tool</mat-icon>
+            {{ 'ca-alerts.actions.acknowledge' | translate }}
+          </button>
+        }
+      }
+    </div>
+  }
+</app-side-panel>
