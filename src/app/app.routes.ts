@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 import { Home } from './shared/presentation/views/home/home';
-import { iamGuard } from './iam/infrastructure/iam-guard';
+import { iamGuard, visitorGuard } from './iam/infrastructure/iam-guard';
 import { onboardingGuard } from './iam/infrastructure/onboarding-guard';
 import { qualityManagerGuard } from './iam/infrastructure/role-guards';
 import { AuthenticationSection } from './iam/presentation/components/authentication-section/authentication-section';
@@ -40,7 +40,7 @@ const baseTitle = 'QualiTrack';
 
 export const routes: Routes = [
   // Home is in shared and cannot import IAM: the route hands it the authentication section to render.
-  { path: 'home', component: Home, data: { authComponent: AuthenticationSection }, title: `Home - ${baseTitle}` },
+  { path: 'home', component: Home, canActivate: [visitorGuard], data: { authComponent: AuthenticationSection }, title: `Home - ${baseTitle}` },
   { path: 'about', loadComponent: about, title: `About - ${baseTitle}` },
 
   // The Layout wraps every page from app.html, so no route declares it.

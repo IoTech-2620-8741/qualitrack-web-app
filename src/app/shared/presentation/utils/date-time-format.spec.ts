@@ -1,4 +1,21 @@
-import { formatDateTime, formatElapsedTime, formatRelativeTime } from './date-time-format';
+import { formatDate, formatDateTime, formatElapsedTime, formatRelativeTime } from './date-time-format';
+
+describe('formatDate', () => {
+  it('shows the day of an instant in the time zone of the laboratories', () => {
+    expect(formatDate('2026-10-05T03:00:00Z', 'es')).toBe('4 oct 2026');
+    expect(formatDate('2026-10-05T03:00:00Z', 'en')).toBe('Oct 4, 2026');
+  });
+
+  it('shows a calendar day as it is, whatever the time zone', () => {
+    expect(formatDate('2026-10-04', 'es')).toBe('4 oct 2026');
+    expect(formatDate('2026-10-04', 'en')).toBe('Oct 4, 2026');
+  });
+
+  it('shows nothing without a valid date', () => {
+    expect(formatDate(null, 'es')).toBe('');
+    expect(formatDate('not a date', 'es')).toBe('');
+  });
+});
 
 describe('formatDateTime', () => {
   it('formats in 24 hours, in the time zone of Lima and in the language of the application', () => {

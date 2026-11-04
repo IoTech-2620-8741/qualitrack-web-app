@@ -12,6 +12,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { CaStore } from '../../../application/ca.store';
 import { Notification } from '../../../domain/model/notification.entity';
+import { formatDate } from '../../../../shared/presentation/utils/date-time-format';
 
 /** How often the bell asks for the unread count. */
 const REFRESH_INTERVAL_MS = 30_000;
@@ -181,7 +182,7 @@ export class NotificationBell {
     if (Math.abs(hours) < 24) return relative.format(hours, 'hour');
     const days = Math.round(hours / 24);
     if (Math.abs(days) < 7) return relative.format(days, 'day');
-    return new Intl.DateTimeFormat(language, { dateStyle: 'medium' }).format(new Date(isoDate));
+    return formatDate(isoDate, language);
   }
 
   /**

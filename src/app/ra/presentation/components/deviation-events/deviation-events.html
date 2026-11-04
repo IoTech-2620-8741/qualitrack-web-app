@@ -2,15 +2,17 @@
   <h3>{{ 'reporting.deviations.events-title' | translate }}</h3>
 
   <div class="events-body" [class.empty]="criticalEvents().length === 0">
-    @for (point of criticalEvents(); track point.timestamp) {
+    @for (point of criticalEvents(); track $index) {
       <div class="event-row" [class.critical]="point.state === 'CRITICAL'">
         <div class="event-icon">
           <span class="dot" [class.critical-dot]="point.state === 'CRITICAL'"></span>
           <strong>{{ 'tracking.states.' + point.state | translate }}</strong>
         </div>
         <div class="event-info">
-              <span>{{ point.timestamp | date:'short' }} - {{ 'tracking.metrics.' + trend().parameterName | translate }} {{ point.recordedValue | number:'1.0-2' }} {{ trend().unit }}
-                <small>({{ 'reporting.deviations.limit' | translate }} {{ point.upperThreshold || point.lowerThreshold }})</small>
+              <span>{{ point.timestamp | dateTime }} - {{ 'tracking.metrics.' + trend().parameterName | translate }} {{ point.recordedValue | number:'1.0-2' }} {{ trend().unit }}
+                @if (limitOf(point) !== null) {
+                  <small>({{ 'reporting.deviations.limit' | translate }} {{ limitOf(point) }} {{ trend().unit }})</small>
+                }
               </span>
         </div>
       </div>

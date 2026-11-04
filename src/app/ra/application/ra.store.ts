@@ -66,6 +66,8 @@ export class RaStore {
   private readonly _staffActivityLoading = signal(false);
   private readonly _staffActivityError = signal<string | null>(null);
   private readonly _profiles = signal<Record<number, OverviewEnvironmentalProfile | null>>({});
+  /** Devices whose profile was already asked for, so that it is requested once. */
+  private readonly requestedProfiles = new Set<number>();
 
   /** Activity of the selected staff member, newest first. */
   readonly staffActivity = this._staffActivity.asReadonly();
@@ -73,7 +75,7 @@ export class RaStore {
   readonly auditedStaffMember = this._auditedStaffMember.asReadonly();
   readonly staffActivityLoading = this._staffActivityLoading.asReadonly();
   readonly staffActivityError = this._staffActivityError.asReadonly();
-  /** Environmental profile by environment; null if it hasn't been read yet or doesn't exist. */
+  /** Environmental profile by device; null if it does not exist, and no entry until it has been read. */
   readonly profiles = this._profiles.asReadonly();
 
   /** Cancels the previous request and releases state when the activity route changes or is left. */
@@ -737,17 +739,19 @@ export class RaStore {
    * Reads the environmental profile of one device (environment or container monitor) so KPI cards can be colored.
    *
    * @remarks
-   * It dynamically chooses the correct endpoint based on the equipment type.
+   * It dynamically chooses the correct endpoint based on the equipment type, so it waits until the equipment is known:
+   * call it from an effect, which runs again when the equipment arrives. Each profile is requested once.
    * A 404 (not configured) resolves to null; other failures are silent.
    *
    * @param deviceId - The device whose profile is required.
    * @param environmentId - The environment where the device is located.
    */
   loadProfile(deviceId: number, environmentId: number): void {
-    if (deviceId in this._profiles()) return;
+    const equipment = this._overviewEquipment();
+    if (equipment.status !== 'ready' || this.requestedProfiles.has(deviceId)) return;
+    this.requestedProfiles.add(deviceId);
     const laboratoryId = this.iam.requireLaboratoryId();
-    const equipment = this._overviewEquipment().data?.find(e => e.id === deviceId);
-    const isContainer = equipment?.isContainerMonitor === true;
+    const isContainer = equipment.data?.find(e => e.id === deviceId)?.isContainerMonitor === true;
     const request$ = isContainer
       ? this.api.getOverviewContainerMonitorProfile(laboratoryId, environmentId, deviceId)
       : this.api.getOverviewEnvironmentalProfile(laboratoryId, environmentId);
@@ -766,6 +770,7 @@ export class RaStore {
    * Useful when changing laboratories or manually reloading the dashboard.
    */
   clearProfiles(): void {
+    this.requestedProfiles.clear();
     this._profiles.set({});
   }
 

@@ -10,7 +10,6 @@ import {
   viewChild,
   ChangeDetectionStrategy,
 } from '@angular/core';
-import { DatePipe } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import {
@@ -40,6 +39,7 @@ import {
   phoneValidator,
 } from '../../../../shared/presentation/validators/phone.validator';
 import { personNameValidator } from '../../../../shared/presentation/validators/person-name.validator';
+import { DateTimePipe } from '../../../../shared/presentation/pipes/date-time.pipe';
 
 /**
  * Letters and digits, as the password policy of the platform requires.
@@ -65,7 +65,7 @@ function lettersAndDigits(control: AbstractControl): ValidationErrors | null {
   selector: 'app-profile-page',
   standalone: true,
   imports: [
-    DatePipe,
+    DateTimePipe,
     ReactiveFormsModule,
     TranslatePipe,
     MatButtonModule,

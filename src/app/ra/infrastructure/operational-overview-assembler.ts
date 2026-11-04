@@ -176,7 +176,7 @@ export class OperationalOverviewAssembler {
       resource.environmentId,
       resource.deviceId,
       resource.version,
-      resource.thresholds.map(t => ({ ...t })), // Copia defensiva para evitar mutaciones externas
+      resource.thresholds.map(t => ({ ...t })), // Defensive copy to avoid external mutations
       resource.actuationRules.map(r => ({ ...r })),
       resource.updatedAt,
       resource.updatedBy

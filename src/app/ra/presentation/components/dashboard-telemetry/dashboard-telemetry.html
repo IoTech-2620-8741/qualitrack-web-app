@@ -50,13 +50,13 @@
 
     @if (measurementsStatus() === 'loading' || measurementsStatus() === 'error') {
       <app-dashboard-state [state]="measurementsStatus()" (retry)="retry.emit()" />
-    } @else if (latestReading()) {
+    } @else if (latestReading(); as latest) {
       <div class="latest-reading">
         <div>
           <span>{{ 'dashboard.overview.latest' | translate }}</span>
-          <strong>{{ latestReading().value | number: '1.0-2' }} <small>{{ latestReading().unit }}</small></strong>
+          <strong>{{ latest.value | number: '1.0-2' }} <small>{{ latest.unit }}</small></strong>
         </div>
-        <time [attr.datetime]="latestReading().measuredAt">{{ formatDate()(latestReading().measuredAt) }}</time>
+        <time [attr.datetime]="latest.measuredAt">{{ formatDate()(latest.measuredAt) }}</time>
       </div>
 
       <div class="chart-wrapper">
@@ -82,7 +82,7 @@
               count: readings().length,
               min: (readingRange()?.min || 0 | number: '1.0-2'),
               max: (readingRange()?.max || 0 | number: '1.0-2'),
-              unit: latestReading().unit,
+              unit: latest.unit,
             }
         }}
       </p>

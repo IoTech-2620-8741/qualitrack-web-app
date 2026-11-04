@@ -7,7 +7,6 @@ import {
   signal,
   ChangeDetectionStrategy,
 } from '@angular/core';
-import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -18,6 +17,7 @@ import { BatchPath } from '../../../domain/model/batch-path';
 import { ProductionEquipment } from '../../../domain/model/production-equipment.entity';
 import { ProductionStaffMember } from '../../../domain/model/production-staff-member.entity';
 import { IamStore } from '../../../../iam/application/iam.store';
+import { DateTimePipe } from '../../../../shared/presentation/pipes/date-time.pipe';
 
 /**
  * Equipment and staff that took part in a batch, with the association forms while it is open.
@@ -33,7 +33,7 @@ import { IamStore } from '../../../../iam/application/iam.store';
   selector: 'app-batch-participants',
   standalone: true,
   imports: [
-    DatePipe,
+    DateTimePipe,
     FormsModule,
     MatButtonModule,
     MatIconModule,

@@ -1,4 +1,5 @@
 import {AuditAction, AuditLogEntry} from '../../domain/model/audit-log-entry.entity';
+import { LABORATORY_TIME_ZONE } from '../../../shared/presentation/utils/local-date';
 
 /** Columns to display in the audit log data table. */
 export const AUDIT_LOG_COLUMNS = ['timestamp', 'action', 'entity', 'performedBy'] as const;
@@ -121,8 +122,8 @@ export function toAuditLogRows(
   entries: readonly AuditLogEntry[],
   locale: string,
 ): AuditLogRow[] {
-  const dateFmt = new Intl.DateTimeFormat(locale, { dateStyle: 'medium' });
-  const timeFmt = new Intl.DateTimeFormat(locale, { timeStyle: 'medium' });
+  const dateFmt = new Intl.DateTimeFormat(locale, { dateStyle: 'medium', timeZone: LABORATORY_TIME_ZONE });
+  const timeFmt = new Intl.DateTimeFormat(locale, { timeStyle: 'medium', timeZone: LABORATORY_TIME_ZONE });
   return entries.map((entry) => {
     const date = new Date(entry.timestamp);
     return {

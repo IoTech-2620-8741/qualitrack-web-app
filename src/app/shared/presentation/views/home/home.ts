@@ -28,5 +28,5 @@ export class Home {
   /**
    * The authentication component injected dynamically from the router configuration.
    */
-  readonly authComponent = this.route.snapshot.data['authComponent'] as Type<any>;
+  readonly authComponent = this.route.snapshot.data['authComponent'] as Type<unknown>;
 }

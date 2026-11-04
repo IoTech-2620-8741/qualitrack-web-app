@@ -1,67 +1,33 @@
 :host {
   display: block;
   min-width: 0;
-  color: #20343c;
 }
 .operations-page {
   max-width: 1280px;
   margin: 0 auto;
   padding: 24px;
 }
-.page-heading,
-.actions,
+.context-bar {
+  margin-bottom: 16px;
+}
+.context-bar app-environment-selector {
+  display: block;
+  max-width: 520px;
+}
 .filters {
   display: flex;
   align-items: center;
   gap: 12px;
   flex-wrap: wrap;
-}
-.page-heading {
-  justify-content: space-between;
-  margin-bottom: 20px;
-}
-h1 {
-  font-size: 24px;
-  margin: 0;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-h2 {
-  font-size: 19px;
-  margin: 12px 0 18px;
-}
-h3 {
-  font-size: 16px;
-}
-h1,
-h2,
-h3,
-p,
-a {
-  overflow-wrap: anywhere;
-  letter-spacing: 0;
-}
-.actions button {
-  white-space: normal;
-  height: auto;
-  min-height: 40px;
-  padding: 8px 16px;
+  margin: 20px 0;
 }
 mat-form-field {
   width: 100%;
   min-width: 0;
 }
-.filters {
-  margin: 20px 0;
-}
 .filters mat-form-field {
   flex: 1;
   max-width: 440px;
-}
-a {
-  color: #006e76;
-  font-weight: 600;
 }
 .error,
 .notice {
@@ -77,28 +43,12 @@ a {
   background: #fff6df;
   color: #704f00;
 }
-.status {
-  display: inline-block;
-  font-size: 12px;
-  font-weight: 600;
-  color: #704f00;
-  padding: 4px 0;
-}
-.muted {
-  color: #5c7079;
-}
 @media (max-width: 760px) {
   .operations-page {
     padding: 16px 10px;
   }
-  h1 {
-    font-size: 21px;
-  }
   .filters mat-form-field {
     max-width: none;
-  }
-  .page-heading .actions {
-    width: 100%;
   }
   .filters {
     align-items: stretch;

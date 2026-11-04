@@ -112,21 +112,15 @@ ng test
 
 ## Running browser tests
 
-The scripts in `tests/*.mjs` drive a real browser with Playwright to check the main views (dashboard, inventory, onboarding, report generator, Stripe catalog and responsive layout). With the web app running, execute one of them with Node, for example:
+The scripts in `tests/*.mjs` drive a real browser with Playwright to check the main views (alerts, dashboard, inventory, onboarding, report generator, Stripe catalog and responsive layout). They answer the API with fixtures, so nothing reaches a real platform. With the web app running, execute one of them with Node from the root of the repository, for example:
 
 ```bash
 node tests/responsive.mjs
 ```
 
-## Running system tests
+The `WEB_URL` environment variable overrides the address of the web app.
 
-The system test in `tests/system` runs the quality manager journey with a real browser, the real Angular app and the real Spring Boot API, without route mocks. Start the backend with its isolated system-test server and the web app with `npm start`, then run:
-
-```bash
-npm run test:system
-```
-
-The `WEB_URL`, `API_URL`, `SYSTEM_USERNAME` and `SYSTEM_PASSWORD` environment variables override the defaults.
+The Stripe catalog check and the first part of the onboarding check create accounts through the real API, so they only run against an isolated local backend, with `LOCAL_API=1`. Without it, the Stripe catalog check is skipped and the onboarding check runs its fixtures only.
 
 ## Legacy fixtures
 The `server` folder keeps historical JSON Server fixtures for local use only. The application does not use them; it works against the Spring Boot API.

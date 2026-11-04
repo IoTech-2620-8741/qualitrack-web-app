@@ -32,9 +32,9 @@
         </strong>
       </div>
       <div><span>{{ 'batches.fields.quantity' | translate }}</span><strong>{{ batch.quantity | number: '1.0-3' }} {{ batch.unit }}</strong></div>
-      <div><span>{{ 'batches.fields.date' | translate }}</span><strong>{{ batch.startDate | date: 'mediumDate' }}</strong></div>
+      <div><span>{{ 'batches.fields.date' | translate }}</span><strong>{{ batch.startDate | dateOnly }}</strong></div>
       @if (batch.endDate) {
-        <div><span>{{ 'batch-detail.closed-on' | translate }}</span><strong>{{ batch.endDate | date: 'mediumDate' }}</strong></div>
+        <div><span>{{ 'batch-detail.closed-on' | translate }}</span><strong>{{ batch.endDate | dateOnly }}</strong></div>
       }
     </section>
     @if (!batch.isOpen) {

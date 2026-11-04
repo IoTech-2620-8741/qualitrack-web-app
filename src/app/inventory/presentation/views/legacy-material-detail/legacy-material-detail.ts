@@ -8,6 +8,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslatePipe } from '@ngx-translate/core';
 import { InventoryStore } from '../../../application/inventory.store';
+import { DateOnlyPipe } from '../../../../shared/presentation/pipes/date-only.pipe';
+import { DateTimePipe } from '../../../../shared/presentation/pipes/date-time.pipe';
 
 /**
  * Component that shows a raw material and the history of its usages in production batches.
@@ -19,7 +21,7 @@ import { InventoryStore } from '../../../application/inventory.store';
 @Component({
   selector: 'app-legacy-material-detail',
   standalone: true,
-  imports: [
+  imports: [DateOnlyPipe, DateTimePipe, 
     CommonModule,
     RouterLink,
     TranslatePipe,

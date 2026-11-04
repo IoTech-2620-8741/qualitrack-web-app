@@ -58,7 +58,7 @@ export class InventoryCatalogue implements OnInit {
     () => new Map(this.store.materials().map((material) => [material.id, material.name])),
   );
   ngOnInit() {
-    if (!this.store.environmentsLoaded()) void this.store.loadEnvironments();
+    void this.store.loadEnvironments();
     this.route.paramMap.pipe(takeUntilDestroyed(this.destroy)).subscribe(async (params) => {
       const environmentId = Number(params.get('environmentId'));
       this.lowOnly.set(false);

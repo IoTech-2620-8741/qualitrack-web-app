@@ -5,6 +5,7 @@ import { RouterLink } from '@angular/router';
 import { MatTooltip } from '@angular/material/tooltip';
 import { TranslatePipe } from '@ngx-translate/core';
 import { DashboardState } from '../../../../shared/presentation/components/dashboard-state/dashboard-state';
+import { OverviewAlert } from '../../../domain/model/overview-alert.entity';
 
 /**
  * Alerts section of the dashboard.
@@ -31,7 +32,7 @@ export class DashboardAlerts {
   readonly alertsStatus = input.required<string>();
 
   /** List of open alerts. */
-  readonly openAlerts = input.required<any[]>();
+  readonly openAlerts = input.required<OverviewAlert[]>();
 
   /** Utility function to resolve the equipment name from an ID. */
   readonly equipmentName = input.required<(id: number) => string>();

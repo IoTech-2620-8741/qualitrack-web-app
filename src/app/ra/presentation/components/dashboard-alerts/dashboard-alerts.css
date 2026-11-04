@@ -6,7 +6,7 @@
   min-width: 0;
 }
 
-/* Header (Título e icono de flecha) */
+/* Header (title and arrow icon) */
 .section-header {
   display: flex;
   justify-content: space-between;
@@ -27,7 +27,7 @@ h2 mat-icon {
   flex-shrink: 0;
 }
 
-/* Fila de la alerta */
+/* Alert row */
 .record-row {
   display: flex;
   align-items: center;
@@ -80,7 +80,7 @@ h2 mat-icon {
   background: #c85058;
 }
 
-/* Estado (Critical / Unresolved) */
+/* Status (Critical / Unresolved) */
 .record-status {
   max-width: 38%;
   text-align: right;
@@ -109,7 +109,7 @@ h2 mat-icon {
   color: #906315;
 }
 
-/* Texto vacío */
+/* Empty text */
 .empty {
   color: #62747e;
   font-size: 13px;

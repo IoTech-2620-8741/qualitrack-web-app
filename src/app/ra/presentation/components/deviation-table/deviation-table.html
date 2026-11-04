@@ -14,12 +14,16 @@
     <ng-container matColumnDef="timeInRange">
       <th mat-header-cell *matHeaderCellDef>{{ 'reporting.fields.time-in-range' | translate }}</th>
       <td mat-cell *matCellDef="let trend">
-        <div class="progress-cell">
-          <div class="progress-bar">
-            <div class="progress-fill" [style.width.%]="trend.timeInRangePercent || 0" [class.warning]="trend.timeInRangePercent < 100"></div>
+        @if (trend.timeInRangePercent === null) {
+          <span class="progress-text">{{ 'reporting.deviations.not-enough' | translate }}</span>
+        } @else {
+          <div class="progress-cell">
+            <div class="progress-bar">
+              <div class="progress-fill" [style.width.%]="trend.timeInRangePercent" [class.warning]="trend.timeInRangePercent < 100"></div>
+            </div>
+            <span class="progress-text">{{ trend.timeInRangePercent | number:'1.0-1' }} %</span>
           </div>
-          <span class="progress-text">{{ trend.timeInRangePercent | number:'1.0-1' }} %</span>
-        </div>
+        }
       </td>
     </ng-container>
 

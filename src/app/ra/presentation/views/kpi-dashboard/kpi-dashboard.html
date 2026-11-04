@@ -23,7 +23,7 @@
     }
     @if (store.dashboard()?.from && store.dashboard()?.to) {
       <span class="date-range">
-        {{ store.dashboard()!.from | date:'short' }} - {{ store.dashboard()!.to | date:'short' }}
+        {{ store.dashboard()!.from | dateTime }} - {{ store.dashboard()!.to | dateTime }}
       </span>
     }
   </div>
@@ -45,11 +45,12 @@
       @if (viewMode() === 'cards') {
         <app-kpi-summary-cards
           [summaries]="group.summaries"
+          [deviceNameFn]="deviceName"
           [profiles]="store.profiles()" />
       } @else {
         <app-kpi-table
           [summaries]="group.summaries"
-          [deviceNameFn]="store.deviceName.bind(store)"
+          [deviceNameFn]="deviceName"
         />
       }
     } @empty {

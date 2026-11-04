@@ -7,35 +7,81 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.2.0] - 2026-11-04
+
+### Added
+
+- Shared (shared): the `dateOnly` pipe shows a day in the single date format of the application; a calendar day stays as it is, whatever the time zone (#75).
+
+### Changed
+
+- Release: package and lockfile versions are now 2.2.0.
+
+- Compliance & Alerts (ca): the alert history uses `AlertsPageHeader`, with the same tabs as the active alerts, and opens the environment of the address (#75).
+
+- Subscription (subscription): the plans explain how to switch plans, by canceling the renewal and choosing another one when the period ends, and the button of the billing summary reads "View Plans" (#75).
+
+- Reporting & Audit (ra): the components of the dashboard use the models of the context instead of `any` (#75).
+
+- Tests: the browser checks follow the current screens and endpoints; the ones that create accounts through the real API only run with `LOCAL_API=1` (#75).
+
+### Removed
+
+- Documentation: the README section about a system test that is not in the repository (#75).
+
+### Fixed
+
+- IAM (iam): the home page, sign-in, sign-up and password recovery are only for visitors. Whoever still has a session goes to the dashboard, instead of seeing the signed-in user next to the sign-in button (#75).
+
+- Internationalization: every date follows the chosen language and the time zone of the laboratories, instead of the US format and the time zone of the browser (#75).
+
+- Environments: the views read the environments every time they open, so a new one appears without reloading the page, and the inbox reads its alerts as soon as it appears (#75).
+
+- Reporting & Audit (ra): the period buttons of the deviation indicators fit on small phones (#75).
+
+## [2.1.0] - 2026-11-04
+
 ### Added
 
 - Shared (shared): `EmptyState`, `ErrorBanner` and `DashboardState` show empty lists, failures with a retry and the loading state of each part of a page (#59, #60).
 
-- Shared (shared): design tokens of the style guide (`--qt-*`) and the `.qt-theme` class for the pages that adopt them; `StatusChip` shows a status with color, icon and text; `UndoToast` gives a few seconds to undo an action, with a progress bar that stops under the pointer or the focus; the `dateTime` and `relativeTime` pipes format every date the same way, in the chosen language and the time zone of the laboratories; `EnvironmentSelector` can offer an option for every environment.
+- Shared (shared): design tokens of the style guide (`--qt-*`) and the `.qt-theme` class for the pages that adopt them; `StatusChip` shows a status with color, icon and text; `UndoToast` gives a few seconds to undo an action, with a progress bar that stops under the pointer or the focus; the `dateTime` and `relativeTime` pipes format every date the same way, in the chosen language and the time zone of the laboratories; `EnvironmentSelector` can offer an option for every environment (#68).
 
-- Shared (shared): `StatFilterCard` is a summary figure that works as a filter; `ActionBanner` tells what needs attention and offers the way to deal with it; `EmptyState` can have a title, a positive tone and actions.
+- Shared (shared): `StatFilterCard` is a summary figure that works as a filter; `ActionBanner` tells what needs attention and offers the way to deal with it; `EmptyState` can have a title, a positive tone and actions (#70).
 
-- Compliance & Alerts (ca): `AlertsPageHeader` with the breadcrumb, the notification preferences and the Active and History tabs, and `alert-chips` with the chip of each severity and status.
+- Compliance & Alerts (ca): `AlertsPageHeader` with the breadcrumb, the notification preferences and the Active and History tabs, and `alert-chips` with the chip of each severity and status (#68).
 
-- Compliance & Alerts (ca): the active alerts are a prioritized inbox across every environment, with `AlertCard`, a banner for the critical alerts nobody attends, summary figures that filter, search, three orders and a positive empty state. An environment can be chosen through `?environmentId=`, and one that cannot be read is named without hiding the others.
+- Compliance & Alerts (ca): the active alerts are a prioritized inbox across every environment, with `AlertCard`, a banner for the critical alerts nobody attends, summary figures that filter, search, three orders and a positive empty state. An environment can be chosen through `?environmentId=`, and one that cannot be read is named without hiding the others (#70).
 
-- Compliance & Alerts (ca): the inbox refreshes itself every 30 seconds while the tab is visible and announces the alerts that arrive.
+- Compliance & Alerts (ca): the inbox refreshes itself every 30 seconds while the tab is visible and announces the alerts that arrive (#70).
 
-- Compliance & Alerts (ca): registering attention from the inbox can be undone for 5 seconds. The request is sent when that time ends, when the person moves on with the alert, signs out or leaves the page.
+- Compliance & Alerts (ca): registering attention from the inbox can be undone for 5 seconds. The request is sent when that time ends, when the person moves on with the alert, signs out or leaves the page (#70).
 
-- Shared (shared): `SidePanel` opens a modal panel over the whole application, keeps the focus inside, closes with Escape and gives the focus back; the `elapsedTime` pipe tells how long passed between two instants.
+- Shared (shared): `SidePanel` opens a modal panel over the whole application, keeps the focus inside, closes with Escape and gives the focus back; the `elapsedTime` pipe tells how long passed between two instants (#71).
 
-- Compliance & Alerts (ca): `AlertTimeline` tells what happened to an alert in order and what is still missing; `AlertResolutionForm` closes it with a corrective action, with templates that can be edited. Alerts name who attended and resolved them instead of their account number.
+- Compliance & Alerts (ca): `AlertTimeline` tells what happened to an alert in order and what is still missing; `AlertResolutionForm` closes it with a corrective action, with templates that can be edited. Alerts name who attended and resolved them instead of their account number (#71).
 
-- Compliance & Alerts (ca): with the focus on the inbox, J and K move between the cards and A registers attention, which can be undone.
+- Reporting & Audit (ra): the environmental summary evaluates each card against the thresholds of its device, with a state and the range of the readings, and can be seen as a table (#65).
+
+- Reporting & Audit (ra): the deviation indicators have a detail page for each variable, `/reports/deviation-trends/:equipmentId/:parameter`, with its events filtered by date and condition. The environment, the period and the variable chosen stay in the address (#69).
+
+- Compliance & Alerts (ca): with the focus on the inbox, J and K move between the cards and A registers attention, which can be undone (#71).
 
 ### Changed
 
-- Shared (shared): `EnvironmentSelector` shows the whole name of the chosen environment, in two lines if needed.
+- Release: package and lockfile versions are now 2.1.0.
 
-- Compliance & Alerts (ca): the detail of an alert is a panel over the inbox, which stays as it was; `/alerts/:alertId` opens it and closing goes back to where the person came from. Attention registered in the panel can be undone too, and a resolved alert only reads.
+- Shared (shared): `EnvironmentSelector` shows the whole name of the chosen environment, in two lines if needed (#70).
 
-- Compliance & Alerts (ca): the active alerts page uses `AlertsPageHeader`. In Spanish the critical severity reads "Crítica"; in English "Being attended" becomes "In progress" and "Condition back to normal" becomes "Condition normalized".
+- Compliance & Alerts (ca): the detail of an alert is a panel over the inbox, which stays as it was; `/alerts/:alertId` opens it and closing goes back to where the person came from. Attention registered in the panel can be undone too, and a resolved alert only reads (#71).
+
+- Compliance & Alerts (ca): the active alerts page uses `AlertsPageHeader`. In Spanish the critical severity reads "Crítica"; in English "Being attended" becomes "In progress" and "Condition back to normal" becomes "Condition normalized" (#68).
+
+- Shared (shared): the side menu groups its options by how often the laboratory uses them: operation, quality and administration (#67).
+
+- Reporting & Audit (ra): the environmental summary and the deviation indicators are split into smaller components, and the chart draws the limits of the variable as zones (#65, #69).
+
+- Subscription (subscription): the plans choose the billing period with a toggle and mark the recommended plan; the plans, checkout, payment results and billing views share one design (#66).
 
 - Routing: every bounded context now uses semantic routes that name the resource instead of the view (#57):
   - Equipment (equipment): `/equipments`, `/equipments/new`, `/equipments/devices/new`, `/equipments/:equipmentId`, `/equipments/:equipmentId/bpm-configuration` and `/equipments/:equipmentId/maintenances/new`.
@@ -62,6 +108,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Shared (shared): the `Toolbar` component, unused since the layout wraps every page (#62).
 
+- Compliance & Alerts (ca): the `DeviationDetail` view, replaced by the detail panel (#71).
+
 ### Fixed
 
 - Shared (shared): the logo leads to the home page again before signing in, `/about` shows a single toolbar and the not-found page offers the dashboard to signed-in users (#62).
@@ -71,6 +119,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Reporting & Audit (ra): the report preview generates the report once; downloading it from the preview, or again with the same parameters, reuses that file instead of storing another report. A failed preview shows its translated message, the preview dialog shows its title and a download button, and the "report downloaded" message is shown again (#63).
 
 - Internationalization: the close label of dialogs and error banners exists in English and Spanish (#63).
+
+- Routing: the layout no longer renders twice inside the bounded contexts (#67).
+
+- Shared (shared): the side menu keeps its option active when the address has query parameters (#72).
+
+- Reporting & Audit (ra): the deviation chart only draws the limits configured for the variable, on both sides of the range, instead of inventing them when there is no profile, and its axis follows readings below zero (#72).
+
+- Reporting & Audit (ra): the fixed "Goal 95% · meets" text is gone, because it did not depend on the value and the report defines no such goal; without enough readings the time in range is shown as unknown instead of 0% (#72).
+
+- Reporting & Audit (ra): the environmental summary names the device of each card, its state is the worst the readings reached in the period instead of the one of the average, which could say normal after critical readings, a normal state reads "Normal" and the range is translated. Each environmental profile is read once and for the right kind of device, even if the equipment answers late (#72).
+
+- Reporting & Audit (ra): choosing a row of the deviation indicators no longer reloads the page, and each change of environment or period reads the trends once. A deviation event tells the limit it crossed, also the lower one. The dates of the summary and of the events follow the chosen language and the time zone of the laboratories (#72).
+
+- Reporting & Audit (ra): the report generator and the period filters of the environmental summary fit on phones. An invalid period tells what is wrong with it instead of showing a translation key, and the hint gives the real limit of 366 days (#72).
 
 ## [2.0.0] - 2026-10-28
 

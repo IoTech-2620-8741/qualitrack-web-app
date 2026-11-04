@@ -34,11 +34,12 @@ import {
 } from '../../../../shared/presentation/validators/date.validators';
 import { notBlankValidator } from '../../../../shared/presentation/validators/not-blank.validator';
 import { stockQuantityValidator } from '../../../../shared/presentation/validators/stock-quantity.validator';
+import { DateTimePipe } from '../../../../shared/presentation/pipes/date-time.pipe';
 
 @Component({
   selector: 'app-inventory-detail',
   standalone: true,
-  imports: [
+  imports: [DateTimePipe, 
     CommonModule,
     ReactiveFormsModule,
     RouterLink,

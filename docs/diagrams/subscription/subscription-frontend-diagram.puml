@@ -274,6 +274,8 @@ package "subscription" {
       -store: SubscriptionStore
       -iamStore: IamStore
       -router: Router
+      +billingPeriod: Signal<"MONTHLY | YEARLY">
+      +visiblePlans: Signal<SubscriptionPlan[]>
       +ngOnInit(): void
       +onSelectPlan(plan: SubscriptionPlan): void
       +formatPrice(plan: SubscriptionPlan): string

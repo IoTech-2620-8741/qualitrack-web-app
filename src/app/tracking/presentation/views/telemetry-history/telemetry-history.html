@@ -89,7 +89,7 @@
             <tbody>
               @for (reading of history.measurements; track reading.id) {
                 <tr>
-                  <td [attr.data-label]="'tracking.history.moment' | translate">{{ reading.measuredAt | date: 'short' }}</td>
+                  <td [attr.data-label]="'tracking.history.moment' | translate">{{ reading.measuredAt | dateTime }}</td>
                   <td [attr.data-label]="'tracking.history.metric' | translate">{{ 'tracking.metrics.' + reading.metric | translate }}</td>
                   <td [attr.data-label]="'tracking.history.value' | translate">
                     @if (reading.metric === 'RFID_TAG') {
@@ -133,7 +133,7 @@
               <tbody>
                 @for (event of history.actuationEvents; track event.id) {
                   <tr>
-                    <td [attr.data-label]="'tracking.history.moment' | translate">{{ event.occurredAt | date: 'short' }}</td>
+                    <td [attr.data-label]="'tracking.history.moment' | translate">{{ event.occurredAt | dateTime }}</td>
                     <td [attr.data-label]="'tracking.history.action' | translate">{{ 'tracking.actions.' + event.action | translate }}</td>
                     <td [attr.data-label]="'tracking.history.cause' | translate">
                       @if (event.triggerMetric && event.triggerState) {

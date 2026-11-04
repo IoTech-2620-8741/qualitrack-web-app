@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { TranslatePipe } from '@ngx-translate/core';
 import { RouterLink } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
+import { KpiMetric } from '../../../domain/model/kpi-metric.entity';
 
 /**
  * Component that displays the laboratory record summaries as clickable cards.
@@ -22,7 +23,7 @@ import { MatCardModule } from '@angular/material/card';
 })
 export class KpiRecords {
   /** The array of operational metrics containing the name and current value. */
-  readonly metrics = input.required<any[]>();
+  readonly metrics = input.required<KpiMetric[]>();
 
   /**
    * Resolves the navigation route based on the metric name.

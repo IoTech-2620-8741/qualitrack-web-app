@@ -1,5 +1,5 @@
 import { Component, inject, input, ChangeDetectionStrategy } from '@angular/core';
-import { DatePipe, DecimalPipe } from '@angular/common';
+import { DecimalPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -7,6 +7,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { CaStore } from '../../../application/ca.store';
 import { DeviationAlert } from '../../../domain/model/deviation-alert.entity';
+import { DateTimePipe } from '../../../../shared/presentation/pipes/date-time.pipe';
 
 /**
  * Table of deviation alerts with their origin, variable, severity and lifecycle (US85).
@@ -17,7 +18,7 @@ import { DeviationAlert } from '../../../domain/model/deviation-alert.entity';
 @Component({
   selector: 'app-alert-table',
   standalone: true,
-  imports: [DatePipe, DecimalPipe, RouterLink, MatButtonModule, MatIconModule, MatTooltipModule, TranslatePipe],
+  imports: [DateTimePipe, DecimalPipe, RouterLink, MatButtonModule, MatIconModule, MatTooltipModule, TranslatePipe],
   templateUrl: './alert-table.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './alert-table.css',

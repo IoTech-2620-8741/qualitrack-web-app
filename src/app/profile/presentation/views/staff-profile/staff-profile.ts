@@ -1,5 +1,4 @@
 import { Component, DestroyRef, inject, signal, ChangeDetectionStrategy } from '@angular/core';
-import { DatePipe } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -8,12 +7,13 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { IamStore } from '../../../../iam/application/iam.store';
 import { ProfileStore, StaffProfile } from '../../../application/profile.store';
+import { DateTimePipe } from '../../../../shared/presentation/pipes/date-time.pipe';
 
 /** Personal data of a staff member, available only to quality managers through the route guard. */
 @Component({
   selector: 'app-staff-profile',
   standalone: true,
-  imports: [DatePipe, RouterLink, TranslatePipe, MatIconModule, MatProgressSpinnerModule],
+  imports: [DateTimePipe, RouterLink, TranslatePipe, MatIconModule, MatProgressSpinnerModule],
   templateUrl: './staff-profile.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './staff-profile.css',

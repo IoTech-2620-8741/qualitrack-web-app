@@ -13,9 +13,9 @@
     @for (alert of alerts(); track alert.id) {
       <tr>
         <td>
-          <strong>{{ alert.timestamp | date: 'short' }}</strong>
+          <strong>{{ alert.timestamp | dateTime }}</strong>
           @if (alert.deviationCount > 1 && alert.lastDetectedAt) {
-            <small>{{ 'ca-alerts.fields.last-deviation' | translate }}: {{ alert.lastDetectedAt | date: 'short' }}</small>
+            <small>{{ 'ca-alerts.fields.last-deviation' | translate }}: {{ alert.lastDetectedAt | dateTime }}</small>
           }
         </td>
         <td [attr.data-label]="'ca-alerts.fields.origin' | translate">
