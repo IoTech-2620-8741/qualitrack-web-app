@@ -2,6 +2,8 @@ import { Component, computed, input } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { DataPoint, DeviationTrend } from '../../../domain/model/deviation-trend.entity';
+import { OverviewEnvironmentalThreshold } from '../../../domain/model/overview-environmental-profile.entity';
+import { crossedLimit } from '../deviation-chart/deviation-chart.factory';
 
 /**
  * Presentational component that renders a list of deviation events (warnings and criticals).
@@ -27,6 +29,9 @@ export class DeviationEvents {
    */
   readonly points = input<DataPoint[] | null>(null);
 
+  /** The limits of the variable, or null when it has none. */
+  readonly thresholds = input<OverviewEnvironmentalThreshold | null>(null);
+
   /**
    * Computes the list of events to display.
    *
@@ -44,14 +49,12 @@ export class DeviationEvents {
   });
 
   /**
-   * Limit a reading went past: the lower one when it is below it, otherwise the upper one.
+   * Limit a reading went past, from the profile of the device: the platform does not keep it with the readings.
    *
    * @param point - The reading
-   * @returns The limit, or null when the reading does not keep it
+   * @returns The limit, or null when the variable has no limits
    */
   protected limitOf(point: DataPoint): number | null {
-    return point.lowerThreshold !== null && point.recordedValue < point.lowerThreshold
-      ? point.lowerThreshold
-      : point.upperThreshold;
+    return crossedLimit(point, this.thresholds());
   }
 }

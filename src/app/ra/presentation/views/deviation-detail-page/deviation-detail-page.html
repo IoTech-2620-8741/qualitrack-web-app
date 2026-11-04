@@ -72,7 +72,7 @@
       </section>
 
       <!-- Event list -->
-      <app-deviation-events [trend]="t" [points]="filteredPoints()" />
+      <app-deviation-events [trend]="t" [points]="filteredPoints()" [thresholds]="thresholds()" />
 
     } @else {
       <div class="empty-state">

@@ -78,7 +78,7 @@ function bandText({ state, from, to }: ThresholdBand, unit: string): Pick<Legend
  * @param thresholds - The limits configured for the variable, or null when there are none
  * @returns The limit, or null when it is not known
  */
-function crossedLimit(point: DataPoint, thresholds: ChartThresholds | null): number | null {
+export function crossedLimit(point: DataPoint, thresholds: ChartThresholds | null): number | null {
   if (!thresholds) return null;
   const critical = point.state === 'CRITICAL';
   const lower = critical ? thresholds.criticalMin : thresholds.normalMin;

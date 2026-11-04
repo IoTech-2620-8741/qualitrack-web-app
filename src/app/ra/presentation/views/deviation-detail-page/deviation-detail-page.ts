@@ -1,4 +1,4 @@
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, effect, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Location } from '@angular/common';
 import { CommonModule } from '@angular/common';
@@ -59,6 +59,9 @@ export class DeviationDetailPage implements OnInit {
   /** The parameter name (e.g., 'Temperature') being viewed. */
   protected readonly parameter = signal<string | null>(null);
 
+  /** The environment of the equipment being viewed. */
+  private readonly environmentId = signal<number | null>(null);
+
   /** Start date for filtering events. */
   protected readonly fromDate = signal<Date | null>(null);
 
@@ -117,6 +120,12 @@ export class DeviationDetailPage implements OnInit {
     );
   });
 
+  /** The limits of the variable, from the profile of its device; null when it has none. */
+  protected readonly thresholds = computed(() => {
+    const trend = this.trend();
+    return trend ? (this.store.profiles()[trend.equipmentId]?.threshold(trend.parameterName) ?? null) : null;
+  });
+
   /**
    * Computes the list of events filtered by the selected date range and alert type.
    * Results are sorted chronologically, newest first.
@@ -171,6 +180,15 @@ export class DeviationDetailPage implements OnInit {
     };
   });
 
+  constructor() {
+    // The limit each event crossed comes from the profile of the device.
+    effect(() => {
+      const equipmentId = this.equipmentId();
+      const environmentId = this.environmentId();
+      if (equipmentId !== null && environmentId !== null) this.store.loadProfile(equipmentId, environmentId);
+    });
+  }
+
   /**
    * Initializes the component by loading necessary data and resolving route parameters.
    *
@@ -193,6 +211,7 @@ export class DeviationDetailPage implements OnInit {
       this.route.queryParams.subscribe(query => {
         const days = query['days'] ? Number(query['days']) : 7;
         const envId = query['env'] ? Number(query['env']) : this.store.preferredEnvironmentId();
+        this.environmentId.set(envId);
 
         if (envId !== null && !this.store.deviationTrends().length) {
           this.store.loadDeviationTrends(envId, lastDays(days));
