@@ -43,12 +43,7 @@ import { AlertEnvironment } from '../domain/model/alert-environment.entity';
  * `ApiError` or of an `HttpErrorResponse`, and finally the generic failure key.
  */
 export function alertError(error: unknown): string {
-  const status =
-    error instanceof ApiError
-      ? error.status
-      : error instanceof HttpErrorResponse
-        ? error.status
-        : null;
+  const status = error instanceof ApiError ? error.status : error instanceof HttpErrorResponse ? error.status : null;
   if (status === 0) return 'ca-alerts.errors.connection';
   if (status === 403) return 'ca-alerts.errors.forbidden';
   if (status === 404) return 'ca-alerts.not-found';
@@ -130,9 +125,7 @@ export class CaStore {
   private readonly _alertsUpdatedAtSignal = signal<Date | null>(null);
   private readonly _newAlertIdsSignal = signal<ReadonlySet<number>>(new Set());
   private readonly _refreshingSignal = signal(false);
-  private readonly _pendingAttentionsSignal = signal<ReadonlyMap<number, PendingAttention>>(
-    new Map(),
-  );
+  private readonly _pendingAttentionsSignal = signal<ReadonlyMap<number, PendingAttention>>(new Map());
   private readonly _selectedAlertLoadingSignal = signal(false);
   private readonly _peopleSignal = signal<ReadonlyMap<number, string>>(new Map());
 
@@ -179,9 +172,7 @@ export class CaStore {
   readonly environmentsLoaded = this._environmentsLoadedSignal.asReadonly();
 
   /** Whether the laboratory has no environment yet. */
-  readonly environmentsEmpty = computed(
-    () => this._environmentsLoadedSignal() && this._environmentsSignal().length === 0,
-  );
+  readonly environmentsEmpty = computed(() => this._environmentsLoadedSignal() && this._environmentsSignal().length === 0);
 
   /** Indicates whether alerts, events, preferences or an alert detail are being loaded. */
   readonly loading = this._loadingSignal.asReadonly();
@@ -279,16 +270,15 @@ export class CaStore {
   loadLatestNotifications(): void {
     this._notificationsLoadingSignal.set(true);
     this._notificationsFailedSignal.set(false);
-    this.caApi
-      .getNotifications(false, NOTIFICATION_PANEL_SIZE)
-      .pipe(finalize(() => this._notificationsLoadingSignal.set(false)))
-      .subscribe({
-        next: (notifications) => {
-          this._notificationsSignal.set(notifications);
-          this.refreshUnreadNotifications().subscribe();
-        },
-        error: () => this._notificationsFailedSignal.set(true),
-      });
+    this.caApi.getNotifications(false, NOTIFICATION_PANEL_SIZE).pipe(
+      finalize(() => this._notificationsLoadingSignal.set(false)),
+    ).subscribe({
+      next: (notifications) => {
+        this._notificationsSignal.set(notifications);
+        this.refreshUnreadNotifications().subscribe();
+      },
+      error: () => this._notificationsFailedSignal.set(true),
+    });
   }
 
   /**
@@ -300,9 +290,7 @@ export class CaStore {
     if (notification.isRead) return;
     this.caApi.markNotificationAsRead(notification.id).subscribe({
       next: (read) => {
-        this._notificationsSignal.update((current) =>
-          current.map((item) => (item.id === read.id ? read : item)),
-        );
+        this._notificationsSignal.update((current) => current.map((item) => item.id === read.id ? read : item));
         this._unreadNotificationsSignal.update((count) => Math.max(0, count - 1));
       },
     });
@@ -315,9 +303,8 @@ export class CaStore {
     this.caApi.markAllNotificationsAsRead().subscribe({
       next: () => {
         const readAt = new Date().toISOString();
-        this._notificationsSignal.update((current) =>
-          current.map((item) => (item.isRead ? item : new Notification({ ...item, readAt }))),
-        );
+        this._notificationsSignal.update((current) => current.map((item) =>
+          item.isRead ? item : new Notification({ ...item, readAt })));
         this._unreadNotificationsSignal.set(0);
       },
     });
@@ -363,10 +350,7 @@ export class CaStore {
     this.caApi
       .getAlertDevices(this.iam.requireLaboratoryId())
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (devices) => this._devicesSignal.set(devices),
-        error: () => this._devicesSignal.set([]),
-      });
+      .subscribe({ next: (devices) => this._devicesSignal.set(devices), error: () => this._devicesSignal.set([]) });
   }
 
   /**
@@ -402,9 +386,7 @@ export class CaStore {
    */
   async loadEnvironments(): Promise<void> {
     try {
-      this._environmentsSignal.set(
-        await firstValueFrom(this.caApi.getAlertEnvironments(this.iam.requireLaboratoryId())),
-      );
+      this._environmentsSignal.set(await firstValueFrom(this.caApi.getAlertEnvironments(this.iam.requireLaboratoryId())));
       this._environmentsLoadedSignal.set(true);
     } catch (error) {
       this._errorSignal.set(alertError(error));
@@ -417,10 +399,7 @@ export class CaStore {
    * @returns The environment identifier, or null when the laboratory has none
    */
   preferredEnvironmentId(): number | null {
-    return (
-      this.environmentPreference.choose(this.iam.requireLaboratoryId(), this._environmentsSignal())
-        ?.id ?? null
-    );
+    return this.environmentPreference.choose(this.iam.requireLaboratoryId(), this._environmentsSignal())?.id ?? null;
   }
 
   /**
@@ -516,11 +495,7 @@ export class CaStore {
         const listedIds = new Set(this._alertsSignal().map((alert) => alert.id));
         this.showAlerts(readings);
         this._newAlertIdsSignal.set(
-          new Set(
-            this._alertsSignal()
-              .map((alert) => alert.id)
-              .filter((id) => !listedIds.has(id)),
-          ),
+          new Set(this._alertsSignal().map((alert) => alert.id).filter((id) => !listedIds.has(id))),
         );
       });
   }
@@ -550,8 +525,7 @@ export class CaStore {
    * An attention that was already sent can no longer be undone, so the alert stays as attended.
    */
   undoAttention(alertId: number): void {
-    if (this._pendingAttentionsSignal().get(alertId)?.settled === null)
-      this.forgetPendingAttention(alertId);
+    if (this._pendingAttentionsSignal().get(alertId)?.settled === null) this.forgetPendingAttention(alertId);
   }
 
   /**
@@ -660,26 +634,17 @@ export class CaStore {
     this._noticeSignal.set(null);
     this.sendAttention(alertId);
 
-    this.caApi
-      .sendAlertEmailNotification(alertId)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (delivery) => {
-          this._noticeParamsSignal.set({ count: delivery.recipients });
-          this._noticeSignal.set(
-            delivery.recipients === 0 ? 'ca-alerts.email.no-recipients' : 'ca-alerts.email.sent',
-          );
-          this._savingSignal.set(false);
-        },
-        error: (err) => {
-          this._errorSignal.set(
-            err instanceof ApiError && err.status === 502
-              ? 'ca-alerts.email.failed'
-              : alertError(err),
-          );
-          this._savingSignal.set(false);
-        },
-      });
+    this.caApi.sendAlertEmailNotification(alertId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: (delivery) => {
+        this._noticeParamsSignal.set({ count: delivery.recipients });
+        this._noticeSignal.set(delivery.recipients === 0 ? 'ca-alerts.email.no-recipients' : 'ca-alerts.email.sent');
+        this._savingSignal.set(false);
+      },
+      error: (err) => {
+        this._errorSignal.set(err instanceof ApiError && err.status === 502 ? 'ca-alerts.email.failed' : alertError(err));
+        this._savingSignal.set(false);
+      },
+    });
   }
 
   /**
@@ -759,12 +724,10 @@ export class CaStore {
    * @param request - DTO containing the updated preference values.
    * @returns The saved preferences; the caller shows the confirmation or the error.
    */
-  updateNotificationPreferences(
-    request: UpdateNotificationPreferenceRequest,
-  ): Observable<NotificationPreference> {
-    return this.caApi
-      .updatePreferences(request)
-      .pipe(tap((updatedPreference) => this._preferenceSignal.set(updatedPreference)));
+  updateNotificationPreferences(request: UpdateNotificationPreferenceRequest): Observable<NotificationPreference> {
+    return this.caApi.updatePreferences(request).pipe(
+      tap((updatedPreference) => this._preferenceSignal.set(updatedPreference)),
+    );
   }
 
   /** Cancels the alerts request in progress and empties the list. */
@@ -803,11 +766,7 @@ export class CaStore {
    * Ignored for an empty id or while another operation is being saved. The response does not repeat the actions
    * related to the incident, so those of the selected alert are kept.
    */
-  private attend(
-    alertId: number,
-    request: ReturnType<CaApi['acknowledgeAlert']>,
-    notice: string,
-  ): void {
+  private attend(alertId: number, request: ReturnType<CaApi['acknowledgeAlert']>, notice: string): void {
     if (!alertId || this._savingSignal()) return;
     this._savingSignal.set(true);
     this._errorSignal.set(null);
@@ -817,8 +776,7 @@ export class CaStore {
       next: (updatedAlert) => {
         // The acknowledgement and resolution responses do not repeat the related actions of the detail.
         const current = this._selectedAlertSignal();
-        if (current?.id === updatedAlert.id)
-          updatedAlert.relatedActuations = current.relatedActuations;
+        if (current?.id === updatedAlert.id) updatedAlert.relatedActuations = current.relatedActuations;
         this.replaceAlert(updatedAlert);
         this._noticeSignal.set(notice);
         this._savingSignal.set(false);
@@ -884,14 +842,9 @@ export class CaStore {
    * @param filters - What the platform filters, the same for every environment
    * @returns Observable emitting one reading per environment; it never errors
    */
-  private readAlerts(
-    environmentId: number | null,
-    filters: AlertFilters,
-  ): Observable<EnvironmentAlertsReading[]> {
+  private readAlerts(environmentId: number | null, filters: AlertFilters): Observable<EnvironmentAlertsReading[]> {
     const environmentIds =
-      environmentId === null
-        ? this._environmentsSignal().map((environment) => environment.id)
-        : [environmentId];
+      environmentId === null ? this._environmentsSignal().map((environment) => environment.id) : [environmentId];
     if (!environmentIds.length) return of([]);
     const laboratoryId = this.iam.requireLaboratoryId();
     return forkJoin(
@@ -910,16 +863,13 @@ export class CaStore {
    * @param readings - One reading per environment
    */
   private showAlerts(readings: EnvironmentAlertsReading[]): void {
-    const unavailableIds = readings
-      .filter(({ alerts }) => alerts === null)
-      .map(({ environmentId }) => environmentId);
+    const unavailableIds = readings.filter(({ alerts }) => alerts === null).map(({ environmentId }) => environmentId);
     const keptAlerts = this._alertsSignal().filter(
       (alert) => alert.environmentId !== null && unavailableIds.includes(alert.environmentId),
     );
     this._alertsSignal.set([...readings.flatMap(({ alerts }) => alerts ?? []), ...keptAlerts]);
     this._unavailableEnvironmentIdsSignal.set(unavailableIds);
-    if (unavailableIds.length < readings.length || !readings.length)
-      this._alertsUpdatedAtSignal.set(new Date());
+    if (unavailableIds.length < readings.length || !readings.length) this._alertsUpdatedAtSignal.set(new Date());
   }
 
   /**
@@ -932,10 +882,7 @@ export class CaStore {
    * @remarks
    * If the alert is no longer waiting for attention, what the platform says wins.
    */
-  private withPendingAttention(
-    alert: DeviationAlert,
-    pendingAttention?: PendingAttention,
-  ): DeviationAlert {
+  private withPendingAttention(alert: DeviationAlert, pendingAttention?: PendingAttention): DeviationAlert {
     if (!pendingAttention || alert.status !== 'UNRESOLVED') return alert;
     return new DeviationAlert({
       ...alert,
@@ -1014,9 +961,7 @@ export class CaStore {
   }
 
   private setPendingAttention(alertId: number, pendingAttention: PendingAttention): void {
-    this._pendingAttentionsSignal.update((current) =>
-      new Map(current).set(alertId, pendingAttention),
-    );
+    this._pendingAttentionsSignal.update((current) => new Map(current).set(alertId, pendingAttention));
   }
 
   private forgetPendingAttention(alertId: number): void {
