@@ -1,0 +1,47 @@
+:host {
+  display: block;
+}
+
+h3 {
+  margin: 0 0 8px;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.templates {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.template {
+  min-height: 32px;
+  padding: 4px 12px;
+  border: 1px solid var(--qt-border);
+  border-radius: var(--qt-radius-pill);
+  background: var(--qt-surface);
+  color: var(--qt-primary-strong);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.template:hover {
+  background: var(--qt-primary-surface);
+}
+
+.template:focus-visible {
+  outline: 2px solid var(--qt-primary-strong);
+  outline-offset: 2px;
+}
+
+.notes {
+  width: 100%;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 8px;
+}

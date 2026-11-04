@@ -747,6 +747,13 @@
         "waiting-attention": "Pendiente: nadie ha registrado atención",
         "waiting-resolution": "Pendiente: falta registrar la acción correctiva"
       },
+      "corrective-action": "Acción correctiva",
+      "templates": {
+        "label": "Plantillas de acción correctiva",
+        "ventilation": { "label": "Ventilación ajustada", "text": "Se ajustó la ventilación del área y se verificó que la lectura volvió al rango." },
+        "filter": { "label": "Filtro reemplazado", "text": "Se reemplazó el filtro y se verificó que la lectura volvió al rango." },
+        "sensor": { "label": "Sensor recalibrado", "text": "Se recalibró el sensor y se verificó que la lectura es correcta." }
+      },
       "detected": "Detectada el {{date}}.",
       "last-deviation": "Última desviación el {{date}} ({{count}} desviaciones en el incidente).",
       "acknowledged": "Atendida por el usuario #{{user}} el {{date}}.",

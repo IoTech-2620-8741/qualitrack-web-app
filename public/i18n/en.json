@@ -747,6 +747,13 @@
         "waiting-attention": "Pending: nobody has registered attention",
         "waiting-resolution": "Pending: the corrective action is missing"
       },
+      "corrective-action": "Corrective action",
+      "templates": {
+        "label": "Corrective action templates",
+        "ventilation": { "label": "Ventilation adjusted", "text": "The ventilation of the area was adjusted and the reading was verified back in range." },
+        "filter": { "label": "Filter replaced", "text": "The filter was replaced and the reading was verified back in range." },
+        "sensor": { "label": "Sensor recalibrated", "text": "The sensor was recalibrated and the reading was verified as correct." }
+      },
       "detected": "Detected on {{date}}.",
       "last-deviation": "Last deviation on {{date}} ({{count}} deviations in the incident).",
       "acknowledged": "Attended by user #{{user}} on {{date}}.",
