@@ -1,12 +1,20 @@
+:host {
+  display: block;
+}
+
 .error-message {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 16px;
+  max-width: 880px;
   margin-bottom: 24px;
-  color: #b91c1c;
-  background-color: #fee2e2;
-  border-radius: 8px;
+  padding: 16px;
+  background: #ffebee;
+  border: 1px solid #f44336;
+  border-radius: 12px;
+  color: #b71c1c;
+  font-size: 14px;
+  line-height: 1.6;
 }
 
 .message {
@@ -22,4 +30,22 @@
 .error-message button {
   flex-shrink: 0;
   margin: -8px -8px -8px 0;
+  color: #b71c1c;
+  --mdc-icon-button-icon-color: #b71c1c;
+  transition: background-color 0.2s ease;
+}
+
+.error-message button:hover {
+  background: #fff;
+}
+
+.error-message button:focus-visible {
+  outline: 3px solid #0d9488;
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+  }
 }
