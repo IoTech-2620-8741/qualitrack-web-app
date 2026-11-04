@@ -15,6 +15,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 
 import { RaStore } from '../../../application/ra.store';
 import { lastDays } from '../../../domain/model/indicator-period';
+import { DataPoint } from '../../../domain/model/deviation-trend.entity';
 import { DeviationEvents } from '../../components/deviation-events/deviation-events';
 
 type AlertFilter = 'all' | 'WARNING' | 'CRITICAL';
@@ -124,7 +125,7 @@ export class DeviationDetailPage implements OnInit {
     const trend = this.trend();
     if (!trend) return [];
 
-    const points = (trend.dataPoints || []) as any[];
+    const points: DataPoint[] = trend.dataPoints;
     const fromDate = this.fromDate();
     const toDate = this.toDate();
     const filter = this.alertFilter();
@@ -160,7 +161,7 @@ export class DeviationDetailPage implements OnInit {
    * based on the full unfiltered trend data.
    */
   protected readonly counts = computed(() => {
-    const devs = ((this.trend()?.dataPoints || []) as any[]).filter(
+    const devs = (this.trend()?.dataPoints ?? []).filter(
       (p) => p.state === 'WARNING' || p.state === 'CRITICAL',
     );
     return {

@@ -27,7 +27,7 @@
   } @else {
     @if (trend(); as t) {
 
-      <!-- Resumen -->
+      <!-- Summary -->
       <div class="detail-summary">
         <div class="summary-chip">
           <span class="label">{{ 'reporting.deviations.all-events' | translate }}</span>
@@ -43,7 +43,7 @@
         </div>
       </div>
 
-      <!-- Filtros -->
+      <!-- Filters -->
       <section class="filters">
         <mat-form-field appearance="outline" class="date-range-field">
           <mat-label>{{ 'reporting.deviations.date-range-label' | translate }}</mat-label>
@@ -55,7 +55,7 @@
           <mat-date-range-picker #picker (closed)="onDateRangeChange(pickerInput.value)"></mat-date-range-picker>
         </mat-form-field>
 
-        <!-- Filtro de Alerta -->
+        <!-- Alert filter -->
         <mat-form-field appearance="outline">
           <mat-label>{{ 'reporting.deviations.alert-type' | translate }}</mat-label>
           <mat-select [ngModel]="alertFilter()" (ngModelChange)="alertFilter.set($event)">
@@ -71,7 +71,7 @@
         </button>
       </section>
 
-      <!-- Lista de eventos -->
+      <!-- Event list -->
       <app-deviation-events [trend]="t" [points]="filteredPoints()" />
 
     } @else {

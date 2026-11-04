@@ -33,7 +33,7 @@ const deviationDetailPage = () =>
 const raRoutes: Routes = [
   { path: 'staff/:staffId/activity', loadComponent: () => import('./views/staff-activity/staff-activity').then((m) => m.StaffActivity), canActivate: [staffActivityGuard], title: 'Staff activity - QualiTrack' },
   { path: 'kpis', loadComponent: kpiDashboard },
-  { path: 'deviation-trends/:equipmentId/:parameter', loadComponent: deviationDetailPage, title: 'Detalle de desviaciones - QualiTrack', },
+  { path: 'deviation-trends/:equipmentId/:parameter', loadComponent: deviationDetailPage, title: 'Deviation detail - QualiTrack' },
   { path: 'deviation-trends', loadComponent: deviationTrendChart },
   { path: 'new', loadComponent: reportGenerator },
   { path: 'audit-log', loadComponent: auditLogViewer },
