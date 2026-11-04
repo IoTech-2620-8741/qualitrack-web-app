@@ -5,6 +5,7 @@ import {
   isInPeriod,
   matchesChips,
   matchesSearch,
+  periodRangeOf,
 } from './alert-history-filter';
 import { AlertOrigin, AlertSeverity, AlertStatus, DeviationAlert } from './deviation-alert.entity';
 
@@ -57,6 +58,30 @@ describe('alert history filter', () => {
 
       expect(isInPeriod(alertOf(1, '2020-01-01T10:00:00-05:00'), sinceOctober, now)).toBe(false);
       expect(isInPeriod(alertOf(2, '2030-01-01T10:00:00-05:00'), sinceOctober, now)).toBe(true);
+    });
+  });
+
+  describe('periodRangeOf', () => {
+    const now = new Date('2026-10-10T12:00:00Z');
+
+    it('goes from the days back of the period until now', () => {
+      expect(periodRangeOf({ ...DEFAULT_ALERT_HISTORY_FILTER, period: 7 }, now)).toEqual({
+        since: Date.parse('2026-10-03T12:00:00Z'),
+        until: now.getTime(),
+      });
+    });
+
+    it('covers the whole days of a custom period in Peru, without going past now', () => {
+      const custom = { ...DEFAULT_ALERT_HISTORY_FILTER, period: null };
+
+      expect(periodRangeOf({ ...custom, from: '2026-09-01', to: '2026-09-30' }, now)).toEqual({
+        since: Date.parse('2026-09-01T05:00:00Z'),
+        until: Date.parse('2026-10-01T04:59:59.999Z'),
+      });
+      expect(periodRangeOf({ ...custom, to: '2026-12-31' }, now)).toEqual({
+        since: null,
+        until: now.getTime(),
+      });
     });
   });
 

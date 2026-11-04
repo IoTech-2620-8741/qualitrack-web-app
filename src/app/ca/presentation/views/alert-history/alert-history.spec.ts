@@ -75,7 +75,7 @@ describe('AlertHistory', () => {
 
   const activeTabOf = (page: HTMLElement) =>
     page.querySelector('a[mat-tab-link]')?.getAttribute('href');
-  const rowsOf = (page: HTMLElement) => page.querySelectorAll('tbody tr').length;
+  const rowsOf = (page: HTMLElement) => page.querySelectorAll('app-alert-table tbody tr').length;
   const chipNamed = (page: HTMLElement, key: string) =>
     [...page.querySelectorAll<HTMLButtonElement>('app-filter-chip button')].find((button) =>
       button.textContent?.includes(key),

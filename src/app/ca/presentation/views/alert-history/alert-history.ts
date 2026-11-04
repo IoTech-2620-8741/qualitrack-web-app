@@ -27,7 +27,9 @@ import {
   AlertHistoryPeriod,
   DEFAULT_ALERT_HISTORY_FILTER,
   filterAlertHistory,
+  periodRangeOf,
 } from '../../../domain/model/alert-history-filter';
+import { countAlertsByWeek } from '../../../domain/model/alert-history-weeks';
 import { compareAlertsByNewest } from '../../../domain/model/alert-priority';
 import {
   AlertOrigin,
@@ -45,7 +47,9 @@ import {
   queryFromFilter,
 } from '../../alert-history-query';
 import { alertVariableName } from '../../alert-variable';
+import { AlertHistoryCards } from '../../components/alert-history-cards/alert-history-cards';
 import { AlertTable } from '../../components/alert-table/alert-table';
+import { AlertWeekChart } from '../../components/alert-week-chart/alert-week-chart';
 import { AlertsPageHeader } from '../../components/alerts-page-header/alerts-page-header';
 
 /** Alerts shown on each page of the table. */
@@ -77,7 +81,9 @@ const ORIGIN_ICONS: Readonly<Record<AlertOrigin, string>> = {
     MatIconModule,
     MatInputModule,
     ActionBanner,
+    AlertHistoryCards,
     AlertTable,
+    AlertWeekChart,
     AlertsPageHeader,
     EmptyState,
     EnvironmentSelector,
@@ -149,6 +155,12 @@ export class AlertHistory implements OnInit {
   protected readonly shownAlerts = computed(() =>
     this.filtered(this.filter()).sort(compareAlertsByNewest),
   );
+
+  /** Alerts of each week of the period, by severity, for the weekly chart. */
+  protected readonly weeks = computed(() => {
+    const range = periodRangeOf(this.filter(), this.now());
+    return countAlertsByWeek(this.shownAlerts(), range.since, range.until);
+  });
 
   /** How many pages the table has, at least one. */
   protected readonly pageCount = computed(() =>

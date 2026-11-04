@@ -754,6 +754,21 @@
         "resolved-by": "Resuelta por",
         "corrective-action": "Acción correctiva"
       },
+      "metrics": {
+        "alerts": "Alertas",
+        "resolved": "Resueltas",
+        "percent": "{{value}} %",
+        "resolved-of": "{{resolved}} de {{total}}",
+        "attention": "T. medio de atención",
+        "attention-hint": "De la detección a la atención",
+        "resolution": "T. medio de resolución",
+        "resolution-hint": "De la detección a la resolución",
+        "no-time": "—"
+      },
+      "chart": {
+        "title": "Alertas por semana",
+        "week": "Semana del"
+      },
       "open-for": "{{time}} abierta",
       "attention-after": "atención {{time}}",
       "view-short": "Ver",

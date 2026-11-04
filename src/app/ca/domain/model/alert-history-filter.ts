@@ -59,6 +59,32 @@ export function isInPeriod(alert: DeviationAlert, filter: AlertHistoryFilter, no
   return true;
 }
 
+/** First and last moment of the period of a filter. */
+export interface AlertHistoryRange {
+  /** First moment, in milliseconds since 1970, or `null` when a custom period has no first day. */
+  since: number | null;
+  /** Last moment, in milliseconds since 1970; never later than now. */
+  until: number;
+}
+
+/**
+ * First and last moment of the period of the filter, which the weekly chart covers.
+ *
+ * @param filter - The filter of the history
+ * @param now - The current moment; it is a parameter so the tests can fix it
+ * @returns The range; a custom period counts whole days in Peru and does not go past now
+ */
+export function periodRangeOf(filter: AlertHistoryFilter, now: Date): AlertHistoryRange {
+  if (filter.period !== null) {
+    return { since: now.getTime() - filter.period * DAY_IN_MILLISECONDS, until: now.getTime() };
+  }
+  const lastMoment = filter.to ? startOfDay(filter.to) + DAY_IN_MILLISECONDS - 1 : now.getTime();
+  return {
+    since: filter.from ? startOfDay(filter.from) : null,
+    until: Math.min(lastMoment, now.getTime()),
+  };
+}
+
 /**
  * First moment of a day in the laboratory, in Peru.
  *

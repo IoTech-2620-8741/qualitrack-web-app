@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+
+- Compliance & Alerts (ca): the alert history shows the alerts, the share resolved and the average attention and resolution times of the filter, and a weekly chart of stacked bars by severity with a table for screen readers.
+
 - Compliance & Alerts (ca): the detail of an alert opens over the alert history, at `/alerts/history/:alertId`, and closing it goes back to the history with its filter.
 
 - Shared: `app-filter-chip` is a chip that can be pressed and tells how many results it leaves.

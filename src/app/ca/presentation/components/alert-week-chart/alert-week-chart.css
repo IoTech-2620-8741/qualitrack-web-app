@@ -1,0 +1,37 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+
+.chart-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  height: 100%;
+  padding: 16px;
+  border: 1px solid var(--qt-border);
+  border-radius: var(--qt-radius-medium);
+  background: var(--qt-surface);
+}
+
+h2 {
+  margin: 0;
+  color: var(--qt-text-muted);
+  font-size: 13px;
+  font-weight: 400;
+}
+
+.chart {
+  position: relative;
+  min-height: 200px;
+  flex: 1;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}

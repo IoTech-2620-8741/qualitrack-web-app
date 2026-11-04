@@ -1,0 +1,63 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  height: 100%;
+  margin: 0;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid var(--qt-border);
+  border-radius: var(--qt-radius-medium);
+  background: var(--qt-surface);
+}
+
+dt {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--qt-text-muted);
+  font-size: 13px;
+}
+
+dt mat-icon {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  font-size: 18px;
+}
+
+dd {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+}
+
+strong {
+  color: var(--qt-text);
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+small {
+  color: var(--qt-text-muted);
+  font-size: 12px;
+}
+
+@media (max-width: 420px) {
+  .cards {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
