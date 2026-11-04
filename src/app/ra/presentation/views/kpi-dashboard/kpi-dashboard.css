@@ -114,7 +114,7 @@ h3 {
 .empty-state {
   border: 2px dashed #e2e8f0;
   border-radius: 12px;
-  padding: 48px;
+  padding: 250px 48px;
   text-align: center;
   display: flex;
   flex-direction: column;
