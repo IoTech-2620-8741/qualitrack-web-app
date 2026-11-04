@@ -92,6 +92,10 @@ export class StaffList implements OnInit {
     return this.iamStore.canManageQuality() ? [...columns, 'actions'] : columns;
   });
 
+  refresh(): void {
+    this.store.loadStaff(this.iamStore.requireLaboratoryId());
+  }
+
   /**
    * Lifecycle hook that loads staff members for the current laboratory.
    */
