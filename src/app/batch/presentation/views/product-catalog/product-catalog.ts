@@ -67,7 +67,7 @@ export class ProductCatalog implements OnInit {
    * Lifecycle hook that loads the products of the environment of the route every time it changes.
    */
   ngOnInit(): void {
-    if (!this.store.environmentsLoaded()) void this.store.loadEnvironments();
+    void this.store.loadEnvironments();
     this.route.paramMap.pipe(takeUntilDestroyed(this.destroy)).subscribe(async (params) => {
       const environmentId = Number(params.get('environmentId'));
       this.search.set('');

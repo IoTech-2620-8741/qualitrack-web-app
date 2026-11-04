@@ -199,9 +199,7 @@ export class DeviationDetailPage implements OnInit {
   async ngOnInit() {
     this.store.loadDevices();
 
-    if (!this.store.environmentsLoaded()) {
-      await this.store.loadEnvironments();
-    }
+    await this.store.loadEnvironments();
 
     this.route.paramMap.subscribe((params) => {
       const eq = Number(params.get('equipmentId'));

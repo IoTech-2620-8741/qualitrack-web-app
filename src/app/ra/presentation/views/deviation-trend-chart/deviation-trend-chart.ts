@@ -137,7 +137,7 @@ export class DeviationTrendChartComponent implements OnInit {
   async ngOnInit() {
     this.store.clearProfiles();
     this.store.loadDevices();
-    if (!this.store.environmentsLoaded()) await this.store.loadEnvironments();
+    await this.store.loadEnvironments();
 
     this.route.queryParams
       .pipe(takeUntilDestroyed(this.destroyRef))

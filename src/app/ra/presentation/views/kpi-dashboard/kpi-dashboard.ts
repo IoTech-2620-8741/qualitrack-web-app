@@ -119,7 +119,7 @@ export class KpiDashboardComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     this.store.clearProfiles();
     this.store.loadDevices();
-    if (!this.store.environmentsLoaded()) await this.store.loadEnvironments();
+    await this.store.loadEnvironments();
     this.reload();
   }
 

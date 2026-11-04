@@ -47,7 +47,7 @@ export class ReportGeneratorComponent implements OnInit, OnDestroy {
     this.store.clearReportPreview();
     this.store.loadBatches();
     this.store.loadEquipment();
-    if (!this.store.environmentsLoaded()) void this.store.loadEnvironments();
+    void this.store.loadEnvironments();
   }
 
   /** Forgets the previewed report, so a later visit generates the report again with the current data. */
