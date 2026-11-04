@@ -1,15 +1,12 @@
-<section class="operations-page" [attr.aria-busy]="loading()">
-  <a class="back-link" routerLink="/laboratories/staff">
-    <mat-icon aria-hidden="true">arrow_back</mat-icon>
-    {{ 'staff-list.title' | translate }}
-  </a>
+<main class="operations-page" [attr.aria-busy]="loading()">
+  <a class="back-link" routerLink="/laboratories/staff">{{ 'staff-list.title' | translate }}</a>
 
   @if (loading()) {
     <div class="loading">
       <mat-spinner diameter="40" [attr.aria-label]="'onboarding.loading-data' | translate"></mat-spinner>
     </div>
   } @else if (member(); as current) {
-    <div class="page-heading">
+    <header class="page-heading">
       <div>
         <h1>
           <mat-icon aria-hidden="true">badge</mat-icon>
@@ -19,30 +16,19 @@
       </div>
       @if (iam.canManageQuality() && current.active) {
         <div class="actions">
-          <button mat-stroked-button color="warn" type="button" [disabled]="deactivating()" (click)="deactivate(current)">
+          <button mat-stroked-button class="danger-btn" type="button" [disabled]="deactivating()" (click)="deactivate(current)">
             <mat-icon>person_off</mat-icon>
             {{ 'staff-list.deactivate' | translate }}
           </button>
         </div>
       }
-    </div>
+    </header>
 
     @if (error(); as message) {
       <p class="error" role="alert">{{ message | translate }}</p>
     }
 
-    <div class="actions staff-links">
-      @if (iam.canManageQuality() && current.userId !== null) {
-        <a mat-stroked-button [routerLink]="['/profile/staff', current.id]">
-          <mat-icon>person</mat-icon>{{ 'staff.detail.view-profile' | translate }}
-        </a>
-      }
-      <a mat-stroked-button [routerLink]="['/reports/staff', current.id, 'activity']">
-        <mat-icon>history</mat-icon>{{ 'staff.detail.view-activity' | translate }}
-      </a>
-    </div>
-
-    <div class="summary-strip">
+    <section class="summary-strip">
       <div>
         <span>{{ 'staff-list.access-role' | translate }}</span>
         <strong>
@@ -55,8 +41,19 @@
           {{ (current.active ? 'common.active' : 'common.inactive') | translate }}
         </strong>
       </div>
+    </section>
+
+    <div class="actions staff-links">
+      @if (iam.canManageQuality() && current.userId !== null) {
+        <a mat-stroked-button class="secondary-btn" [routerLink]="['/profile/staff', current.id]">
+          <mat-icon>person</mat-icon>{{ 'staff.detail.view-profile' | translate }}
+        </a>
+      }
+      <a mat-stroked-button class="secondary-btn" [routerLink]="['/reports/staff', current.id, 'activity']">
+        <mat-icon>history</mat-icon>{{ 'staff.detail.view-activity' | translate }}
+      </a>
     </div>
   } @else {
     <p class="error" role="alert">{{ (error() ?? 'staff.detail.load-error') | translate }}</p>
   }
-</section>
+</main>
