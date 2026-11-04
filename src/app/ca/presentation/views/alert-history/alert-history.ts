@@ -8,7 +8,7 @@ import {
   signal,
   untracked,
 } from '@angular/core';
-import { ActivatedRoute, Params, Router, RouterOutlet } from '@angular/router';
+import { ActivatedRoute, Params, Router, RouterLink, RouterOutlet } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -45,6 +45,7 @@ import {
   ALERT_HISTORY_STATUSES,
   filterFromQuery,
   queryFromFilter,
+  reportQueryOf,
 } from '../../alert-history-query';
 import { alertVariableName } from '../../alert-variable';
 import { AlertHistoryCards } from '../../components/alert-history-cards/alert-history-cards';
@@ -74,6 +75,7 @@ const ORIGIN_ICONS: Readonly<Record<AlertOrigin, string>> = {
   selector: 'app-alert-history',
   standalone: true,
   imports: [
+    RouterLink,
     RouterOutlet,
     TranslatePipe,
     MatButtonModule,
@@ -154,6 +156,11 @@ export class AlertHistory implements OnInit {
   /** Alerts that pass the filter, the latest first. */
   protected readonly shownAlerts = computed(() =>
     this.filtered(this.filter()).sort(compareAlertsByNewest),
+  );
+
+  /** Address of the report generator with the period and the environment of the history. */
+  protected readonly reportQuery = computed(() =>
+    reportQueryOf(this.filter(), this.environmentId(), this.now()),
   );
 
   /** Alerts of each week of the period, by severity, for the weekly chart. */

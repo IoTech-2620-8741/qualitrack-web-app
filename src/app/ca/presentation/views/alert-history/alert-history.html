@@ -14,6 +14,10 @@
     subtitleKey="ca-alerts.history.subtitle"
     [environmentId]="environmentId()"
   >
+    <a mat-stroked-button routerLink="/reports/new" [queryParams]="reportQuery()">
+      <mat-icon aria-hidden="true">description</mat-icon>
+      {{ 'ca-alerts.history.export' | translate }}
+    </a>
     <div alertsSection class="history">
       @if (!detailOpen() && store.error(); as error) {
         <app-error-banner

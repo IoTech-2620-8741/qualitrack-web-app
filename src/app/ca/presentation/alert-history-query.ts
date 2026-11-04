@@ -4,6 +4,7 @@ import {
   AlertHistoryFilter,
   AlertHistoryPeriod,
   DEFAULT_ALERT_HISTORY_FILTER,
+  periodRangeOf,
 } from '../domain/model/alert-history-filter';
 import { AlertOrigin, AlertSeverity, AlertStatus } from '../domain/model/deviation-alert.entity';
 
@@ -19,6 +20,9 @@ export const ALERT_HISTORY_ORIGINS: readonly AlertOrigin[] = ['ENVIRONMENT', 'CO
 
 /** A day written as `YYYY-MM-DD`. */
 const DAY = /^\d{4}-\d{2}-\d{2}$/;
+
+/** Hours that the laboratories, in Peru, are behind UTC. */
+const LABORATORY_OFFSET_IN_MILLISECONDS = -5 * 60 * 60 * 1000;
 
 /**
  * Reads the filter of the history from the query parameters of the address.
@@ -68,6 +72,41 @@ export function queryFromFilter(filter: AlertHistoryFilter): Params {
     origin: filter.origins.join(',') || null,
     q: filter.search || null,
   };
+}
+
+/**
+ * Query parameters that open the report generator with the period and the environment of the history.
+ *
+ * @param filter - The filter of the history
+ * @param environmentId - The environment shown, or `null` for every environment
+ * @param now - The current moment; it is a parameter so the tests can fix it
+ * @returns An environmental compliance report of the same days, in Peru; a side without day is left to the person
+ *
+ * @remarks
+ * The report covers the whole period and environment: the chips and the search only narrow the table.
+ */
+export function reportQueryOf(
+  filter: AlertHistoryFilter,
+  environmentId: number | null,
+  now: Date,
+): Params {
+  const range = periodRangeOf(filter, now);
+  return {
+    type: 'compliance',
+    environmentId,
+    from: range.since === null ? null : laboratoryDayOf(range.since),
+    to: laboratoryDayOf(range.until),
+  };
+}
+
+/**
+ * Day of a moment in the laboratory, in Peru.
+ *
+ * @param moment - Milliseconds since 1970
+ * @returns The day, as `YYYY-MM-DD`
+ */
+function laboratoryDayOf(moment: number): string {
+  return new Date(moment + LABORATORY_OFFSET_IN_MILLISECONDS).toISOString().slice(0, 10);
 }
 
 /**

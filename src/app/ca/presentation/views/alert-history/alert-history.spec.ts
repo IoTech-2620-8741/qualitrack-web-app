@@ -115,6 +115,15 @@ describe('AlertHistory', () => {
     expect(tabs[1].classList.contains('mdc-tab--active')).toBe(true);
   });
 
+  it('exports the period and the environment to the report generator', async () => {
+    const page = await open(
+      '/alerts/history?environmentId=2&period=custom&from=2026-09-01&to=2026-09-30',
+    );
+
+    const href = page.querySelector('a[href^="/reports/new"]')?.getAttribute('href');
+    expect(href).toBe('/reports/new?type=compliance&environmentId=2&from=2026-09-01&to=2026-09-30');
+  });
+
   it('shows only the alerts of the chips in the address, and tells how many each chip leaves', async () => {
     store.alerts.set([alertOf(1, 'CRITICAL'), alertOf(2), alertOf(3)]);
 
