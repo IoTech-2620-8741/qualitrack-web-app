@@ -1,127 +1,298 @@
+/* ==========================================================================
+   Batch detail view
+   Same visual language as the product detail, catalog and billing views.
+   Colors are plain hex values. Only the h1 uses #1a3a5c.
+   ========================================================================== */
+
 :host {
   display: block;
   min-width: 0;
-  color: #20343c;
+  min-height: 100%;
+  background: #f3f4f6;
+  color: #0f172a;
 }
+
+/* Same width and padding as the other views, so the title lines up */
 .operations-page {
-  max-width: 1280px;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 24px;
+  padding: 32px 24px 48px;
 }
-.page-heading,
-.actions {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-.page-heading {
-  justify-content: space-between;
-  margin-bottom: 20px;
-}
-h1 {
-  font-size: 24px;
-  margin: 0;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-h2 {
-  font-size: 19px;
-  margin: 12px 0 18px;
-}
-h3 {
-  font-size: 16px;
-}
+
 h1,
 h2,
-h3,
 p,
 a {
   overflow-wrap: anywhere;
   letter-spacing: 0;
 }
-.actions button {
-  white-space: normal;
-  height: auto;
-  min-height: 40px;
-  padding: 8px 16px;
+
+/* --------------------------------------------------------------------------
+   Back link (first link of the page, outside the actions)
+   -------------------------------------------------------------------------- */
+.operations-page > a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 16px;
+  color: #0f766e;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
 }
-mat-form-field {
-  width: 100%;
-  min-width: 0;
+
+.operations-page > a::before {
+  content: '\2190';
+  content: '\2190' / '';
 }
-.summary-strip {
+
+.operations-page > a:hover {
+  text-decoration: underline;
+}
+
+.operations-page > a:focus-visible {
+  outline: 3px solid #0d9488;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* --------------------------------------------------------------------------
+   Page heading: plain title on the left, decision actions on the right
+   -------------------------------------------------------------------------- */
+.page-heading,
+.actions {
   display: flex;
-  gap: 32px;
+  align-items: center;
   flex-wrap: wrap;
-  border-block: 1px solid #cfdbdf;
-  padding: 18px 0;
-  margin: 20px 0;
+  gap: 12px;
 }
-.summary-strip span {
-  display: block;
-  font-size: 13px;
-  color: #4b6068;
+
+.page-heading {
+  justify-content: space-between;
+  margin-bottom: 24px;
 }
-.summary-strip strong {
-  display: block;
-  font-size: 23px;
-  margin-top: 6px;
+
+h1 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  color: #1a3a5c;
+  font-size: 28px;
+  font-weight: 700;
 }
-a {
-  color: #006e76;
+
+h1 mat-icon {
+  flex-shrink: 0;
+  color: #0d9488;
+}
+
+/* Both action buttons: pill shape, minimum touch target */
+.actions a[mat-flat-button],
+.actions a[mat-stroked-button] {
+  height: auto;
+  min-height: 48px;
+  padding: 8px 24px;
+  border-radius: 999px;
   font-weight: 600;
+  white-space: normal;
+  text-decoration: none;
 }
+
+/* Release: solid teal (AA: white on #0f766e is 5.47:1) */
+.actions a[mat-flat-button] {
+  --mdc-filled-button-container-color: #0f766e;
+  --mdc-filled-button-label-text-color: #fff;
+  background: #0f766e;
+  color: #fff;
+}
+
+.actions a[mat-flat-button]:hover {
+  background: #115e59;
+}
+
+/* Reject: destructive action, outlined red with dark text for contrast */
+.actions a[mat-stroked-button] {
+  color: #b71c1c;
+  border-color: #f44336;
+}
+
+.actions a[mat-stroked-button]:hover {
+  background: #ffebee;
+}
+
+.actions a:focus-visible {
+  outline: 3px solid #0d9488;
+  outline-offset: 2px;
+}
+
+/* --------------------------------------------------------------------------
+   Messages: error, success and closed-batch notice
+   -------------------------------------------------------------------------- */
 .error,
 .success,
 .notice {
-  padding: 12px 16px;
-  border-left: 4px solid;
+  margin: 0 0 20px;
+  padding: 16px;
+  border: 1px solid;
+  border-radius: 12px;
+  font-size: 14px;
+  line-height: 1.6;
   overflow-wrap: anywhere;
 }
+
 .error {
-  background: #fff0f0;
-  color: #9d2424;
+  background: #ffebee;
+  border-color: #f44336;
+  color: #b71c1c;
 }
+
 .success {
-  background: #e7f5ef;
-  color: #19664e;
+  background: #e8f5e9;
+  border-color: #4caf50;
+  color: #1b5e20;
 }
+
 .notice {
-  background: #fff6df;
-  color: #704f00;
+  background: #fff8e1;
+  border-color: #ffc107;
+  color: #7a5a00;
 }
-.status {
-  display: inline-block;
+
+/* --------------------------------------------------------------------------
+   Summary strip: status, quantity and dates in one card
+   -------------------------------------------------------------------------- */
+.summary-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 40px;
+  margin: 0 0 24px;
+  padding: 20px 24px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+}
+
+.summary-strip span {
+  display: block;
+  color: #64748b;
   font-size: 12px;
-  font-weight: 600;
-  color: #704f00;
-  padding: 4px 0;
+  font-weight: 500;
+  text-transform: uppercase;
 }
-.status.released {
-  color: #087957;
+
+.summary-strip strong {
+  display: block;
+  margin-top: 6px;
+  color: #0f172a;
+  font-size: 24px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
 }
-.status.rejected {
-  color: #a12d2d;
+
+/* --------------------------------------------------------------------------
+   Batch status chip (the status is a <strong class="status">)
+   Dark text variants for AA contrast. Default is amber (pending / in progress).
+   -------------------------------------------------------------------------- */
+.summary-strip .status {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: #fff8e1;
+  color: #7a5a00;
+  font-size: 14px;
+  font-weight: 500;
 }
+
+.summary-strip .status.released {
+  background: #e8f5e9;
+  color: #1b5e20;
+}
+
+.summary-strip .status.rejected {
+  background: #ffebee;
+  color: #b71c1c;
+}
+
+/* --------------------------------------------------------------------------
+   Tabs: the whole group is a card, teal indicator and active label
+   -------------------------------------------------------------------------- */
+mat-tab-group {
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+  --mdc-tab-indicator-active-indicator-color: #0d9488;
+  --mat-tab-header-active-label-text-color: #0f766e;
+  --mat-tab-header-active-focus-label-text-color: #0f766e;
+  --mat-tab-header-active-hover-label-text-color: #0f766e;
+  --mat-tab-header-active-ripple-color: #0d9488;
+  --mat-tab-header-inactive-label-text-color: #64748b;
+  --mat-tab-header-inactive-ripple-color: #0d9488;
+  --mat-tab-header-divider-color: #e2e8f0;
+}
+
 .tab-content {
-  padding: 18px 0;
+  padding: 24px;
 }
+
+.tab-content h2 {
+  margin: 0 0 12px;
+  color: #0f172a;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.tab-content p {
+  margin: 0;
+  color: #64748b;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* Loading message */
+p[role='status']:not(.notice) {
+  margin: 0;
+  padding: 32px 0;
+  color: #64748b;
+  font-size: 14px;
+  text-align: center;
+}
+
+/* --------------------------------------------------------------------------
+   Responsive
+   -------------------------------------------------------------------------- */
 @media (max-width: 760px) {
   .operations-page {
-    padding: 16px 10px;
+    padding: 20px 16px 36px;
   }
+
   h1 {
-    font-size: 21px;
+    font-size: 24px;
   }
+
+  .page-heading .actions {
+    width: 100%;
+  }
+
+  .actions a[mat-flat-button],
+  .actions a[mat-stroked-button] {
+    flex: 1;
+    justify-content: center;
+  }
+
   .summary-strip {
-    gap: 18px;
+    gap: 16px 24px;
+    padding: 16px;
   }
+
   .summary-strip strong {
     font-size: 20px;
   }
-  .page-heading .actions {
-    width: 100%;
+
+  .tab-content {
+    padding: 16px;
   }
 }
