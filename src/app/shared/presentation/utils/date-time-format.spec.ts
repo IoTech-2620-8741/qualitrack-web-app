@@ -1,4 +1,4 @@
-import { formatDateTime, formatRelativeTime } from './date-time-format';
+import { formatDateTime, formatElapsedTime, formatRelativeTime } from './date-time-format';
 
 describe('formatDateTime', () => {
   it('formats in 24 hours, in the time zone of Lima and in the language of the application', () => {
@@ -39,5 +39,30 @@ describe('formatRelativeTime', () => {
 
   it('returns an empty text when there is no valid instant', () => {
     expect(formatRelativeTime(null, 'en', now)).toBe('');
+  });
+});
+
+describe('formatElapsedTime', () => {
+  const start = '2026-10-03T14:00:00Z';
+
+  it('uses the largest unit that fits', () => {
+    expect(formatElapsedTime(start, '2026-10-03T14:00:30Z', 'en')).toBe('30 sec');
+    expect(formatElapsedTime(start, '2026-10-03T14:14:40Z', 'en')).toBe('14 min');
+    expect(formatElapsedTime(start, '2026-10-03T16:30:00Z', 'en')).toBe('2 hours');
+    expect(formatElapsedTime(start, '2026-10-06T15:00:00Z', 'en')).toBe('3 days');
+  });
+
+  it('follows the language of the application', () => {
+    expect(formatElapsedTime(start, '2026-10-03T14:14:00Z', 'es')).toBe('14 min');
+    expect(formatElapsedTime(start, '2026-11-02T14:00:00Z', 'es')).toBe('30 días');
+  });
+
+  it('reads a later start as no time at all', () => {
+    expect(formatElapsedTime('2026-10-03T14:00:05Z', start, 'en')).toBe('0 sec');
+  });
+
+  it('returns an empty text when an instant is missing', () => {
+    expect(formatElapsedTime(null, start, 'en')).toBe('');
+    expect(formatElapsedTime(start, null, 'en')).toBe('');
   });
 });

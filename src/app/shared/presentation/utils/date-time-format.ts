@@ -7,6 +7,7 @@ const SECONDS_PER_DAY = 86_400;
 /** Formatters by locale; building an `Intl` formatter is expensive and these run on every change detection. */
 const dateTimeFormatters = new Map<string, Intl.DateTimeFormat>();
 const relativeTimeFormatters = new Map<string, Intl.RelativeTimeFormat>();
+const elapsedTimeFormatters = new Map<string, Intl.NumberFormat>();
 
 /**
  * Locale that formats the dates of an application language.
@@ -81,6 +82,52 @@ export function formatRelativeTime(
     return formatter.format(-Math.floor(elapsedSeconds / SECONDS_PER_HOUR), 'hour');
   }
   return formatter.format(-Math.floor(elapsedSeconds / SECONDS_PER_DAY), 'day');
+}
+
+/**
+ * Tells how long passed between two instants, in the largest unit that fits.
+ *
+ * @param from - The first instant
+ * @param to - The later instant
+ * @param language - The language of the application
+ * @returns For example `14 min` or `2 hours`; an empty text when an instant is missing or invalid
+ */
+export function formatElapsedTime(
+  from: string | Date | null | undefined,
+  to: string | Date | null | undefined,
+  language: string,
+): string {
+  const start = toValidDate(from);
+  const end = toValidDate(to);
+  if (!start || !end) return '';
+  const elapsedSeconds = Math.max(0, Math.floor((end.getTime() - start.getTime()) / 1000));
+  if (elapsedSeconds < SECONDS_PER_MINUTE) return elapsedFormatter(language, 'second').format(elapsedSeconds);
+  if (elapsedSeconds < SECONDS_PER_HOUR) {
+    return elapsedFormatter(language, 'minute').format(Math.floor(elapsedSeconds / SECONDS_PER_MINUTE));
+  }
+  if (elapsedSeconds < SECONDS_PER_DAY) {
+    return elapsedFormatter(language, 'hour').format(Math.floor(elapsedSeconds / SECONDS_PER_HOUR));
+  }
+  return elapsedFormatter(language, 'day').format(Math.floor(elapsedSeconds / SECONDS_PER_DAY));
+}
+
+/**
+ * Formatter of an amount of time in a unit.
+ *
+ * @param language - The language of the application
+ * @param unit - The unit of the amount
+ * @returns The formatter, built only once per locale and unit
+ */
+function elapsedFormatter(language: string, unit: string): Intl.NumberFormat {
+  const key = `${localeOf(language)}:${unit}`;
+  let formatter = elapsedTimeFormatters.get(key);
+  if (!formatter) {
+    // Spanish abbreviates days as `dd.`, which nobody reads as days, so only the small units are abbreviated.
+    const unitDisplay = unit === 'second' || unit === 'minute' ? 'short' : 'long';
+    formatter = new Intl.NumberFormat(localeOf(language), { style: 'unit', unit, unitDisplay });
+    elapsedTimeFormatters.set(key, formatter);
+  }
+  return formatter;
 }
 
 /**
