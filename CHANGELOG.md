@@ -13,9 +13,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Shared (shared): design tokens of the style guide (`--qt-*`) and the `.qt-theme` class for the pages that adopt them; `StatusChip` shows a status with color, icon and text; `UndoToast` gives a few seconds to undo an action, with a progress bar that stops under the pointer or the focus; the `dateTime` and `relativeTime` pipes format every date the same way, in the chosen language and the time zone of the laboratories; `EnvironmentSelector` can offer an option for every environment.
 
+- Shared (shared): `StatFilterCard` is a summary figure that works as a filter; `ActionBanner` tells what needs attention and offers the way to deal with it; `EmptyState` can have a title, a positive tone and actions.
+
 - Compliance & Alerts (ca): `AlertsPageHeader` with the breadcrumb, the notification preferences and the Active and History tabs, and `alert-chips` with the chip of each severity and status.
 
+- Compliance & Alerts (ca): the active alerts are a prioritized inbox across every environment, with `AlertCard`, a banner for the critical alerts nobody attends, summary figures that filter, search, three orders and a positive empty state. An environment can be chosen through `?environmentId=`, and one that cannot be read is named without hiding the others.
+
+- Compliance & Alerts (ca): the inbox refreshes itself every 30 seconds while the tab is visible and announces the alerts that arrive.
+
+- Compliance & Alerts (ca): registering attention from the inbox can be undone for 5 seconds. The request is sent when that time ends, when the person moves on with the alert, signs out or leaves the page.
+
 ### Changed
+
+- Shared (shared): `EnvironmentSelector` shows the whole name of the chosen environment, in two lines if needed.
 
 - Compliance & Alerts (ca): the active alerts page uses `AlertsPageHeader`. In Spanish the critical severity reads "Crítica"; in English "Being attended" becomes "In progress" and "Condition back to normal" becomes "Condition normalized".
 
