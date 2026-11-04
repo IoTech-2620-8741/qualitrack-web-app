@@ -92,9 +92,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Reporting & Audit (ra): the fixed "Goal 95% · meets" text is gone, because it did not depend on the value and the report defines no such goal; without enough readings the time in range is shown as unknown instead of 0% (#72).
 
-- Reporting & Audit (ra): the environmental summary names the device of each card, its normal state reads "Normal" and the range is translated. Each environmental profile is read once and for the right kind of device, even if the equipment answers late (#72).
+- Reporting & Audit (ra): the environmental summary names the device of each card, its state is the worst the readings reached in the period instead of the one of the average, which could say normal after critical readings, a normal state reads "Normal" and the range is translated. Each environmental profile is read once and for the right kind of device, even if the equipment answers late (#72).
 
-- Reporting & Audit (ra): choosing a row of the deviation indicators no longer reloads the page, and each change of environment or period reads the trends once. A deviation event tells the limit it crossed, also the lower one (#72).
+- Reporting & Audit (ra): choosing a row of the deviation indicators no longer reloads the page, and each change of environment or period reads the trends once. A deviation event tells the limit it crossed, also the lower one. The dates of the summary and of the events follow the chosen language and the time zone of the laboratories (#72).
 
 - Reporting & Audit (ra): the report generator and the period filters of the environmental summary fit on phones. An invalid period tells what is wrong with it instead of showing a translation key, and the hint gives the real limit of 366 days (#72).
 

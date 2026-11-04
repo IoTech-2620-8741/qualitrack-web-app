@@ -486,8 +486,9 @@ package "ra.presentation" {
   note bottom of KpiDashboardComponent
     Environmental summary (US93): average, minimum and maximum
     per environment, device and variable of the last 24 hours,
-    7 or 31 days; every environment or one, as cards or a table. The
-    cards compare the average with the thresholds of the device profile.
+    7 or 31 days; every environment or one, as cards or a table. Each
+    card shows the worst state of the period, comparing the minimum and
+    the maximum with the thresholds of the device profile.
     Without readings it states that nothing is calculated.
   end note
 
