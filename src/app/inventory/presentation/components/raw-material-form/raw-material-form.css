@@ -1,0 +1,53 @@
+
+:host {
+  display: block;
+  min-width: 0;
+}
+
+.editor {
+  border-block: 1px solid #cbd7db;
+  padding: 16px 0;
+  margin: 16px 0;
+}
+
+h2 {
+  font-size: 19px;
+  margin: 12px 0 18px;
+  overflow-wrap: anywhere;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px 20px;
+}
+
+mat-form-field {
+  width: 100%;
+  min-width: 0;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.actions button {
+  white-space: normal;
+  height: auto;
+  min-height: 40px;
+  padding: 8px 16px;
+}
+
+@media (max-width: 760px) {
+  .form-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  h2 {
+    font-size: 17px;
+  }
+}
