@@ -1,0 +1,74 @@
+
+<table class="data-table">
+  <thead>
+  <tr>
+    <th>{{ 'inventory.movement' | translate }}</th>
+    <th>{{ 'inventory.receiptNumber' | translate }}</th>
+    <th>{{ 'inventory.balance' | translate }}</th>
+    <th>{{ 'inventory.traceability' | translate }}</th>
+  </tr>
+  </thead>
+
+  <tbody>
+    @for (movement of movements(); track movement.id) {
+      <tr>
+        <!-- Tipo de movimiento y responsable -->
+        <td [attr.data-label]="'inventory.movement' | translate">
+          <strong>
+            {{ 'inventory.types.' + movement.type | translate }}
+          </strong>
+
+          <small>
+            {{ movement.occurredAt | dateTime }}
+          </small>
+
+          <small>
+            {{ 'inventory.reviewer' | translate }}
+            #{{ movement.actorId }}
+          </small>
+        </td>
+
+        <!-- Lote de materia prima -->
+        <td [attr.data-label]="'inventory.receiptNumber' | translate">
+          #{{ movement.receiptId }}
+
+          <small>
+            {{ 'inventory.status.' + movement.statusAfter | translate }}
+          </small>
+        </td>
+
+        <!-- Balance antes y después -->
+        <td [attr.data-label]="'inventory.balance' | translate">
+          {{ movement.stockBefore | number: '1.0-3' }}
+          →
+          {{ movement.stockAfter | number: '1.0-3' }}
+          {{ movement.unit }}
+
+          <small>
+            {{ movement.amount > 0 ? '+' : '' }}
+            {{ movement.amount | number: '1.0-3' }}
+            {{ movement.unit }}
+          </small>
+        </td>
+
+        <!-- Trazabilidad -->
+        <td [attr.data-label]="'inventory.traceability' | translate">
+          @if (movement.productBatchId !== null) {
+            <a [routerLink]="['/batches', movement.productBatchId]">
+              {{ 'inventory.productBatch' | translate }}
+              #{{ movement.productBatchId }}
+            </a>
+          }
+
+          <small>{{ movement.reason }}</small>
+        </td>
+      </tr>
+    } @empty {
+      <tr>
+        <td colspan="4">
+          {{ 'inventory.noMovements' | translate }}
+        </td>
+      </tr>
+    }
+  </tbody>
+</table>
