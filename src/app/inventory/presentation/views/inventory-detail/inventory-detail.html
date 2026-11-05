@@ -75,48 +75,14 @@
       />
     }
     @if (storing(); as receipt) {
-      <section class="review" role="region" [attr.aria-label]="'inventory.storeInContainer' | translate">
-        <h2>{{ 'inventory.storeInContainer' | translate }} · {{ receipt.batchNumber }}</h2>
-        @if (store.availableContainers().length) {
-          <form [formGroup]="containerForm" (ngSubmit)="storeInContainer()">
-            <div class="form-grid">
-              <mat-form-field appearance="outline"
-                ><mat-label>{{ 'inventory.container' | translate }}</mat-label
-                ><mat-select formControlName="containerMonitorId">
-                  @for (container of store.availableContainers(); track container.id) {
-                    <mat-option [value]="container.id"
-                      >{{ container.name }} · {{ container.serialNumber }}</mat-option
-                    >
-                  }
-                </mat-select
-                ><mat-error>{{ 'inventory.required' | translate }}</mat-error></mat-form-field
-              >
-            </div>
-            <p class="muted">{{ 'inventory.containerNotice' | translate }}</p>
-            <div class="actions">
-              <button mat-flat-button [disabled]="store.saving()">
-                <mat-icon>inventory</mat-icon>{{ 'inventory.confirmStorage' | translate }}</button
-              ><button
-                mat-button
-                type="button"
-                (click)="storing.set(null)"
-                [disabled]="store.saving()"
-              >
-                {{ 'inventory.cancel' | translate }}
-              </button>
-            </div>
-          </form>
-        } @else {
-          <p class="notice">{{ 'inventory.noContainers' | translate }}</p>
-          <div class="actions">
-            <a mat-stroked-button routerLink="/equipments"
-              ><mat-icon>sensors</mat-icon>{{ 'inventory.manageContainers' | translate }}</a
-            ><button mat-button type="button" (click)="storing.set(null)">
-              {{ 'inventory.cancel' | translate }}
-            </button>
-          </div>
-        }
-      </section>
+      <app-container-assignment-form
+        [receipt]="receipt"
+        [form]="containerForm"
+        [containers]="store.availableContainers()"
+        [saving]="store.saving()"
+        (confirmRequested)="storeInContainer()"
+        (cancelRequested)="storing.set(null)"
+      />
     }
     <mat-tab-group>
       <mat-tab [label]="'inventory.receipts' | translate"

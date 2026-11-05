@@ -41,6 +41,7 @@ import { RawMaterialBatchesTable } from '../../components/raw-material-batches-t
 import { RawMaterialForm } from '../../components/raw-material-form/raw-material-form';
 import { ReceiveBatchForm } from '../../components/receive-batch-form/receive-batch-form';
 import { BatchReviewForm } from '../../components/batch-review-form/batch-review-form';
+import { ContainerAssignmentForm } from '../../components/container-assignment-form/container-assignment-form';
 
 @Component({
   selector: 'app-inventory-detail',
@@ -52,6 +53,7 @@ import { BatchReviewForm } from '../../components/batch-review-form/batch-review
     RawMaterialForm,
     ReceiveBatchForm,
     BatchReviewForm,
+    ContainerAssignmentForm,
     CommonModule,
     ReactiveFormsModule,
     RouterLink,
