@@ -66,16 +66,12 @@
       <span>{{ 'inventory.lowStock' | translate }}</span><strong>{{ store.lowCount() }}</strong>
     </div>
   </section>
-  <div class="filters">
-    <mat-form-field appearance="outline" subscriptSizing="dynamic"
-      ><mat-label>{{ 'inventory.search' | translate }}</mat-label
-      ><mat-icon matPrefix>search</mat-icon
-      ><input matInput [ngModel]="search()" (ngModelChange)="search.set($event)"
-    /></mat-form-field>
-    <mat-checkbox [checked]="lowOnly()" (change)="toggleLowOnly($event.checked)">{{
-      'inventory.lowStock' | translate
-    }}</mat-checkbox>
-  </div>
+  <app-inventory-filters
+    [search]="search()"
+    [lowOnly]="lowOnly()"
+    (searchChange)="search.set($event)"
+    (lowOnlyChange)="toggleLowOnly($event)"
+  />
   @if (store.loading()) {
     <p role="status">{{ 'inventory.loading' | translate }}</p>
   } @else {

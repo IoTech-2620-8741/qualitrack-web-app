@@ -20,6 +20,7 @@ import { InventoryStore } from '../../../application/inventory.store';
 import { EnvironmentSelector } from '../../../../shared/presentation/components/environment-selector/environment-selector';
 import { InventoryMaterialTable } from '../../components/inventory-material-table/inventory-material-table';
 import { NearExpiryTable } from '../../components/near-expiry-table/near-expiry-table';
+import { InventoryFilters } from '../../components/inventory-filters/inventory-filters';
 
 @Component({
   selector: 'app-inventory-catalogue',
@@ -35,7 +36,8 @@ import { NearExpiryTable } from '../../components/near-expiry-table/near-expiry-
     TranslatePipe,
     EnvironmentSelector,
     InventoryMaterialTable,
-    NearExpiryTable
+    NearExpiryTable,
+    InventoryFilters
   ],
   templateUrl: './inventory-catalogue.html',
   changeDetection: ChangeDetectionStrategy.Eager,
