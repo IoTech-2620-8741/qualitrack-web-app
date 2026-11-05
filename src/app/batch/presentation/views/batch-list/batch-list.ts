@@ -6,26 +6,33 @@ import {
   signal,
   ChangeDetectionStrategy,
 } from '@angular/core';
-import { DecimalPipe } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTooltip } from '@angular/material/tooltip';
 import { TranslatePipe } from '@ngx-translate/core';
 import { BatchStore } from '../../../application/batch.store';
 import { BatchStatus } from '../../../domain/model/batch.entity';
 import { IamStore } from '../../../../iam/application/iam.store';
-import { DateOnlyPipe } from '../../../../shared/presentation/pipes/date-only.pipe';
-import { MatTooltip } from '@angular/material/tooltip';
+import { EmptyState } from '../../../../shared/presentation/components/empty-state/empty-state';
+import {
+  BatchFilter,
+  EMPTY_BATCH_FILTER,
+  filterBatches,
+  isBatchFilterApplied,
+} from '../../batch-filter';
+import { BatchFilters, BatchProductOption } from '../../components/batch-filters/batch-filters';
+import { BatchKpiCards } from '../../components/batch-kpi-cards/batch-kpi-cards';
+import { BatchTable } from '../../components/batch-table/batch-table';
 
 /**
  * Batches of every product of the laboratory, newest first.
  *
  * @remarks
- * Batches are created from their product; this list only helps to find them. Batches registered before
- * environments existed are listed without a link until they are assigned to an environment.
+ * Batches are created from their product; this list only helps to find them. The indicators count the batches of
+ * each status among those that meet the other criteria, and also filter the list by status. Batches registered
+ * before environments existed are listed without a link until they are assigned to an environment.
  *
  * @author Qualitrack
  */
@@ -33,16 +40,16 @@ import { MatTooltip } from '@angular/material/tooltip';
   selector: 'app-batch-list',
   standalone: true,
   imports: [
-    DateOnlyPipe,
-    DecimalPipe,
-    FormsModule,
+    BatchFilters,
+    BatchKpiCards,
+    BatchTable,
+    EmptyState,
     RouterLink,
     MatButtonModule,
     MatIconModule,
-    MatInputModule,
-    MatSelectModule,
-    TranslatePipe,
+    MatProgressSpinnerModule,
     MatTooltip,
+    TranslatePipe,
   ],
   templateUrl: './batch-list.html',
   changeDetection: ChangeDetectionStrategy.Eager,
@@ -53,39 +60,56 @@ export class BatchList implements OnInit {
   private readonly iam = inject(IamStore);
 
   /**
-   * Statuses offered by the status filter.
+   * Criteria of the list.
    */
-  protected readonly statuses: BatchStatus[] = ['PENDING', 'IN_PROGRESS', 'RELEASED', 'REJECTED'];
+  protected readonly filter = signal<BatchFilter>({ ...EMPTY_BATCH_FILTER });
 
   /**
-   * Text typed in the search box.
+   * Batches that meet every criterion but the status; the indicators count them.
    */
-  protected readonly search = signal('');
+  protected readonly inContext = computed(() =>
+    filterBatches(this.store.batches(), { ...this.filter(), status: '' }),
+  );
 
   /**
-   * Status selected in the filter; empty means every status.
+   * Batches that meet every criterion.
    */
-  protected readonly status = signal<BatchStatus | ''>('');
+  protected readonly filtered = computed(() => filterBatches(this.store.batches(), this.filter()));
 
   /**
-   * Batches that match the selected status and contain the search text in their number or product name.
+   * Whether any criterion hides batches.
    */
-  protected readonly filtered = computed(() => {
-    const term = this.search().trim().toLowerCase();
-    return this.store
-      .batches()
-      .filter(
-        (batch) =>
-          (!this.status() || batch.status === this.status()) &&
-          `${batch.batchNumber} ${batch.productName}`.toLowerCase().includes(term),
-      );
+  protected readonly filterApplied = computed(() => isBatchFilterApplied(this.filter()));
+
+  /**
+   * Environments that have batches, offered by the environment filter.
+   */
+  protected readonly environments = computed(() => {
+    const ids = new Set(this.store.batches().map((batch) => batch.environmentId));
+    return this.store.environments().filter((environment) => ids.has(environment.id));
   });
 
   /**
-   * Lifecycle hook that loads the batches of the laboratory.
+   * Products that have batches in the chosen environment, offered by the product filter.
+   */
+  protected readonly products = computed<BatchProductOption[]>(() => {
+    const environmentId = this.filter().environmentId;
+    const names = new Map<number, string>();
+    for (const batch of this.store.batches()) {
+      if (environmentId === null || batch.environmentId === environmentId)
+        names.set(batch.productId, batch.productName);
+    }
+    return [...names]
+      .map(([id, name]) => ({ id, name }))
+      .sort((a, b) => a.name.localeCompare(b.name));
+  });
+
+  /**
+   * Lifecycle hook that loads the batches and the environments of the laboratory.
    */
   ngOnInit(): void {
     this.refresh();
+    void this.store.loadEnvironments();
   }
 
   /**
@@ -96,12 +120,18 @@ export class BatchList implements OnInit {
   }
 
   /**
-   * Builds the translation key suffix of a batch status (e.g., `IN_PROGRESS` becomes `in-progress`).
+   * Shows only the batches of a status, as chosen through an indicator.
    *
-   * @param status - The batch status.
-   * @returns The key suffix.
+   * @param status - The status, or empty for every status
    */
-  protected statusKey(status: string): string {
-    return status.toLowerCase().replace(/_/g, '-');
+  protected chooseStatus(status: BatchStatus | ''): void {
+    this.filter.update((filter) => ({ ...filter, status }));
+  }
+
+  /**
+   * Shows every batch again.
+   */
+  protected clearFilters(): void {
+    this.filter.set({ ...EMPTY_BATCH_FILTER });
   }
 }
