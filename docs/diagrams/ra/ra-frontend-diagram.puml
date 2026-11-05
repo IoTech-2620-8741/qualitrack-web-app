@@ -560,6 +560,8 @@ package "ra.presentation" {
     #limitOf(point): number | null
   }
 
+  class "reportConfigFromQuery()" as ReportGeneratorQuery
+
   class ReportGeneratorComponent {
     +ngOnInit(): void
     +ngOnDestroy(): void
@@ -706,6 +708,7 @@ DeviationTrendChartComponent ..> LastDays
 
 ReportGeneratorComponent --> RaStore : loadEquipment(), loadBatches()
 ReportGeneratorComponent *-- ReportGeneratorState : provides
+ReportGeneratorComponent ..> ReportGeneratorQuery : values of the address
 ReportGeneratorComponent *-- ReportTypeSelector
 ReportGeneratorComponent *-- ReportParamsForm
 ReportTypeSelector --> ReportGeneratorState
