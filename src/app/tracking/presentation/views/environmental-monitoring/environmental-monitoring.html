@@ -1,14 +1,23 @@
 <section class="operations-page">
   <header class="page-heading">
-    <h1><mat-icon aria-hidden="true">sensors</mat-icon>{{ 'tracking.monitoring.title' | translate }}</h1>
+    <div class="heading-content">
+      <h1><mat-icon aria-hidden="true">sensors</mat-icon>{{ 'tracking.monitoring.title' | translate }}</h1>
+      <p class="muted">{{ 'tracking.monitoring.subtitle' | translate }}</p>
+    </div>
     <div class="actions">
       <app-environment-selector [environments]="store.environments()" [selectedId]="store.environmentId()" (selectedChange)="changeEnvironment($event)" />
-      <button mat-stroked-button type="button" (click)="refresh()" [disabled]="store.isLoading() || store.environmentId() === null">
-        <mat-icon>refresh</mat-icon>{{ 'tracking.refresh' | translate }}
+      <button
+        mat-icon-button
+        type="button"
+        (click)="refresh()"
+        [disabled]="store.isLoading() || store.environmentId() === null"
+        [matTooltip]="'tracking.refresh' | translate"
+        [attr.aria-label]="'tracking.refresh' | translate"
+      >
+        <mat-icon>refresh</mat-icon>
       </button>
     </div>
   </header>
-  <p class="muted">{{ 'tracking.monitoring.subtitle' | translate }}</p>
 
   @if (store.error(); as error) {
     <p class="error" role="alert">{{ error | translate }}</p>

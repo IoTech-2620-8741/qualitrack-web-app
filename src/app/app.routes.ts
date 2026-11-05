@@ -36,15 +36,14 @@ const profileRoutes = () =>
 const subscriptionRoutes = () =>
   import('./subscription/presentation/subscription.routes').then((m) => m.subscriptionRoutes);
 
-const baseTitle = 'QualiTrack';
 
 export const routes: Routes = [
   // Home is in shared and cannot import IAM: the route hands it the authentication section to render.
-  { path: 'home', component: Home, canActivate: [visitorGuard], data: { authComponent: AuthenticationSection }, title: `Home - ${baseTitle}` },
-  { path: 'about', loadComponent: about, title: `About - ${baseTitle}` },
+  { path: 'home', component: Home, canActivate: [visitorGuard], data: { authComponent: AuthenticationSection }, title: 'page-titles.home' },
+  { path: 'about', loadComponent: about, title: 'page-titles.about' },
 
   // The Layout wraps every page from app.html, so no route declares it.
-  { path: 'dashboard', loadComponent: dashboard, canActivate: [onboardingGuard], title: `Dashboard - ${baseTitle}` },
+  { path: 'dashboard', loadComponent: dashboard, canActivate: [onboardingGuard], title: 'page-titles.dashboard' },
   { path: 'iam', loadChildren: iamRoutes },
   { path: 'inventory', loadChildren: () => import('./inventory/presentation/inventory.routes').then(m => m.inventoryRoutes), canActivate: [onboardingGuard], canActivateChild: [onboardingGuard] },
   { path: 'laboratories', loadChildren: laboratoryRoutes, canActivate: [iamGuard] },
@@ -57,5 +56,5 @@ export const routes: Routes = [
   { path: 'profile', loadChildren: profileRoutes, canActivate: [onboardingGuard], canActivateChild: [onboardingGuard] },
 
   { path: '', redirectTo: '/home', pathMatch: 'full' },
-  { path: '**', loadComponent: pageNotFound, title: `Page Not Found - ${baseTitle}` },
+  { path: '**', loadComponent: pageNotFound, title: 'page-titles.not-found' },
 ];

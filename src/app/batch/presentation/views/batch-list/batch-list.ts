@@ -18,6 +18,7 @@ import { BatchStore } from '../../../application/batch.store';
 import { BatchStatus } from '../../../domain/model/batch.entity';
 import { IamStore } from '../../../../iam/application/iam.store';
 import { DateOnlyPipe } from '../../../../shared/presentation/pipes/date-only.pipe';
+import { MatTooltip } from '@angular/material/tooltip';
 
 /**
  * Batches of every product of the laboratory, newest first.
@@ -41,6 +42,7 @@ import { DateOnlyPipe } from '../../../../shared/presentation/pipes/date-only.pi
     MatInputModule,
     MatSelectModule,
     TranslatePipe,
+    MatTooltip,
   ],
   templateUrl: './batch-list.html',
   changeDetection: ChangeDetectionStrategy.Eager,

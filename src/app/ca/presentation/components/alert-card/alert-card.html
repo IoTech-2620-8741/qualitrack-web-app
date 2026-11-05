@@ -124,6 +124,7 @@
         <button
           #primaryAction
           mat-flat-button
+          class="primary-btn"
           type="button"
           [attr.aria-label]="('ca-alerts.actions.acknowledge' | translate) + ': ' + title()"
           (click)="attend.emit()"
@@ -135,6 +136,7 @@
         <a
           #primaryAction
           mat-flat-button
+          class="primary-btn"
           [routerLink]="['/alerts', alert().id]"
           [queryParams]="{ panel: 'resolve' }"
           queryParamsHandling="merge"

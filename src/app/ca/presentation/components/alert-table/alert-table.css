@@ -1,55 +1,78 @@
 :host {
+  position: relative;
   display: block;
   min-width: 0;
   overflow-x: auto;
-  border: 1px solid var(--qt-border);
-  border-radius: var(--qt-radius-medium);
-  background: var(--qt-surface);
   color: var(--qt-text);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 .data-table {
   width: 100%;
-  min-width: 900px;
-  border-collapse: collapse;
-  font-size: 13px;
+  min-width: 1010px;
+  table-layout: fixed;
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow: hidden;
+  background: var(--qt-surface);
+  border: 1px solid var(--qt-border);
+  border-radius: var(--qt-radius-medium);
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+  font-size: 14px;
 }
 
 .data-table th {
-  padding: 12px 10px;
-  border-bottom: 1px solid var(--qt-border);
-  background: var(--qt-neutral-surface);
-  color: var(--qt-neutral-text);
-  font-size: 13px;
-  font-weight: 600;
+  background: var(--qt-surface);
+  color: var(--qt-text-muted);
+  font-size: 12px;
+  font-weight: 500;
   text-align: left;
+  text-transform: uppercase;
 }
 
-.data-table td {
-  padding: 12px 10px;
+.data-table td,
+.data-table th {
+  padding: 16px 12px;
   border-bottom: 1px solid var(--qt-border);
-  overflow-wrap: break-word;
+  overflow-wrap: anywhere;
   vertical-align: top;
 }
 
+.data-table td {
+  color: var(--qt-text);
+  font-variant-numeric: tabular-nums;
+}
+
+.data-table tbody tr {
+  transition: background-color 0.2s ease;
+}
+
 .data-table tbody tr:last-child td {
-  border-bottom: 0;
+  border-bottom: none;
 }
 
-/* Severity is also told by the chip of the row: the border only helps to scan the table (WCAG 1.4.1). */
-.data-table tr > td:first-child {
-  border-left: 5px solid transparent;
+.data-table tbody tr:hover {
+  background: var(--qt-background);
 }
 
-.data-table .severity-critical > td:first-child {
-  border-left-color: var(--qt-error);
+.data-table tr.severity-critical td:first-child {
+  box-shadow: inset 3px 0 0 var(--qt-error);
 }
 
-.data-table .severity-warning > td:first-child {
-  border-left-color: var(--qt-warning);
-}
-
-.data-table strong {
+.data-table td strong {
+  display: block;
+  color: var(--qt-text);
   font-weight: 600;
 }
 
@@ -58,18 +81,19 @@
   margin-top: 4px;
   color: var(--qt-text-muted);
   font-size: 12px;
+  line-height: 1.5;
 }
 
-.col-detected {
-  width: 110px;
-}
+.col-detected { width: 120px; }
+.col-resolved { width: 150px; }
+.col-notes    { width: 120px; }
+.col-view     { width: 80px; }
 
-.col-notes {
-  width: 20%;
-}
-
-.col-view {
-  width: 72px;
+.data-table th:last-child,
+.data-table td:last-child {
+  padding-left: 8px;
+  padding-right: 12px;
+  text-align: right;
 }
 
 .chip-cell {
@@ -77,40 +101,55 @@
 }
 
 .still-open {
-  color: var(--qt-error-text);
+  color: var(--qt-warning-text);
 }
 
 .person {
   display: inline-flex;
   align-items: center;
   gap: 8px;
+  font-weight: 500;
 }
 
 .avatar {
   display: inline-grid;
-  flex: none;
+  flex-shrink: 0;
   place-items: center;
   width: 28px;
   height: 28px;
+  background: var(--qt-primary-strong);
   border-radius: 50%;
-  background: var(--qt-primary-surface);
-  color: var(--qt-primary-strong);
-  font-size: 11px;
-  font-weight: 700;
+  color: var(--qt-surface);
+  font-size: 12px;
+  font-weight: 600;
 }
 
 .notes {
-  color: var(--qt-neutral-text);
-  font-size: 13px;
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
 }
 
-.visually-hidden {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
-  white-space: nowrap;
+.data-table a[mat-button] {
+  min-height: 40px;
+  padding: 4px 12px;
+  border-radius: var(--qt-radius-pill);
+  color: var(--qt-primary-strong);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color 0.2s ease;
+}
+
+.data-table a[mat-button]:hover {
+  background: var(--qt-primary-surface);
+}
+
+.data-table a[mat-button]:focus-visible {
+  outline: 3px solid var(--qt-primary);
+  outline-offset: 2px;
 }
 
 @media (max-width: 760px) {
@@ -120,6 +159,10 @@
 
   .data-table {
     min-width: 0;
+    overflow: visible;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
   }
 
   .data-table thead {
@@ -135,30 +178,34 @@
   }
 
   .data-table tr {
-    padding: 8px 0;
-    border-bottom: 1px solid var(--qt-border);
+    margin-bottom: 12px;
+    padding: 8px 12px;
+    background: var(--qt-surface);
+    border: 1px solid var(--qt-border);
+    border-radius: var(--qt-radius-medium);
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
   }
 
-  .data-table tr > td:first-child {
-    border-left-width: 0;
+  .data-table tr.severity-critical {
+    border-left: 4px solid var(--qt-error);
   }
 
-  .severity-critical,
-  .severity-warning {
-    border-left: 5px solid;
+  .data-table tr.severity-critical td:first-child {
+    box-shadow: none;
   }
 
-  .severity-critical {
-    border-left-color: var(--qt-error);
-  }
-
-  .severity-warning {
-    border-left-color: var(--qt-warning);
+  .data-table tbody tr:hover {
+    background: var(--qt-surface);
   }
 
   .data-table td {
-    padding: 6px 12px;
+    padding: 8px 0;
     border: 0;
+  }
+
+  .data-table td:last-child {
+    padding: 4px 0 0;
+    text-align: right;
   }
 
   .data-table td[data-label]::before {
@@ -167,5 +214,13 @@
     margin-bottom: 4px;
     color: var(--qt-text-muted);
     font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
   }
 }

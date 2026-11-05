@@ -2,11 +2,9 @@ import { Component, OnInit, inject, ChangeDetectionStrategy } from '@angular/cor
 import { Router } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 
-import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { LaboratoryStore } from '../../../application/laboratory.store';
@@ -25,11 +23,9 @@ import { ENVIRONMENT_USAGES, EnvironmentUsage } from '../../../domain/model/envi
   standalone: true,
   imports: [
     TranslatePipe,
-    MatTableModule,
     MatButtonModule,
     MatIconModule,
     MatMenuModule,
-    MatProgressSpinnerModule,
     MatTooltipModule,
   ],
   templateUrl: './environment-list.html',
@@ -53,18 +49,16 @@ export class EnvironmentList implements OnInit {
   protected readonly usages = ENVIRONMENT_USAGES;
 
   /**
-   * Columns displayed in the environment table; the actions are only shown to quality managers.
-   */
-  protected get displayedColumns(): string[] {
-    return this.store.canManageEnvironments()
-      ? ['code', 'name', 'usage', 'description', 'actions']
-      : ['code', 'name', 'usage', 'description'];
-  }
-
-  /**
    * Lifecycle hook that loads the environments of the current laboratory.
    */
   ngOnInit(): void {
+    void this.store.loadEnvironments();
+  }
+
+  /**
+   * Reads the environments of the current laboratory again.
+   */
+  protected refresh(): void {
     void this.store.loadEnvironments();
   }
 

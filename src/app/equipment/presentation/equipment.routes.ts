@@ -92,9 +92,9 @@ const maintenanceForm = () =>
  * The view-named paths used before semantic routes redirect to their new address, so bookmarks keep working.
  */
 const equipmentRoutes: Routes = [
-  { path: '', loadComponent: equipmentList, pathMatch: 'full' },
-  { path: 'new', loadComponent: equipmentForm },
-  { path: 'devices/new', loadComponent: deviceForm },
+  { path: '', loadComponent: equipmentList, pathMatch: 'full', title: 'page-titles.equipment-list' },
+  { path: 'new', loadComponent: equipmentForm, title: 'page-titles.equipment-new' },
+  { path: 'devices/new', loadComponent: deviceForm, title: 'page-titles.device-new' },
   // View-named paths used before semantic routes, declared before the identifier so they are not read as one.
   { path: 'equipment-list', redirectTo: '/equipments', pathMatch: 'full' },
   { path: 'register-equipment', redirectTo: '/equipments/new', pathMatch: 'full' },
@@ -103,9 +103,9 @@ const equipmentRoutes: Routes = [
   { path: 'maintenance-history/:id', redirectTo: '/equipments/:id' },
   { path: 'bpm-config-form/:id', redirectTo: '/equipments/:id/bpm-configuration' },
   { path: 'maintenance-form/:id', redirectTo: '/equipments/:id/maintenances/new' },
-  { path: ':equipmentId', loadComponent: equipmentDetail },
-  { path: ':equipmentId/bpm-configuration', loadComponent: bpmConfigForm, canActivate: [operatorGuard] },
-  { path: ':equipmentId/maintenances/new', loadComponent: maintenanceForm, canActivate: [operatorGuard] },
+  { path: ':equipmentId', loadComponent: equipmentDetail, title: 'page-titles.equipment-detail' },
+  { path: ':equipmentId/bpm-configuration', loadComponent: bpmConfigForm, canActivate: [operatorGuard], title: 'page-titles.bpm-config' },
+  { path: ':equipmentId/maintenances/new', loadComponent: maintenanceForm, canActivate: [operatorGuard], title: 'page-titles.maintenance-new' },
 ];
 
 export { equipmentRoutes };

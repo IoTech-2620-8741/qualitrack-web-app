@@ -1,6 +1,7 @@
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
+import { provideRouter } from '@angular/router';
 import { provideTranslateService } from '@ngx-translate/core';
 import { of } from 'rxjs';
 import { CaStore } from '../../../application/ca.store';
@@ -15,7 +16,7 @@ describe('NotificationSettings', () => {
   beforeEach(() => {
     preference.set(null); loadNotificationPreferences.mockClear(); updateNotificationPreferences.mockClear();
     TestBed.configureTestingModule({ imports: [NotificationSettings], providers: [
-      provideTranslateService(),
+      provideRouter([]), provideTranslateService(),
       { provide: CaStore, useValue: { preference, loadNotificationPreferences, updateNotificationPreferences } },
     ] });
   });

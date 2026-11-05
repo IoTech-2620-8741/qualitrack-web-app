@@ -5,7 +5,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-
+import { MatTooltipModule} from '@angular/material/tooltip';
 import { TrackingStore, DeviceSnapshot } from '../../../application/tracking.store';
 import { EnvironmentSelector } from '../../../../shared/presentation/components/environment-selector/environment-selector';
 import { MonitoredMetric } from '../../../domain/model/monitored-metric';
@@ -53,6 +53,7 @@ import { DateTimePipe } from '../../../../shared/presentation/pipes/date-time.pi
     MatIconModule,
     MatProgressSpinnerModule,
     EnvironmentSelector,
+    MatTooltipModule
   ],
   templateUrl: './environmental-monitoring.html',
   changeDetection: ChangeDetectionStrategy.Eager,

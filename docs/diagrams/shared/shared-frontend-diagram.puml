@@ -90,7 +90,6 @@ package "shared" {
       #currentLang: string
       #languages: string[]
       #translate: TranslateService
-      #compact: Signal<boolean>
       +useLanguage(language: string): void
     }
 
@@ -192,6 +191,12 @@ package "shared" {
 
   package "presentation.tokens" {
     class SIGNED_IN <<InjectionToken<Signal<boolean>>>>
+  }
+
+  package "presentation.utils" {
+    class TranslatedTitleStrategy {
+      +updateTitle(snapshot: RouterStateSnapshot): void
+    }
   }
 }
 

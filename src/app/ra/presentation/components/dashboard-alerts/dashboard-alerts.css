@@ -1,118 +1,173 @@
 :host {
   display: block;
-  color: #233b47;
-  border-top: 1px solid #d5e0e5;
-  padding-top: 16px;
   min-width: 0;
+  padding: 24px;
+  background: var(--qt-surface);
+  border: 1px solid var(--qt-border);
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+  color: var(--qt-text);
 }
 
-/* Header (title and arrow icon) */
 .section-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 12px;
-  margin-bottom: 18px;
   min-height: 40px;
-}
-h2 {
-  font-size: 17px;
-  margin: 0;
-  display: flex;
-  align-items: center;
-  gap: 9px;
-}
-h2 mat-icon {
-  color: #43766d;
-  flex-shrink: 0;
+  margin-bottom: 16px;
 }
 
-/* Alert row */
+h2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  color: var(--qt-text);
+  font-size: 18px;
+  font-weight: 700;
+}
+
+h2 mat-icon {
+  flex-shrink: 0;
+  color: var(--qt-primary);
+}
+
+.section-header a {
+  color: var(--qt-text);
+}
+
+.section-header a:focus-visible {
+  outline: 3px solid var(--qt-primary);
+  outline-offset: 2px;
+}
+
 .record-row {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 15px 0;
-  border-bottom: 1px solid #dce4e9;
+  margin: 0 -8px;
+  padding: 14px 8px;
+  border-bottom: 1px solid var(--qt-border);
+  border-radius: 8px;
   text-decoration: none;
   color: inherit;
-}
-.record-row:hover {
-  background: #eaf1f4;
-}
-.record-row:focus-visible {
-  outline: 2px solid #166d83;
-  outline-offset: 3px;
+  transition: background 0.2s ease;
 }
 
-/* Contenido de la alerta */
+.record-row:last-child {
+  border-bottom: none;
+}
+
+.record-row:hover {
+  background: var(--qt-background);
+}
+
+.record-row:focus-visible {
+  outline: 3px solid var(--qt-primary);
+  outline-offset: 2px;
+}
+
+.severity-mark {
+  flex-shrink: 0;
+  width: 4px;
+  height: 42px;
+  border-radius: 2px;
+  background: var(--qt-warning);
+}
+
+.severity-mark.critical {
+  background: var(--qt-error);
+}
+
 .record-main {
   min-width: 0;
   flex: 1;
   text-align: left;
 }
-.record-main strong {
+
+.record-main strong,
+.record-main span,
+.record-main small,
+.record-status small {
   display: block;
-  font-size: 13px;
-  margin-bottom: 4px;
-  color: #233b47;
+  overflow-wrap: anywhere;
 }
+
+.record-main strong {
+  margin-bottom: 4px;
+  color: var(--qt-text);
+  font-size: 14px;
+  font-weight: 600;
+}
+
 .record-main span {
-  display: block;
+  color: var(--qt-text);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.record-main small,
+.record-status small {
+  margin-top: 4px;
+  color: var(--qt-text-muted);
   font-size: 12px;
 }
-.record-main small {
-  display: block;
-  font-size: 11px;
-  color: #637680;
-  margin-top: 5px;
-}
 
-/* Indicador de severidad (la barrita de la izquierda) */
-.severity-mark {
-  width: 4px;
-  height: 42px;
-  background: #cc992e;
-  flex-shrink: 0;
-  border-radius: 2px;
-}
-.severity-mark.critical {
-  background: #c85058;
-}
-
-/* Status (Critical / Unresolved) */
 .record-status {
   max-width: 38%;
   text-align: right;
 }
-.record-status small {
-  display: block;
-  font-size: 11px;
-  color: #637680;
-  margin-top: 5px;
-}
+
 .status {
   display: inline-block;
-  border-radius: 4px;
-  padding: 4px 7px;
-  font-size: 11px;
-  background: #edf1f3;
-  color: #445c66;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--qt-neutral-surface);
+  color: var(--qt-neutral-text);
+  font-size: 12px;
   font-weight: 500;
 }
-.CRITICAL, .REJECTED {
-  background: #fce7e7;
-  color: #a22e36;
-}
-.WARNING, .PENDING {
-  background: #fff0d1;
-  color: #906315;
+
+.CRITICAL,
+.REJECTED {
+  background: var(--qt-error-surface);
+  color: var(--qt-error-text);
 }
 
-/* Empty text */
+.WARNING,
+.PENDING {
+  background: var(--qt-warning-surface);
+  color: var(--qt-warning-text);
+}
+
 .empty {
-  color: #62747e;
-  font-size: 13px;
-  padding: 25px 0;
+  margin: 0;
+  padding: 24px 0;
+  color: var(--qt-text-muted);
+  font-size: 14px;
   line-height: 1.6;
+  text-align: center;
+}
+
+@media (max-width: 760px) {
+  :host {
+    padding: 20px 16px;
+  }
+}
+
+@media (max-width: 420px) {
+  h2 {
+    font-size: 16px;
+  }
+
+  .record-status {
+    max-width: 45%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .record-row {
+    transition: none;
+  }
 }

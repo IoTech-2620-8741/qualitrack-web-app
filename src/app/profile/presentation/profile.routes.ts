@@ -13,8 +13,8 @@ const profilePage = () =>
  * as `/profile#notifications` opens the corresponding preferences page in CA.
  */
 const profileRoutes: Routes = [
-  { path: 'staff/:staffId', loadComponent: () => import('./views/staff-profile/staff-profile').then((m) => m.StaffProfilePage), canActivate: [qualityManagerGuard], title: 'Staff profile - QualiTrack' },
-  { path: '', loadComponent: profilePage, title: 'Profile - QualiTrack' },
+  { path: 'staff/:staffId', loadComponent: () => import('./views/staff-profile/staff-profile').then((m) => m.StaffProfilePage), canActivate: [qualityManagerGuard], title: 'page-titles.staff-profile' },
+  { path: '', loadComponent: profilePage, title: 'page-titles.profile' },
 ];
 
 export { profileRoutes };

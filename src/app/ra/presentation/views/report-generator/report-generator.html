@@ -1,7 +1,9 @@
 <div class="generator-container">
   <div class="page-header">
-    <div class="breadcrumbs">{{ 'report-generator.breadcrumbs' | translate }}</div>
-    <h1 class="page-title">{{ 'report-generator.title' | translate }}</h1>
+    <h1 class="page-title">
+      <mat-icon aria-hidden="true">summarize</mat-icon>
+      {{ 'report-generator.title' | translate }}
+    </h1>
     <p class="page-desc">{{ 'report-generator.subtitle' | translate }}</p>
   </div>
 
@@ -31,7 +33,7 @@
   </div>
 
   @if (store.isLoading()) {
-    <div class="loading-overlay">
+    <div class="loading-overlay" role="status">
       <mat-spinner diameter="50"></mat-spinner>
       <p>{{ 'report-generator.generating' | translate }}</p>
     </div>

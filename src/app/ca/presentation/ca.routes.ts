@@ -33,12 +33,13 @@ const caRoutes: Routes = [
   {
     path: 'history',
     loadComponent: alertHistory,
-    children: [{ path: ':alertId', loadComponent: alertDetailPanel }],
+    title: 'page-titles.alert-history',
+    children: [{ path: ':alertId', loadComponent: alertDetailPanel, title: 'page-titles.alert-detail' }],
   },
   {
     path: 'notification-settings',
     loadComponent: notificationSettings,
-    title: 'Notification preferences - QualiTrack',
+    title: 'page-titles.notification-preferences',
   },
   // View-named paths used before semantic routes, declared before the identifier so they are not read as one.
   { path: 'alert-dashboard', redirectTo: '/alerts', pathMatch: 'full' },
@@ -48,7 +49,8 @@ const caRoutes: Routes = [
   {
     path: '',
     loadComponent: alertDashboard,
-    children: [{ path: ':alertId', loadComponent: alertDetailPanel }],
+    title: 'page-titles.alerts',
+    children: [{ path: ':alertId', loadComponent: alertDetailPanel, title: 'page-titles.alert-detail' }],
   },
 ];
 

@@ -1,11 +1,21 @@
 <section class="operations-page">
   <header class="page-heading">
-    <h1><mat-icon aria-hidden="true">tune</mat-icon>{{ 'tracking.profiles.title' | translate }}</h1>
+    <div class="heading-content">
+      <h1>
+        <mat-icon aria-hidden="true">tune</mat-icon>
+        {{ 'tracking.profiles.title' | translate }}
+      </h1>
+      <p class="muted">{{ 'tracking.profiles.subtitle' | translate }}</p>
+    </div>
+
     <div class="actions">
-      <app-environment-selector [environments]="store.environments()" [selectedId]="store.environmentId()" (selectedChange)="changeEnvironment($event)" />
+      <app-environment-selector
+        [environments]="store.environments()"
+        [selectedId]="store.environmentId()"
+        (selectedChange)="changeEnvironment($event)"
+      />
     </div>
   </header>
-  <p class="muted">{{ 'tracking.profiles.subtitle' | translate }}</p>
   @if (!store.canConfigure()) {
     <p class="notice">{{ 'tracking.profiles.read-only' | translate }}</p>
   }
