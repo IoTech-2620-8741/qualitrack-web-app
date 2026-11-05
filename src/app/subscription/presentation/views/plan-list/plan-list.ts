@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, effect, inject, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -62,6 +62,14 @@ export class PlanList implements OnInit {
     this.store.plans().filter((p) => p.billingPeriod?.toUpperCase() === this.billingPeriod()),
   );
 
+  constructor() {
+    // A plan chosen on the website goes straight to its checkout, unless the account already pays for one.
+    effect(() => {
+      const plan = this.store.selectedPlan();
+      if (plan && this.iamStore.onboarding()?.subscriptionStatus === 'INACTIVE') this.openCheckout(plan);
+    });
+  }
+
   /**
    * Lifecycle hook that loads available subscription plans.
    */
@@ -92,14 +100,13 @@ export class PlanList implements OnInit {
       return;
     }
 
-    this.router
-      .navigate(['/subscriptions/checkout'], {
-        queryParams: {
-          plan: plan.code,
-          billingCycle: plan.billingPeriod,
-        },
-      })
-      .then();
+    this.openCheckout(plan);
+  }
+
+  private openCheckout(plan: SubscriptionPlan): void {
+    void this.router.navigate(['/subscriptions/checkout'], {
+      queryParams: { plan: plan.code, billingCycle: plan.billingPeriod },
+    });
   }
 
   protected signOut(): void {

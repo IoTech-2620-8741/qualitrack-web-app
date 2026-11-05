@@ -1,6 +1,7 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { IamStore } from '../../iam/application/iam.store';
+import { errorStatus } from '../../shared/infrastructure/api-error';
 
 import { SubscriptionApi } from '../infrastructure/subscription-api';
 import { SubscriptionPlan } from '../domain/model/subscription-plan.entity';
@@ -142,6 +143,11 @@ export class SubscriptionStore {
    */
   readonly hasActiveSubscription = computed(() => this._currentSubscription()?.status === 'ACTIVE');
 
+  constructor() {
+    // The plan lives in sessionStorage, which a reload keeps: the next person on this tab must not inherit it.
+    this.iam.beforeSignOut(() => this.clearSelectedPlan());
+  }
+
   /**
    * Loads all available subscription plans.
    */
@@ -241,12 +247,19 @@ export class SubscriptionStore {
         this._checkoutSession.set(session);
         this._successMsg.set('Checkout session created successfully');
         this.finishRequest();
+        // The choice is spent: coming back from Stripe must not send the person to checkout again.
+        this.clearSelectedPlan();
 
         if (session.checkoutUrl) {
           window.location.href = session.checkoutUrl;
         }
       },
-      error: (error) => this.failRequest(error, 'Failed to create checkout session'),
+      error: (error) => {
+        if (errorStatus(error) === 409) {
+          this._error.set('subscription.plans.already-active');
+          this._isLoading.set(false);
+        } else this.failRequest(error, 'Failed to create checkout session');
+      },
     });
   }
 
