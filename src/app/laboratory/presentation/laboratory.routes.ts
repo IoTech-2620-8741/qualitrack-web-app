@@ -50,7 +50,7 @@ const staffDetail = () => import('./views/staff-detail/staff-detail').then((m) =
  * which now own those resources.
  */
 export const laboratoryRoutes: Routes = [
-  { path: 'new', loadComponent: labForm, canActivate: [laboratorySetupGuard] },
+  { path: 'new', loadComponent: labForm, canActivate: [laboratorySetupGuard], title: 'page-titles.lab-new' },
   { path: 'create', redirectTo: 'new', pathMatch: 'full' },
   { path: 'lab-form', redirectTo: 'new', pathMatch: 'full' },
   {
@@ -58,13 +58,13 @@ export const laboratoryRoutes: Routes = [
     canActivate: [onboardingGuard],
     canActivateChild: [onboardingGuard],
     children: [
-      { path: 'profile', loadComponent: labProfile },
-      { path: 'environments', loadComponent: environmentList },
-      { path: 'environments/new', loadComponent: environmentForm },
-      { path: 'environments/:environmentId/edit', loadComponent: environmentForm },
-      { path: 'staff', loadComponent: staffList },
-      { path: 'staff/new', loadComponent: staffForm, canActivate: [qualityManagerGuard] },
-      { path: 'staff/:staffId', loadComponent: staffDetail, canActivate: [staffActivityGuard] },
+      { path: 'profile', loadComponent: labProfile, title: 'page-titles.lab-profile' },
+      { path: 'environments', loadComponent: environmentList, title: 'page-titles.environment-list' },
+      { path: 'environments/new', loadComponent: environmentForm, title: 'page-titles.environment-new' },
+      { path: 'environments/:environmentId/edit', loadComponent: environmentForm, title: 'page-titles.environment-edit' },
+      { path: 'staff', loadComponent: staffList, title: 'page-titles.staff-list' },
+      { path: 'staff/new', loadComponent: staffForm, canActivate: [qualityManagerGuard], title: 'page-titles.staff-new' },
+      { path: 'staff/:staffId', loadComponent: staffDetail, canActivate: [staffActivityGuard], title: 'page-titles.staff-detail' },
       // View-named paths used before semantic routes.
       { path: 'lab-profile', redirectTo: 'profile', pathMatch: 'full' },
       { path: 'staff-list', redirectTo: 'staff', pathMatch: 'full' },
