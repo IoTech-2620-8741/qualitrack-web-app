@@ -79,7 +79,10 @@ export class ProductCatalog implements OnInit {
     });
   }
 
-  refresh(): void {
+  /**
+   * Reads the products of the chosen environment again.
+   */
+  protected refresh(): void {
     const environmentId = this.store.productEnvironmentId();
 
     if (environmentId !== null) {
