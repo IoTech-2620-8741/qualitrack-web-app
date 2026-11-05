@@ -34,6 +34,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Compliance & Alerts (ca): `CaStore.loadAlertHistory` reads every alert, open or resolved, of one environment or of the whole laboratory; an environment that fails does not hide the others.
 
+### Fixed
+
+- Compliance & Alerts (ca): the view action of the alert history shows only the eye icon again, with its words as label and tooltip (#84).
+
 ## [2.2.0] - 2026-11-04
 
 ### Added
