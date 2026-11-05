@@ -132,22 +132,7 @@
   line-clamp: 3;
 }
 
-.data-table a[mat-button] {
-  min-height: 40px;
-  padding: 4px 12px;
-  border-radius: var(--qt-radius-pill);
-  color: var(--qt-primary-strong);
-  font-size: 14px;
-  font-weight: 600;
-  text-decoration: none;
-  transition: background-color 0.2s ease;
-}
-
-.data-table a[mat-button]:hover {
-  background: var(--qt-primary-surface);
-}
-
-.data-table a[mat-button]:focus-visible {
+.data-table a[mat-icon-button]:focus-visible {
   outline: 3px solid var(--qt-primary);
   outline-offset: 2px;
 }
