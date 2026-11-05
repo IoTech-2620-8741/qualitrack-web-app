@@ -4,7 +4,6 @@
 
 .bell-button {
   color: var(--qt-text-muted);
-  --mdc-icon-button-icon-color: var(--qt-text-muted);
   --mat-badge-background-color: var(--qt-error-text);
   --mat-badge-text-color: var(--qt-surface);
   transition: background-color 0.2s ease, color 0.2s ease;
@@ -57,7 +56,6 @@
   color: var(--qt-primary-strong);
   font-size: 14px;
   font-weight: 600;
-  --mdc-text-button-label-text-color: var(--qt-primary-strong);
   transition: background-color 0.2s ease;
 }
 
@@ -85,7 +83,6 @@
   color: var(--qt-text-muted);
   font-size: 14px;
   text-align: center;
-  --mdc-circular-progress-active-indicator-color: var(--qt-primary);
 }
 
 .state p {

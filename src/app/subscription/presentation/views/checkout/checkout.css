@@ -71,15 +71,6 @@
   line-height: 1.6;
 }
 
-.back-btn {
-  color: var(--qt-text);
-}
-
-.back-btn:focus-visible {
-  outline: 3px solid var(--qt-primary);
-  outline-offset: 2px;
-}
-
 /* Checkout card */
 .checkout-card {
   border-radius: 12px;
@@ -168,10 +159,6 @@
 /* Primary action */
 .pay-btn {
   padding: 0 28px;
-  --mdc-filled-button-container-color: var(--qt-primary-strong);
-  --mdc-filled-button-label-text-color: var(--qt-surface);
-  --mdc-filled-button-disabled-container-color: var(--qt-border);
-  --mdc-filled-button-disabled-label-text-color: var(--qt-neutral-text);
   background: var(--qt-primary-strong);
   color: var(--qt-surface);
 }

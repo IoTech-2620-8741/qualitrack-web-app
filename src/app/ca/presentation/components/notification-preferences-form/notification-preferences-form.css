@@ -14,28 +14,6 @@
   border-bottom: 1px solid var(--qt-border);
 }
 
-mat-slide-toggle {
-  --mdc-switch-selected-handle-color: var(--qt-primary-strong);
-  --mdc-switch-selected-hover-handle-color: var(--qt-primary-hover);
-  --mdc-switch-selected-focus-handle-color: var(--qt-primary-hover);
-  --mdc-switch-selected-pressed-handle-color: var(--qt-primary-hover);
-  --mdc-switch-selected-track-color: var(--qt-primary-soft);
-  --mdc-switch-selected-hover-track-color: var(--qt-primary-soft);
-  --mdc-switch-selected-focus-track-color: var(--qt-primary-soft);
-  --mdc-switch-selected-pressed-track-color: var(--qt-primary-soft);
-  --mdc-switch-unselected-handle-color: var(--qt-text-muted);
-  --mdc-switch-unselected-hover-handle-color: var(--qt-text-muted);
-  --mdc-switch-unselected-focus-handle-color: var(--qt-text-muted);
-  --mdc-switch-unselected-pressed-handle-color: var(--qt-text-muted);
-  --mdc-switch-unselected-track-color: var(--qt-border);
-  --mdc-switch-unselected-hover-track-color: var(--qt-border);
-  --mdc-switch-unselected-focus-track-color: var(--qt-border);
-  --mdc-switch-unselected-pressed-track-color: var(--qt-border);
-  --mat-switch-label-text-color: var(--qt-text);
-  --mat-switch-label-text-size: 14px;
-  --mat-switch-label-text-weight: 600;
-}
-
 .toggle .hint {
   margin: 4px 0 0 52px;
   color: var(--qt-text-muted);
@@ -90,10 +68,6 @@ mat-slide-toggle {
   font-size: 14px;
   font-weight: 600;
   white-space: nowrap;
-  --mdc-filled-button-container-color: var(--qt-primary-strong);
-  --mdc-filled-button-label-text-color: var(--qt-surface);
-  --mdc-filled-button-disabled-container-color: var(--qt-border);
-  --mdc-filled-button-disabled-label-text-color: var(--qt-neutral-text);
   background: var(--qt-primary-strong);
   color: var(--qt-surface);
   transition: background-color 0.2s ease;

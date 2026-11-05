@@ -17,8 +17,6 @@
   border-left: 4px solid var(--qt-success);
   border-radius: 12px;
   box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
-  --mdc-elevated-card-container-color: var(--qt-surface);
-  --mdc-elevated-card-container-shape: 12px;
 }
 
 .kpi-card--warning      { border-left-color: var(--qt-warning); }

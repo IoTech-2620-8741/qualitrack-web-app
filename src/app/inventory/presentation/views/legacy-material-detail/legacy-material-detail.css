@@ -94,7 +94,6 @@ h2 span {
 
 .page-heading button[mat-icon-button] {
   color: var(--qt-text-muted);
-  --mdc-icon-button-icon-color: var(--qt-text-muted);
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 
@@ -289,7 +288,6 @@ td a:focus-visible {
   color: var(--qt-text-muted);
   font-size: 14px;
   text-align: center;
-  --mdc-circular-progress-active-indicator-color: var(--qt-primary);
 }
 
 .state[role='alert'],
@@ -310,8 +308,6 @@ td a:focus-visible {
   color: var(--qt-text);
   font-size: 14px;
   font-weight: 600;
-  --mdc-outlined-button-outline-color: var(--qt-border);
-  --mdc-outlined-button-label-text-color: var(--qt-text);
 }
 
 p.state {

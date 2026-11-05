@@ -11,7 +11,6 @@
   color: var(--qt-text-muted);
   font-size: 14px;
   line-height: 1.6;
-  --mdc-circular-progress-active-indicator-color: var(--qt-primary);
 }
 
 .state.error {
@@ -25,7 +24,6 @@
 
 .state button {
   color: var(--qt-text-muted);
-  --mdc-icon-button-icon-color: var(--qt-text-muted);
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 

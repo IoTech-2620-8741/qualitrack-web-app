@@ -126,12 +126,6 @@ mat-button-toggle-group {
   background: var(--qt-surface);
   border: 1px solid var(--qt-border);
   border-radius: 999px;
-  --mat-standard-button-toggle-shape: 999px;
-  --mat-standard-button-toggle-text-color: var(--qt-text-muted);
-  --mat-standard-button-toggle-background-color: transparent;
-  --mat-standard-button-toggle-selected-state-text-color: var(--qt-surface);
-  --mat-standard-button-toggle-selected-state-background-color: var(--qt-primary-strong);
-  --mat-standard-button-toggle-divider-color: transparent;
 }
 
 mat-button-toggle-group ::ng-deep .mat-button-toggle {
@@ -278,10 +272,6 @@ mat-button-toggle-group ::ng-deep .mat-button-toggle-button:focus-visible {
 }
 
 .primary-btn {
-  --mdc-filled-button-container-color: var(--qt-primary-strong);
-  --mdc-filled-button-label-text-color: var(--qt-surface);
-  --mdc-filled-button-disabled-container-color: var(--qt-border);
-  --mdc-filled-button-disabled-label-text-color: var(--qt-neutral-text);
   background: var(--qt-primary-strong);
   color: var(--qt-surface);
   transition: background-color 0.2s ease;

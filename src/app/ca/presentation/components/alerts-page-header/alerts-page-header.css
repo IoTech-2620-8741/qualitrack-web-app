@@ -72,8 +72,6 @@ p {
   font-weight: 600;
   text-decoration: none;
   white-space: nowrap;
-  --mdc-outlined-button-outline-color: var(--qt-border);
-  --mdc-outlined-button-label-text-color: var(--qt-text);
 }
 
 .actions a:focus-visible {
@@ -82,17 +80,6 @@ p {
 }
 
 /* Pestañas de navegación */
-nav[mat-tab-nav-bar] {
-  --mdc-tab-indicator-active-indicator-color: var(--qt-primary);
-  --mat-tab-header-active-label-text-color: var(--qt-primary-strong);
-  --mat-tab-header-active-focus-label-text-color: var(--qt-primary-strong);
-  --mat-tab-header-active-hover-label-text-color: var(--qt-primary-strong);
-  --mat-tab-header-active-ripple-color: var(--qt-primary);
-  --mat-tab-header-inactive-label-text-color: var(--qt-text-muted);
-  --mat-tab-header-inactive-ripple-color: var(--qt-primary);
-  --mat-tab-header-divider-color: var(--qt-border);
-}
-
 [mat-tab-link] {
   min-width: auto;
   font-size: 14px;

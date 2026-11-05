@@ -123,10 +123,6 @@ p.muted {
 }
 
 .section-actions button[mat-flat-button] {
-  --mdc-filled-button-container-color: var(--qt-primary-strong);
-  --mdc-filled-button-label-text-color: var(--qt-surface);
-  --mdc-filled-button-disabled-container-color: var(--qt-border);
-  --mdc-filled-button-disabled-label-text-color: var(--qt-neutral-text);
   background: var(--qt-primary-strong);
   color: var(--qt-surface);
 }

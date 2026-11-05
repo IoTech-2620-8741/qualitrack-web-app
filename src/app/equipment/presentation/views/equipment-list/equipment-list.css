@@ -85,8 +85,6 @@ h1 mat-icon {
 }
 
 .actions a[mat-flat-button] {
-  --mdc-filled-button-container-color: var(--qt-primary-strong);
-  --mdc-filled-button-label-text-color: var(--qt-surface);
   background: var(--qt-primary-strong);
   color: var(--qt-surface);
 }
@@ -179,13 +177,6 @@ mat-button-toggle-group {
   border-radius: 999px;
   background: var(--qt-surface);
   overflow: visible;
-  --mat-standard-button-toggle-height: 44px;
-  --mat-standard-button-toggle-shape: 999px;
-  --mat-standard-button-toggle-divider-color: transparent;
-  --mat-standard-button-toggle-text-color: var(--qt-text-muted);
-  --mat-standard-button-toggle-background-color: transparent;
-  --mat-standard-button-toggle-selected-state-text-color: var(--qt-surface);
-  --mat-standard-button-toggle-selected-state-background-color: var(--qt-primary-strong);
 }
 
 mat-button-toggle-group ::ng-deep .mat-button-toggle {
@@ -235,10 +226,6 @@ mat-button-toggle-group ::ng-deep .mat-button-toggle:has(.mat-button-toggle-butt
 }
 
 mat-checkbox {
-  --mdc-checkbox-selected-icon-color: var(--qt-primary-strong);
-  --mdc-checkbox-selected-hover-icon-color: var(--qt-primary-strong);
-  --mdc-checkbox-selected-focus-icon-color: var(--qt-primary-strong);
-  --mdc-checkbox-selected-pressed-icon-color: var(--qt-primary-strong);
   --mat-checkbox-label-text-color: var(--qt-text);
 }
 
@@ -363,7 +350,6 @@ p[role='status'] {
   background: var(--qt-neutral-surface);
   color: var(--qt-neutral-text);
 }
-
 
 @media (max-width: 760px) {
   .operations-page {

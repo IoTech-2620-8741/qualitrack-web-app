@@ -13,9 +13,6 @@
 }
 
 .auth-section .auth-main-btn {
-  --mdc-filled-button-container-color: var(--qt-primary-strong);
-  --mdc-filled-button-label-text-color: var(--qt-surface);
-  --mdc-filled-button-container-shape: 999px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -69,9 +66,6 @@
 }
 
 .auth-section .btn-role {
-  --mdc-outlined-button-outline-color: var(--qt-border);
-  --mdc-outlined-button-label-text-color: var(--qt-text);
-  --mdc-outlined-button-container-shape: 999px;
   flex: 1;
   min-height: 48px;
   padding: 8px 24px;

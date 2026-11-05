@@ -50,10 +50,6 @@
   font-weight: 600;
   white-space: nowrap;
   transition: background-color 0.2s ease;
-  --mdc-filled-button-container-color: var(--qt-primary-strong);
-  --mdc-filled-button-label-text-color: var(--qt-surface);
-  --mdc-filled-button-disabled-container-color: var(--qt-border);
-  --mdc-filled-button-disabled-label-text-color: var(--qt-neutral-text);
 }
 
 .dialog-actions button[mat-flat-button]:hover:not(:disabled) {
@@ -63,7 +59,6 @@
 .dialog-actions button[mat-icon-button] {
   color: var(--qt-text-muted);
   transition: background-color 0.2s ease, color 0.2s ease;
-  --mdc-icon-button-icon-color: var(--qt-text-muted);
 }
 
 .dialog-actions button[mat-icon-button]:hover:not(:disabled) {

@@ -126,7 +126,6 @@ tr.mat-mdc-row:last-child td.mat-mdc-cell {
   display: flex;
   justify-content: center;
   padding: 32px 0;
-  --mdc-circular-progress-active-indicator-color: var(--qt-primary);
 }
 
 @media (max-width: 760px) {

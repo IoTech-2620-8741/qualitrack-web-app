@@ -80,25 +80,15 @@ a {
 button[mat-stroked-button] {
   border-color: var(--qt-border);
   color: var(--qt-text);
-  --mdc-outlined-button-outline-color: var(--qt-border);
-  --mdc-outlined-button-label-text-color: var(--qt-text);
-  --mdc-outlined-button-disabled-outline-color: var(--qt-border);
-  --mdc-outlined-button-disabled-label-text-color: var(--qt-neutral-text);
 }
 
 button[mat-stroked-button][aria-pressed='true'] {
   background: var(--qt-primary-surface);
   border-color: var(--qt-primary);
   color: var(--qt-primary-strong);
-  --mdc-outlined-button-outline-color: var(--qt-primary);
-  --mdc-outlined-button-label-text-color: var(--qt-primary-strong);
 }
 
 .primary-btn {
-  --mdc-filled-button-container-color: var(--qt-primary-strong);
-  --mdc-filled-button-label-text-color: var(--qt-surface);
-  --mdc-filled-button-disabled-container-color: var(--qt-border);
-  --mdc-filled-button-disabled-label-text-color: var(--qt-neutral-text);
   background: var(--qt-primary-strong);
   color: var(--qt-surface);
 }
@@ -259,12 +249,6 @@ mat-icon[matPrefix] {
 }
 
 mat-checkbox {
-  --mdc-checkbox-selected-icon-color: var(--qt-primary-strong);
-  --mdc-checkbox-selected-hover-icon-color: var(--qt-primary-strong);
-  --mdc-checkbox-selected-focus-icon-color: var(--qt-primary-strong);
-  --mdc-checkbox-selected-pressed-icon-color: var(--qt-primary-strong);
-  --mdc-checkbox-selected-checkmark-color: var(--qt-surface);
-  --mdc-checkbox-unselected-icon-color: var(--qt-text-muted);
   --mat-checkbox-label-text-color: var(--qt-text);
 }
 

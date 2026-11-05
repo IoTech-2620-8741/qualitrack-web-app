@@ -50,8 +50,6 @@ mat-progress-bar {
   margin-bottom: 16px;
   border-radius: 999px;
   overflow: hidden;
-  --mdc-linear-progress-active-indicator-color: var(--qt-primary);
-  --mdc-linear-progress-track-color: var(--qt-border);
 }
 
 .page-heading {
@@ -173,14 +171,6 @@ mat-tab-group {
   border: 1px solid var(--qt-border);
   border-radius: 12px;
   box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
-  --mdc-tab-indicator-active-indicator-color: var(--qt-primary);
-  --mat-tab-header-active-label-text-color: var(--qt-primary-strong);
-  --mat-tab-header-active-focus-label-text-color: var(--qt-primary-strong);
-  --mat-tab-header-active-hover-label-text-color: var(--qt-primary-strong);
-  --mat-tab-header-active-ripple-color: var(--qt-primary);
-  --mat-tab-header-inactive-label-text-color: var(--qt-text-muted);
-  --mat-tab-header-inactive-ripple-color: var(--qt-primary);
-  --mat-tab-header-divider-color: var(--qt-border);
 }
 
 .tab-icon {
@@ -214,7 +204,6 @@ mat-tab-group {
   border: 1px solid var(--qt-border);
   border-radius: 12px;
   box-shadow: none;
-  --mdc-outlined-card-outline-color: var(--qt-border);
 }
 
 .tab-content mat-card-header {
@@ -301,10 +290,6 @@ mat-form-field {
   font-weight: 600;
   white-space: nowrap;
   text-decoration: none;
-  --mdc-filled-button-container-color: var(--qt-primary-strong);
-  --mdc-filled-button-label-text-color: var(--qt-surface);
-  --mdc-filled-button-disabled-container-color: var(--qt-border);
-  --mdc-filled-button-disabled-label-text-color: var(--qt-neutral-text);
   background: var(--qt-primary-strong);
   color: var(--qt-surface);
 }

@@ -44,8 +44,6 @@ h3 {
   font-size: 14px;
   font-weight: 600;
   white-space: nowrap;
-  --mdc-outlined-button-outline-color: var(--qt-border);
-  --mdc-outlined-button-label-text-color: var(--qt-text);
 }
 
 .chart-header button:focus-visible {

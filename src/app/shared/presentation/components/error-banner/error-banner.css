@@ -31,7 +31,6 @@
   flex-shrink: 0;
   margin: -8px -8px -8px 0;
   color: var(--qt-error-text);
-  --mdc-icon-button-icon-color: var(--qt-error-text);
   transition: background-color 0.2s ease;
 }
 

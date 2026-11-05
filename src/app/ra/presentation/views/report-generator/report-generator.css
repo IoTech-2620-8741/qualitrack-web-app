@@ -88,7 +88,6 @@
   flex-shrink: 0;
   margin: -8px -8px -8px 0;
   color: var(--qt-success-text);
-  --mdc-icon-button-icon-color: var(--qt-success-text);
   transition: background-color 0.2s ease;
 }
 
@@ -112,7 +111,6 @@
   justify-content: center;
   background: rgba(255, 255, 255, 0.72);
   border-radius: 12px;
-  --mdc-circular-progress-active-indicator-color: var(--qt-primary);
 }
 
 .loading-overlay p {

@@ -134,12 +134,6 @@ mat-button-toggle-group {
   background: var(--qt-surface);
   border: 1px solid var(--qt-border);
   border-radius: 999px;
-  --mat-standard-button-toggle-shape: 999px;
-  --mat-standard-button-toggle-text-color: var(--qt-text-muted);
-  --mat-standard-button-toggle-background-color: transparent;
-  --mat-standard-button-toggle-selected-state-text-color: var(--qt-surface);
-  --mat-standard-button-toggle-selected-state-background-color: var(--qt-primary-strong);
-  --mat-standard-button-toggle-divider-color: transparent;
 }
 
 mat-button-toggle-group ::ng-deep .mat-button-toggle {
@@ -185,7 +179,6 @@ mat-button-toggle-group ::ng-deep .mat-button-toggle-button:focus-visible {
   display: flex;
   justify-content: center;
   padding: 48px 0;
-  --mdc-circular-progress-active-indicator-color: var(--qt-primary);
 }
 
 .error {
@@ -243,8 +236,6 @@ mat-button-toggle-group ::ng-deep .mat-button-toggle-button:focus-visible {
   font-size: 14px;
   font-weight: 600;
   white-space: normal;
-  --mdc-outlined-button-outline-color: var(--qt-border);
-  --mdc-outlined-button-label-text-color: var(--qt-text);
 }
 
 .empty-state button:focus-visible {

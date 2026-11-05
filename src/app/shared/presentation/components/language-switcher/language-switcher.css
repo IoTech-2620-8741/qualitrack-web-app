@@ -10,13 +10,6 @@ mat-button-toggle-group {
   border-radius: 999px;
   background: var(--qt-surface);
   overflow: visible;
-  --mat-standard-button-toggle-height: 44px;
-  --mat-standard-button-toggle-shape: 999px;
-  --mat-standard-button-toggle-divider-color: transparent;
-  --mat-standard-button-toggle-text-color: var(--qt-text-muted);
-  --mat-standard-button-toggle-background-color: transparent;
-  --mat-standard-button-toggle-selected-state-text-color: var(--qt-surface);
-  --mat-standard-button-toggle-selected-state-background-color: var(--qt-primary-strong);
 }
 
 mat-button-toggle-group ::ng-deep .mat-button-toggle {

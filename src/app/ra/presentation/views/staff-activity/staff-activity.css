@@ -215,7 +215,6 @@ a:not(.back-link):focus-visible {
   display: flex;
   justify-content: center;
   padding: 48px 0;
-  --mdc-circular-progress-active-indicator-color: var(--qt-primary);
 }
 
 .error {

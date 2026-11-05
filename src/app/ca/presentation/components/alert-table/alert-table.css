@@ -136,7 +136,6 @@
   font-size: 14px;
   font-weight: 600;
   text-decoration: none;
-  --mdc-text-button-label-text-color: var(--qt-primary-strong);
   transition: background-color 0.2s ease;
 }
 

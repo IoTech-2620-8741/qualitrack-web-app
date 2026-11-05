@@ -72,8 +72,6 @@ a {
   font-size: 14px;
   font-weight: 600;
   white-space: nowrap;
-  --mdc-outlined-button-outline-color: var(--qt-border);
-  --mdc-outlined-button-label-text-color: var(--qt-text);
 }
 
 .actions button:focus-visible,
@@ -168,8 +166,6 @@ input {
   font-size: 14px;
   font-weight: 600;
   white-space: nowrap;
-  --mdc-outlined-button-outline-color: var(--qt-border);
-  --mdc-outlined-button-label-text-color: var(--qt-text);
 }
 
 .loading {
@@ -178,7 +174,6 @@ input {
   justify-content: center;
   width: 100%;
   min-height: 300px;
-  --mdc-circular-progress-active-indicator-color: var(--qt-primary);
 }
 
 .empty-state {

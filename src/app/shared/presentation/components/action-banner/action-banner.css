@@ -48,8 +48,6 @@ button {
   white-space: nowrap;
   --mat-button-outlined-label-text-color: currentColor;
   --mat-button-outlined-outline-color: currentColor;
-  --mdc-outlined-button-label-text-color: currentColor;
-  --mdc-outlined-button-outline-color: currentColor;
 }
 
 button:focus-visible {

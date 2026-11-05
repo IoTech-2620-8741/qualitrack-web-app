@@ -8,8 +8,6 @@
   border: 1px solid var(--qt-border);
   border-radius: 12px;
   box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
-  --mdc-elevated-card-container-color: var(--qt-surface);
-  --mdc-elevated-card-container-shape: 12px;
 }
 
 mat-card-content.filter-content {
@@ -62,17 +60,9 @@ mat-icon[matSuffix] {
 .filter-actions button[mat-stroked-button] {
   border-color: var(--qt-border);
   color: var(--qt-text);
-  --mdc-outlined-button-outline-color: var(--qt-border);
-  --mdc-outlined-button-label-text-color: var(--qt-text);
-  --mdc-outlined-button-disabled-outline-color: var(--qt-border);
-  --mdc-outlined-button-disabled-label-text-color: var(--qt-neutral-text);
 }
 
 .primary-btn {
-  --mdc-filled-button-container-color: var(--qt-primary-strong);
-  --mdc-filled-button-label-text-color: var(--qt-surface);
-  --mdc-filled-button-disabled-container-color: var(--qt-border);
-  --mdc-filled-button-disabled-label-text-color: var(--qt-neutral-text);
   background: var(--qt-primary-strong);
   color: var(--qt-surface);
   transition: background-color 0.2s ease;

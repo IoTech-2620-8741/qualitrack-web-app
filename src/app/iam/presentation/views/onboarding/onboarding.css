@@ -17,7 +17,6 @@
 }
 
 mat-spinner {
-  --mdc-circular-progress-active-indicator-color: var(--qt-primary);
   margin: auto;
 }
 

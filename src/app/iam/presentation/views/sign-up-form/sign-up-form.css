@@ -156,14 +156,6 @@
   line-height: 1.5;
 }
 
-.account-line {
-  margin: 0 0 20px;
-  color: var(--qt-text);
-  font-size: 14px;
-  line-height: 1.6;
-  overflow-wrap: anywhere;
-}
-
 .alert-error,
 .alert-success {
   margin-bottom: 20px;
@@ -179,12 +171,6 @@
   background: var(--qt-error-surface);
   border-color: var(--qt-error);
   color: var(--qt-error-text);
-}
-
-.alert-success {
-  background: var(--qt-success-surface);
-  border-color: var(--qt-success);
-  color: var(--qt-success-text);
 }
 
 .btn-primary {
@@ -220,19 +206,6 @@
   cursor: not-allowed;
 }
 
-mat-spinner {
-  --mdc-circular-progress-active-indicator-color: var(--qt-neutral-text);
-}
-
-.forgot-password {
-  display: inline-block;
-  margin-top: 10px;
-  color: var(--qt-primary-strong);
-  font-size: 14px;
-  font-weight: 500;
-  text-decoration: none;
-}
-
 .forgot-password:hover,
 .footer-link a:hover {
   text-decoration: underline;
@@ -244,34 +217,6 @@ mat-spinner {
   outline: 3px solid var(--qt-primary);
   outline-offset: 2px;
   border-radius: 4px;
-}
-
-.secondary-actions {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 12px;
-  margin-top: 16px;
-}
-
-.btn-link {
-  padding: 0;
-  background: none;
-  border: 0;
-  color: var(--qt-primary-strong);
-  cursor: pointer;
-  font: inherit;
-  font-size: 14px;
-  font-weight: 500;
-}
-
-.btn-link:hover:not(:disabled) {
-  text-decoration: underline;
-}
-
-.btn-link:disabled {
-  color: var(--qt-neutral-text);
-  cursor: default;
 }
 
 .footer-link {
@@ -293,12 +238,6 @@ mat-spinner {
   cursor: pointer;
   font-weight: 600;
   text-decoration: none;
-}
-
-.footer-link .staff-hint {
-  margin-top: 12px;
-  font-size: 12px;
-  line-height: 1.5;
 }
 
 @media (max-width: 480px) {

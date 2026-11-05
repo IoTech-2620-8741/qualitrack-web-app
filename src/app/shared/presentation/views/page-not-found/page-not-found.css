@@ -128,8 +128,6 @@
 }
 
 .primary-action {
-  --mdc-filled-button-container-color: var(--qt-primary-strong);
-  --mdc-filled-button-label-text-color: var(--qt-surface);
   background: var(--qt-primary-strong);
   color: var(--qt-surface);
   transition: background-color 0.2s ease;
@@ -142,8 +140,6 @@
 .secondary-action {
   border-color: var(--qt-border);
   color: var(--qt-text);
-  --mdc-outlined-button-outline-color: var(--qt-border);
-  --mdc-outlined-button-label-text-color: var(--qt-text);
 }
 
 .primary-action:focus-visible,

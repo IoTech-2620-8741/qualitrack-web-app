@@ -30,8 +30,6 @@
   border-radius: 12px;
   box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
   transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
-  --mdc-elevated-card-container-color: var(--qt-surface);
-  --mdc-elevated-card-container-shape: 12px;
 }
 
 .record-link-wrapper:hover .record-card,

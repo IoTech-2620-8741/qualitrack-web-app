@@ -185,13 +185,6 @@ meter.IN_PROGRESS::-moz-meter-bar {
   font-size: 12px;
 }
 
-.record-main small,
-.record-status small {
-  margin-top: 4px;
-  color: var(--qt-text-muted);
-  font-size: 12px;
-}
-
 /* --------------------------------------------------------------------------
    Empty state
    -------------------------------------------------------------------------- */

@@ -105,8 +105,6 @@ h1 mat-icon {
 }
 
 .actions a[mat-flat-button] {
-  --mdc-filled-button-container-color: var(--qt-primary-strong);
-  --mdc-filled-button-label-text-color: var(--qt-surface);
   background: var(--qt-primary-strong);
   color: var(--qt-surface);
 }
