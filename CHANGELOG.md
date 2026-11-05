@@ -53,6 +53,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Shared (shared): the application stays in Roboto instead of falling back to the font of the system (#82).
 
+- Shared (shared): the browser tab no longer keeps the title of the previous page. Every page has a title in the language of the application, in the format `Page - QualiTrack` (#83).
+
 ## [2.2.0] - 2026-11-04
 
 ### Added

@@ -4,7 +4,7 @@ import {
   provideBrowserGlobalErrorListeners,
   provideZoneChangeDetection,
 } from '@angular/core';
-import { provideRouter } from '@angular/router';
+import { provideRouter, TitleStrategy } from '@angular/router';
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
 import { provideTranslateService } from '@ngx-translate/core';
 import { provideTranslateHttpLoader } from '@ngx-translate/http-loader';
@@ -13,12 +13,14 @@ import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
 import { authenticationInterceptor } from './iam/infrastructure/iam-interceptor';
 import { IamStore } from './iam/application/iam.store';
 import { SIGNED_IN } from './shared/presentation/tokens/signed-in.token';
+import { TranslatedTitleStrategy } from './shared/presentation/utils/translated-title-strategy';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
+    { provide: TitleStrategy, useClass: TranslatedTitleStrategy },
     provideHttpClient(withFetch(), withInterceptors([authenticationInterceptor])),
     provideTranslateService({
       loader: provideTranslateHttpLoader({ prefix: './i18n/', suffix: '.json' }),

@@ -45,15 +45,15 @@ const batch = `${product}/batches/:batchId`;
  * @author Qualitrack
  */
 export const batchRoutes: Routes = [
-  { path: '', loadComponent: batchList, pathMatch: 'full' },
-  { path: 'environments', loadComponent: batchHome, pathMatch: 'full' },
-  { path: 'environments/:environmentId/products', loadComponent: productCatalog },
-  { path: 'environments/:environmentId/products/new', loadComponent: productForm },
-  { path: product, loadComponent: productDetail },
-  { path: `${product}/batches/new`, loadComponent: batchForm, canActivate: [operatorGuard] },
-  { path: batch, loadComponent: batchDetail },
-  { path: `${batch}/release`, loadComponent: batchReleaseForm },
-  { path: `${batch}/reject`, loadComponent: batchRejectForm },
+  { path: '', loadComponent: batchList, pathMatch: 'full', title: 'page-titles.batch-list' },
+  { path: 'environments', loadComponent: batchHome, pathMatch: 'full', title: 'page-titles.product-catalog' },
+  { path: 'environments/:environmentId/products', loadComponent: productCatalog, title: 'page-titles.product-catalog' },
+  { path: 'environments/:environmentId/products/new', loadComponent: productForm, title: 'page-titles.product-new' },
+  { path: product, loadComponent: productDetail, title: 'page-titles.product-detail' },
+  { path: `${product}/batches/new`, loadComponent: batchForm, canActivate: [operatorGuard], title: 'page-titles.batch-new' },
+  { path: batch, loadComponent: batchDetail, title: 'page-titles.batch-detail' },
+  { path: `${batch}/release`, loadComponent: batchReleaseForm, title: 'page-titles.batch-release' },
+  { path: `${batch}/reject`, loadComponent: batchRejectForm, title: 'page-titles.batch-reject' },
   // View-named paths used before semantic routes.
   { path: 'batch-list', redirectTo: '/batches', pathMatch: 'full' },
   { path: 'batch-form', redirectTo: '/batches/environments', pathMatch: 'full' },
@@ -61,5 +61,5 @@ export const batchRoutes: Routes = [
   { path: 'batch-release-form/:id', redirectTo: '/batches/:id' },
   { path: 'batch-reject-form/:id', redirectTo: '/batches/:id' },
   // Links that only know the batch id (dashboard, inventory, reports) are resolved to the full path.
-  { path: ':batchId', loadComponent: batchRedirect },
+  { path: ':batchId', loadComponent: batchRedirect, title: 'page-titles.batch-detail' },
 ];
