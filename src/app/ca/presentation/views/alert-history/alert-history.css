@@ -318,6 +318,12 @@ mat-icon[matPrefix] {
   }
 }
 
+@media (max-width: 480px) {
+  .operations-page a[mat-stroked-button] {
+    white-space: normal;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   * {
     transition: none !important;
