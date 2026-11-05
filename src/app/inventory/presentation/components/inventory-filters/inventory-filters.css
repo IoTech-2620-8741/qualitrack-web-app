@@ -1,0 +1,30 @@
+
+:host {
+  display: block;
+  min-width: 0;
+}
+
+.filters {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: 20px 0;
+}
+
+.filters mat-form-field {
+  flex: 1;
+  max-width: 440px;
+  min-width: 0;
+}
+
+@media (max-width: 760px) {
+  .filters {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .filters mat-form-field {
+    max-width: none;
+  }
+}
