@@ -10,6 +10,8 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { InventoryStore } from '../../../application/inventory.store';
 import { DateOnlyPipe } from '../../../../shared/presentation/pipes/date-only.pipe';
 import { DateTimePipe } from '../../../../shared/presentation/pipes/date-time.pipe';
+import { LegacyMaterialSummary } from '../../components/legacy-material-summary/legacy-material-summary';
+
 
 /**
  * Component that shows a raw material and the history of its usages in production batches.
@@ -21,7 +23,7 @@ import { DateTimePipe } from '../../../../shared/presentation/pipes/date-time.pi
 @Component({
   selector: 'app-legacy-material-detail',
   standalone: true,
-  imports: [DateOnlyPipe, DateTimePipe, 
+  imports: [DateOnlyPipe, DateTimePipe,
     CommonModule,
     RouterLink,
     TranslatePipe,
@@ -29,6 +31,7 @@ import { DateTimePipe } from '../../../../shared/presentation/pipes/date-time.pi
     MatIconModule,
     MatProgressSpinnerModule,
     MatTooltipModule,
+    LegacyMaterialSummary
   ],
   templateUrl: './legacy-material-detail.html',
   changeDetection: ChangeDetectionStrategy.Eager,
