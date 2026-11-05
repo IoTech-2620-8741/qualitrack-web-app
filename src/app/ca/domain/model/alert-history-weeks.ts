@@ -1,3 +1,4 @@
+import { DAY_IN_MILLISECONDS, LABORATORY_OFFSET_IN_MILLISECONDS } from './alert-history-filter';
 import { AlertSeverity, DeviationAlert } from './deviation-alert.entity';
 
 /** Alerts that started in one week, for one bar of the weekly chart of the history. */
@@ -8,11 +9,8 @@ export interface AlertWeek {
   bySeverity: Record<AlertSeverity, number>;
 }
 
-/** Milliseconds in one day. */
-const DAY_IN_MILLISECONDS = 24 * 60 * 60 * 1000;
-
-/** Distance from UTC to the time of Peru, where the laboratories operate (it has no daylight saving time). */
-const LABORATORY_OFFSET_IN_MILLISECONDS = -5 * 60 * 60 * 1000;
+/** Longest period drawn whole, about two years; a longer one starts at its oldest alert. */
+const LONGEST_WHOLE_PERIOD = 104 * 7 * DAY_IN_MILLISECONDS;
 
 /**
  * Monday that opens the week of a moment, in Peru.
@@ -35,14 +33,19 @@ function weekStartOf(moment: number): number {
  * @returns One week per bar, the oldest first, including the weeks without alerts
  *
  * @remarks
- * Weeks start on Monday in Peru. The weeks without alerts are kept so that the chart shows the gaps.
+ * Weeks start on Monday in Peru. The weeks without alerts are kept so that the chart shows the gaps, except before the
+ * oldest alert of a period longer than about two years: while a person types a date, the browser goes through years
+ * such as 0202, which would be thousands of empty weeks.
  */
 export function countAlertsByWeek(
   alerts: readonly DeviationAlert[],
   since: number | null,
   until: number,
 ): AlertWeek[] {
-  const first = since ?? Math.min(...alerts.map((alert) => Date.parse(alert.timestamp)));
+  const first =
+    since !== null && until - since <= LONGEST_WHOLE_PERIOD
+      ? since
+      : alerts.reduce((oldest, alert) => Math.min(oldest, Date.parse(alert.timestamp)), Infinity);
   if (!Number.isFinite(first) || first > until) return [];
 
   const weeks = new Map<number, AlertWeek>();

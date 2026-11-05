@@ -124,6 +124,37 @@ describe('AlertHistory', () => {
     expect(href).toBe('/reports/new?type=compliance&environmentId=2&from=2026-09-01&to=2026-09-30');
   });
 
+  it('says that the report does not follow the chips or the search, only when they narrow the table', async () => {
+    store.alerts.set([alertOf(1, 'CRITICAL'), alertOf(2)]);
+    const note = (page: HTMLElement) => page.querySelector('.export-note');
+
+    expect(note(await open('/alerts/history?period=30'))).toBeNull();
+    TestBed.resetTestingModule();
+    expect(note(await open('/alerts/history?severity=CRITICAL'))?.textContent).toContain('ca-alerts.history.export-note');
+    TestBed.resetTestingModule();
+    expect(note(await open('/alerts/history?q=sala'))).not.toBeNull();
+  });
+
+  it('does not leave a step in the browser history for each digit of a date being typed', async () => {
+    store.alerts.set([alertOf(1)]);
+    const page = await open('/alerts/history?period=custom');
+    const navigate = vi.spyOn(TestBed.inject(Router), 'navigate');
+
+    const from = page.querySelector<HTMLInputElement>('input[type=date]')!;
+    from.value = '0202-10-01';
+    from.dispatchEvent(new Event('change'));
+    await harness.fixture.whenStable();
+
+    expect(currentUrl()).toBe('/alerts/history?period=custom&from=0202-10-01');
+    expect(navigate.mock.calls[0][1]?.replaceUrl).toBe(true);
+  });
+
+  it('opens with the other filters when a day of the address does not exist', async () => {
+    store.alerts.set([alertOf(1)]);
+
+    expect(rowsOf(await open('/alerts/history?period=custom&to=2026-13-45'))).toBe(1);
+  });
+
   it('shows only the alerts of the chips in the address, and tells how many each chip leaves', async () => {
     store.alerts.set([alertOf(1, 'CRITICAL'), alertOf(2), alertOf(3)]);
 

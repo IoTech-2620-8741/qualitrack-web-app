@@ -161,6 +161,12 @@ mat-icon[matPrefix] {
   color: var(--qt-text-muted);
 }
 
+.export-note {
+  color: var(--qt-text-muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
 .custom-period {
   display: flex;
   flex-wrap: wrap;

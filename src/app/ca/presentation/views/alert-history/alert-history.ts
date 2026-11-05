@@ -143,15 +143,19 @@ export class AlertHistory implements OnInit {
     this.queryParams() ? filterFromQuery(this.queryParams()!) : DEFAULT_ALERT_HISTORY_FILTER,
   );
 
-  /** Whether anything other than the default period narrows the list. */
-  protected readonly isFiltered = computed(() => {
+  /** Whether a chip or the search narrows the table, which the exported report does not follow. */
+  protected readonly narrowsTable = computed(() => {
     const filter = this.filter();
     return (
-      filter.period !== DEFAULT_ALERT_HISTORY_FILTER.period ||
       filter.severities.length + filter.statuses.length + filter.origins.length > 0 ||
       filter.search.trim() !== ''
     );
   });
+
+  /** Whether anything other than the default period narrows the list. */
+  protected readonly isFiltered = computed(
+    () => this.filter().period !== DEFAULT_ALERT_HISTORY_FILTER.period || this.narrowsTable(),
+  );
 
   /** Alerts that pass the filter, the latest first. */
   protected readonly shownAlerts = computed(() =>
@@ -186,10 +190,15 @@ export class AlertHistory implements OnInit {
     return this.shownAlerts().slice(start, start + ALERT_HISTORY_PAGE_SIZE);
   });
 
-  /** Positions of the first and last alert of the page, from 1, for the text under the table. */
+  /** Positions of the first and last alert of the page, from 1, and the size of a page, for the text under the table. */
   protected readonly pageRange = computed(() => {
     const first = (this.page() - 1) * ALERT_HISTORY_PAGE_SIZE + 1;
-    return { first, last: first + this.pageAlerts().length - 1, total: this.shownAlerts().length };
+    return {
+      first,
+      last: first + this.pageAlerts().length - 1,
+      total: this.shownAlerts().length,
+      size: ALERT_HISTORY_PAGE_SIZE,
+    };
   });
 
   /** Codes of the environments that could not be read, for the warning that says so. */
@@ -262,9 +271,12 @@ export class AlertHistory implements OnInit {
    *
    * @param limit - Which day changes
    * @param day - The day, as `YYYY-MM-DD`, or an empty text to remove it
+   *
+   * @remarks
+   * The browser reports a date with every digit of its year, and those are not steps to go back through.
    */
   protected chooseDay(limit: 'from' | 'to', day: string): void {
-    this.changeFilter({ [limit]: day || null });
+    this.changeFilter({ [limit]: day || null }, true);
   }
 
   protected toggleSeverity(severity: AlertSeverity): void {

@@ -18,6 +18,7 @@ package "shared" {
   class ActionBanner <<component>>
   class EmptyState <<component>>
   class ErrorBanner <<component>>
+  class FilterChip <<component>>
   class SidePanel <<component>>
   class StatFilterCard <<component>>
   class StatusChip <<component>>
@@ -58,6 +59,9 @@ package "ca.domain.model" {
     +name: string
   }
   class "compareAlertsByPriority() / compareAlertsByNewest()" as AlertOrder <<functions>>
+  class "filterAlertHistory() / isInPeriod() / periodRangeOf() / matchesChips() / matchesSearch()" as AlertHistoryFilter <<functions>>
+  class "summarizeAlertHistory() / attentionTime() / resolutionTime()" as AlertHistoryMetrics <<functions>>
+  class "countAlertsByWeek()" as AlertHistoryWeeks <<functions>>
   class DeviationAlert {
     +id: number
     +laboratoryId: number | null
@@ -177,6 +181,7 @@ package "ca.application" {
     +unavailableEnvironmentIds / alertsUpdatedAt / newAlertIds / refreshing
     +selectedAlertLoading
     +loadOpenAlerts(environmentId: number | null): void
+    +loadAlertHistory(environmentId: number | null): void
     +refreshOpenAlerts(environmentId: number | null): void
     +startAttention(alertId: number): void
     +confirmAttention(alertId: number): void
@@ -353,9 +358,23 @@ package "ca.presentation" {
 
   class AlertTable <<component>> {
     +alerts: input<DeviationAlert[]>
-    +emptyKey: input<string>
-    #variable(parameterName): string
+    +now: input<Date>
+    #variableOf(alert): string
+    #resolvedByOf(alert): string | null
+    #initialsOf(name): string
   }
+
+  class AlertHistoryCards <<component>> {
+    +alerts: input<readonly DeviationAlert[]>
+    #summary
+  }
+
+  class AlertWeekChart <<component>> {
+    +weeks: input<readonly AlertWeek[]>
+    #days / data / options
+  }
+
+  class "filterFromQuery() / queryFromFilter() / reportQueryOf()" as AlertHistoryQuery <<functions>>
 
   class AlertDashboard {
     #environmentId: Signal<number | null>
@@ -391,12 +410,22 @@ package "ca.presentation" {
 
   class AlertHistory {
     #environmentId: Signal<number | null>
-    #chosenEnvironmentId: Signal<number | null>
-    #status
-    #severity
-    #changeEnvironment(environmentId): void
-    #search(): void
+    #filter: Signal<AlertHistoryFilter>
+    #shownAlerts / pageAlerts / page / pageCount
+    #weeks / reportQuery / narrowsTable / isFiltered
+    #detailOpen
+    #load(): void
+    #chooseEnvironment(environmentId): void
+    #chooseAllEnvironments(): void
+    #choosePeriod(period): void
+    #chooseDay(limit, day): void
+    #toggleSeverity(severity): void
+    #toggleStatus(status): void
+    #toggleOrigin(origin): void
+    #search(search): void
     #clearFilters(): void
+    #goToPage(page): void
+    #countWith(changes): number
   }
 
   class AlertDetailPanel {
@@ -552,7 +581,22 @@ AlertHistory *-- AlertsPageHeader
 AlertHistory --> CaStore
 AlertHistory ..> EnvironmentSelector
 AlertHistory *-- AlertTable
+AlertHistory *-- AlertHistoryCards
+AlertHistory *-- AlertWeekChart
+AlertHistory ..> FilterChip
+AlertHistory ..> AlertHistoryQuery
+AlertHistory ..> AlertHistoryFilter
+AlertHistory ..> AlertHistoryWeeks
+AlertHistoryQuery ..> AlertHistoryFilter
+AlertHistoryWeeks ..> AlertHistoryFilter
+AlertHistoryCards ..> AlertHistoryMetrics
+AlertWeekChart ..> AlertHistoryWeeks
 AlertTable --> CaStore
+note bottom of AlertHistory
+  Every alert of one environment or of the whole laboratory, read once and filtered in the
+  browser so each chip can tell its count. The environment, the filter and the page live in
+  the address. "Export report" opens /reports/new with the period and the environment only.
+end note
 
 AlertDetailPanel --> CaStore
 AlertDetailPanel --> AlertAttentionFlow
@@ -595,6 +639,7 @@ CaRoutes ..> AlertHistory
 CaRoutes ..> AlertDetailPanel
 note bottom of CaRoutes
   /alerts (active), /alerts/history and /alerts/:alertId, a child of the inbox;
+  /alerts/history/:alertId opens the same detail over the history;
   deviation-detail/:id, which the e-mails link to, redirects.
   /alerts/notification-settings loads NotificationSettings.
 end note

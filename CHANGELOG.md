@@ -17,6 +17,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Compliance & Alerts (ca): the alert history says that "Export report" covers the whole period and environment when a chip or the search narrows the table (#90).
+
 - Subscription (subscription): the root routes compose the guard of the plan link and the plan switch notice, so `iam` and `ra` no longer import `subscription`; a plan link is remembered on every IAM page (#89).
 
 - Inventory (inventory): the raw material, catalogue and legacy views are split into 14 components that receive their data and report what the user asks for (#88).
@@ -72,6 +74,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Inventory (inventory): the "Changes saved" message stays visible after the reload that follows a change, and opening another environment no longer shows the data of the previous one (#88).
 
 - Inventory (inventory), Product Batch (batch): leaving the inventory home, the product home or a link to a batch while it loads no longer pulls you back to the page it was about to open (#89).
+
+- Compliance & Alerts (ca): typing a date in the custom period of the alert history no longer freezes the page or leaves a step per digit in the browser history, and a day that does not exist in the address no longer breaks the view (#90).
 
 ## [2.2.0] - 2026-11-04
 

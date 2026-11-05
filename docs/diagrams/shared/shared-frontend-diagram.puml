@@ -118,6 +118,10 @@ package "shared" {
     class StatusChip {
       +tone / icon / labelKey
     }
+    class FilterChip {
+      +labelKey / icon / count / pressed
+      +toggled: OutputEmitterRef<void>
+    }
     class StatFilterCard {
       +icon / labelKey / value
       +hintKey / hintParams / pressed

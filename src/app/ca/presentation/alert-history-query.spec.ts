@@ -42,6 +42,18 @@ describe('alert history query', () => {
     expect(filter.severities).toEqual(['LOW']);
   });
 
+  it.each(['2026-13-45', '2026-02-31', '9999-99-99'])('drops the day %s, which does not exist', (day) => {
+    const filter = filterFromQuery(convertToParamMap({ period: 'custom', from: day, to: day }));
+
+    expect(filter.from).toBeNull();
+    expect(filter.to).toBeNull();
+    expect(() => reportQueryOf(filter, null, new Date('2026-10-10T03:00:00Z'))).not.toThrow();
+  });
+
+  it('keeps a year being typed, so the date box is not emptied under the person', () => {
+    expect(filterFromQuery(convertToParamMap({ period: 'custom', from: '0202-10-01' })).from).toBe('0202-10-01');
+  });
+
   it('leaves the default values out of the address', () => {
     expect(queryFromFilter(DEFAULT_ALERT_HISTORY_FILTER)).toEqual({
       period: null,

@@ -145,6 +145,10 @@
               </button>
             }
           </div>
+
+          @if (narrowsTable()) {
+            <p class="export-note">{{ 'ca-alerts.history.export-note' | translate }}</p>
+          }
         </section>
 
         @if (store.loading()) {
