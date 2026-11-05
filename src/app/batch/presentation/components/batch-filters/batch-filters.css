@@ -1,0 +1,106 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+
+.filters {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+mat-form-field {
+  min-width: 0;
+  --mat-form-field-outlined-focus-outline-color: var(--qt-primary);
+  --mat-form-field-outlined-focus-label-text-color: var(--qt-primary-strong);
+  --mat-form-field-focus-select-arrow-color: var(--qt-primary);
+}
+
+.filter-row > mat-form-field {
+  flex: 1 1 180px;
+}
+
+.filter-row > .search {
+  flex: 2 1 260px;
+}
+
+.environment {
+  flex: 1.5 1 260px;
+  min-width: 0;
+}
+
+input {
+  caret-color: var(--qt-primary);
+}
+
+mat-icon[matPrefix] {
+  color: var(--qt-text-muted);
+}
+
+.period {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.period mat-form-field {
+  flex: 0 1 200px;
+}
+
+.clear {
+  height: auto;
+  min-height: 48px;
+  padding: 8px 20px;
+  border-radius: var(--qt-radius-pill);
+  border-color: var(--qt-border);
+  color: var(--qt-text);
+  font-weight: 600;
+}
+
+.clear:focus-visible {
+  outline: 3px solid var(--qt-primary);
+  outline-offset: 2px;
+}
+
+@media (max-width: 760px) {
+  /* Two columns: text, environment, days and the clear button take the whole row */
+  .filter-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-flow: row dense;
+    gap: 10px;
+  }
+
+  .filter-row > mat-form-field,
+  .environment {
+    width: 100%;
+  }
+
+  .filter-row > .search,
+  .environment,
+  .period,
+  .clear {
+    grid-column: 1 / -1;
+  }
+
+  .period {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .period mat-form-field {
+    width: 100%;
+  }
+
+  .clear {
+    width: 100%;
+  }
+}
