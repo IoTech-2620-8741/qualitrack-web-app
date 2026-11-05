@@ -772,7 +772,6 @@
       "open-for": "Open for {{time}}",
       "attention-after": "attended after {{time}}",
       "export": "Export report",
-      "view-short": "View",
       "view": "View the detail of the {{variable}} alert",
       "pages": {
         "label": "Pages of the history",
