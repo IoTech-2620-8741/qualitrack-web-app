@@ -86,8 +86,10 @@
         @if (store.isLoading()) {
           <mat-spinner diameter="20"></mat-spinner>
         } @else {
-          <mat-icon>save</mat-icon>
-          {{ 'common.register' | translate }}
+          <ng-container>
+            <mat-icon>save</mat-icon>
+            {{ 'common.register' | translate }}
+          </ng-container>
         }
       </button>
     </div>
