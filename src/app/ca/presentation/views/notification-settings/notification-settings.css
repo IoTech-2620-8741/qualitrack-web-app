@@ -2,8 +2,8 @@
   display: block;
   min-width: 0;
   min-height: 100%;
-  background: #f3f4f6;
-  color: #0f172a;
+  background: var(--qt-background);
+  color: var(--qt-text);
 }
 
 .operations-page {
@@ -24,7 +24,7 @@ a {
   align-items: center;
   gap: 6px;
   margin-bottom: 16px;
-  color: #0f766e;
+  color: var(--qt-primary-strong);
   font-size: 14px;
   font-weight: 500;
   text-decoration: none;
@@ -40,7 +40,7 @@ a {
 }
 
 .operations-page > a:focus-visible {
-  outline: 3px solid #0d9488;
+  outline: 3px solid var(--qt-primary);
   outline-offset: 2px;
   border-radius: 4px;
 }
@@ -56,14 +56,14 @@ a {
 
 h1 {
   margin: 0;
-  color: #1a3a5c;
+  color: var(--qt-heading);
   font-size: 28px;
   font-weight: 700;
 }
 
 .muted {
   margin: 8px 0 0;
-  color: #64748b;
+  color: var(--qt-text-muted);
   font-size: 14px;
   line-height: 1.6;
 }
@@ -71,8 +71,8 @@ h1 {
 .settings-card {
   max-width: 720px;
   padding: 24px;
-  background: #fff;
-  border: 1px solid #e2e8f0;
+  background: var(--qt-surface);
+  border: 1px solid var(--qt-border);
   border-radius: 12px;
   box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
 }

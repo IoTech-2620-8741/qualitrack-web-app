@@ -6,17 +6,17 @@ mat-button-toggle-group {
   display: inline-flex;
   gap: 4px;
   padding: 4px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--qt-border);
   border-radius: 999px;
-  background: #fff;
+  background: var(--qt-surface);
   overflow: visible;
   --mat-standard-button-toggle-height: 44px;
   --mat-standard-button-toggle-shape: 999px;
   --mat-standard-button-toggle-divider-color: transparent;
-  --mat-standard-button-toggle-text-color: #64748b;
+  --mat-standard-button-toggle-text-color: var(--qt-text-muted);
   --mat-standard-button-toggle-background-color: transparent;
-  --mat-standard-button-toggle-selected-state-text-color: #fff;
-  --mat-standard-button-toggle-selected-state-background-color: #0f766e;
+  --mat-standard-button-toggle-selected-state-text-color: var(--qt-surface);
+  --mat-standard-button-toggle-selected-state-background-color: var(--qt-primary-strong);
 }
 
 mat-button-toggle-group ::ng-deep .mat-button-toggle {
@@ -24,7 +24,7 @@ mat-button-toggle-group ::ng-deep .mat-button-toggle {
   border: 0;
   border-radius: 999px;
   background: transparent;
-  color: #64748b;
+  color: var(--qt-text-muted);
   font-family: inherit;
 }
 
@@ -40,12 +40,12 @@ mat-button-toggle-group ::ng-deep .mat-button-toggle-label-content {
 }
 
 mat-button-toggle-group ::ng-deep .mat-button-toggle:hover:not(.mat-button-toggle-checked) {
-  background: #f3f4f6;
+  background: var(--qt-background);
 }
 
 mat-button-toggle-group ::ng-deep .mat-button-toggle-checked {
-  background: #0f766e;
-  color: #fff;
+  background: var(--qt-primary-strong);
+  color: var(--qt-surface);
 }
 
 mat-button-toggle-group ::ng-deep .mat-button-toggle-checked .mat-button-toggle-label-content {
@@ -57,7 +57,7 @@ mat-button-toggle-group ::ng-deep .mat-button-toggle-focus-overlay {
 }
 
 mat-button-toggle-group ::ng-deep .mat-button-toggle:has(.mat-button-toggle-button:focus-visible) {
-  outline: 3px solid #0d9488;
+  outline: 3px solid var(--qt-primary);
   outline-offset: 2px;
 }
 

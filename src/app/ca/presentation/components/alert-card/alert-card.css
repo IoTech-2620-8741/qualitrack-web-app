@@ -10,21 +10,21 @@
   gap: 20px 28px;
   min-width: 0;
   padding: 24px;
-  background: #fff;
-  border: 1px solid #e2e8f0;
-  border-left: 4px solid #94a3b8;
-  border-radius: 12px;
+  background: var(--qt-surface);
+  border: 1px solid var(--qt-border);
+  border-left: 4px solid var(--qt-text-subtle);
+  border-radius: var(--qt-radius-medium);
   box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
 }
 
 .alert-card:focus-visible {
-  outline: 3px solid #0d9488;
+  outline: 3px solid var(--qt-primary);
   outline-offset: 2px;
 }
 
-.severity-critical { border-left-color: #f44336; }
-.severity-warning  { border-left-color: #ffc107; }
-.severity-low      { border-left-color: #94a3b8; }
+.severity-critical { border-left-color: var(--qt-error); }
+.severity-warning  { border-left-color: var(--qt-warning); }
+.severity-low      { border-left-color: var(--qt-text-subtle); }
 
 .is-new {
   animation: arrived 3s ease-out;
@@ -32,8 +32,8 @@
 
 @keyframes arrived {
   from {
-    background: #f0fdfa;
-    box-shadow: 0 0 0 2px #0d9488;
+    background: var(--qt-primary-surface);
+    box-shadow: 0 0 0 2px var(--qt-primary);
   }
 }
 
@@ -51,7 +51,7 @@
 
 h2 {
   margin: 12px 0 8px;
-  color: #0f172a;
+  color: var(--qt-text);
   font-size: 18px;
   font-weight: 700;
   line-height: 1.4;
@@ -68,7 +68,7 @@ p {
   flex-wrap: wrap;
   align-items: center;
   gap: 6px 16px;
-  color: #64748b;
+  color: var(--qt-text-muted);
   font-size: 14px;
   line-height: 1.6;
 }
@@ -99,7 +99,7 @@ p {
 }
 
 .value {
-  color: #0f172a;
+  color: var(--qt-text);
   font-size: 24px;
   font-weight: 700;
   line-height: 1.2;
@@ -107,7 +107,7 @@ p {
 }
 
 .limit {
-  color: #64748b;
+  color: var(--qt-text-muted);
   font-size: 14px;
 }
 
@@ -115,7 +115,7 @@ p {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  color: #b71c1c;
+  color: var(--qt-error-text);
   font-size: 14px;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
@@ -130,7 +130,7 @@ p {
 
 .meta {
   padding-top: 12px;
-  border-top: 1px solid #e2e8f0;
+  border-top: 1px solid var(--qt-border);
   font-size: 12px;
   line-height: 1.5;
   font-variant-numeric: tabular-nums;
@@ -154,7 +154,7 @@ p {
   min-height: 40px;
   height: auto;
   padding: 8px 16px;
-  border-radius: 999px;
+  border-radius: var(--qt-radius-pill);
   font-size: 14px;
   font-weight: 600;
   text-decoration: none;
@@ -163,36 +163,36 @@ p {
 }
 
 .actions a[mat-button] {
-  border: 1px solid #e2e8f0;
-  color: #0f172a;
-  --mdc-text-button-label-text-color: #0f172a;
+  border: 1px solid var(--qt-border);
+  color: var(--qt-text);
+  --mdc-text-button-label-text-color: var(--qt-text);
 }
 
 .actions button[mat-stroked-button] {
-  border-color: #e2e8f0;
-  color: #0f172a;
-  --mdc-outlined-button-outline-color: #e2e8f0;
-  --mdc-outlined-button-label-text-color: #0f172a;
-  --mdc-outlined-button-disabled-outline-color: #e2e8f0;
-  --mdc-outlined-button-disabled-label-text-color: #475569;
+  border-color: var(--qt-border);
+  color: var(--qt-text);
+  --mdc-outlined-button-outline-color: var(--qt-border);
+  --mdc-outlined-button-label-text-color: var(--qt-text);
+  --mdc-outlined-button-disabled-outline-color: var(--qt-border);
+  --mdc-outlined-button-disabled-label-text-color: var(--qt-neutral-text);
 }
 
 .primary-btn {
-  --mdc-filled-button-container-color: #0f766e;
-  --mdc-filled-button-label-text-color: #fff;
-  --mdc-filled-button-disabled-container-color: #e2e8f0;
-  --mdc-filled-button-disabled-label-text-color: #475569;
-  background: #0f766e;
-  color: #fff;
+  --mdc-filled-button-container-color: var(--qt-primary-strong);
+  --mdc-filled-button-label-text-color: var(--qt-surface);
+  --mdc-filled-button-disabled-container-color: var(--qt-border);
+  --mdc-filled-button-disabled-label-text-color: var(--qt-neutral-text);
+  background: var(--qt-primary-strong);
+  color: var(--qt-surface);
 }
 
 .primary-btn:hover:not(:disabled) {
-  background: #115e59;
+  background: var(--qt-primary-hover);
 }
 
 .actions a:focus-visible,
 .actions button:focus-visible {
-  outline: 3px solid #0d9488;
+  outline: 3px solid var(--qt-primary);
   outline-offset: 2px;
 }
 
@@ -238,7 +238,7 @@ p {
 
   .is-new {
     animation: none;
-    outline: 2px solid #0d9488;
+    outline: 2px solid var(--qt-primary);
     outline-offset: -2px;
   }
 }

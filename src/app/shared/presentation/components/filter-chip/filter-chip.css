@@ -8,10 +8,10 @@
   gap: 6px;
   min-height: 40px;
   padding: 0 16px;
-  background: #fff;
-  border: 1px solid #e2e8f0;
-  border-radius: 999px;
-  color: #0f172a;
+  background: var(--qt-surface);
+  border: 1px solid var(--qt-border);
+  border-radius: var(--qt-radius-pill);
+  color: var(--qt-text);
   font: inherit;
   font-size: 14px;
   font-weight: 500;
@@ -20,18 +20,18 @@
 }
 
 .filter-chip:hover {
-  background: #f3f4f6;
+  background: var(--qt-background);
 }
 
 .filter-chip:focus-visible {
-  outline: 3px solid #0d9488;
+  outline: 3px solid var(--qt-primary);
   outline-offset: 2px;
 }
 
 .filter-chip.pressed {
-  background: #f0fdfa;
-  border-color: #0d9488;
-  color: #0f766e;
+  background: var(--qt-primary-surface);
+  border-color: var(--qt-primary);
+  color: var(--qt-primary-strong);
   font-weight: 600;
 }
 
@@ -42,7 +42,7 @@ mat-icon {
 }
 
 .count {
-  color: #64748b;
+  color: var(--qt-text-muted);
   font-size: 12px;
   font-variant-numeric: tabular-nums;
 }

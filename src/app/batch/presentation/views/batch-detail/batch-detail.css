@@ -1,15 +1,14 @@
 /* ==========================================================================
    Batch detail view
    Same visual language as the product detail, catalog and billing views.
-   Colors are plain hex values. Only the h1 uses #1a3a5c.
    ========================================================================== */
 
 :host {
   display: block;
   min-width: 0;
   min-height: 100%;
-  background: #f3f4f6;
-  color: #0f172a;
+  background: var(--qt-background);
+  color: var(--qt-text);
 }
 
 /* Same width and padding as the other views, so the title lines up */
@@ -35,7 +34,7 @@ a {
   align-items: center;
   gap: 6px;
   margin-bottom: 16px;
-  color: #0f766e;
+  color: var(--qt-primary-strong);
   font-size: 14px;
   font-weight: 500;
   text-decoration: none;
@@ -51,7 +50,7 @@ a {
 }
 
 .operations-page > a:focus-visible {
-  outline: 3px solid #0d9488;
+  outline: 3px solid var(--qt-primary);
   outline-offset: 2px;
   border-radius: 4px;
 }
@@ -77,14 +76,14 @@ h1 {
   align-items: center;
   gap: 10px;
   margin: 0;
-  color: #1a3a5c;
+  color: var(--qt-heading);
   font-size: 28px;
   font-weight: 700;
 }
 
 h1 mat-icon {
   flex-shrink: 0;
-  color: #0d9488;
+  color: var(--qt-primary);
 }
 
 /* Both action buttons: pill shape, minimum touch target */
@@ -101,28 +100,28 @@ h1 mat-icon {
 
 /* Release: solid teal (AA: white on #0f766e is 5.47:1) */
 .actions a[mat-flat-button] {
-  --mdc-filled-button-container-color: #0f766e;
-  --mdc-filled-button-label-text-color: #fff;
-  background: #0f766e;
-  color: #fff;
+  --mdc-filled-button-container-color: var(--qt-primary-strong);
+  --mdc-filled-button-label-text-color: var(--qt-surface);
+  background: var(--qt-primary-strong);
+  color: var(--qt-surface);
 }
 
 .actions a[mat-flat-button]:hover {
-  background: #115e59;
+  background: var(--qt-primary-hover);
 }
 
 /* Reject: destructive action, outlined red with dark text for contrast */
 .actions a[mat-stroked-button] {
-  color: #b71c1c;
-  border-color: #f44336;
+  color: var(--qt-error-text);
+  border-color: var(--qt-error);
 }
 
 .actions a[mat-stroked-button]:hover {
-  background: #ffebee;
+  background: var(--qt-error-surface);
 }
 
 .actions a:focus-visible {
-  outline: 3px solid #0d9488;
+  outline: 3px solid var(--qt-primary);
   outline-offset: 2px;
 }
 
@@ -142,21 +141,21 @@ h1 mat-icon {
 }
 
 .error {
-  background: #ffebee;
-  border-color: #f44336;
-  color: #b71c1c;
+  background: var(--qt-error-surface);
+  border-color: var(--qt-error);
+  color: var(--qt-error-text);
 }
 
 .success {
-  background: #e8f5e9;
-  border-color: #4caf50;
-  color: #1b5e20;
+  background: var(--qt-success-surface);
+  border-color: var(--qt-success);
+  color: var(--qt-success-text);
 }
 
 .notice {
-  background: #fff8e1;
-  border-color: #ffc107;
-  color: #7a5a00;
+  background: var(--qt-warning-surface);
+  border-color: var(--qt-warning);
+  color: var(--qt-warning-text);
 }
 
 /* --------------------------------------------------------------------------
@@ -168,15 +167,15 @@ h1 mat-icon {
   gap: 16px 40px;
   margin: 0 0 24px;
   padding: 20px 24px;
-  background: #fff;
-  border: 1px solid #e2e8f0;
+  background: var(--qt-surface);
+  border: 1px solid var(--qt-border);
   border-radius: 12px;
   box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
 }
 
 .summary-strip span {
   display: block;
-  color: #64748b;
+  color: var(--qt-text-muted);
   font-size: 12px;
   font-weight: 500;
   text-transform: uppercase;
@@ -185,7 +184,7 @@ h1 mat-icon {
 .summary-strip strong {
   display: block;
   margin-top: 6px;
-  color: #0f172a;
+  color: var(--qt-text);
   font-size: 24px;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
@@ -199,20 +198,20 @@ h1 mat-icon {
   display: inline-block;
   padding: 4px 12px;
   border-radius: 999px;
-  background: #fff8e1;
-  color: #7a5a00;
+  background: var(--qt-warning-surface);
+  color: var(--qt-warning-text);
   font-size: 14px;
   font-weight: 500;
 }
 
 .summary-strip .status.released {
-  background: #e8f5e9;
-  color: #1b5e20;
+  background: var(--qt-success-surface);
+  color: var(--qt-success-text);
 }
 
 .summary-strip .status.rejected {
-  background: #ffebee;
-  color: #b71c1c;
+  background: var(--qt-error-surface);
+  color: var(--qt-error-text);
 }
 
 /* --------------------------------------------------------------------------
@@ -220,18 +219,18 @@ h1 mat-icon {
    -------------------------------------------------------------------------- */
 mat-tab-group {
   overflow: hidden;
-  background: #fff;
-  border: 1px solid #e2e8f0;
+  background: var(--qt-surface);
+  border: 1px solid var(--qt-border);
   border-radius: 12px;
   box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
-  --mdc-tab-indicator-active-indicator-color: #0d9488;
-  --mat-tab-header-active-label-text-color: #0f766e;
-  --mat-tab-header-active-focus-label-text-color: #0f766e;
-  --mat-tab-header-active-hover-label-text-color: #0f766e;
-  --mat-tab-header-active-ripple-color: #0d9488;
-  --mat-tab-header-inactive-label-text-color: #64748b;
-  --mat-tab-header-inactive-ripple-color: #0d9488;
-  --mat-tab-header-divider-color: #e2e8f0;
+  --mdc-tab-indicator-active-indicator-color: var(--qt-primary);
+  --mat-tab-header-active-label-text-color: var(--qt-primary-strong);
+  --mat-tab-header-active-focus-label-text-color: var(--qt-primary-strong);
+  --mat-tab-header-active-hover-label-text-color: var(--qt-primary-strong);
+  --mat-tab-header-active-ripple-color: var(--qt-primary);
+  --mat-tab-header-inactive-label-text-color: var(--qt-text-muted);
+  --mat-tab-header-inactive-ripple-color: var(--qt-primary);
+  --mat-tab-header-divider-color: var(--qt-border);
 }
 
 .tab-content {
@@ -240,14 +239,14 @@ mat-tab-group {
 
 .tab-content h2 {
   margin: 0 0 12px;
-  color: #0f172a;
+  color: var(--qt-text);
   font-size: 20px;
   font-weight: 700;
 }
 
 .tab-content p {
   margin: 0;
-  color: #64748b;
+  color: var(--qt-text-muted);
   font-size: 14px;
   line-height: 1.6;
 }
@@ -256,7 +255,7 @@ mat-tab-group {
 p[role='status']:not(.notice) {
   margin: 0;
   padding: 32px 0;
-  color: #64748b;
+  color: var(--qt-text-muted);
   font-size: 14px;
   text-align: center;
 }

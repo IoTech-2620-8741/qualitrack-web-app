@@ -18,7 +18,7 @@ a.user-identity:hover .user-name {
 }
 
 a.user-identity:focus-visible {
-  outline: 3px solid #0d9488;
+  outline: 3px solid var(--qt-primary);
   outline-offset: 2px;
 }
 
@@ -29,9 +29,9 @@ a.user-identity:focus-visible {
   width: 36px;
   height: 36px;
   overflow: hidden;
-  background: #0f766e;
+  background: var(--qt-primary-strong);
   border-radius: 50%;
-  color: #fff;
+  color: var(--qt-surface);
   font-size: 13px;
   font-weight: 700;
 }
@@ -52,7 +52,7 @@ a.user-identity:focus-visible {
 .user-name {
   max-width: 140px;
   overflow: hidden;
-  color: #0f172a;
+  color: var(--qt-text);
   font-size: 14px;
   font-weight: 700;
   text-overflow: ellipsis;
@@ -62,7 +62,7 @@ a.user-identity:focus-visible {
 .user-role {
   max-width: 140px;
   overflow: hidden;
-  color: #64748b;
+  color: var(--qt-text-muted);
   font-size: 12px;
   font-weight: 500;
   text-overflow: ellipsis;

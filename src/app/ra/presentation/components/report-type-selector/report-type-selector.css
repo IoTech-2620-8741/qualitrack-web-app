@@ -7,7 +7,7 @@
   align-items: center;
   gap: 12px;
   margin: 0 0 16px;
-  color: #0f172a;
+  color: var(--qt-text);
   font-size: 20px;
   font-weight: 700;
   overflow-wrap: anywhere;
@@ -20,9 +20,9 @@
   justify-content: center;
   width: 24px;
   height: 24px;
-  background: #0f766e;
+  background: var(--qt-primary-strong);
   border-radius: 50%;
-  color: #fff;
+  color: var(--qt-surface);
   font-size: 14px;
   font-weight: 600;
 }
@@ -38,8 +38,8 @@
   display: flex;
   gap: 16px;
   padding: 16px;
-  background: #fff;
-  border: 1px solid #e2e8f0;
+  background: var(--qt-surface);
+  border: 1px solid var(--qt-border);
   border-radius: 12px;
   box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
   cursor: pointer;
@@ -48,23 +48,23 @@
 
 .type-card:hover {
   transform: translateY(-2px);
-  border-color: #0d9488;
+  border-color: var(--qt-primary);
   box-shadow: 0 10px 24px rgba(15, 23, 42, 0.12);
 }
 
 .type-card:focus-visible {
-  outline: 3px solid #0d9488;
+  outline: 3px solid var(--qt-primary);
   outline-offset: 2px;
 }
 
 .type-card.active {
-  background: #f0fdfa;
-  border-color: #0d9488;
-  box-shadow: 0 0 0 1px #0d9488;
+  background: var(--qt-primary-surface);
+  border-color: var(--qt-primary);
+  box-shadow: 0 0 0 1px var(--qt-primary);
 }
 
 .type-card.active:hover {
-  box-shadow: 0 0 0 1px #0d9488, 0 10px 24px rgba(15, 23, 42, 0.12);
+  box-shadow: 0 0 0 1px var(--qt-primary), 0 10px 24px rgba(15, 23, 42, 0.12);
 }
 
 .icon-box {
@@ -74,15 +74,15 @@
   justify-content: center;
   width: 40px;
   height: 40px;
-  background: #f0fdfa;
+  background: var(--qt-primary-surface);
   border-radius: 8px;
-  color: #0f766e;
+  color: var(--qt-primary-strong);
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .type-card.active .icon-box {
-  background: #0f766e;
-  color: #fff;
+  background: var(--qt-primary-strong);
+  color: var(--qt-surface);
 }
 
 .text-box {
@@ -93,7 +93,7 @@
 
 .text-box h3 {
   margin: 0 0 4px;
-  color: #0f172a;
+  color: var(--qt-text);
   font-size: 16px;
   font-weight: 600;
   overflow-wrap: anywhere;
@@ -101,14 +101,14 @@
 
 .text-box p {
   margin: 0 0 8px;
-  color: #64748b;
+  color: var(--qt-text-muted);
   font-size: 14px;
   line-height: 1.6;
   overflow-wrap: anywhere;
 }
 
 .formats {
-  color: #64748b;
+  color: var(--qt-text-muted);
   font-size: 12px;
   font-weight: 500;
 }
@@ -119,7 +119,7 @@
   right: 16px;
   width: 20px;
   height: 20px;
-  color: #0f766e;
+  color: var(--qt-primary-strong);
   font-size: 20px;
 }
 

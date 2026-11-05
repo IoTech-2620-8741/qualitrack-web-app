@@ -1,18 +1,17 @@
 /* ==========================================================================
    Dashboard batches section
    The host element is the card, so it matches the rest of the dashboard.
-   Colors are plain hex values.
    ========================================================================== */
 
 :host {
   display: block;
   min-width: 0;
   padding: 24px;
-  background: #fff;
-  border: 1px solid #e2e8f0;
+  background: var(--qt-surface);
+  border: 1px solid var(--qt-border);
   border-radius: 12px;
   box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
-  color: #0f172a;
+  color: var(--qt-text);
 }
 
 .batches-section {
@@ -36,23 +35,23 @@ h2 {
   align-items: center;
   gap: 8px;
   margin: 0;
-  color: #0f172a;
+  color: var(--qt-text);
   font-size: 18px;
   font-weight: 700;
 }
 
 h2 mat-icon {
   flex-shrink: 0;
-  color: #0d9488;
+  color: var(--qt-primary);
 }
 
 /* Link to the batches view (icon button) */
 .section-header a {
-  color: #0f172a;
+  color: var(--qt-text);
 }
 
 .section-header a:focus-visible {
-  outline: 3px solid #0d9488;
+  outline: 3px solid var(--qt-primary);
   outline-offset: 2px;
 }
 
@@ -69,7 +68,7 @@ h2 mat-icon {
   align-items: center;
   gap: 10px;
   margin-bottom: 12px;
-  color: #0f172a;
+  color: var(--qt-text);
   font-size: 13px;
 }
 
@@ -86,27 +85,27 @@ meter {
   border-radius: 999px;
   appearance: none;
   -webkit-appearance: none;
-  background: #e2e8f0;
+  background: var(--qt-border);
 }
 
 /* WebKit / Blink */
 meter::-webkit-meter-bar {
   border: 0;
   border-radius: 999px;
-  background: #e2e8f0;
+  background: var(--qt-border);
 }
 
 meter::-webkit-meter-optimum-value {
   border-radius: 999px;
-  background: #0d9488;
+  background: var(--qt-primary);
 }
 
 meter.REJECTED::-webkit-meter-optimum-value {
-  background: #f44336;
+  background: var(--qt-error);
 }
 
 meter.PENDING::-webkit-meter-optimum-value {
-  background: #ffc107;
+  background: var(--qt-warning);
 }
 
 meter.IN_PROGRESS::-webkit-meter-optimum-value {
@@ -116,15 +115,15 @@ meter.IN_PROGRESS::-webkit-meter-optimum-value {
 /* Firefox */
 meter::-moz-meter-bar {
   border-radius: 999px;
-  background: #0d9488;
+  background: var(--qt-primary);
 }
 
 meter.REJECTED::-moz-meter-bar {
-  background: #f44336;
+  background: var(--qt-error);
 }
 
 meter.PENDING::-moz-meter-bar {
-  background: #ffc107;
+  background: var(--qt-warning);
 }
 
 meter.IN_PROGRESS::-moz-meter-bar {
@@ -140,7 +139,7 @@ meter.IN_PROGRESS::-moz-meter-bar {
   gap: 12px;
   margin: 0 -8px;
   padding: 12px 8px;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid var(--qt-border);
   border-radius: 8px;
   text-decoration: none;
   color: inherit;
@@ -148,17 +147,17 @@ meter.IN_PROGRESS::-moz-meter-bar {
 }
 
 .record-row:hover {
-  background: #f3f4f6;
+  background: var(--qt-background);
 }
 
 .record-row:focus-visible {
-  outline: 3px solid #0d9488;
+  outline: 3px solid var(--qt-primary);
   outline-offset: 2px;
 }
 
 .record-row mat-icon {
   flex-shrink: 0;
-  color: #64748b;
+  color: var(--qt-text-muted);
 }
 
 .record-main {
@@ -176,20 +175,20 @@ meter.IN_PROGRESS::-moz-meter-bar {
 
 .record-main strong {
   margin-bottom: 4px;
-  color: #0f172a;
+  color: var(--qt-text);
   font-size: 14px;
   font-weight: 600;
 }
 
 .record-main span {
-  color: #64748b;
+  color: var(--qt-text-muted);
   font-size: 12px;
 }
 
 .record-main small,
 .record-status small {
   margin-top: 4px;
-  color: #64748b;
+  color: var(--qt-text-muted);
   font-size: 12px;
 }
 
@@ -199,7 +198,7 @@ meter.IN_PROGRESS::-moz-meter-bar {
 .empty {
   margin: 0;
   padding: 24px 0;
-  color: #64748b;
+  color: var(--qt-text-muted);
   font-size: 14px;
   line-height: 1.6;
   text-align: center;

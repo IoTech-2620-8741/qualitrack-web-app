@@ -10,21 +10,21 @@
   padding: 16px;
   border: 1px solid;
   border-left-width: 4px;
-  border-radius: 12px;
+  border-radius: var(--qt-radius-medium);
   font-size: 14px;
   line-height: 1.6;
 }
 
 .tone-danger {
-  background: #ffebee;
-  border-color: #f44336;
-  color: #b71c1c;
+  background: var(--qt-error-surface);
+  border-color: var(--qt-error);
+  color: var(--qt-error-text);
 }
 
 .tone-warning {
-  background: #fff8e1;
-  border-color: #ffc107;
-  color: #7a5a00;
+  background: var(--qt-warning-surface);
+  border-color: var(--qt-warning);
+  color: var(--qt-warning-text);
 }
 
 .action-banner > mat-icon {
@@ -41,7 +41,7 @@ button {
   flex: none;
   min-height: 40px;
   padding: 8px 16px;
-  border-radius: 999px;
+  border-radius: var(--qt-radius-pill);
   color: inherit;
   font-size: 14px;
   font-weight: 600;
@@ -53,7 +53,7 @@ button {
 }
 
 button:focus-visible {
-  outline: 3px solid #0d9488;
+  outline: 3px solid var(--qt-primary);
   outline-offset: 2px;
 }
 

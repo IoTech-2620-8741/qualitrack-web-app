@@ -2,8 +2,8 @@
   display: block;
   min-width: 0;
   min-height: 100%;
-  background: #f3f4f6;
-  color: #0f172a;
+  background: var(--qt-background);
+  color: var(--qt-text);
 }
 
 .operations-page {
@@ -33,7 +33,7 @@ h1 {
   align-items: center;
   gap: 10px;
   margin: 0;
-  color: #1a3a5c;
+  color: var(--qt-heading);
   font-size: 28px;
   font-weight: 700;
   letter-spacing: 0;
@@ -43,7 +43,7 @@ h1 mat-icon {
   flex-shrink: 0;
   width: 28px;
   height: 28px;
-  color: #0d9488;
+  color: var(--qt-primary);
   font-size: 28px;
 }
 
@@ -57,7 +57,7 @@ a {
 
 .muted {
   margin: 8px 0 0;
-  color: #64748b;
+  color: var(--qt-text-muted);
   font-size: 14px;
   line-height: 1.6;
 }
@@ -72,14 +72,14 @@ mat-button-toggle-group {
   display: inline-flex;
   gap: 4px;
   padding: 4px;
-  background: #fff;
-  border: 1px solid #e2e8f0;
+  background: var(--qt-surface);
+  border: 1px solid var(--qt-border);
   border-radius: 999px;
   --mat-standard-button-toggle-shape: 999px;
-  --mat-standard-button-toggle-text-color: #64748b;
+  --mat-standard-button-toggle-text-color: var(--qt-text-muted);
   --mat-standard-button-toggle-background-color: transparent;
-  --mat-standard-button-toggle-selected-state-text-color: #fff;
-  --mat-standard-button-toggle-selected-state-background-color: #0f766e;
+  --mat-standard-button-toggle-selected-state-text-color: var(--qt-surface);
+  --mat-standard-button-toggle-selected-state-background-color: var(--qt-primary-strong);
   --mat-standard-button-toggle-divider-color: transparent;
 }
 
@@ -87,7 +87,7 @@ mat-button-toggle-group ::ng-deep .mat-button-toggle {
   background: transparent;
   border: none;
   border-radius: 999px;
-  color: #64748b;
+  color: var(--qt-text-muted);
   font-size: 14px;
   font-weight: 500;
   transition: background-color 0.2s ease;
@@ -98,12 +98,12 @@ mat-button-toggle-group ::ng-deep .mat-button-toggle + .mat-button-toggle {
 }
 
 mat-button-toggle-group ::ng-deep .mat-button-toggle:not(.mat-button-toggle-checked):hover {
-  background: #f3f4f6;
+  background: var(--qt-background);
 }
 
 mat-button-toggle-group ::ng-deep .mat-button-toggle-checked {
-  background: #0f766e;
-  color: #fff;
+  background: var(--qt-primary-strong);
+  color: var(--qt-surface);
   font-weight: 600;
 }
 
@@ -117,7 +117,7 @@ mat-button-toggle-group ::ng-deep .mat-button-toggle-focus-overlay {
 }
 
 mat-button-toggle-group ::ng-deep .mat-button-toggle-button:focus-visible {
-  outline: 3px solid #0d9488;
+  outline: 3px solid var(--qt-primary);
   outline-offset: -3px;
   border-radius: 999px;
 }
@@ -136,15 +136,15 @@ mat-button-toggle-group ::ng-deep .mat-button-toggle-button:focus-visible {
 }
 
 .error {
-  background: #ffebee;
-  border-color: #f44336;
-  color: #b71c1c;
+  background: var(--qt-error-surface);
+  border-color: var(--qt-error);
+  color: var(--qt-error-text);
 }
 
 .notice {
-  background: #fff8e1;
-  border-color: #ffc107;
-  color: #7a5a00;
+  background: var(--qt-warning-surface);
+  border-color: var(--qt-warning);
+  color: var(--qt-warning-text);
 }
 
 /* Carga y vacío */
@@ -154,7 +154,7 @@ mat-button-toggle-group ::ng-deep .mat-button-toggle-button:focus-visible {
   justify-content: center;
   width: 100%;
   min-height: 400px;
-  --mdc-circular-progress-active-indicator-color: #0d9488;
+  --mdc-circular-progress-active-indicator-color: var(--qt-primary);
 }
 
 .empty-state {
@@ -165,8 +165,8 @@ mat-button-toggle-group ::ng-deep .mat-button-toggle-button:focus-visible {
   gap: 8px;
   margin-top: 24px;
   padding: 64px 24px;
-  background: #fff;
-  border: 1px dashed #e2e8f0;
+  background: var(--qt-surface);
+  border: 1px dashed var(--qt-border);
   border-radius: 12px;
   text-align: center;
 }
@@ -174,13 +174,13 @@ mat-button-toggle-group ::ng-deep .mat-button-toggle-button:focus-visible {
 .empty-state mat-icon {
   width: 40px;
   height: 40px;
-  color: #94a3b8;
+  color: var(--qt-text-subtle);
   font-size: 40px;
 }
 
 .empty-state h3 {
   margin: 0;
-  color: #0f172a;
+  color: var(--qt-text);
   font-size: 18px;
   font-weight: 700;
 }
@@ -188,7 +188,7 @@ mat-button-toggle-group ::ng-deep .mat-button-toggle-button:focus-visible {
 .empty-state p {
   max-width: 400px;
   margin: 0;
-  color: #64748b;
+  color: var(--qt-text-muted);
   font-size: 14px;
   line-height: 1.6;
 }

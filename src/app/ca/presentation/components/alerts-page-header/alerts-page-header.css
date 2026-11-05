@@ -27,7 +27,7 @@ h1 {
   align-items: center;
   gap: 10px;
   margin: 0;
-  color: #1a3a5c;
+  color: var(--qt-heading);
   font-size: 28px;
   font-weight: 700;
   letter-spacing: 0;
@@ -38,13 +38,13 @@ h1 mat-icon {
   flex-shrink: 0;
   width: 28px;
   height: 28px;
-  color: #0d9488;
+  color: var(--qt-primary);
   font-size: 28px;
 }
 
 p {
   margin: 8px 0 0;
-  color: #64748b;
+  color: var(--qt-text-muted);
   font-size: 14px;
   line-height: 1.6;
   overflow-wrap: anywhere;
@@ -65,32 +65,32 @@ p {
   min-height: 40px;
   height: auto;
   padding: 8px 16px;
-  border-color: #e2e8f0;
-  border-radius: 999px;
-  color: #0f172a;
+  border-color: var(--qt-border);
+  border-radius: var(--qt-radius-pill);
+  color: var(--qt-text);
   font-size: 14px;
   font-weight: 600;
   text-decoration: none;
   white-space: nowrap;
-  --mdc-outlined-button-outline-color: #e2e8f0;
-  --mdc-outlined-button-label-text-color: #0f172a;
+  --mdc-outlined-button-outline-color: var(--qt-border);
+  --mdc-outlined-button-label-text-color: var(--qt-text);
 }
 
 .actions a:focus-visible {
-  outline: 3px solid #0d9488;
+  outline: 3px solid var(--qt-primary);
   outline-offset: 2px;
 }
 
 /* Pestañas de navegación */
 nav[mat-tab-nav-bar] {
-  --mdc-tab-indicator-active-indicator-color: #0d9488;
-  --mat-tab-header-active-label-text-color: #0f766e;
-  --mat-tab-header-active-focus-label-text-color: #0f766e;
-  --mat-tab-header-active-hover-label-text-color: #0f766e;
-  --mat-tab-header-active-ripple-color: #0d9488;
-  --mat-tab-header-inactive-label-text-color: #64748b;
-  --mat-tab-header-inactive-ripple-color: #0d9488;
-  --mat-tab-header-divider-color: #e2e8f0;
+  --mdc-tab-indicator-active-indicator-color: var(--qt-primary);
+  --mat-tab-header-active-label-text-color: var(--qt-primary-strong);
+  --mat-tab-header-active-focus-label-text-color: var(--qt-primary-strong);
+  --mat-tab-header-active-hover-label-text-color: var(--qt-primary-strong);
+  --mat-tab-header-active-ripple-color: var(--qt-primary);
+  --mat-tab-header-inactive-label-text-color: var(--qt-text-muted);
+  --mat-tab-header-inactive-ripple-color: var(--qt-primary);
+  --mat-tab-header-divider-color: var(--qt-border);
 }
 
 [mat-tab-link] {
@@ -112,9 +112,9 @@ nav[mat-tab-nav-bar] {
   height: 20px;
   margin-left: 8px;
   padding: 0 6px;
-  background: #ffebee;
-  border-radius: 999px;
-  color: #b71c1c;
+  background: var(--qt-error-surface);
+  border-radius: var(--qt-radius-pill);
+  color: var(--qt-error-text);
   font-size: 12px;
   font-weight: 500;
   line-height: 1;

@@ -1,7 +1,7 @@
 :host {
   display: block;
   min-height: 100%;
-  background: #f3f4f6;
+  background: var(--qt-background);
 }
 
 .generator-container {
@@ -20,7 +20,7 @@
   align-items: center;
   gap: 10px;
   margin: 0;
-  color: #1a3a5c;
+  color: var(--qt-heading);
   font-size: 28px;
   font-weight: 700;
   letter-spacing: 0;
@@ -31,13 +31,13 @@
   flex-shrink: 0;
   width: 28px;
   height: 28px;
-  color: #0d9488;
+  color: var(--qt-primary);
   font-size: 28px;
 }
 
 .page-desc {
   margin: 8px 0 0;
-  color: #64748b;
+  color: var(--qt-text-muted);
   font-size: 14px;
   line-height: 1.6;
   overflow-wrap: anywhere;
@@ -57,8 +57,8 @@
 .main-panel {
   min-width: 0;
   padding: 24px;
-  background: #fff;
-  border: 1px solid #e2e8f0;
+  background: var(--qt-surface);
+  border: 1px solid var(--qt-border);
   border-radius: 12px;
   box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
 }
@@ -70,10 +70,10 @@
   max-width: 880px;
   margin-bottom: 24px;
   padding: 16px;
-  background: #e8f5e9;
-  border: 1px solid #4caf50;
+  background: var(--qt-success-surface);
+  border: 1px solid var(--qt-success);
   border-radius: 12px;
-  color: #1b5e20;
+  color: var(--qt-success-text);
   font-size: 14px;
   line-height: 1.6;
 }
@@ -87,17 +87,17 @@
 .success-message button {
   flex-shrink: 0;
   margin: -8px -8px -8px 0;
-  color: #1b5e20;
-  --mdc-icon-button-icon-color: #1b5e20;
+  color: var(--qt-success-text);
+  --mdc-icon-button-icon-color: var(--qt-success-text);
   transition: background-color 0.2s ease;
 }
 
 .success-message button:hover {
-  background: #fff;
+  background: var(--qt-surface);
 }
 
 .success-message button:focus-visible {
-  outline: 3px solid #0d9488;
+  outline: 3px solid var(--qt-primary);
   outline-offset: 2px;
 }
 
@@ -112,12 +112,12 @@
   justify-content: center;
   background: rgba(255, 255, 255, 0.72);
   border-radius: 12px;
-  --mdc-circular-progress-active-indicator-color: #0d9488;
+  --mdc-circular-progress-active-indicator-color: var(--qt-primary);
 }
 
 .loading-overlay p {
   margin: 16px 0 0;
-  color: #0f172a;
+  color: var(--qt-text);
   font-size: 14px;
   font-weight: 600;
 }

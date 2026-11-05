@@ -6,24 +6,24 @@
   max-width: 520px;
   margin: 64px auto 24px;
   padding: 40px 32px;
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
+  background: var(--qt-surface);
+  border: 1px solid var(--qt-border);
   border-radius: 12px;
   box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
-  color: #64748b;
+  color: var(--qt-text-muted);
   font-size: 14px;
   line-height: 1.6;
   text-align: center;
 }
 
 mat-spinner {
-  --mdc-circular-progress-active-indicator-color: #0d9488;
+  --mdc-circular-progress-active-indicator-color: var(--qt-primary);
   margin: auto;
 }
 
 h1 {
   margin: 0 0 8px;
-  color: #1a3a5c;
+  color: var(--qt-heading);
   font-size: 24px;
   font-weight: 700;
   overflow-wrap: anywhere;

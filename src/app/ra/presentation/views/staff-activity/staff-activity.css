@@ -2,8 +2,8 @@
   display: block;
   min-width: 0;
   min-height: 100%;
-  background: #f3f4f6;
-  color: #0f172a;
+  background: var(--qt-background);
+  color: var(--qt-text);
 }
 
 .operations-page {
@@ -18,7 +18,7 @@
   align-items: center;
   gap: 6px;
   margin-bottom: 16px;
-  color: #0f766e;
+  color: var(--qt-primary-strong);
   font-size: 14px;
   font-weight: 500;
   text-decoration: none;
@@ -34,7 +34,7 @@
 }
 
 .back-link:focus-visible {
-  outline: 3px solid #0d9488;
+  outline: 3px solid var(--qt-primary);
   outline-offset: 2px;
   border-radius: 4px;
 }
@@ -54,7 +54,7 @@ h1 {
   align-items: center;
   gap: 10px;
   margin: 0;
-  color: #1a3a5c;
+  color: var(--qt-heading);
   font-size: 28px;
   font-weight: 700;
   letter-spacing: 0;
@@ -64,13 +64,13 @@ h1 mat-icon {
   flex-shrink: 0;
   width: 28px;
   height: 28px;
-  color: #0d9488;
+  color: var(--qt-primary);
   font-size: 28px;
 }
 
 h2 {
   margin: 0 0 16px;
-  color: #0f172a;
+  color: var(--qt-text);
   font-size: 20px;
   font-weight: 700;
 }
@@ -83,7 +83,7 @@ a {
 }
 
 .muted {
-  color: #64748b;
+  color: var(--qt-text-muted);
   font-size: 14px;
   line-height: 1.6;
 }
@@ -99,15 +99,15 @@ a {
   gap: 16px 40px;
   margin-bottom: 24px;
   padding: 20px 24px;
-  background: #fff;
-  border: 1px solid #e2e8f0;
+  background: var(--qt-surface);
+  border: 1px solid var(--qt-border);
   border-radius: 12px;
   box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
 }
 
 .summary-strip span {
   display: block;
-  color: #64748b;
+  color: var(--qt-text-muted);
   font-size: 12px;
   font-weight: 500;
   text-transform: uppercase;
@@ -116,7 +116,7 @@ a {
 .summary-strip strong {
   display: block;
   margin-top: 4px;
-  color: #0f172a;
+  color: var(--qt-text);
   font-size: 24px;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
@@ -136,9 +136,9 @@ mat-form-field {
   width: 100%;
   min-width: 0;
   max-width: 440px;
-  --mat-form-field-outlined-focus-outline-color: #0d9488;
-  --mat-form-field-outlined-focus-label-text-color: #0f766e;
-  --mat-form-field-focus-select-arrow-color: #0d9488;
+  --mat-form-field-outlined-focus-outline-color: var(--qt-primary);
+  --mat-form-field-outlined-focus-label-text-color: var(--qt-primary-strong);
+  --mat-form-field-focus-select-arrow-color: var(--qt-primary);
 }
 
 /* Tabla */
@@ -148,8 +148,8 @@ mat-form-field {
   border-collapse: separate;
   border-spacing: 0;
   overflow: hidden;
-  background: #fff;
-  border: 1px solid #e2e8f0;
+  background: var(--qt-surface);
+  border: 1px solid var(--qt-border);
   border-radius: 12px;
   box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
   font-size: 14px;
@@ -157,9 +157,9 @@ mat-form-field {
 
 .data-table th {
   padding: 16px 20px;
-  background: #fff;
-  border-bottom: 1px solid #e2e8f0;
-  color: #64748b;
+  background: var(--qt-surface);
+  border-bottom: 1px solid var(--qt-border);
+  color: var(--qt-text-muted);
   font-size: 12px;
   font-weight: 500;
   text-align: left;
@@ -170,8 +170,8 @@ mat-form-field {
 
 .data-table td {
   padding: 16px 20px;
-  border-bottom: 1px solid #e2e8f0;
-  color: #0f172a;
+  border-bottom: 1px solid var(--qt-border);
+  color: var(--qt-text);
   font-variant-numeric: tabular-nums;
   overflow-wrap: anywhere;
   vertical-align: top;
@@ -186,7 +186,7 @@ mat-form-field {
 }
 
 .data-table tbody tr:hover {
-  background: #f3f4f6;
+  background: var(--qt-background);
 }
 
 .data-table td a,
@@ -195,7 +195,7 @@ mat-form-field {
 }
 
 a:not(.back-link) {
-  color: #0f766e;
+  color: var(--qt-primary-strong);
   font-weight: 600;
   text-decoration: none;
 }
@@ -205,7 +205,7 @@ a:not(.back-link):hover {
 }
 
 a:not(.back-link):focus-visible {
-  outline: 3px solid #0d9488;
+  outline: 3px solid var(--qt-primary);
   outline-offset: 2px;
   border-radius: 4px;
 }
@@ -215,17 +215,17 @@ a:not(.back-link):focus-visible {
   display: flex;
   justify-content: center;
   padding: 48px 0;
-  --mdc-circular-progress-active-indicator-color: #0d9488;
+  --mdc-circular-progress-active-indicator-color: var(--qt-primary);
 }
 
 .error {
   max-width: 880px;
   margin: 0 0 24px;
   padding: 16px;
-  background: #ffebee;
-  border: 1px solid #f44336;
+  background: var(--qt-error-surface);
+  border: 1px solid var(--qt-error);
   border-radius: 12px;
-  color: #b71c1c;
+  color: var(--qt-error-text);
   font-size: 14px;
   line-height: 1.6;
   overflow-wrap: anywhere;
@@ -287,8 +287,8 @@ a:not(.back-link):focus-visible {
   .data-table tr {
     margin-bottom: 12px;
     padding: 8px 12px;
-    background: #fff;
-    border: 1px solid #e2e8f0;
+    background: var(--qt-surface);
+    border: 1px solid var(--qt-border);
     border-radius: 12px;
     box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
   }
@@ -302,7 +302,7 @@ a:not(.back-link):focus-visible {
     content: attr(data-label);
     display: block;
     margin-bottom: 4px;
-    color: #64748b;
+    color: var(--qt-text-muted);
     font-size: 12px;
     font-weight: 500;
     text-transform: uppercase;

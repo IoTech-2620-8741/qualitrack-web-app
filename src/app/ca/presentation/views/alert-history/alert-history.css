@@ -2,8 +2,8 @@
   display: block;
   min-width: 0;
   min-height: 100%;
-  background: #f3f4f6;
-  color: #0f172a;
+  background: var(--qt-background);
+  color: var(--qt-text);
 }
 
 .operations-page {
@@ -48,7 +48,7 @@ a {
 
 .history > p[role='status'] {
   padding: 32px 0;
-  color: #64748b;
+  color: var(--qt-text-muted);
   font-size: 14px;
   text-align: center;
 }
@@ -57,22 +57,22 @@ a {
 .notice {
   padding: 16px;
   border: 1px solid;
-  border-radius: 12px;
+  border-radius: var(--qt-radius-medium);
   font-size: 14px;
   line-height: 1.6;
   overflow-wrap: anywhere;
 }
 
 .error {
-  background: #ffebee;
-  border-color: #f44336;
-  color: #b71c1c;
+  background: var(--qt-error-surface);
+  border-color: var(--qt-error);
+  color: var(--qt-error-text);
 }
 
 .notice {
-  background: #fff8e1;
-  border-color: #ffc107;
-  color: #7a5a00;
+  background: var(--qt-warning-surface);
+  border-color: var(--qt-warning);
+  color: var(--qt-warning-text);
 }
 
 /* Botones proyectados (exportar, limpiar en estado vacío) */
@@ -81,20 +81,20 @@ app-empty-state button[mat-stroked-button] {
   min-height: 40px;
   height: auto;
   padding: 8px 16px;
-  border-color: #e2e8f0;
-  border-radius: 999px;
-  color: #0f172a;
+  border-color: var(--qt-border);
+  border-radius: var(--qt-radius-pill);
+  color: var(--qt-text);
   font-size: 14px;
   font-weight: 600;
   text-decoration: none;
   white-space: nowrap;
-  --mdc-outlined-button-outline-color: #e2e8f0;
-  --mdc-outlined-button-label-text-color: #0f172a;
+  --mdc-outlined-button-outline-color: var(--qt-border);
+  --mdc-outlined-button-label-text-color: var(--qt-text);
 }
 
 .operations-page a[mat-stroked-button]:focus-visible,
 app-empty-state button:focus-visible {
-  outline: 3px solid #0d9488;
+  outline: 3px solid var(--qt-primary);
   outline-offset: 2px;
 }
 
@@ -105,9 +105,9 @@ app-empty-state button:focus-visible {
   gap: 16px;
   min-width: 0;
   padding: 24px;
-  background: #fff;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
+  background: var(--qt-surface);
+  border: 1px solid var(--qt-border);
+  border-radius: var(--qt-radius-medium);
   box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
 }
 
@@ -129,7 +129,7 @@ app-empty-state button:focus-visible {
 
 .group-label {
   flex: 0 0 100%;
-  color: #64748b;
+  color: var(--qt-text-muted);
   font-size: 12px;
   font-weight: 500;
   line-height: 1.5;
@@ -145,9 +145,9 @@ app-empty-state button:focus-visible {
 mat-form-field {
   width: 100%;
   min-width: 0;
-  --mat-form-field-outlined-focus-outline-color: #0d9488;
-  --mat-form-field-outlined-focus-label-text-color: #0f766e;
-  --mat-form-field-focus-select-arrow-color: #0d9488;
+  --mat-form-field-outlined-focus-outline-color: var(--qt-primary);
+  --mat-form-field-outlined-focus-label-text-color: var(--qt-primary-strong);
+  --mat-form-field-focus-select-arrow-color: var(--qt-primary);
 }
 
 .filters mat-form-field {
@@ -155,12 +155,12 @@ mat-form-field {
 }
 
 input {
-  caret-color: #0d9488;
+  caret-color: var(--qt-primary);
 }
 
 mat-icon[matPrefix] {
   margin-left: 12px;
-  color: #64748b;
+  color: var(--qt-text-muted);
 }
 
 .custom-period {
@@ -178,17 +178,17 @@ mat-icon[matPrefix] {
 .filters button[mat-button] {
   min-height: 40px;
   padding: 8px 16px;
-  border: 1px solid #e2e8f0;
-  border-radius: 999px;
-  color: #0f172a;
+  border: 1px solid var(--qt-border);
+  border-radius: var(--qt-radius-pill);
+  color: var(--qt-text);
   font-size: 14px;
   font-weight: 600;
   white-space: nowrap;
-  --mdc-text-button-label-text-color: #0f172a;
+  --mdc-text-button-label-text-color: var(--qt-text);
 }
 
 .filters button[mat-button]:focus-visible {
-  outline: 3px solid #0d9488;
+  outline: 3px solid var(--qt-primary);
   outline-offset: 2px;
 }
 
@@ -213,15 +213,15 @@ mat-icon[matPrefix] {
   justify-content: space-between;
   gap: 12px;
   padding: 16px 24px;
-  background: #fff;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
+  background: var(--qt-surface);
+  border: 1px solid var(--qt-border);
+  border-radius: var(--qt-radius-medium);
   box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
 }
 
 .pager p {
   padding: 0;
-  color: #64748b;
+  color: var(--qt-text-muted);
   font-size: 14px;
   text-align: left;
 }
@@ -233,29 +233,29 @@ mat-icon[matPrefix] {
 }
 
 .pager-buttons span {
-  color: #0f172a;
+  color: var(--qt-text);
   font-size: 14px;
   font-weight: 500;
   font-variant-numeric: tabular-nums;
 }
 
 .pager-buttons button {
-  color: #64748b;
-  --mdc-icon-button-icon-color: #64748b;
+  color: var(--qt-text-muted);
+  --mdc-icon-button-icon-color: var(--qt-text-muted);
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .pager-buttons button:hover:not(:disabled) {
-  background: #f3f4f6;
-  color: #0f766e;
+  background: var(--qt-background);
+  color: var(--qt-primary-strong);
 }
 
 .pager-buttons button:disabled {
-  color: #94a3b8;
+  color: var(--qt-text-subtle);
 }
 
 .pager-buttons button:focus-visible {
-  outline: 3px solid #0d9488;
+  outline: 3px solid var(--qt-primary);
   outline-offset: 2px;
 }
 

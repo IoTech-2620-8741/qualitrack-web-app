@@ -1,11 +1,10 @@
 /* ==========================================================================
    Dashboard summary tiles (clickable KPI cards)
-   Colors are plain hex values.
    ========================================================================== */
 
 :host {
   display: block;
-  color: #0f172a;
+  color: var(--qt-text);
 }
 
 .summary-grid {
@@ -26,8 +25,8 @@
   padding: 18px;
   text-decoration: none;
   color: inherit;
-  background: #fff;
-  border: 1px solid #e2e8f0;
+  background: var(--qt-surface);
+  border: 1px solid var(--qt-border);
   border-radius: 12px;
   box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
   transition:
@@ -38,18 +37,18 @@
 
 .summary-item:hover {
   transform: translateY(-2px);
-  border-color: #0d9488;
+  border-color: var(--qt-primary);
   box-shadow: 0 10px 24px rgba(15, 23, 42, 0.12);
 }
 
 .summary-item:focus-visible {
-  outline: 3px solid #0d9488;
+  outline: 3px solid var(--qt-primary);
   outline-offset: 2px;
 }
 
 .summary-label {
   align-self: center;
-  color: #64748b;
+  color: var(--qt-text-muted);
   font-size: 13px;
   font-weight: 500;
   overflow-wrap: anywhere;
@@ -57,7 +56,7 @@
 
 .summary-item strong {
   grid-column: 2;
-  color: #0f172a;
+  color: var(--qt-text);
   font-size: 28px;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
@@ -65,7 +64,7 @@
 
 .summary-item small {
   grid-column: 2;
-  color: #64748b;
+  color: var(--qt-text-muted);
   font-size: 12px;
 }
 
@@ -77,11 +76,11 @@
 }
 
 .teal mat-icon {
-  color: #0d9488;
+  color: var(--qt-primary);
 }
 
 .red mat-icon {
-  color: #f44336;
+  color: var(--qt-error);
 }
 
 .amber mat-icon {

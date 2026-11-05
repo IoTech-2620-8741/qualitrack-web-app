@@ -2,8 +2,8 @@
   display: block;
   min-width: 0;
   min-height: 100%;
-  background: #f3f4f6;
-  color: #0f172a;
+  background: var(--qt-background);
+  color: var(--qt-text);
 }
 
 .operations-page {
@@ -24,7 +24,7 @@ a {
   align-items: center;
   gap: 6px;
   margin-bottom: 16px;
-  color: #0f766e;
+  color: var(--qt-primary-strong);
   font-size: 14px;
   font-weight: 500;
   text-decoration: none;
@@ -40,7 +40,7 @@ a {
 }
 
 .operations-page > a:focus-visible {
-  outline: 3px solid #0d9488;
+  outline: 3px solid var(--qt-primary);
   outline-offset: 2px;
   border-radius: 4px;
 }
@@ -58,19 +58,19 @@ h1 {
   align-items: center;
   gap: 10px;
   margin: 0;
-  color: #1a3a5c;
+  color: var(--qt-heading);
   font-size: 28px;
   font-weight: 700;
 }
 
 h1 mat-icon {
   flex-shrink: 0;
-  color: #0d9488;
+  color: var(--qt-primary);
 }
 
 .muted {
   margin: 0 0 24px;
-  color: #64748b;
+  color: var(--qt-text-muted);
   font-size: 14px;
   line-height: 1.6;
 }
@@ -79,10 +79,10 @@ h1 mat-icon {
   max-width: 880px;
   margin: 0 0 20px;
   padding: 16px;
-  background: #ffebee;
-  border: 1px solid #f44336;
+  background: var(--qt-error-surface);
+  border: 1px solid var(--qt-error);
   border-radius: 12px;
-  color: #b71c1c;
+  color: var(--qt-error-text);
   font-size: 14px;
   line-height: 1.6;
   overflow-wrap: anywhere;
@@ -92,8 +92,8 @@ h1 mat-icon {
   max-width: 880px;
   margin: 0;
   padding: 24px;
-  background: #fff;
-  border: 1px solid #e2e8f0;
+  background: var(--qt-surface);
+  border: 1px solid var(--qt-border);
   border-radius: 12px;
   box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
 }
@@ -111,16 +111,16 @@ h1 mat-icon {
 mat-form-field {
   width: 100%;
   min-width: 0;
-  --mat-form-field-outlined-focus-outline-color: #0d9488;
-  --mat-form-field-outlined-focus-label-text-color: #0f766e;
+  --mat-form-field-outlined-focus-outline-color: var(--qt-primary);
+  --mat-form-field-outlined-focus-label-text-color: var(--qt-primary-strong);
 }
 
 .editor input {
-  caret-color: #0d9488;
+  caret-color: var(--qt-primary);
 }
 
 .editor mat-icon[matSuffix] {
-  color: #64748b;
+  color: var(--qt-text-muted);
 }
 
 .actions {
@@ -131,7 +131,7 @@ mat-form-field {
   gap: 12px;
   margin-top: 8px;
   padding-top: 20px;
-  border-top: 1px solid #e2e8f0;
+  border-top: 1px solid var(--qt-border);
 }
 
 .actions a[mat-button],
@@ -146,37 +146,37 @@ mat-form-field {
 }
 
 .actions a[mat-button] {
-  border: 1px solid #e2e8f0;
-  color: #0f172a;
+  border: 1px solid var(--qt-border);
+  color: var(--qt-text);
 }
 
 .actions button[mat-flat-button] {
-  --mdc-filled-button-container-color: #0f766e;
-  --mdc-filled-button-label-text-color: #fff;
-  --mdc-filled-button-disabled-container-color: #e2e8f0;
-  --mdc-filled-button-disabled-label-text-color: #475569;
-  background: #0f766e;
-  color: #fff;
+  --mdc-filled-button-container-color: var(--qt-primary-strong);
+  --mdc-filled-button-label-text-color: var(--qt-surface);
+  --mdc-filled-button-disabled-container-color: var(--qt-border);
+  --mdc-filled-button-disabled-label-text-color: var(--qt-neutral-text);
+  background: var(--qt-primary-strong);
+  color: var(--qt-surface);
 }
 
 .actions button[mat-flat-button]:hover:not([disabled]) {
-  background: #115e59;
+  background: var(--qt-primary-hover);
 }
 
 .actions button[mat-flat-button][disabled] {
-  background: #e2e8f0;
-  color: #475569;
+  background: var(--qt-border);
+  color: var(--qt-neutral-text);
 }
 
 .actions mat-spinner {
   display: inline-block;
   margin-right: 8px;
-  --mdc-circular-progress-active-indicator-color: #475569;
+  --mdc-circular-progress-active-indicator-color: var(--qt-neutral-text);
 }
 
 .actions a:focus-visible,
 .actions button:focus-visible {
-  outline: 3px solid #0d9488;
+  outline: 3px solid var(--qt-primary);
   outline-offset: 2px;
 }
 

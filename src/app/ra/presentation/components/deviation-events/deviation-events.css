@@ -7,15 +7,15 @@
   flex-direction: column;
   margin-bottom: 24px;
   padding: 24px;
-  background: #fff;
-  border: 1px solid #e2e8f0;
+  background: var(--qt-surface);
+  border: 1px solid var(--qt-border);
   border-radius: 12px;
   box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
 }
 
 h3 {
   margin: 0 0 16px;
-  color: #0f172a;
+  color: var(--qt-text);
   font-size: 18px;
   font-weight: 700;
   overflow-wrap: anywhere;
@@ -43,7 +43,7 @@ h3 {
   gap: 16px;
   width: 100%;
   padding: 12px 0;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid var(--qt-border);
 }
 
 .event-row:last-child {
@@ -61,32 +61,32 @@ h3 {
   gap: 6px;
   padding: 4px 10px;
   border-radius: 999px;
-  background: #fff8e1;
-  color: #7a5a00;
+  background: var(--qt-warning-surface);
+  color: var(--qt-warning-text);
   font-size: 12px;
   font-weight: 500;
 }
 
 .state-chip.critical {
-  background: #ffebee;
-  color: #b71c1c;
+  background: var(--qt-error-surface);
+  color: var(--qt-error-text);
 }
 
 .dot {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #ffc107;
+  background: var(--qt-warning);
 }
 
 .state-chip.critical .dot {
-  background: #f44336;
+  background: var(--qt-error);
 }
 
 .event-info {
   flex-grow: 1;
   min-width: 0;
-  color: #0f172a;
+  color: var(--qt-text);
   font-size: 14px;
   line-height: 1.6;
   font-variant-numeric: tabular-nums;
@@ -94,12 +94,12 @@ h3 {
 }
 
 .event-info small {
-  color: #64748b;
+  color: var(--qt-text-muted);
   font-size: 12px;
 }
 
 .muted {
-  color: #64748b;
+  color: var(--qt-text-muted);
   font-size: 14px;
   line-height: 1.6;
 }

@@ -8,10 +8,10 @@
   align-items: center;
   height: 64px;
   padding: 0 24px;
-  background: #fff;
-  border-bottom: 1px solid #e2e8f0;
+  background: var(--qt-surface);
+  border-bottom: 1px solid var(--qt-border);
   box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
-  color: #0f172a;
+  color: var(--qt-text);
 }
 
 .brand {
@@ -23,12 +23,12 @@
 }
 
 .brand:focus-visible {
-  outline: 3px solid #0d9488;
+  outline: 3px solid var(--qt-primary);
   outline-offset: 2px;
 }
 
 .brand:hover .toolbar-title {
-  color: #0f766e;
+  color: var(--qt-primary-strong);
 }
 
 .toolbar img {
@@ -38,7 +38,7 @@
 }
 
 .toolbar-title {
-  color: #0f172a;
+  color: var(--qt-text);
   font-size: 22px;
   font-weight: 700;
   letter-spacing: 0;
@@ -62,8 +62,8 @@
   gap: 10px;
   min-width: 0;
   padding: 4px 6px 4px 4px;
-  background: #fff;
-  border: 1px solid #e2e8f0;
+  background: var(--qt-surface);
+  border: 1px solid var(--qt-border);
   border-radius: 999px;
 }
 
@@ -76,22 +76,22 @@
   display: flex;
   height: calc(100vh - 64px);
   overflow: hidden;
-  background: #f3f4f6;
+  background: var(--qt-background);
 }
 
 .sidenav-container {
   flex: 1;
   min-width: 0;
   height: 100%;
-  background: #f3f4f6;
+  background: var(--qt-background);
 }
 
 mat-sidenav {
   display: flex;
   flex-direction: column;
   width: 280px;
-  background: #fff;
-  border-right: 1px solid #e2e8f0;
+  background: var(--qt-surface);
+  border-right: 1px solid var(--qt-border);
   box-shadow: none;
 }
 
@@ -117,7 +117,7 @@ mat-sidenav {
 
 .nav-section-title {
   padding: 4px 12px;
-  color: #64748b;
+  color: var(--qt-text-muted);
   font-size: 12px;
   font-weight: 500;
   letter-spacing: 0;
@@ -135,7 +135,7 @@ mat-sidenav {
   background: transparent;
   border: 0;
   border-radius: 8px;
-  color: #64748b;
+  color: var(--qt-text-muted);
   font: inherit;
   text-align: left;
   cursor: pointer;
@@ -144,19 +144,19 @@ mat-sidenav {
 
 .nav-item:hover,
 .nav-item-header:hover {
-  background: #f3f4f6;
-  color: #0f172a;
+  background: var(--qt-background);
+  color: var(--qt-text);
 }
 
 .nav-item:focus-visible,
 .sub-nav-item:focus-visible {
-  outline: 3px solid #0d9488;
+  outline: 3px solid var(--qt-primary);
   outline-offset: -3px;
 }
 
 .nav-item.active {
-  background: #f0fdfa;
-  color: #0f766e;
+  background: var(--qt-primary-surface);
+  color: var(--qt-primary-strong);
   font-weight: 600;
 }
 
@@ -171,8 +171,8 @@ mat-sidenav {
 }
 
 .nav-item.active .nav-icon-wrapper {
-  background: #fff;
-  color: #0d9488;
+  background: var(--qt-surface);
+  color: var(--qt-primary);
 }
 
 .nav-icon-wrapper mat-icon {
@@ -197,7 +197,7 @@ mat-sidenav {
   right: 0;
   width: 4px;
   height: 60%;
-  background: #0d9488;
+  background: var(--qt-primary);
   border-radius: 2px 0 0 2px;
   transform: translateY(-50%);
 }
@@ -208,7 +208,7 @@ mat-sidenav {
   gap: 2px;
   margin: 4px 0 12px 28px;
   padding-left: 12px;
-  border-left: 2px solid #e2e8f0;
+  border-left: 2px solid var(--qt-border);
 }
 
 .sub-nav-item {
@@ -218,7 +218,7 @@ mat-sidenav {
   background: transparent;
   border: 0;
   border-radius: 8px;
-  color: #64748b;
+  color: var(--qt-text-muted);
   font: inherit;
   text-align: left;
   cursor: pointer;
@@ -226,8 +226,8 @@ mat-sidenav {
 }
 
 .sub-nav-item:hover {
-  background: #f3f4f6;
-  color: #0f172a;
+  background: var(--qt-background);
+  color: var(--qt-text);
 }
 
 .sub-nav-label {
@@ -237,8 +237,8 @@ mat-sidenav {
 }
 
 .sub-nav-item.sub-active {
-  background: #f0fdfa;
-  color: #0f766e;
+  background: var(--qt-primary-surface);
+  color: var(--qt-primary-strong);
 }
 
 .sub-nav-item.sub-active .sub-nav-label {
@@ -249,10 +249,10 @@ mat-sidenav {
   background: transparent;
   box-shadow: none;
   --mat-expansion-container-background-color: transparent;
-  --mat-expansion-container-text-color: #0f172a;
-  --mat-expansion-header-text-color: #64748b;
-  --mat-expansion-header-hover-state-layer-color: #f3f4f6;
-  --mat-expansion-header-focus-state-layer-color: #f3f4f6;
+  --mat-expansion-container-text-color: var(--qt-text);
+  --mat-expansion-header-text-color: var(--qt-text-muted);
+  --mat-expansion-header-hover-state-layer-color: var(--qt-background);
+  --mat-expansion-header-focus-state-layer-color: var(--qt-background);
   --mat-expansion-header-collapsed-state-height: 48px;
   --mat-expansion-header-expanded-state-height: 48px;
 }
@@ -273,7 +273,7 @@ mat-sidenav {
 }
 
 mat-sidenav-content {
-  background: #f3f4f6;
+  background: var(--qt-background);
 }
 
 .content-wrapper {

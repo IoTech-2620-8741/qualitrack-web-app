@@ -12,7 +12,7 @@ form {
 
 h3 {
   margin: 0;
-  color: #0f172a;
+  color: var(--qt-text);
   font-size: 18px;
   font-weight: 700;
   line-height: 1.4;
@@ -31,10 +31,10 @@ h3 {
   justify-content: center;
   min-height: 40px;
   padding: 0 16px;
-  background: #fff;
-  border: 1px solid #e2e8f0;
-  border-radius: 999px;
-  color: #0f172a;
+  background: var(--qt-surface);
+  border: 1px solid var(--qt-border);
+  border-radius: var(--qt-radius-pill);
+  color: var(--qt-text);
   font: inherit;
   font-size: 14px;
   font-weight: 500;
@@ -43,11 +43,11 @@ h3 {
 }
 
 .template:hover {
-  background: #f3f4f6;
+  background: var(--qt-background);
 }
 
 .template:focus-visible {
-  outline: 3px solid #0d9488;
+  outline: 3px solid var(--qt-primary);
   outline-offset: 2px;
 }
 
@@ -55,13 +55,13 @@ h3 {
   display: block;
   width: 100%;
   min-width: 0;
-  --mat-form-field-outlined-focus-outline-color: #0d9488;
-  --mat-form-field-outlined-focus-label-text-color: #0f766e;
-  --mat-form-field-focus-select-arrow-color: #0d9488;
+  --mat-form-field-outlined-focus-outline-color: var(--qt-primary);
+  --mat-form-field-outlined-focus-label-text-color: var(--qt-primary-strong);
+  --mat-form-field-focus-select-arrow-color: var(--qt-primary);
 }
 
 .notes textarea {
-  caret-color: #0d9488;
+  caret-color: var(--qt-primary);
   line-height: 1.6;
 }
 
@@ -71,40 +71,40 @@ h3 {
   justify-content: flex-end;
   gap: 12px;
   padding-top: 20px;
-  border-top: 1px solid #e2e8f0;
+  border-top: 1px solid var(--qt-border);
 }
 
 .actions button {
   min-height: 48px;
   height: auto;
   padding: 8px 24px;
-  border-radius: 999px;
+  border-radius: var(--qt-radius-pill);
   font-size: 14px;
   font-weight: 600;
   white-space: normal;
 }
 
 .primary-btn {
-  --mdc-filled-button-container-color: #0f766e;
-  --mdc-filled-button-label-text-color: #fff;
-  --mdc-filled-button-disabled-container-color: #e2e8f0;
-  --mdc-filled-button-disabled-label-text-color: #475569;
-  background: #0f766e;
-  color: #fff;
+  --mdc-filled-button-container-color: var(--qt-primary-strong);
+  --mdc-filled-button-label-text-color: var(--qt-surface);
+  --mdc-filled-button-disabled-container-color: var(--qt-border);
+  --mdc-filled-button-disabled-label-text-color: var(--qt-neutral-text);
+  background: var(--qt-primary-strong);
+  color: var(--qt-surface);
   transition: background-color 0.2s ease;
 }
 
 .primary-btn:hover:not(:disabled) {
-  background: #115e59;
+  background: var(--qt-primary-hover);
 }
 
 .primary-btn:disabled {
-  background: #e2e8f0;
-  color: #475569;
+  background: var(--qt-border);
+  color: var(--qt-neutral-text);
 }
 
 .actions button:focus-visible {
-  outline: 3px solid #0d9488;
+  outline: 3px solid var(--qt-primary);
   outline-offset: 2px;
 }
 

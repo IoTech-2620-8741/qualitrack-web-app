@@ -5,8 +5,8 @@
 .chart-card {
   margin-bottom: 24px;
   padding: 24px;
-  background: #fff;
-  border: 1px solid #e2e8f0;
+  background: var(--qt-surface);
+  border: 1px solid var(--qt-border);
   border-radius: 12px;
   box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
 }
@@ -22,7 +22,7 @@
 
 h3 {
   margin: 0 0 4px;
-  color: #0f172a;
+  color: var(--qt-text);
   font-size: 18px;
   font-weight: 700;
   overflow-wrap: anywhere;
@@ -30,7 +30,7 @@ h3 {
 
 .chart-subtitle {
   margin: 0;
-  color: #64748b;
+  color: var(--qt-text-muted);
   font-size: 14px;
   line-height: 1.6;
 }
@@ -38,18 +38,18 @@ h3 {
 .chart-header button {
   min-height: 40px;
   padding: 8px 16px;
-  border-color: #e2e8f0;
+  border-color: var(--qt-border);
   border-radius: 999px;
-  color: #0f172a;
+  color: var(--qt-text);
   font-size: 14px;
   font-weight: 600;
   white-space: nowrap;
-  --mdc-outlined-button-outline-color: #e2e8f0;
-  --mdc-outlined-button-label-text-color: #0f172a;
+  --mdc-outlined-button-outline-color: var(--qt-border);
+  --mdc-outlined-button-label-text-color: var(--qt-text);
 }
 
 .chart-header button:focus-visible {
-  outline: 3px solid #0d9488;
+  outline: 3px solid var(--qt-primary);
   outline-offset: 2px;
 }
 
@@ -65,14 +65,14 @@ h3 {
   align-items: center;
   gap: 8px 20px;
   padding-top: 16px;
-  border-top: 1px solid #e2e8f0;
+  border-top: 1px solid var(--qt-border);
 }
 
 .legend-item {
   display: flex;
   align-items: center;
   gap: 8px;
-  color: #0f172a;
+  color: var(--qt-text);
   font-size: 12px;
   font-weight: 500;
 }
@@ -80,7 +80,7 @@ h3 {
 .line-legend {
   width: 24px;
   height: 2px;
-  background: #0d9488;
+  background: var(--qt-primary);
 }
 
 .box-legend {
@@ -104,7 +104,7 @@ h3 {
   height: 0;
   border-left: 6px solid transparent;
   border-right: 6px solid transparent;
-  border-bottom: 10px solid #ffc107;
+  border-bottom: 10px solid var(--qt-warning);
 }
 
 .triangle-warning::after {
@@ -112,7 +112,7 @@ h3 {
   position: absolute;
   top: 2px;
   left: -2px;
-  color: #7a5a00;
+  color: var(--qt-warning-text);
   font-size: 8px;
   font-weight: bold;
 }
@@ -120,10 +120,10 @@ h3 {
 .critical-dot {
   width: 10px;
   height: 10px;
-  background: #f44336;
-  border: 2px solid #fff;
+  background: var(--qt-error);
+  border: 2px solid var(--qt-surface);
   border-radius: 50%;
-  box-shadow: 0 0 0 1px #f44336;
+  box-shadow: 0 0 0 1px var(--qt-error);
 }
 
 @media (max-width: 760px) {

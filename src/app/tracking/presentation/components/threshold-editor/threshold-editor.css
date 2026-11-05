@@ -1,7 +1,7 @@
 :host {
   display: block;
   min-width: 0;
-  color: #0f172a;
+  color: var(--qt-text);
 }
 
 .data-table {
@@ -10,15 +10,15 @@
   border-collapse: separate;
   border-spacing: 0;
   overflow: hidden;
-  background: #fff;
-  border: 1px solid #e2e8f0;
+  background: var(--qt-surface);
+  border: 1px solid var(--qt-border);
   border-radius: 8px;
   font-size: 14px;
 }
 
 .data-table th {
-  background: #fff;
-  color: #64748b;
+  background: var(--qt-surface);
+  color: var(--qt-text-muted);
   font-size: 12px;
   font-weight: 500;
   text-align: left;
@@ -28,7 +28,7 @@
 .data-table td,
 .data-table th {
   padding: 12px 16px;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid var(--qt-border);
   overflow-wrap: anywhere;
   vertical-align: middle;
 }
@@ -38,7 +38,7 @@
 }
 
 .muted {
-  color: #64748b;
+  color: var(--qt-text-muted);
 }
 
 p.muted {
@@ -48,11 +48,11 @@ p.muted {
 }
 
 mat-checkbox {
-  --mdc-checkbox-selected-icon-color: #0f766e;
-  --mdc-checkbox-selected-hover-icon-color: #0f766e;
-  --mdc-checkbox-selected-focus-icon-color: #0f766e;
-  --mdc-checkbox-selected-pressed-icon-color: #0f766e;
-  --mat-checkbox-label-text-color: #0f172a;
+  --mdc-checkbox-selected-icon-color: var(--qt-primary-strong);
+  --mdc-checkbox-selected-hover-icon-color: var(--qt-primary-strong);
+  --mdc-checkbox-selected-focus-icon-color: var(--qt-primary-strong);
+  --mdc-checkbox-selected-pressed-icon-color: var(--qt-primary-strong);
+  --mat-checkbox-label-text-color: var(--qt-text);
 }
 
 .editor-table input {
@@ -60,33 +60,33 @@ mat-checkbox {
   min-width: 70px;
   box-sizing: border-box;
   padding: 8px 10px;
-  background: #fff;
-  border: 1px solid #e2e8f0;
+  background: var(--qt-surface);
+  border: 1px solid var(--qt-border);
   border-radius: 8px;
-  color: #0f172a;
+  color: var(--qt-text);
   font: inherit;
   font-variant-numeric: tabular-nums;
-  caret-color: #0d9488;
+  caret-color: var(--qt-primary);
 }
 
 .editor-table input:focus-visible {
-  border-color: #0d9488;
-  outline: 3px solid #0d9488;
+  border-color: var(--qt-primary);
+  outline: 3px solid var(--qt-primary);
   outline-offset: 2px;
 }
 
 .editor-table input:disabled {
-  background: #f3f4f6;
-  color: #64748b;
+  background: var(--qt-background);
+  color: var(--qt-text-muted);
 }
 
 .error {
   margin: 16px 0 0;
   padding: 16px;
-  background: #ffebee;
-  border: 1px solid #f44336;
+  background: var(--qt-error-surface);
+  border: 1px solid var(--qt-error);
   border-radius: 12px;
-  color: #b71c1c;
+  color: var(--qt-error-text);
   font-size: 14px;
   line-height: 1.6;
   overflow-wrap: anywhere;
@@ -106,25 +106,25 @@ mat-checkbox {
   border-radius: 999px;
   font-weight: 600;
   white-space: nowrap;
-  --mdc-filled-button-container-color: #0f766e;
-  --mdc-filled-button-label-text-color: #fff;
-  --mdc-filled-button-disabled-container-color: #e2e8f0;
-  --mdc-filled-button-disabled-label-text-color: #475569;
-  background: #0f766e;
-  color: #fff;
+  --mdc-filled-button-container-color: var(--qt-primary-strong);
+  --mdc-filled-button-label-text-color: var(--qt-surface);
+  --mdc-filled-button-disabled-container-color: var(--qt-border);
+  --mdc-filled-button-disabled-label-text-color: var(--qt-neutral-text);
+  background: var(--qt-primary-strong);
+  color: var(--qt-surface);
 }
 
 .section-actions button[mat-flat-button]:hover:not([disabled]) {
-  background: #115e59;
+  background: var(--qt-primary-hover);
 }
 
 .section-actions button[mat-flat-button][disabled] {
-  background: #e2e8f0;
-  color: #475569;
+  background: var(--qt-border);
+  color: var(--qt-neutral-text);
 }
 
 .section-actions button:focus-visible {
-  outline: 3px solid #0d9488;
+  outline: 3px solid var(--qt-primary);
   outline-offset: 2px;
 }
 
@@ -149,7 +149,7 @@ mat-checkbox {
 
   .data-table tr {
     padding: 12px 0;
-    border-bottom: 1px solid #e2e8f0;
+    border-bottom: 1px solid var(--qt-border);
   }
 
   .data-table tbody tr:last-child {
@@ -165,7 +165,7 @@ mat-checkbox {
     content: attr(data-label);
     display: block;
     margin-bottom: 4px;
-    color: #64748b;
+    color: var(--qt-text-muted);
     font-size: 12px;
     font-weight: 500;
     text-transform: uppercase;

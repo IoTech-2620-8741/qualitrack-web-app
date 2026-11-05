@@ -26,7 +26,7 @@
 
 .progress-bar {
   height: 100%;
-  background: #99d5cf;
+  background: var(--qt-primary-soft);
   transform-origin: left;
   animation-name: undo-window-drain;
   animation-timing-function: linear;

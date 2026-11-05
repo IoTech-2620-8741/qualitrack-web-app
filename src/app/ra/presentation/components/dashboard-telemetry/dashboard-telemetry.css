@@ -1,18 +1,17 @@
 /* ==========================================================================
    Dashboard telemetry section
    The host element is the card, so it matches the rest of the dashboard.
-   Colors are plain hex values.
    ========================================================================== */
 
 :host {
   display: block;
   min-width: 0;
   padding: 24px;
-  background: #fff;
-  border: 1px solid #e2e8f0;
+  background: var(--qt-surface);
+  border: 1px solid var(--qt-border);
   border-radius: 12px;
   box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
-  color: #0f172a;
+  color: var(--qt-text);
 }
 
 /* --------------------------------------------------------------------------
@@ -32,23 +31,23 @@ h2 {
   align-items: center;
   gap: 8px;
   margin: 0;
-  color: #0f172a;
+  color: var(--qt-text);
   font-size: 18px;
   font-weight: 700;
 }
 
 h2 mat-icon {
   flex-shrink: 0;
-  color: #0d9488;
+  color: var(--qt-primary);
 }
 
 /* Link to the tracking view (icon button) */
 .section-header a {
-  color: #0f172a;
+  color: var(--qt-text);
 }
 
 .section-header a:focus-visible {
-  outline: 3px solid #0d9488;
+  outline: 3px solid var(--qt-primary);
   outline-offset: 2px;
 }
 
@@ -66,9 +65,9 @@ h2 mat-icon {
 mat-form-field {
   width: 100%;
   min-width: 0;
-  --mat-form-field-outlined-focus-outline-color: #0d9488;
-  --mat-form-field-outlined-focus-label-text-color: #0f766e;
-  --mat-form-field-focus-select-arrow-color: #0d9488;
+  --mat-form-field-outlined-focus-outline-color: var(--qt-primary);
+  --mat-form-field-outlined-focus-label-text-color: var(--qt-primary-strong);
+  --mat-form-field-focus-select-arrow-color: var(--qt-primary);
 }
 
 /* --------------------------------------------------------------------------
@@ -81,34 +80,34 @@ mat-form-field {
   gap: 12px;
   margin-bottom: 16px;
   padding: 12px 16px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--qt-border);
   border-radius: 8px;
-  background: #f3f4f6;
+  background: var(--qt-background);
 }
 
 .latest-reading span {
-  color: #64748b;
+  color: var(--qt-text-muted);
   font-size: 12px;
   font-weight: 500;
 }
 
 .latest-reading strong {
   display: block;
-  color: #0f766e;
+  color: var(--qt-primary-strong);
   font-size: 28px;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
 
 .latest-reading small {
-  color: #64748b;
+  color: var(--qt-text-muted);
   font-size: 14px;
   font-weight: 400;
 }
 
 .latest-reading time {
   max-width: 45%;
-  color: #64748b;
+  color: var(--qt-text-muted);
   font-size: 12px;
   text-align: right;
 }
@@ -124,7 +123,7 @@ mat-form-field {
 
 .chart-summary {
   margin: 12px 0 0;
-  color: #64748b;
+  color: var(--qt-text-muted);
   font-size: 12px;
   line-height: 1.6;
 }
@@ -135,7 +134,7 @@ mat-form-field {
 .empty {
   margin: 0;
   padding: 24px 0;
-  color: #64748b;
+  color: var(--qt-text-muted);
   font-size: 14px;
   line-height: 1.6;
   text-align: center;

@@ -2,8 +2,8 @@
   display: block;
   min-width: 0;
   min-height: 100%;
-  background: #f3f4f6;
-  color: #0f172a;
+  background: var(--qt-background);
+  color: var(--qt-text);
 }
 
 .operations-page {
@@ -25,7 +25,7 @@ a {
   align-items: center;
   gap: 6px;
   margin-bottom: 16px;
-  color: #0f766e;
+  color: var(--qt-primary-strong);
   font-size: 14px;
   font-weight: 500;
   text-decoration: none;
@@ -41,7 +41,7 @@ a {
 }
 
 .operations-page > a:focus-visible {
-  outline: 3px solid #0d9488;
+  outline: 3px solid var(--qt-primary);
   outline-offset: 2px;
   border-radius: 4px;
 }
@@ -50,8 +50,8 @@ mat-progress-bar {
   margin-bottom: 16px;
   border-radius: 999px;
   overflow: hidden;
-  --mdc-linear-progress-active-indicator-color: #0d9488;
-  --mdc-linear-progress-track-color: #e2e8f0;
+  --mdc-linear-progress-active-indicator-color: var(--qt-primary);
+  --mdc-linear-progress-track-color: var(--qt-border);
 }
 
 .page-heading {
@@ -67,14 +67,14 @@ h1 {
   align-items: center;
   gap: 10px;
   margin: 0;
-  color: #1a3a5c;
+  color: var(--qt-heading);
   font-size: 28px;
   font-weight: 700;
 }
 
 h1 mat-icon {
   flex-shrink: 0;
-  color: #0d9488;
+  color: var(--qt-primary);
 }
 
 .error,
@@ -89,15 +89,15 @@ h1 mat-icon {
 }
 
 .error {
-  background: #ffebee;
-  border-color: #f44336;
-  color: #b71c1c;
+  background: var(--qt-error-surface);
+  border-color: var(--qt-error);
+  color: var(--qt-error-text);
 }
 
 .notice {
-  background: #fff8e1;
-  border-color: #ffc107;
-  color: #7a5a00;
+  background: var(--qt-warning-surface);
+  border-color: var(--qt-warning);
+  color: var(--qt-warning-text);
 }
 
 .summary-strip {
@@ -106,15 +106,15 @@ h1 mat-icon {
   gap: 16px 40px;
   margin: 0 0 24px;
   padding: 20px 24px;
-  background: #fff;
-  border: 1px solid #e2e8f0;
+  background: var(--qt-surface);
+  border: 1px solid var(--qt-border);
   border-radius: 12px;
   box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
 }
 
 .summary-strip span {
   display: block;
-  color: #64748b;
+  color: var(--qt-text-muted);
   font-size: 12px;
   font-weight: 500;
   text-transform: uppercase;
@@ -123,7 +123,7 @@ h1 mat-icon {
 .summary-strip strong {
   display: block;
   margin-top: 6px;
-  color: #0f172a;
+  color: var(--qt-text);
   font-size: 18px;
   font-weight: 700;
   overflow-wrap: anywhere;
@@ -133,32 +133,32 @@ h1 mat-icon {
   display: inline-block;
   padding: 4px 12px;
   border-radius: 999px;
-  background: #fff8e1;
-  color: #7a5a00;
+  background: var(--qt-warning-surface);
+  color: var(--qt-warning-text);
   font-size: 14px;
   font-weight: 500;
 }
 
 .summary-strip .status.operational {
-  background: #e8f5e9;
-  color: #1b5e20;
+  background: var(--qt-success-surface);
+  color: var(--qt-success-text);
 }
 
 .summary-strip .status.out_of_service {
-  background: #ffebee;
-  color: #b71c1c;
+  background: var(--qt-error-surface);
+  color: var(--qt-error-text);
 }
 
 .summary-strip .status.inactive {
-  background: #f1f5f9;
-  color: #475569;
+  background: var(--qt-neutral-surface);
+  color: var(--qt-neutral-text);
 }
 
 .device-type {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  color: #0f766e;
+  color: var(--qt-primary-strong);
 }
 
 .device-type mat-icon {
@@ -169,18 +169,18 @@ h1 mat-icon {
 
 mat-tab-group {
   overflow: hidden;
-  background: #fff;
-  border: 1px solid #e2e8f0;
+  background: var(--qt-surface);
+  border: 1px solid var(--qt-border);
   border-radius: 12px;
   box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
-  --mdc-tab-indicator-active-indicator-color: #0d9488;
-  --mat-tab-header-active-label-text-color: #0f766e;
-  --mat-tab-header-active-focus-label-text-color: #0f766e;
-  --mat-tab-header-active-hover-label-text-color: #0f766e;
-  --mat-tab-header-active-ripple-color: #0d9488;
-  --mat-tab-header-inactive-label-text-color: #64748b;
-  --mat-tab-header-inactive-ripple-color: #0d9488;
-  --mat-tab-header-divider-color: #e2e8f0;
+  --mdc-tab-indicator-active-indicator-color: var(--qt-primary);
+  --mat-tab-header-active-label-text-color: var(--qt-primary-strong);
+  --mat-tab-header-active-focus-label-text-color: var(--qt-primary-strong);
+  --mat-tab-header-active-hover-label-text-color: var(--qt-primary-strong);
+  --mat-tab-header-active-ripple-color: var(--qt-primary);
+  --mat-tab-header-inactive-label-text-color: var(--qt-text-muted);
+  --mat-tab-header-inactive-ripple-color: var(--qt-primary);
+  --mat-tab-header-divider-color: var(--qt-border);
 }
 
 .tab-icon {
@@ -204,17 +204,17 @@ mat-tab-group {
 
 .tab-header h3 {
   margin: 0;
-  color: #0f172a;
+  color: var(--qt-text);
   font-size: 20px;
   font-weight: 700;
 }
 
 .tab-content mat-card {
-  background: #fff;
-  border: 1px solid #e2e8f0;
+  background: var(--qt-surface);
+  border: 1px solid var(--qt-border);
   border-radius: 12px;
   box-shadow: none;
-  --mdc-outlined-card-outline-color: #e2e8f0;
+  --mdc-outlined-card-outline-color: var(--qt-border);
 }
 
 .tab-content mat-card-header {
@@ -222,21 +222,21 @@ mat-tab-group {
 }
 
 .tab-content mat-card-title {
-  color: #0f172a;
+  color: var(--qt-text);
   font-size: 18px;
   font-weight: 700;
 }
 
 .tab-content mat-card-subtitle {
   margin-top: 4px;
-  color: #64748b;
+  color: var(--qt-text-muted);
   font-size: 14px;
   line-height: 1.6;
 }
 
 .tab-content mat-card-content {
   padding: 16px 24px 24px;
-  color: #64748b;
+  color: var(--qt-text-muted);
   font-size: 14px;
   line-height: 1.6;
 }
@@ -251,7 +251,7 @@ mat-tab-group {
 .info-item label {
   display: block;
   margin-bottom: 6px;
-  color: #64748b;
+  color: var(--qt-text-muted);
   font-size: 12px;
   font-weight: 500;
   text-transform: uppercase;
@@ -259,15 +259,15 @@ mat-tab-group {
 
 .info-item p {
   margin: 0;
-  color: #0f172a;
+  color: var(--qt-text);
   font-size: 16px;
   font-weight: 600;
 }
 
 mat-form-field {
-  --mat-form-field-outlined-focus-outline-color: #0d9488;
-  --mat-form-field-outlined-focus-label-text-color: #0f766e;
-  --mat-form-field-focus-select-arrow-color: #0d9488;
+  --mat-form-field-outlined-focus-outline-color: var(--qt-primary);
+  --mat-form-field-outlined-focus-label-text-color: var(--qt-primary-strong);
+  --mat-form-field-focus-select-arrow-color: var(--qt-primary);
 }
 
 .inline-form {
@@ -286,7 +286,7 @@ mat-form-field {
 }
 
 .inline-form input {
-  caret-color: #0d9488;
+  caret-color: var(--qt-primary);
 }
 
 .inline-form button {
@@ -301,25 +301,25 @@ mat-form-field {
   font-weight: 600;
   white-space: nowrap;
   text-decoration: none;
-  --mdc-filled-button-container-color: #0f766e;
-  --mdc-filled-button-label-text-color: #fff;
-  --mdc-filled-button-disabled-container-color: #e2e8f0;
-  --mdc-filled-button-disabled-label-text-color: #475569;
-  background: #0f766e;
-  color: #fff;
+  --mdc-filled-button-container-color: var(--qt-primary-strong);
+  --mdc-filled-button-label-text-color: var(--qt-surface);
+  --mdc-filled-button-disabled-container-color: var(--qt-border);
+  --mdc-filled-button-disabled-label-text-color: var(--qt-neutral-text);
+  background: var(--qt-primary-strong);
+  color: var(--qt-surface);
 }
 
 .primary-btn:hover:not([disabled]) {
-  background: #115e59;
+  background: var(--qt-primary-hover);
 }
 
 .primary-btn[disabled] {
-  background: #e2e8f0;
-  color: #475569;
+  background: var(--qt-border);
+  color: var(--qt-neutral-text);
 }
 
 .primary-btn:focus-visible {
-  outline: 3px solid #0d9488;
+  outline: 3px solid var(--qt-primary);
   outline-offset: 2px;
 }
 
@@ -335,7 +335,7 @@ mat-form-field {
 }
 
 .config-content strong {
-  color: #0f172a;
+  color: var(--qt-text);
   font-size: 14px;
   font-weight: 600;
 }
@@ -343,8 +343,8 @@ mat-form-field {
 .config-content span {
   padding: 4px 10px;
   border-radius: 8px;
-  background: #f3f4f6;
-  color: #0f172a;
+  background: var(--qt-background);
+  color: var(--qt-text);
   font-family: monospace;
   font-size: 13px;
 }
@@ -352,7 +352,7 @@ mat-form-field {
 .maintenance-timeline {
   margin-left: 12px;
   padding-left: 24px;
-  border-left: 2px solid #e2e8f0;
+  border-left: 2px solid var(--qt-border);
 }
 
 .timeline-item {
@@ -372,12 +372,12 @@ mat-form-field {
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background: #0d9488;
+  background: var(--qt-primary);
 }
 
 .timeline-item .date {
   margin-bottom: 8px;
-  color: #64748b;
+  color: var(--qt-text-muted);
   font-size: 12px;
   font-weight: 500;
   text-transform: uppercase;
@@ -386,7 +386,7 @@ mat-form-field {
 .empty-msg {
   margin: 0;
   padding: 24px 0;
-  color: #64748b;
+  color: var(--qt-text-muted);
   font-size: 14px;
   line-height: 1.6;
   text-align: center;

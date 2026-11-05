@@ -14,15 +14,15 @@
   min-height: 280px;
   padding: 24px;
   box-sizing: border-box;
-  background: #fff;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
+  background: var(--qt-surface);
+  border: 1px solid var(--qt-border);
+  border-radius: var(--qt-radius-medium);
   box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
 }
 
 h2 {
   margin: 0;
-  color: #0f172a;
+  color: var(--qt-text);
   font-size: 18px;
   font-weight: 700;
   line-height: 1.4;

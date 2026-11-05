@@ -2,8 +2,8 @@
   display: block;
   min-width: 0;
   min-height: 100%;
-  background: #f3f4f6;
-  color: #0f172a;
+  background: var(--qt-background);
+  color: var(--qt-text);
 }
 
 .operations-page {
@@ -46,14 +46,14 @@ h1 {
   align-items: center;
   gap: 10px;
   margin: 0;
-  color: #1a3a5c;
+  color: var(--qt-heading);
   font-size: 28px;
   font-weight: 700;
 }
 
 h1 mat-icon {
   flex-shrink: 0;
-  color: #0d9488;
+  color: var(--qt-primary);
 }
 
 .heading-content p.muted {
@@ -64,13 +64,13 @@ h1 mat-icon {
 
 h2 {
   margin: 24px 0 12px;
-  color: #0f172a;
+  color: var(--qt-text);
   font-size: 20px;
   font-weight: 700;
 }
 
 .muted {
-  color: #64748b;
+  color: var(--qt-text-muted);
 }
 
 p.muted {
@@ -95,15 +95,15 @@ p.muted {
 }
 
 .error {
-  background: #ffebee;
-  border-color: #f44336;
-  color: #b71c1c;
+  background: var(--qt-error-surface);
+  border-color: var(--qt-error);
+  color: var(--qt-error-text);
 }
 
 .notice {
-  background: #fff8e1;
-  border-color: #ffc107;
-  color: #7a5a00;
+  background: var(--qt-warning-surface);
+  border-color: var(--qt-warning);
+  color: var(--qt-warning-text);
 }
 
 .loading {
@@ -119,9 +119,9 @@ p.muted {
 mat-form-field {
   width: 100%;
   min-width: 0;
-  --mat-form-field-outlined-focus-outline-color: #0d9488;
-  --mat-form-field-outlined-focus-label-text-color: #0f766e;
-  --mat-form-field-focus-select-arrow-color: #0d9488;
+  --mat-form-field-outlined-focus-outline-color: var(--qt-primary);
+  --mat-form-field-outlined-focus-label-text-color: var(--qt-primary-strong);
+  --mat-form-field-focus-select-arrow-color: var(--qt-primary);
 }
 
 .filters mat-form-field {
@@ -131,7 +131,7 @@ mat-form-field {
 }
 
 .filters input {
-  caret-color: #0d9488;
+  caret-color: var(--qt-primary);
 }
 
 .filters button[mat-flat-button] {
@@ -141,25 +141,25 @@ mat-form-field {
   border-radius: 999px;
   font-weight: 600;
   white-space: nowrap;
-  --mdc-filled-button-container-color: #0f766e;
-  --mdc-filled-button-label-text-color: #fff;
-  --mdc-filled-button-disabled-container-color: #e2e8f0;
-  --mdc-filled-button-disabled-label-text-color: #475569;
-  background: #0f766e;
-  color: #fff;
+  --mdc-filled-button-container-color: var(--qt-primary-strong);
+  --mdc-filled-button-label-text-color: var(--qt-surface);
+  --mdc-filled-button-disabled-container-color: var(--qt-border);
+  --mdc-filled-button-disabled-label-text-color: var(--qt-neutral-text);
+  background: var(--qt-primary-strong);
+  color: var(--qt-surface);
 }
 
 .filters button[mat-flat-button]:hover:not([disabled]) {
-  background: #115e59;
+  background: var(--qt-primary-hover);
 }
 
 .filters button[mat-flat-button][disabled] {
-  background: #e2e8f0;
-  color: #475569;
+  background: var(--qt-border);
+  color: var(--qt-neutral-text);
 }
 
 .filters button:focus-visible {
-  outline: 3px solid #0d9488;
+  outline: 3px solid var(--qt-primary);
   outline-offset: 2px;
 }
 
@@ -168,17 +168,17 @@ mat-button-toggle-group {
   gap: 4px;
   margin-bottom: 16px;
   padding: 4px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--qt-border);
   border-radius: 999px;
-  background: #fff;
+  background: var(--qt-surface);
   overflow: visible;
   --mat-standard-button-toggle-height: 44px;
   --mat-standard-button-toggle-shape: 999px;
   --mat-standard-button-toggle-divider-color: transparent;
-  --mat-standard-button-toggle-text-color: #64748b;
+  --mat-standard-button-toggle-text-color: var(--qt-text-muted);
   --mat-standard-button-toggle-background-color: transparent;
-  --mat-standard-button-toggle-selected-state-text-color: #fff;
-  --mat-standard-button-toggle-selected-state-background-color: #0f766e;
+  --mat-standard-button-toggle-selected-state-text-color: var(--qt-surface);
+  --mat-standard-button-toggle-selected-state-background-color: var(--qt-primary-strong);
 }
 
 mat-button-toggle-group ::ng-deep .mat-button-toggle {
@@ -186,7 +186,7 @@ mat-button-toggle-group ::ng-deep .mat-button-toggle {
   border: 0;
   border-radius: 999px;
   background: transparent;
-  color: #64748b;
+  color: var(--qt-text-muted);
   font-family: inherit;
 }
 
@@ -202,12 +202,12 @@ mat-button-toggle-group ::ng-deep .mat-button-toggle-label-content {
 }
 
 mat-button-toggle-group ::ng-deep .mat-button-toggle:hover:not(.mat-button-toggle-checked) {
-  background: #f3f4f6;
+  background: var(--qt-background);
 }
 
 mat-button-toggle-group ::ng-deep .mat-button-toggle-checked {
-  background: #0f766e;
-  color: #fff;
+  background: var(--qt-primary-strong);
+  color: var(--qt-surface);
 }
 
 mat-button-toggle-group ::ng-deep .mat-button-toggle-checked .mat-button-toggle-label-content {
@@ -219,7 +219,7 @@ mat-button-toggle-group ::ng-deep .mat-button-toggle-focus-overlay {
 }
 
 mat-button-toggle-group ::ng-deep .mat-button-toggle:has(.mat-button-toggle-button:focus-visible) {
-  outline: 3px solid #0d9488;
+  outline: 3px solid var(--qt-primary);
   outline-offset: 2px;
 }
 
@@ -228,8 +228,8 @@ mat-button-toggle-group ::ng-deep .mat-button-toggle:has(.mat-button-toggle-butt
   height: 320px;
   margin: 0 0 16px;
   padding: 16px;
-  background: #fff;
-  border: 1px solid #e2e8f0;
+  background: var(--qt-surface);
+  border: 1px solid var(--qt-border);
   border-radius: 12px;
   box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
 }
@@ -240,16 +240,16 @@ mat-button-toggle-group ::ng-deep .mat-button-toggle:has(.mat-button-toggle-butt
   border-collapse: separate;
   border-spacing: 0;
   overflow: hidden;
-  background: #fff;
-  border: 1px solid #e2e8f0;
+  background: var(--qt-surface);
+  border: 1px solid var(--qt-border);
   border-radius: 12px;
   box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
   font-size: 14px;
 }
 
 .data-table th {
-  background: #fff;
-  color: #64748b;
+  background: var(--qt-surface);
+  color: var(--qt-text-muted);
   font-size: 12px;
   font-weight: 500;
   text-align: left;
@@ -259,13 +259,13 @@ mat-button-toggle-group ::ng-deep .mat-button-toggle:has(.mat-button-toggle-butt
 .data-table td,
 .data-table th {
   padding: 16px 20px;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid var(--qt-border);
   overflow-wrap: anywhere;
   vertical-align: top;
 }
 
 .data-table td {
-  color: #0f172a;
+  color: var(--qt-text);
   font-variant-numeric: tabular-nums;
 }
 
@@ -274,13 +274,13 @@ mat-button-toggle-group ::ng-deep .mat-button-toggle:has(.mat-button-toggle-butt
 }
 
 .data-table tbody tr:hover {
-  background: #f3f4f6;
+  background: var(--qt-background);
 }
 
 .data-table small {
   display: block;
   margin-top: 4px;
-  color: #64748b;
+  color: var(--qt-text-muted);
   font-size: 12px;
 }
 
@@ -300,18 +300,18 @@ mat-button-toggle-group ::ng-deep .mat-button-toggle:has(.mat-button-toggle-butt
 }
 
 .state.normal {
-  background: #e8f5e9;
-  color: #1b5e20;
+  background: var(--qt-success-surface);
+  color: var(--qt-success-text);
 }
 
 .state.warning {
-  background: #fff8e1;
-  color: #7a5a00;
+  background: var(--qt-warning-surface);
+  color: var(--qt-warning-text);
 }
 
 .state.critical {
-  background: #ffebee;
-  color: #b71c1c;
+  background: var(--qt-error-surface);
+  color: var(--qt-error-text);
 }
 
 .collapsible {
@@ -346,7 +346,7 @@ mat-button-toggle-group ::ng-deep .mat-button-toggle:has(.mat-button-toggle-butt
 
 .collapsible summary mat-icon {
   flex-shrink: 0;
-  color: #64748b;
+  color: var(--qt-text-muted);
   transform: rotate(-90deg);
   transition: transform 0.2s ease;
 }
@@ -360,11 +360,11 @@ mat-button-toggle-group ::ng-deep .mat-button-toggle:has(.mat-button-toggle-butt
 }
 
 .collapsible summary:hover mat-icon {
-  color: #0f172a;
+  color: var(--qt-text);
 }
 
 .collapsible summary:focus-visible {
-  outline: 3px solid #0d9488;
+  outline: 3px solid var(--qt-primary);
   outline-offset: 4px;
 }
 
@@ -460,15 +460,15 @@ mat-button-toggle-group ::ng-deep .mat-button-toggle:has(.mat-button-toggle-butt
     width: 100%;
     margin: 0 0 12px;
     padding: 8px 12px;
-    background: #fff;
-    border: 1px solid #e2e8f0;
+    background: var(--qt-surface);
+    border: 1px solid var(--qt-border);
     border-radius: 12px;
     box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
     box-sizing: border-box;
   }
 
   .data-table tbody tr:hover {
-    background: #fff;
+    background: var(--qt-surface);
   }
 
   .data-table td {
@@ -483,7 +483,7 @@ mat-button-toggle-group ::ng-deep .mat-button-toggle:has(.mat-button-toggle-butt
     content: attr(data-label);
     display: block;
     margin-bottom: 4px;
-    color: #64748b;
+    color: var(--qt-text-muted);
     font-size: 12px;
     font-weight: 500;
     text-transform: uppercase;
