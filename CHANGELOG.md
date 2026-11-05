@@ -9,13 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Reporting & Analytics (ra): when someone who already pays for a plan arrives from a website plan link with another one, the dashboard opens a notice that names both plans, says when the current period ends and sends them to Billing to cancel the renewal, since the platform has no direct plan switch.
+- Subscription (subscription): when someone who already pays for a plan arrives from a website plan link with another one, the dashboard opens a notice that names both plans, says when the current period ends and sends them to Billing to cancel the renewal, since the platform has no direct plan switch.
 
 - Identity & Access (iam): the sign-up page keeps the plan of the website link (`plan` and `billingCycle`) even when the person goes on to sign in, so the checkout of that plan opens after signing in.
 
 - Subscription (subscription): a plan chosen on the website (`plan` and `billingCycle` in the link) is remembered by `planPreselectionGuard`; the plans view sends an account without a subscription straight to the checkout of that plan, leaving the checkout or signing out forgets it.
 
 ### Changed
+
+- Subscription (subscription): the root routes compose the guard of the plan link and the plan switch notice, so `iam` and `ra` no longer import `subscription`; a plan link is remembered on every IAM page (#89).
 
 - Inventory (inventory): the raw material, catalogue and legacy views are split into 14 components that receive their data and report what the user asks for (#88).
 
@@ -68,6 +70,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Compliance & Alerts (ca): the view action of the alert history shows only the eye icon again, with its words as label and tooltip (#84).
 
 - Inventory (inventory): the "Changes saved" message stays visible after the reload that follows a change, and opening another environment no longer shows the data of the previous one (#88).
+
+- Inventory (inventory), Product Batch (batch): leaving the inventory home, the product home or a link to a batch while it loads no longer pulls you back to the page it was about to open (#89).
 
 ## [2.2.0] - 2026-11-04
 
