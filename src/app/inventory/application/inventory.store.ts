@@ -526,18 +526,31 @@ export class InventoryStore {
    * Discards outdated responses using a generation counter.
    */
   async load(environmentId: number, id: number | null = null): Promise<boolean> {
+
+    const environmentChanged = this.environmentId() !== environmentId;
     const generation = ++this.generation;
+
+    if (environmentChanged) {
+      this.materials.set([]);
+      this.lowStockMaterials.set([]);
+      this.nearExpiry.set([]);
+      this.containers.set([]);
+      this.environmentUsage.set(null);
+    }
+
     this.environmentId.set(environmentId);
     this.selectedId.set(id);
     this.loading.set(true);
     this.error.set('');
     this.notice.set('');
+
     this.receipts.set([]);
     this.movements.set([]);
     this.usages.set([]);
     this.legacyHistory.set([]);
     this.legacyError.set('');
     this.storageError.set('');
+
     let materialsLoaded = false;
     try {
       const materials = await firstValueFrom(this.api.materials(this.lab, environmentId));
