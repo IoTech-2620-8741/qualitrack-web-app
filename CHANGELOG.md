@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Reporting & Analytics (ra): when someone who already pays for a plan arrives from a website plan link with another one, the dashboard opens a notice that names both plans, says when the current period ends and sends them to Billing to cancel the renewal, since the platform has no direct plan switch.
+
+- Identity & Access (iam): the sign-up page keeps the plan of the website link (`plan` and `billingCycle`) even when the person goes on to sign in, so the checkout of that plan opens after signing in.
+
+- Subscription (subscription): a plan chosen on the website (`plan` and `billingCycle` in the link) is remembered by `planPreselectionGuard`; the plans view sends an account without a subscription straight to the checkout of that plan, leaving the checkout or signing out forgets it.
+
 ### Changed
 
 - Presentation: the views share one visual language, with cards, titles with an icon, pill buttons and tables that become cards on a phone; the logo no longer has empty margins, and the alerts and the report generator no longer show breadcrumbs (#81).
@@ -42,6 +48,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Presentation: 356 custom properties this version of Angular Material does not read, and the rules no element of their component can match (#82).
 
 ### Fixed
+
+- Subscription (subscription): the checkout of an account that already has a subscription shows the translated already-active notice instead of a generic conflict message.
 
 - Laboratory (laboratory): the action columns of the staff and environment lists are only offered to quality managers again (#82).
 
