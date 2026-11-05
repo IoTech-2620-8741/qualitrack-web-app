@@ -21,6 +21,7 @@ import { EnvironmentSelector } from '../../../../shared/presentation/components/
 import { InventoryMaterialTable } from '../../components/inventory-material-table/inventory-material-table';
 import { NearExpiryTable } from '../../components/near-expiry-table/near-expiry-table';
 import { InventoryFilters } from '../../components/inventory-filters/inventory-filters';
+import { LegacyImportPanel } from '../../components/legacy-import-panel/legacy-import-panel';
 
 @Component({
   selector: 'app-inventory-catalogue',
@@ -37,7 +38,8 @@ import { InventoryFilters } from '../../components/inventory-filters/inventory-f
     EnvironmentSelector,
     InventoryMaterialTable,
     NearExpiryTable,
-    InventoryFilters
+    InventoryFilters,
+    LegacyImportPanel
   ],
   templateUrl: './inventory-catalogue.html',
   changeDetection: ChangeDetectionStrategy.Eager,

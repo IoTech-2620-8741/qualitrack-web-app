@@ -26,26 +26,11 @@
     <p class="success" role="status">{{ store.notice() | translate }}</p>
   }
   @if (importing()) {
-    <section class="editor">
-      <h2>{{ 'inventory.legacy' | translate }}</h2>
-      <p class="notice">{{ 'inventory.importNotice' | translate }}</p>
-      @for (item of store.legacy(); track item.id) {
-        <div class="legacy-row">
-          <div>
-            <strong>{{ item.name }}</strong>
-            <p>
-              {{ item.code }} · {{ item.batchNumber }} · {{ item.balance | number: '1.0-3' }}
-              {{ item.unit }}
-            </p>
-          </div>
-          <button mat-stroked-button (click)="import(item.id)" [disabled]="store.saving()">
-            <mat-icon>move_to_inbox</mat-icon>{{ 'inventory.import' | translate }}
-          </button>
-        </div>
-      } @empty {
-        <p>{{ 'inventory.noLegacy' | translate }}</p>
-      }
-    </section>
+    <app-legacy-import-panel
+      [materials]="store.legacy()"
+      [saving]="store.saving()"
+      (importRequested)="import($event)"
+    />
   }
   @if (showNearExpiry()) {
     <section class="editor" aria-labelledby="near-expiry-title">
