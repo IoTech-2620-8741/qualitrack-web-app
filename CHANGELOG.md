@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Presentation: the views share one visual language, with cards, titles with an icon, pill buttons and tables that become cards on a phone; the logo no longer has empty margins, and the alerts and the report generator no longer show breadcrumbs (#81).
+
+- Shared (shared): the colors of the component styles use the design tokens again, with new `--qt-primary-hover`, `--qt-primary-soft`, `--qt-heading` and `--qt-text-subtle` tokens (#82).
 
 - Compliance & Alerts (ca): "Export report" in the alert history opens the report generator with an environmental compliance report of the same environment and period.
 
@@ -33,6 +36,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Compliance & Alerts (ca): `countAlertsByWeek` counts the alerts of the history in weeks that start on Monday in Peru, by severity, for the weekly chart.
 
 - Compliance & Alerts (ca): `CaStore.loadAlertHistory` reads every alert, open or resolved, of one environment or of the whole laboratory; an environment that fails does not hide the others.
+
+### Removed
+
+- Presentation: 356 custom properties this version of Angular Material does not read, and the rules no element of their component can match (#82).
+
+### Fixed
+
+- Laboratory (laboratory): the action columns of the staff and environment lists are only offered to quality managers again (#82).
+
+- Compliance & Alerts (ca): on a phone the title of the alerts no longer splits a word, the sort options wrap and the export link fits, and the alert table scrolls inside its own area on every width that does not show cards (#82).
+
+- Product Batch Management (batch), Inventory (inventory) and Laboratory (laboratory): the product catalog actions, the tables of a raw material and the staff table keep their words whole on a tablet (#82).
+
+- Reporting & Analytics (ra): the styles of the subscription section no longer end in a cut rule (#82).
+
+- Shared (shared): the application stays in Roboto instead of falling back to the font of the system (#82).
 
 ## [2.2.0] - 2026-11-04
 
