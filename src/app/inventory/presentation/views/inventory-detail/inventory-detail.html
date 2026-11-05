@@ -85,77 +85,36 @@
       />
     }
     <mat-tab-group>
-      <mat-tab [label]="'inventory.receipts' | translate"
-        ><div class="tab-content">
+      <mat-tab [label]="'inventory.receipts' | translate">
+        <div class="tab-content">
+
           @if (store.storageError()) {
             <p class="error" role="alert">{{ store.storageError() | translate }}</p>
           } @else if (store.environmentUsage() !== null && !store.storesInContainers()) {
             <p class="notice">{{ 'inventory.containerUsageNotice' | translate }}</p>
           }
-        <app-raw-material-batches-table
-          [receipts]="store.receipts()"
-          [containers]="store.containers()"
-          [environmentId]="store.environmentId()"
-          [canOperate]="store.canOperate()"
-          [canReview]="store.canReview()"
-          [storesInContainers]="store.storesInContainers()"
-          [saving]="store.saving()"
-          (storageRequested)="startStoring($event)"
-          (reviewRequested)="startReview($event)"
-        />
-        </div></mat-tab
-      >
-      <mat-tab [label]="'inventory.movements' | translate"
-        ><div class="tab-content">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>{{ 'inventory.movement' | translate }}</th>
-                <th>{{ 'inventory.receiptNumber' | translate }}</th>
-                <th>{{ 'inventory.balance' | translate }}</th>
-                <th>{{ 'inventory.traceability' | translate }}</th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (movement of store.movements(); track movement.id) {
-                <tr>
-                  <td>
-                    <strong>{{ 'inventory.types.' + movement.type | translate }}</strong
-                    ><small>{{ movement.occurredAt | dateTime }}</small
-                    ><small>{{ 'inventory.reviewer' | translate }} #{{ movement.actorId }}</small>
-                  </td>
-                  <td [attr.data-label]="'inventory.receiptNumber' | translate">
-                    #{{ movement.receiptId
-                    }}<small>{{ 'inventory.status.' + movement.statusAfter | translate }}</small>
-                  </td>
-                  <td [attr.data-label]="'inventory.balance' | translate">
-                    {{ movement.stockBefore | number: '1.0-3' }} →
-                    {{ movement.stockAfter | number: '1.0-3' }} {{ movement.unit
-                    }}<small
-                      >{{ movement.amount > 0 ? '+' : '' }}{{ movement.amount | number: '1.0-3' }}
-                      {{ movement.unit }}</small
-                    >
-                  </td>
-                  <td [attr.data-label]="'inventory.traceability' | translate">
-                    @if (movement.productBatchId) {
-                      <a [routerLink]="['/batches', movement.productBatchId]"
-                        >{{ 'inventory.productBatch' | translate }} #{{
-                          movement.productBatchId
-                        }}</a
-                      >
-                    }
-                    <small>{{ movement.reason }}</small>
-                  </td>
-                </tr>
-              } @empty {
-                <tr>
-                  <td colspan="4">{{ 'inventory.noMovements' | translate }}</td>
-                </tr>
-              }
-            </tbody>
-          </table>
-        </div></mat-tab
-      >
+
+          <app-raw-material-batches-table
+            [receipts]="store.receipts()"
+            [containers]="store.containers()"
+            [environmentId]="store.environmentId()"
+            [canOperate]="store.canOperate()"
+            [canReview]="store.canReview()"
+            [storesInContainers]="store.storesInContainers()"
+            [saving]="store.saving()"
+            (storageRequested)="startStoring($event)"
+            (reviewRequested)="startReview($event)"
+          />
+
+        </div>
+      </mat-tab>
+
+      <mat-tab [label]="'inventory.movements' | translate">
+        <div class="tab-content">
+          <app-inventory-movements-table [movements]="store.movements()" />
+        </div>
+      </mat-tab>
+
       @if (material.legacyId) {
         <mat-tab [label]="'inventory.legacyHistory' | translate"
           ><div class="tab-content">
