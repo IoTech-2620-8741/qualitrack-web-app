@@ -488,20 +488,6 @@ export class InventoryStore {
       ),
     );
   }
-
-  /**
-   * Retrieves the name of a container monitor.
-   *
-   * @param containerMonitorId - Identifier of the container monitor.
-   * @returns The container name, or null if no match is found.
-   *
-   * @remarks
-   * Searches the monitors loaded for the current environment.
-   */
-  containerName(containerMonitorId: number | null): string | null {
-    return this.containers().find((container) => container.id === containerMonitorId)?.name ?? null;
-  }
-
   /**
    * Imports a legacy raw material into the selected environment.
    *
