@@ -142,6 +142,11 @@ export class SubscriptionStore {
    */
   readonly hasActiveSubscription = computed(() => this._currentSubscription()?.status === 'ACTIVE');
 
+  constructor() {
+    // The plan lives in sessionStorage, which a reload keeps: the next person on this tab must not inherit it.
+    this.iam.beforeSignOut(() => this.clearSelectedPlan());
+  }
+
   /**
    * Loads all available subscription plans.
    */
@@ -241,6 +246,8 @@ export class SubscriptionStore {
         this._checkoutSession.set(session);
         this._successMsg.set('Checkout session created successfully');
         this.finishRequest();
+        // The choice is spent: coming back from Stripe must not send the person to checkout again.
+        this.clearSelectedPlan();
 
         if (session.checkoutUrl) {
           window.location.href = session.checkoutUrl;

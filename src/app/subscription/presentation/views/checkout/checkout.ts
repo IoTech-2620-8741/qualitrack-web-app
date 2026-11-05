@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -38,7 +38,7 @@ type BillingCycle = 'MONTHLY' | 'YEARLY';
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './checkout.css',
 })
-export class Checkout implements OnInit {
+export class Checkout implements OnInit, OnDestroy {
   /**
    * Route used to read the selected plan code from query parameters.
    */
@@ -82,6 +82,11 @@ export class Checkout implements OnInit {
     }
 
     this.store.loadPlans();
+  }
+
+  /** Leaving without paying (Cancel, Back) drops the choice, so the plans view does not send the person back here. */
+  ngOnDestroy(): void {
+    this.store.clearSelectedPlan();
   }
 
   /**
