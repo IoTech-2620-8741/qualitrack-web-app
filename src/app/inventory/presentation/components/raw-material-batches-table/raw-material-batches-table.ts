@@ -19,22 +19,19 @@ import { StorageContainer } from '../../../domain/model/storage-container.entity
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RawMaterialBatchesTable {
-  // Datos recibidos desde la vista contenedora
+
   readonly receipts = input.required<readonly RawMaterialBatch[]>();
   readonly containers = input.required<readonly StorageContainer[]>();
   readonly environmentId = input<number | null>(null);
 
-  // Permisos y estados
   readonly canOperate = input(false);
   readonly canReview = input(false);
   readonly storesInContainers = input(false);
   readonly saving = input(false);
 
-  // Eventos hacia el componente padre
   readonly storageRequested = output<RawMaterialBatch>();
   readonly reviewRequested = output<RawMaterialBatch>();
 
-  // Busca el nombre del contenedor asociado a un lote
   containerName(containerMonitorId: number): string | null {
     return this.containers().find((container) => container.id === containerMonitorId)?.name ?? null;
   }

@@ -1,0 +1,48 @@
+
+<table class="data-table">
+  <thead>
+  <tr>
+    <th>
+      {{ 'inventory.productBatch' | translate }}
+    </th>
+    <th>
+      {{ 'inventory.amount' | translate }}
+    </th>
+    <th>
+      {{ 'inventory.date' | translate }}
+    </th>
+  </tr>
+  </thead>
+
+  <tbody>
+    @for (usage of history(); track usage.id) {
+      <tr>
+
+        <td [attr.data-label]="'inventory.productBatch' | translate">
+          <a [routerLink]="['/batches', usage.batchId]">
+            #{{ usage.batchId }}
+          </a>
+        </td>
+
+        <td
+          [attr.data-label]="'inventory.amount' | translate"
+        >
+          {{ usage.quantityUsed | number: '1.0-3' }}
+          {{ usage.unit }}
+        </td>
+
+        <td
+          [attr.data-label]="'inventory.date' | translate"
+        >
+          {{ usage.usageDate | dateTime }}
+        </td>
+      </tr>
+    } @empty {
+      <tr>
+        <td colspan="3" class="empty-state">
+          {{ 'inventory.noMovements' | translate }}
+        </td>
+      </tr>
+    }
+  </tbody>
+</table>

@@ -12,7 +12,7 @@
   <tbody>
     @for (movement of movements(); track movement.id) {
       <tr>
-        <!-- Tipo de movimiento y responsable -->
+
         <td [attr.data-label]="'inventory.movement' | translate">
           <strong>
             {{ 'inventory.types.' + movement.type | translate }}
@@ -28,7 +28,6 @@
           </small>
         </td>
 
-        <!-- Lote de materia prima -->
         <td [attr.data-label]="'inventory.receiptNumber' | translate">
           #{{ movement.receiptId }}
 
