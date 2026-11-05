@@ -5,6 +5,7 @@ import { provideTranslateService } from '@ngx-translate/core';
 import { BehaviorSubject } from 'rxjs';
 import { InventoryStore } from '../../../application/inventory.store';
 import { LegacyMaterialSnapshot } from '../../../domain/model/legacy-material-snapshot.entity';
+import { ConsumingBatch } from '../../../domain/model/consuming-batch.entity';
 import { MaterialConsumption } from '../../../domain/model/material-consumption.entity';
 import { LegacyMaterialDetail } from './legacy-material-detail';
 
@@ -17,7 +18,7 @@ describe('LegacyMaterialDetail', () => {
       new MaterialConsumption({ id: 2, batchId: 8, quantityUsed: 2, unit: 'kg', usageDate: '2026-08-01' }),
     ]),
     legacyDetailLoading: signal(false), legacyDetailError: signal(null),
-    legacyDetailHasUnrecordedStock: () => true, legacyDetailBatchLabel: () => 'PB-8',
+    legacyDetailHasUnrecordedStock: () => true, legacyDetailBatches: signal([new ConsumingBatch({ id: 8, batchNumber: 'PB-8' })]),
     loadLegacyDetail: vi.fn(), clearLegacyDetail: vi.fn(),
   };
   beforeEach(() => {

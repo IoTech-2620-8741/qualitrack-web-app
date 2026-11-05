@@ -17,6 +17,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Inventory (inventory): the raw material, catalogue and legacy views are split into 14 components that receive their data and report what the user asks for (#88).
+
 - Presentation: the views share one visual language, with cards, titles with an icon, pill buttons and tables that become cards on a phone; the logo no longer has empty margins, and the alerts and the report generator no longer show breadcrumbs (#81).
 
 - Shared (shared): the colors of the component styles use the design tokens again, with new `--qt-primary-hover`, `--qt-primary-soft`, `--qt-heading` and `--qt-text-subtle` tokens (#82).
@@ -64,6 +66,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Shared (shared): the browser tab no longer keeps the title of the previous page. Every page has a title in the language of the application, in the format `Page - QualiTrack` (#83).
 
 - Compliance & Alerts (ca): the view action of the alert history shows only the eye icon again, with its words as label and tooltip (#84).
+
+- Inventory (inventory): the "Changes saved" message stays visible after the reload that follows a change, and opening another environment no longer shows the data of the previous one (#88).
 
 ## [2.2.0] - 2026-11-04
 

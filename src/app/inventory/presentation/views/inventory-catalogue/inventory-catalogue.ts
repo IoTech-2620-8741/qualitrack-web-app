@@ -7,17 +7,17 @@ import {
   signal,
   ChangeDetectionStrategy,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
-import { MatCheckboxModule } from '@angular/material/checkbox';
 import { TranslatePipe } from '@ngx-translate/core';
 import { InventoryStore } from '../../../application/inventory.store';
 import { EnvironmentSelector } from '../../../../shared/presentation/components/environment-selector/environment-selector';
+import { InventoryMaterialTable } from '../../components/inventory-material-table/inventory-material-table';
+import { NearExpiryTable } from '../../components/near-expiry-table/near-expiry-table';
+import { InventoryFilters } from '../../components/inventory-filters/inventory-filters';
+import { LegacyImportPanel } from '../../components/legacy-import-panel/legacy-import-panel';
 
 /**
  * Raw material catalogue of an environment (US36), with low stock (US41) and near expiry (US42) views.
@@ -26,15 +26,15 @@ import { EnvironmentSelector } from '../../../../shared/presentation/components/
   selector: 'app-inventory-catalogue',
   standalone: true,
   imports: [
-    CommonModule,
-    FormsModule,
     RouterLink,
     MatButtonModule,
     MatIconModule,
-    MatInputModule,
-    MatCheckboxModule,
     TranslatePipe,
     EnvironmentSelector,
+    InventoryMaterialTable,
+    NearExpiryTable,
+    InventoryFilters,
+    LegacyImportPanel,
   ],
   templateUrl: './inventory-catalogue.html',
   changeDetection: ChangeDetectionStrategy.Eager,

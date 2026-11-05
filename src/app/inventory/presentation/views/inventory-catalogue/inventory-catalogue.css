@@ -64,8 +64,7 @@ a {
 }
 
 .actions button,
-.actions a[mat-flat-button],
-.legacy-row button {
+.actions a[mat-flat-button] {
   min-height: 40px;
   height: auto;
   padding: 8px 16px;
@@ -158,32 +157,6 @@ p[role='status'] {
   margin-bottom: 16px;
 }
 
-.legacy-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 12px 0;
-  border-bottom: 1px solid var(--qt-border);
-}
-
-.legacy-row:last-child {
-  border-bottom: none;
-}
-
-.legacy-row strong {
-  font-size: 14px;
-  font-weight: 600;
-}
-
-.legacy-row p {
-  margin: 4px 0 0;
-  color: var(--qt-text-muted);
-  font-size: 14px;
-  font-variant-numeric: tabular-nums;
-}
-
 .summary-strip {
   display: flex;
   flex-wrap: wrap;
@@ -211,131 +184,6 @@ p[role='status'] {
   font-size: 24px;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
-}
-
-.filters {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 16px;
-  margin: 0 0 24px;
-  padding: 16px 24px;
-  background: var(--qt-surface);
-  border: 1px solid var(--qt-border);
-  border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
-}
-
-mat-form-field {
-  width: 100%;
-  min-width: 0;
-  --mat-form-field-outlined-focus-outline-color: var(--qt-primary);
-  --mat-form-field-outlined-focus-label-text-color: var(--qt-primary-strong);
-  --mat-form-field-focus-select-arrow-color: var(--qt-primary);
-}
-
-.filters mat-form-field {
-  flex: 1;
-  max-width: 440px;
-}
-
-input {
-  caret-color: var(--qt-primary);
-}
-
-mat-icon[matPrefix] {
-  margin-left: 12px;
-  color: var(--qt-text-muted);
-}
-
-mat-checkbox {
-  --mat-checkbox-label-text-color: var(--qt-text);
-}
-
-.data-table {
-  width: 100%;
-  table-layout: fixed;
-  border-collapse: separate;
-  border-spacing: 0;
-  overflow: hidden;
-  background: var(--qt-surface);
-  border: 1px solid var(--qt-border);
-  border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
-  font-size: 14px;
-}
-
-.editor .data-table {
-  border-radius: 8px;
-  box-shadow: none;
-}
-
-.data-table th {
-  padding: 16px 20px;
-  background: var(--qt-surface);
-  border-bottom: 1px solid var(--qt-border);
-  color: var(--qt-text-muted);
-  font-size: 12px;
-  font-weight: 500;
-  text-align: left;
-  text-transform: uppercase;
-  overflow-wrap: anywhere;
-  vertical-align: top;
-}
-
-.data-table td {
-  padding: 16px 20px;
-  border-bottom: 1px solid var(--qt-border);
-  color: var(--qt-text);
-  font-variant-numeric: tabular-nums;
-  overflow-wrap: anywhere;
-  vertical-align: top;
-}
-
-.data-table tbody tr:last-child td {
-  border-bottom: none;
-}
-
-.data-table tbody tr {
-  transition: background-color 0.2s ease;
-}
-
-.data-table tbody tr:hover {
-  background: var(--qt-background);
-}
-
-.data-table small {
-  display: block;
-  margin-top: 4px;
-  color: var(--qt-text-muted);
-  font-size: 12px;
-}
-
-.data-table td[colspan] {
-  padding: 32px 20px;
-  color: var(--qt-text-muted);
-  text-align: center;
-}
-
-.warning {
-  color: var(--qt-warning-text);
-  font-weight: 600;
-}
-
-td a {
-  color: var(--qt-primary-strong);
-  font-weight: 600;
-  text-decoration: none;
-}
-
-td a:hover {
-  text-decoration: underline;
-}
-
-td a:focus-visible {
-  outline: 3px solid var(--qt-primary);
-  outline-offset: 2px;
-  border-radius: 4px;
 }
 
 @media (max-width: 760px) {
@@ -370,67 +218,6 @@ td a:focus-visible {
     font-size: 20px;
   }
 
-  .filters {
-    flex-direction: column;
-    align-items: stretch;
-    padding: 16px;
-  }
-
-  .filters mat-form-field {
-    max-width: none;
-  }
-
-  .data-table {
-    overflow: visible;
-    background: transparent;
-    border: 0;
-    box-shadow: none;
-  }
-
-  .data-table thead {
-    display: none;
-  }
-
-  .data-table,
-  .data-table tbody,
-  .data-table tr,
-  .data-table td {
-    display: block;
-    width: auto;
-  }
-
-  .data-table tr {
-    margin-bottom: 12px;
-    padding: 8px 12px;
-    background: var(--qt-surface);
-    border: 1px solid var(--qt-border);
-    border-radius: 12px;
-    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
-  }
-
-  .editor .data-table tr {
-    box-shadow: none;
-    border-radius: 8px;
-  }
-
-  .data-table td {
-    padding: 8px 0;
-    border: 0;
-  }
-
-  .data-table td[data-label]::before {
-    content: attr(data-label);
-    display: block;
-    margin-bottom: 4px;
-    color: var(--qt-text-muted);
-    font-size: 12px;
-    font-weight: 500;
-    text-transform: uppercase;
-  }
-
-  .data-table td[colspan] {
-    padding: 24px 0;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {

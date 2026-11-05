@@ -26,61 +26,21 @@
     <p class="success" role="status">{{ store.notice() | translate }}</p>
   }
   @if (importing()) {
-    <section class="editor">
-      <h2>{{ 'inventory.legacy' | translate }}</h2>
-      <p class="notice">{{ 'inventory.importNotice' | translate }}</p>
-      @for (item of store.legacy(); track item.id) {
-        <div class="legacy-row">
-          <div>
-            <strong>{{ item.name }}</strong>
-            <p>
-              {{ item.code }} · {{ item.batchNumber }} · {{ item.balance | number: '1.0-3' }}
-              {{ item.unit }}
-            </p>
-          </div>
-          <button mat-stroked-button (click)="import(item.id)" [disabled]="store.saving()">
-            <mat-icon>move_to_inbox</mat-icon>{{ 'inventory.import' | translate }}
-          </button>
-        </div>
-      } @empty {
-        <p>{{ 'inventory.noLegacy' | translate }}</p>
-      }
-    </section>
+    <app-legacy-import-panel
+      [materials]="store.legacy()"
+      [saving]="store.saving()"
+      (importRequested)="import($event)"
+    />
   }
   @if (showNearExpiry()) {
     <section class="editor" aria-labelledby="near-expiry-title">
       <h2 id="near-expiry-title">{{ 'inventory.nearExpiry' | translate }}</h2>
       <p class="notice">{{ 'inventory.nearExpiryNotice' | translate }}</p>
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>{{ 'inventory.name' | translate }}</th>
-            <th>{{ 'inventory.receiptNumber' | translate }}</th>
-            <th>{{ 'inventory.expiresOn' | translate }}</th>
-            <th>{{ 'inventory.available' | translate }}</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (lot of store.nearExpiry(); track lot.id) {
-            <tr>
-              <td>
-                <a [routerLink]="['/inventory/environments', store.environmentId(), 'raw-materials', lot.rawMaterialId]">
-                  {{ materialNames().get(lot.rawMaterialId) ?? ('#' + lot.rawMaterialId) }}
-                </a>
-              </td>
-              <td [attr.data-label]="'inventory.receiptNumber' | translate">{{ lot.batchNumber }}</td>
-              <td [attr.data-label]="'inventory.expiresOn' | translate" class="warning">{{ lot.expiresOn }}</td>
-              <td [attr.data-label]="'inventory.available' | translate">
-                {{ lot.availableAmount | number: '1.0-3' }} {{ lot.unit }}
-              </td>
-            </tr>
-          } @empty {
-            <tr>
-              <td colspan="4">{{ 'inventory.nearExpiryEmpty' | translate }}</td>
-            </tr>
-          }
-        </tbody>
-      </table>
+      <app-near-expiry-table
+        [batches]="store.nearExpiry()"
+        [materialNames]="materialNames()"
+        [environmentId]="store.environmentId()"
+      />
     </section>
   }
   <section class="summary-strip">
@@ -91,51 +51,18 @@
       <span>{{ 'inventory.lowStock' | translate }}</span><strong>{{ store.lowCount() }}</strong>
     </div>
   </section>
-  <div class="filters">
-    <mat-form-field appearance="outline" subscriptSizing="dynamic"
-      ><mat-label>{{ 'inventory.search' | translate }}</mat-label
-      ><mat-icon matPrefix>search</mat-icon
-      ><input matInput [ngModel]="search()" (ngModelChange)="search.set($event)"
-    /></mat-form-field>
-    <mat-checkbox [checked]="lowOnly()" (change)="toggleLowOnly($event.checked)">{{
-      'inventory.lowStock' | translate
-    }}</mat-checkbox>
-  </div>
+  <app-inventory-filters
+    [search]="search()"
+    [lowOnly]="lowOnly()"
+    (searchChange)="search.set($event)"
+    (lowOnlyChange)="toggleLowOnly($event)"
+  />
   @if (store.loading()) {
     <p role="status">{{ 'inventory.loading' | translate }}</p>
   } @else {
-    <table class="data-table">
-      <thead>
-        <tr>
-          <th>{{ 'inventory.name' | translate }}</th>
-          <th>{{ 'inventory.usableStock' | translate }}</th>
-          <th>{{ 'inventory.physicalStock' | translate }}</th>
-          <th>{{ 'inventory.minimum' | translate }}</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (material of filtered(); track material.id) {
-          <tr>
-            <td>
-              <a [routerLink]="['/inventory/environments', store.environmentId(), 'raw-materials', material.id]">{{ material.name }}</a
-              ><small>{{ material.code }}</small>
-            </td>
-            <td [attr.data-label]="'inventory.usableStock' | translate" [class.warning]="material.isLowStock">
-              {{ material.usableStock | number: '1.0-3' }} {{ material.unit }}
-            </td>
-            <td [attr.data-label]="'inventory.physicalStock' | translate">
-              {{ material.physicalStock | number: '1.0-3' }} {{ material.unit }}
-            </td>
-            <td [attr.data-label]="'inventory.minimum' | translate">
-              {{ material.minimumStock | number: '1.0-3' }} {{ material.unit }}
-            </td>
-          </tr>
-        } @empty {
-          <tr>
-            <td colspan="4">{{ 'inventory.empty' | translate }}</td>
-          </tr>
-        }
-      </tbody>
-    </table>
+    <app-inventory-material-table
+      [materials]="filtered()"
+      [environmentId]="store.environmentId()"
+    />
   }
 </main>

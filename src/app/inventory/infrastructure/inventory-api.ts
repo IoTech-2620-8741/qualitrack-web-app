@@ -28,31 +28,6 @@ import { StockStatus } from '../domain/model/raw-material.entity';
  */
 @Injectable({ providedIn: 'root' })
 export class InventoryApi extends BaseApi {
-  private readonly legacySnapshotEndpoint: LegacyMaterialSnapshotApiEndpoint;
-  private readonly consumingBatchEndpoint: ConsumingBatchApiEndpoint;
-
-  /** All pre-Inventory materials, including those already imported. */
-  legacyMaterialSnapshots(laboratoryId: number) {
-    return this.legacySnapshotEndpoint.getByLaboratory(laboratoryId);
-  }
-
-  /** Production batch labels for historical consumption. */
-  consumingBatches(laboratoryId: number) {
-    return this.consumingBatchEndpoint.getByLaboratory(laboratoryId);
-  }
-
-  private readonly consumptionEndpoint: MaterialConsumptionApiEndpoint;
-
-  /** Production batches that consumed an Inventory material. */
-  materialConsumptions(laboratoryId: number, environmentId: number, rawMaterialId: number) {
-    return this.consumptionEndpoint.getByEnvironmentMaterial(laboratoryId, environmentId, rawMaterialId);
-  }
-
-  /** Historical consumption of a pre-Inventory material. */
-  legacyMaterialConsumptions(laboratoryId: number, legacyId: number) {
-    return this.consumptionEndpoint.getByLegacyMaterial(laboratoryId, legacyId);
-  }
-
   /**
    * Endpoint client for raw material operations.
    *
@@ -81,6 +56,29 @@ export class InventoryApi extends BaseApi {
    */
   private readonly legacyEndpoint: LegacyInventoryApiEndpoint;
 
+  /**
+   * Endpoint client for retrieving legacy raw material snapshots.
+   *
+   * @private
+   */
+  private readonly legacySnapshotEndpoint: LegacyMaterialSnapshotApiEndpoint;
+
+  /**
+   * Endpoint client for retrieving production batches
+   * associated with raw material consumption.
+   *
+   * @private
+   */
+  private readonly consumingBatchEndpoint: ConsumingBatchApiEndpoint;
+
+  /**
+   * Endpoint client for retrieving material consumption records
+   * and their stock traceability information.
+   *
+   * @private
+   */
+  private readonly consumptionEndpoint: MaterialConsumptionApiEndpoint;
+
   /** Reads the container monitors of Equipment Management where lots are stored. */
   private readonly containerEndpoint: StorageContainerApiEndpoint;
 
@@ -107,6 +105,26 @@ export class InventoryApi extends BaseApi {
     this.legacyEndpoint = new LegacyInventoryApiEndpoint(http);
     this.containerEndpoint = new StorageContainerApiEndpoint(http);
     this.environmentEndpoint = new StorageEnvironmentApiEndpoint(http);
+  }
+
+  /** All pre-Inventory materials, including those already imported. */
+  legacyMaterialSnapshots(laboratoryId: number) {
+    return this.legacySnapshotEndpoint.getByLaboratory(laboratoryId);
+  }
+
+  /** Production batch labels for historical consumption. */
+  consumingBatches(laboratoryId: number) {
+    return this.consumingBatchEndpoint.getByLaboratory(laboratoryId);
+  }
+
+  /** Production batches that consumed an Inventory material. */
+  materialConsumptions(laboratoryId: number, environmentId: number, rawMaterialId: number) {
+    return this.consumptionEndpoint.getByEnvironmentMaterial(laboratoryId, environmentId, rawMaterialId);
+  }
+
+  /** Historical consumption of a pre-Inventory material. */
+  legacyMaterialConsumptions(laboratoryId: number, legacyId: number) {
+    return this.consumptionEndpoint.getByLegacyMaterial(laboratoryId, legacyId);
   }
 
   /** Environments of the laboratory where raw materials can be kept. */

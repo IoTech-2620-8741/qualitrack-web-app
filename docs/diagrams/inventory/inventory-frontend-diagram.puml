@@ -163,7 +163,6 @@ package "inventory.application" {
     +legacyDetailLoading / legacyDetailError / legacyDetailHasUnrecordedStock
     +loadLegacyDetail(materialId): void
     +clearLegacyDetail(): void
-    +legacyDetailBatchLabel(batchId): string
     +environments: Signal<StorageEnvironment[]>
     +environmentsLoaded / environmentsLoading / environmentsError / environmentsEmpty
     +loadEnvironments(): Promise<void>
@@ -190,7 +189,6 @@ package "inventory.application" {
     +receive(material, command)
     +review(receipt, command)
     +assignContainer(receipt, containerMonitorId)
-    +containerName(containerMonitorId): string | null
     +loadLegacy()
     +importMaterial(legacyId)
   }
@@ -210,6 +208,42 @@ package "inventory.presentation" {
   class RegisterMaterial
   class InventoryRoutes
 }
+
+package "inventory.presentation.components" {
+  class InventorySummary <<component>>
+  class RawMaterialBatchesTable <<component>> {
+    #containerName(containerMonitorId): string | null
+  }
+  class RawMaterialForm <<component>>
+  class ReceiveBatchForm <<component>>
+  class BatchReviewForm <<component>>
+  class ContainerAssignmentForm <<component>>
+  class InventoryMovementsTable <<component>>
+  class LegacyMaterialHistoryTable <<component>>
+  class InventoryFilters <<component>>
+  class InventoryMaterialTable <<component>>
+  class NearExpiryTable <<component>>
+  class LegacyImportPanel <<component>>
+  class LegacyMaterialSummary <<component>>
+  class LegacyConsumptionHistoryTable <<component>> {
+    #batchNames: Signal<Map<number, string>>
+  }
+}
+
+InventoryDetail *-- InventorySummary
+InventoryDetail *-- RawMaterialBatchesTable
+InventoryDetail *-- RawMaterialForm
+InventoryDetail *-- ReceiveBatchForm
+InventoryDetail *-- BatchReviewForm
+InventoryDetail *-- ContainerAssignmentForm
+InventoryDetail *-- InventoryMovementsTable
+InventoryDetail *-- LegacyMaterialHistoryTable
+InventoryCatalogue *-- InventoryFilters
+InventoryCatalogue *-- InventoryMaterialTable
+InventoryCatalogue *-- NearExpiryTable
+InventoryCatalogue *-- LegacyImportPanel
+LegacyMaterialDetail *-- LegacyMaterialSummary
+LegacyMaterialDetail *-- LegacyConsumptionHistoryTable
 
 InventoryHome --> InventoryStore
 InventoryHome --> IamStore
