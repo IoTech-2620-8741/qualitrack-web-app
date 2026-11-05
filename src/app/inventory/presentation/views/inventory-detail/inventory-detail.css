@@ -343,7 +343,7 @@ mat-tab-group {
 
 .data-table {
   width: 100%;
-  min-width: 820px;
+  min-width: 960px;
   table-layout: fixed;
   border-collapse: separate;
   border-spacing: 0;

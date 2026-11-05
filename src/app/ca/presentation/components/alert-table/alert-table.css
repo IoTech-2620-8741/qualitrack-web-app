@@ -20,7 +20,7 @@
 
 .data-table {
   width: 100%;
-  min-width: 1100px;
+  min-width: 1010px;
   table-layout: fixed;
   border-collapse: separate;
   border-spacing: 0;
@@ -43,7 +43,7 @@
 
 .data-table td,
 .data-table th {
-  padding: 16px 14px;
+  padding: 16px 12px;
   border-bottom: 1px solid var(--qt-border);
   overflow-wrap: anywhere;
   vertical-align: top;
@@ -84,9 +84,10 @@
   line-height: 1.5;
 }
 
-.col-detected { width: 150px; }
-.col-notes    { width: 160px; }
-.col-view     { width: 96px; }
+.col-detected { width: 120px; }
+.col-resolved { width: 150px; }
+.col-notes    { width: 120px; }
+.col-view     { width: 80px; }
 
 .data-table th:last-child,
 .data-table td:last-child {
