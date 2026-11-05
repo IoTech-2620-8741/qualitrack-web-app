@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Reporting & Analytics (ra): when someone who already pays for a plan arrives from a website plan link with another one, the dashboard opens a notice that names both plans, says when the current period ends and sends them to Billing to cancel the renewal, since the platform has no direct plan switch.
+
 - Identity & Access (iam): the sign-up page keeps the plan of the website link (`plan` and `billingCycle`) even when the person goes on to sign in, so the checkout of that plan opens after signing in.
 
 - Subscription (subscription): a plan chosen on the website (`plan` and `billingCycle` in the link) is remembered by `planPreselectionGuard`; the plans view sends an account without a subscription straight to the checkout of that plan, leaving the checkout or signing out forgets it.
