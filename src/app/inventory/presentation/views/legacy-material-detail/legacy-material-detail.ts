@@ -11,6 +11,7 @@ import { InventoryStore } from '../../../application/inventory.store';
 import { DateOnlyPipe } from '../../../../shared/presentation/pipes/date-only.pipe';
 import { DateTimePipe } from '../../../../shared/presentation/pipes/date-time.pipe';
 import { LegacyMaterialSummary } from '../../components/legacy-material-summary/legacy-material-summary';
+import { LegacyConsumptionHistoryTable } from '../../components/legacy-consumption-history-table/legacy-consumption-history-table';
 
 
 /**
@@ -23,7 +24,7 @@ import { LegacyMaterialSummary } from '../../components/legacy-material-summary/
 @Component({
   selector: 'app-legacy-material-detail',
   standalone: true,
-  imports: [DateOnlyPipe, DateTimePipe,
+  imports: [
     CommonModule,
     RouterLink,
     TranslatePipe,
@@ -31,7 +32,8 @@ import { LegacyMaterialSummary } from '../../components/legacy-material-summary/
     MatIconModule,
     MatProgressSpinnerModule,
     MatTooltipModule,
-    LegacyMaterialSummary
+    LegacyMaterialSummary,
+    LegacyConsumptionHistoryTable
   ],
   templateUrl: './legacy-material-detail.html',
   changeDetection: ChangeDetectionStrategy.Eager,
