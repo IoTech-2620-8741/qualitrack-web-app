@@ -19,6 +19,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { InventoryStore } from '../../../application/inventory.store';
 import { EnvironmentSelector } from '../../../../shared/presentation/components/environment-selector/environment-selector';
 import { InventoryMaterialTable } from '../../components/inventory-material-table/inventory-material-table';
+import { NearExpiryTable } from '../../components/near-expiry-table/near-expiry-table';
 
 @Component({
   selector: 'app-inventory-catalogue',
@@ -33,7 +34,8 @@ import { InventoryMaterialTable } from '../../components/inventory-material-tabl
     MatCheckboxModule,
     TranslatePipe,
     EnvironmentSelector,
-    InventoryMaterialTable
+    InventoryMaterialTable,
+    NearExpiryTable
   ],
   templateUrl: './inventory-catalogue.html',
   changeDetection: ChangeDetectionStrategy.Eager,

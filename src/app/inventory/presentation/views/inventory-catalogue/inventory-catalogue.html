@@ -51,36 +51,11 @@
     <section class="editor" aria-labelledby="near-expiry-title">
       <h2 id="near-expiry-title">{{ 'inventory.nearExpiry' | translate }}</h2>
       <p class="notice">{{ 'inventory.nearExpiryNotice' | translate }}</p>
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>{{ 'inventory.name' | translate }}</th>
-            <th>{{ 'inventory.receiptNumber' | translate }}</th>
-            <th>{{ 'inventory.expiresOn' | translate }}</th>
-            <th>{{ 'inventory.available' | translate }}</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (lot of store.nearExpiry(); track lot.id) {
-            <tr>
-              <td>
-                <a [routerLink]="['/inventory/environments', store.environmentId(), 'raw-materials', lot.rawMaterialId]">
-                  {{ materialNames().get(lot.rawMaterialId) ?? ('#' + lot.rawMaterialId) }}
-                </a>
-              </td>
-              <td [attr.data-label]="'inventory.receiptNumber' | translate">{{ lot.batchNumber }}</td>
-              <td [attr.data-label]="'inventory.expiresOn' | translate" class="warning">{{ lot.expiresOn }}</td>
-              <td [attr.data-label]="'inventory.available' | translate">
-                {{ lot.availableAmount | number: '1.0-3' }} {{ lot.unit }}
-              </td>
-            </tr>
-          } @empty {
-            <tr>
-              <td colspan="4">{{ 'inventory.nearExpiryEmpty' | translate }}</td>
-            </tr>
-          }
-        </tbody>
-      </table>
+      <app-near-expiry-table
+        [batches]="store.nearExpiry()"
+        [materialNames]="materialNames()"
+        [environmentId]="store.environmentId()"
+      />
     </section>
   }
   <section class="summary-strip">
