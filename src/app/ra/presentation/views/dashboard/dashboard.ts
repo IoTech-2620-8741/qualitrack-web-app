@@ -1,8 +1,8 @@
-import { Component, computed, effect, inject, untracked, ChangeDetectionStrategy } from '@angular/core';
+import { Component, computed, inject, ChangeDetectionStrategy, Type } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { ActivatedRoute } from '@angular/router';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -11,8 +11,6 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ChartData, ChartOptions } from 'chart.js';
 import { RaStore } from '../../../application/ra.store';
-import { SubscriptionStore } from '../../../../subscription/application/subscription.store';
-import { PlanSwitchDialog } from '../../components/plan-switch-dialog/plan-switch-dialog';
 import { DashboardSummary } from '../../components/dashboard-summary/dashboard-summary';
 import { DashboardTelemetry } from '../../components/dashboard-telemetry/dashboard-telemetry';
 import { DashboardAlerts } from '../../components/dashboard-alerts/dashboard-alerts';
@@ -31,6 +29,9 @@ import { LABORATORY_TIME_ZONE } from '../../../../shared/presentation/utils/loca
  *
  * It computes derived data (like chart configurations and batch distributions)
  * and passes the data down to the pure presentational components.
+ *
+ * Another context can tell something on arrival: the route hands the dashboard a component to render (see
+ * `app.routes.ts`), so the dashboard does not import that context.
  */
 @Component({
   selector: 'app-dashboard',
@@ -61,9 +62,8 @@ export class Dashboard {
   /** Translation service for language formatting. */
   private readonly translate = inject(TranslateService);
 
-  private readonly subscription = inject(SubscriptionStore);
-
-  private readonly dialog = inject(MatDialog);
+  /** Component that the route hands over, rendered as it is. */
+  protected readonly noticeComponent = (inject(ActivatedRoute).snapshot.data['noticeComponent'] ?? null) as Type<unknown> | null;
 
   /** Re-evaluates when the language changes to reformat dates in charts. */
   private readonly language = toSignal(this.translate.onLangChange);
@@ -189,29 +189,6 @@ export class Dashboard {
   /** Initializes the dashboard by loading the overview data. */
   constructor() {
     this.store.reloadOverview();
-    // A plan chosen on the website cannot be bought while another is paid: say how to switch, once.
-    effect(() => {
-      const code = this.subscription.selectedPlanCode();
-      const cycle = this.subscription.selectedBillingCycle();
-      const current = this.store.overviewSubscription();
-      const plans = this.store.overviewPlans();
-      if (!code || !cycle || !this.store.managesSubscription()) return;
-      if (current.status !== 'ready' || (plans.status !== 'ready' && plans.status !== 'error')) return;
-      if (current.data?.status !== 'ACTIVE') return;
-      untracked(() => {
-        this.subscription.clearSelectedPlan();
-        if (current.data!.planCode === code && current.data!.billingCycle === cycle) return;
-        const label = (planCode: string, billingCycle: string) =>
-          `${plans.data?.find((plan) => plan.code === planCode && plan.billingPeriod === billingCycle)?.name ?? planCode} (${this.translate.instant('subscription.billing-period.' + billingCycle.toLowerCase())})`;
-        this.dialog.open(PlanSwitchDialog, {
-          data: {
-            chosen: label(code, cycle),
-            current: label(current.data!.planCode, current.data!.billingCycle),
-            periodEnd: current.data!.currentPeriodEnd,
-          },
-        });
-      });
-    });
   }
 
   /**

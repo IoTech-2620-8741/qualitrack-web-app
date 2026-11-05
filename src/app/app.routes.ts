@@ -16,7 +16,18 @@ const pageNotFound = () =>
 const laboratoryRoutes = () =>
   import('./laboratory/presentation/laboratory.routes').then((m) => m.laboratoryRoutes);
 
-const iamRoutes = () => import('./iam/presentation/iam.routes').then((m) => m.iamRoutes);
+// IAM cannot import subscription, so its routes get the guard of the plan of a website link here. A child guard runs
+// before the guards of the page: someone already signed in is sent away by visitorGuard, and the plan must be kept before that.
+const iamRoutes = async (): Promise<Routes> => {
+  const [{ iamRoutes: children }, { planPreselectionGuard }] = await Promise.all([
+    import('./iam/presentation/iam.routes'),
+    import('./subscription/infrastructure/plan-preselection-guard'),
+  ]);
+  return [{ path: '', canActivateChild: [planPreselectionGuard], children }];
+};
+
+const planSwitchNotice = () =>
+  import('./subscription/presentation/components/plan-switch-notice/plan-switch-notice').then((m) => m.PlanSwitchNotice);
 
 const equipmentRoutes = () =>
   import('./equipment/presentation/equipment.routes').then((m) => m.equipmentRoutes);
@@ -43,7 +54,8 @@ export const routes: Routes = [
   { path: 'about', loadComponent: about, title: 'page-titles.about' },
 
   // The Layout wraps every page from app.html, so no route declares it.
-  { path: 'dashboard', loadComponent: dashboard, canActivate: [onboardingGuard], title: 'page-titles.dashboard' },
+  // The dashboard is in ra and cannot import subscription: the route hands it the notice to render.
+  { path: 'dashboard', loadComponent: dashboard, canActivate: [onboardingGuard], resolve: { noticeComponent: planSwitchNotice }, title: 'page-titles.dashboard' },
   { path: 'iam', loadChildren: iamRoutes },
   { path: 'inventory', loadChildren: () => import('./inventory/presentation/inventory.routes').then(m => m.inventoryRoutes), canActivate: [onboardingGuard], canActivateChild: [onboardingGuard] },
   { path: 'laboratories', loadChildren: laboratoryRoutes, canActivate: [iamGuard] },

@@ -19,17 +19,17 @@ export interface PlanSwitchData {
   selector: 'app-plan-switch-dialog',
   imports: [MatButton, MatDialogActions, MatDialogClose, MatDialogContent, MatDialogTitle, RouterLink, TranslatePipe, DateOnlyPipe],
   template: `
-    <h2 mat-dialog-title>{{ 'dashboard.plan-switch.title' | translate }}</h2>
+    <h2 mat-dialog-title>{{ 'subscription.plan-switch.title' | translate }}</h2>
     <mat-dialog-content>
-      <p>{{ 'dashboard.plan-switch.summary' | translate: { chosen: data.chosen, current: data.current } }}</p>
+      <p>{{ 'subscription.plan-switch.summary' | translate: { chosen: data.chosen, current: data.current } }}</p>
       @if (data.periodEnd) {
-        <p>{{ 'dashboard.plan-switch.until' | translate: { date: (data.periodEnd | dateOnly) } }}</p>
+        <p>{{ 'subscription.plan-switch.until' | translate: { date: (data.periodEnd | dateOnly) } }}</p>
       }
       <p>{{ 'subscription.plans.already-active' | translate }}</p>
     </mat-dialog-content>
     <mat-dialog-actions align="end">
-      <button mat-button mat-dialog-close type="button">{{ 'dashboard.plan-switch.later' | translate }}</button>
-      <a mat-flat-button mat-dialog-close routerLink="/subscriptions/billing">{{ 'dashboard.plan-switch.billing' | translate }}</a>
+      <button mat-button mat-dialog-close type="button">{{ 'subscription.plan-switch.later' | translate }}</button>
+      <a mat-flat-button mat-dialog-close routerLink="/subscriptions/billing">{{ 'subscription.plan-switch.billing' | translate }}</a>
     </mat-dialog-actions>
   `,
 })
