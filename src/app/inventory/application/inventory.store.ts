@@ -64,7 +64,9 @@ export class InventoryStore {
   readonly legacyDetailLoading = signal(false);
   readonly legacyDetailError = signal<string | null>(null);
   /** Whether historical usages predate recorded stock balances. */
-  readonly legacyDetailHasUnrecordedStock = computed(() => this.legacyDetailConsumptions().some((usage) => usage.stockAfter === null));
+  readonly legacyDetailHasUnrecordedStock = computed(() =>
+    this.legacyDetailConsumptions().some((usage) => usage.stockAfter === null),
+  );
 
   /** Cancels stale history and clears the detail when its route changes or is left. */
   clearLegacyDetail(): void {
@@ -88,24 +90,31 @@ export class InventoryStore {
       materials: this.api.legacyMaterialSnapshots(this.lab),
       usages: this.api.legacyMaterialConsumptions(this.lab, materialId),
       batches: this.api.consumingBatches(this.lab),
-    }).pipe(takeUntil(this.reloadLegacyDetail), takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: ({ materials, usages, batches }) => {
-        this.legacyDetailMaterial.set(materials.find((material) => material.id === materialId) ?? null);
-        this.legacyDetailConsumptions.set(usages);
-        this.legacyDetailBatches.set(batches);
-        if (!this.legacyDetailMaterial()) this.legacyDetailError.set('material-history.not-found');
-        this.legacyDetailLoading.set(false);
-      },
-      error: () => {
-        this.legacyDetailError.set('material-history.load-error');
-        this.legacyDetailLoading.set(false);
-      },
-    });
+    })
+      .pipe(takeUntil(this.reloadLegacyDetail), takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: ({ materials, usages, batches }) => {
+          this.legacyDetailMaterial.set(
+            materials.find((material) => material.id === materialId) ?? null,
+          );
+          this.legacyDetailConsumptions.set(usages);
+          this.legacyDetailBatches.set(batches);
+          if (!this.legacyDetailMaterial())
+            this.legacyDetailError.set('material-history.not-found');
+          this.legacyDetailLoading.set(false);
+        },
+        error: () => {
+          this.legacyDetailError.set('material-history.load-error');
+          this.legacyDetailLoading.set(false);
+        },
+      });
   }
 
   /** Batch number shown in history, with an identifier fallback when the batch is unavailable. */
   legacyDetailBatchLabel(batchId: number): string {
-    return this.legacyDetailBatches().find((batch) => batch.id === batchId)?.batchNumber ?? '#' + batchId;
+    return (
+      this.legacyDetailBatches().find((batch) => batch.id === batchId)?.batchNumber ?? '#' + batchId
+    );
   }
 
   /**
@@ -149,7 +158,9 @@ export class InventoryStore {
   /**
    * Indicates whether the laboratory has no environment yet.
    */
-  readonly environmentsEmpty = computed(() => this.environmentsLoaded() && this.environments().length === 0);
+  readonly environmentsEmpty = computed(
+    () => this.environmentsLoaded() && this.environments().length === 0,
+  );
 
   /**
    * Signal containing the selected storage environment identifier.
@@ -265,7 +276,9 @@ export class InventoryStore {
    * Counts materials classified as LOW through
    * the isLowStock domain property.
    */
-  readonly lowCount = computed(() => this.materials().filter((material) => material.isLowStock).length);
+  readonly lowCount = computed(
+    () => this.materials().filter((material) => material.isLowStock).length,
+  );
 
   /**
    * Computed signal identifying product batches affected
@@ -284,7 +297,9 @@ export class InventoryStore {
     return [
       ...new Set(
         this.usages()
-          .filter((usage) => usage.inventoryReceiptId !== null && blocked.has(usage.inventoryReceiptId))
+          .filter(
+            (usage) => usage.inventoryReceiptId !== null && blocked.has(usage.inventoryReceiptId),
+          )
           .map((usage) => usage.batchId),
       ),
     ];
@@ -297,7 +312,9 @@ export class InventoryStore {
    * Filters monitors by OPERATIONAL status.
    * The backend validates container availability.
    */
-  readonly availableContainers = computed(() => this.containers().filter((container) => container.status === 'OPERATIONAL'));
+  readonly availableContainers = computed(() =>
+    this.containers().filter((container) => container.status === 'OPERATIONAL'),
+  );
 
   /**
    * Computed signal indicating whether the environment
@@ -438,7 +455,14 @@ export class InventoryStore {
    */
   review(receipt: RawMaterialBatch, command: ReviewRawMaterialBatchCommand) {
     return this.write(
-      this.api.review(this.lab, this.environment, receipt.rawMaterialId, receipt.id, command.status, command.reason),
+      this.api.review(
+        this.lab,
+        this.environment,
+        receipt.rawMaterialId,
+        receipt.id,
+        command.status,
+        command.reason,
+      ),
     );
   }
 
@@ -455,7 +479,13 @@ export class InventoryStore {
    */
   assignContainer(receipt: RawMaterialBatch, containerMonitorId: number) {
     return this.write(
-      this.api.assignContainer(this.lab, this.environment, receipt.rawMaterialId, receipt.id, containerMonitorId),
+      this.api.assignContainer(
+        this.lab,
+        this.environment,
+        receipt.rawMaterialId,
+        receipt.id,
+        containerMonitorId,
+      ),
     );
   }
 
@@ -515,7 +545,8 @@ export class InventoryStore {
       this.materials.set(materials);
       materialsLoaded = true;
       if (id !== null) {
-        if (!materials.some((material) => material.id === id)) throw new Error('inventory.notFound');
+        if (!materials.some((material) => material.id === id))
+          throw new Error('inventory.notFound');
         const detail = await firstValueFrom(
           forkJoin({
             receipts: this.api.receipts(this.lab, environmentId, id),
@@ -531,7 +562,9 @@ export class InventoryStore {
         const legacyId = this.selected()?.legacyId;
         if (legacyId) {
           try {
-            const history = await firstValueFrom(this.api.legacyMaterialConsumptions(this.lab, legacyId));
+            const history = await firstValueFrom(
+              this.api.legacyMaterialConsumptions(this.lab, legacyId),
+            );
             if (generation === this.generation) this.legacyHistory.set(history);
           } catch (error) {
             if (generation === this.generation) this.legacyError.set(inventoryError(error));
@@ -541,7 +574,11 @@ export class InventoryStore {
     } catch (error) {
       if (generation === this.generation) {
         this.materials.set([]);
-        this.error.set(error instanceof Error && error.message.startsWith('inventory.') ? error.message : inventoryError(error));
+        this.error.set(
+          error instanceof Error && error.message.startsWith('inventory.')
+            ? error.message
+            : inventoryError(error),
+        );
       }
     } finally {
       if (generation === this.generation) this.loading.set(false);
@@ -592,7 +629,9 @@ export class InventoryStore {
    */
   async loadLowStock(): Promise<void> {
     try {
-      this.lowStockMaterials.set(await firstValueFrom(this.api.materials(this.lab, this.environment, 'LOW')));
+      this.lowStockMaterials.set(
+        await firstValueFrom(this.api.materials(this.lab, this.environment, 'LOW')),
+      );
     } catch (error) {
       this.error.set(inventoryError(error));
     }
@@ -611,7 +650,9 @@ export class InventoryStore {
   async loadNearExpiry(withinDays?: number): Promise<void> {
     try {
       this.nearExpiry.set(
-        await firstValueFrom(this.api.environmentReceipts(this.lab, this.environment, 'NEAR_EXPIRY', withinDays)),
+        await firstValueFrom(
+          this.api.environmentReceipts(this.lab, this.environment, 'NEAR_EXPIRY', withinDays),
+        ),
       );
     } catch (error) {
       this.error.set(inventoryError(error));
@@ -651,13 +692,22 @@ export class InventoryStore {
    */
   private async write(request: Observable<unknown>): Promise<boolean> {
     if (this.saving()) return false;
+
     this.saving.set(true);
     this.error.set('');
     this.notice.set('');
+
     try {
       await firstValueFrom(request);
-      this.notice.set('inventory.saved');
-      await this.load(this.environment, this.selectedId());
+
+      const environmentId = this.environment;
+      const materialId = this.selectedId();
+
+      const reloaded = await this.load(environmentId, materialId);
+
+      if (reloaded && !this.error()) {
+        this.notice.set('inventory.saved');
+      }
       return true;
     } catch (error) {
       this.error.set(inventoryError(error));
