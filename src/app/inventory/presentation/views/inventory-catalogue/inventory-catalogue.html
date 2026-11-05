@@ -104,38 +104,9 @@
   @if (store.loading()) {
     <p role="status">{{ 'inventory.loading' | translate }}</p>
   } @else {
-    <table class="data-table">
-      <thead>
-        <tr>
-          <th>{{ 'inventory.name' | translate }}</th>
-          <th>{{ 'inventory.usableStock' | translate }}</th>
-          <th>{{ 'inventory.physicalStock' | translate }}</th>
-          <th>{{ 'inventory.minimum' | translate }}</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (material of filtered(); track material.id) {
-          <tr>
-            <td>
-              <a [routerLink]="['/inventory/environments', store.environmentId(), 'raw-materials', material.id]">{{ material.name }}</a
-              ><small>{{ material.code }}</small>
-            </td>
-            <td [attr.data-label]="'inventory.usableStock' | translate" [class.warning]="material.isLowStock">
-              {{ material.usableStock | number: '1.0-3' }} {{ material.unit }}
-            </td>
-            <td [attr.data-label]="'inventory.physicalStock' | translate">
-              {{ material.physicalStock | number: '1.0-3' }} {{ material.unit }}
-            </td>
-            <td [attr.data-label]="'inventory.minimum' | translate">
-              {{ material.minimumStock | number: '1.0-3' }} {{ material.unit }}
-            </td>
-          </tr>
-        } @empty {
-          <tr>
-            <td colspan="4">{{ 'inventory.empty' | translate }}</td>
-          </tr>
-        }
-      </tbody>
-    </table>
+    <app-inventory-material-table
+      [materials]="filtered()"
+      [environmentId]="store.environmentId()"
+    />
   }
 </main>

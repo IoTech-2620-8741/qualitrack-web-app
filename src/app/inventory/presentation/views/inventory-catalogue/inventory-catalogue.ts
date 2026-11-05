@@ -18,10 +18,8 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { TranslatePipe } from '@ngx-translate/core';
 import { InventoryStore } from '../../../application/inventory.store';
 import { EnvironmentSelector } from '../../../../shared/presentation/components/environment-selector/environment-selector';
+import { InventoryMaterialTable } from '../../components/inventory-material-table/inventory-material-table';
 
-/**
- * Raw material catalogue of an environment (US36), with low stock (US41) and near expiry (US42) views.
- */
 @Component({
   selector: 'app-inventory-catalogue',
   standalone: true,
@@ -35,6 +33,7 @@ import { EnvironmentSelector } from '../../../../shared/presentation/components/
     MatCheckboxModule,
     TranslatePipe,
     EnvironmentSelector,
+    InventoryMaterialTable
   ],
   templateUrl: './inventory-catalogue.html',
   changeDetection: ChangeDetectionStrategy.Eager,
