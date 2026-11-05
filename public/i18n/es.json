@@ -527,6 +527,13 @@
       "billing": "Facturación",
       "plans": "Planes"
     },
+    "plan-switch": {
+      "title": "¿Cambiar de plan?",
+      "summary": "Elegiste {{chosen}} en el sitio web, y tu cuenta tiene {{current}}.",
+      "until": "Tu plan actual dura hasta el {{date}}.",
+      "later": "Ahora no",
+      "billing": "Ir a facturación"
+    },
     "quick-actions": {
       "laboratory": "Laboratorio",
       "equipment": "Equipos",
