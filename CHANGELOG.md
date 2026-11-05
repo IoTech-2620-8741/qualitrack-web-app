@@ -47,7 +47,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Compliance & Alerts (ca): on a phone the title of the alerts no longer splits a word, the sort options wrap and the export link fits, and the alert table scrolls inside its own area on every width that does not show cards (#82).
 
-- Product Batch Management (batch), Inventory (inventory) and Laboratory (laboratory): the product catalog actions, the tables of a raw material and the staff table keep their words whole on a tablet (#82).
+- Product Batch (batch), Inventory (inventory) and Laboratory (laboratory): the product catalog actions, the tables of a raw material and the staff table keep their words whole on a tablet (#82).
 
 - Reporting & Analytics (ra): the styles of the subscription section no longer end in a cut rule (#82).
 
