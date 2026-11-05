@@ -34,6 +34,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Compliance & Alerts (ca): `CaStore.loadAlertHistory` reads every alert, open or resolved, of one environment or of the whole laboratory; an environment that fails does not hide the others.
 
+### Fixed
+
+- Shared (shared): the browser tab no longer keeps the title of the previous page. Every page has a title in the language of the application, in the format `Page - QualiTrack` (#83).
+
 ## [2.2.0] - 2026-11-04
 
 ### Added
