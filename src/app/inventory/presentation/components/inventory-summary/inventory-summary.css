@@ -1,0 +1,35 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+
+.summary-strip {
+  display: flex;
+  gap: 32px;
+  flex-wrap: wrap;
+  border-block: 1px solid #cfdbdf;
+  padding: 18px 0;
+  margin: 20px 0;
+}
+
+.summary-strip span {
+  display: block;
+  font-size: 13px;
+  color: #4b6068;
+}
+
+.summary-strip strong {
+  display: block;
+  font-size: 23px;
+  margin-top: 6px;
+}
+
+@media (max-width: 760px) {
+  .summary-strip {
+    gap: 18px;
+  }
+
+  .summary-strip strong {
+    font-size: 20px;
+  }
+}
