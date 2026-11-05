@@ -109,7 +109,7 @@ h1 mat-icon {
 
 .table-card {
   position: relative;
-  overflow: hidden;
+  overflow-x: auto;
   background: var(--qt-surface);
   border: 1px solid var(--qt-border);
   border-radius: 12px;
@@ -160,6 +160,7 @@ h1 mat-icon {
 }
 
 .name-cell {
+  min-width: 160px;
   font-weight: 600;
 }
 

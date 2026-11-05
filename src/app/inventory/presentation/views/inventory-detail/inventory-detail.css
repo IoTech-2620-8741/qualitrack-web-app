@@ -313,6 +313,7 @@ mat-tab-group {
   flex-direction: column;
   gap: 16px;
   padding: 24px;
+  overflow-x: auto;
 }
 
 .tab-content .error,
@@ -342,6 +343,7 @@ mat-tab-group {
 
 .data-table {
   width: 100%;
+  min-width: 820px;
   table-layout: fixed;
   border-collapse: separate;
   border-spacing: 0;
@@ -467,9 +469,11 @@ td a:focus-visible {
 
   .tab-content {
     padding: 16px;
+    overflow-x: visible;
   }
 
   .data-table {
+    min-width: 0;
     overflow: visible;
     background: transparent;
     border: 0;
