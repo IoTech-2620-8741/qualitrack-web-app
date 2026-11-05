@@ -527,13 +527,6 @@
       "billing": "Billing",
       "plans": "Plans"
     },
-    "plan-switch": {
-      "title": "Switch your plan?",
-      "summary": "You chose {{chosen}} on the website, and your account has {{current}}.",
-      "until": "Your current plan runs until {{date}}.",
-      "later": "Not now",
-      "billing": "Go to billing"
-    },
     "quick-actions": {
       "laboratory": "Laboratory",
       "equipment": "Equipment",
@@ -545,6 +538,13 @@
     }
   },
   "subscription": {
+    "plan-switch": {
+      "title": "Switch your plan?",
+      "summary": "You chose {{chosen}} on the website, and your account has {{current}}.",
+      "until": "Your current plan runs until {{date}}.",
+      "later": "Not now",
+      "billing": "Go to billing"
+    },
     "plans": {
       "title": "Subscription Plans",
       "subtitle": "Choose the plan that fits your laboratory operations.",

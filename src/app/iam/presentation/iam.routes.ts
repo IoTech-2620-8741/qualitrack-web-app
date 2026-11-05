@@ -1,7 +1,6 @@
 import { Routes } from '@angular/router';
 import { iamGuard, visitorGuard } from '../infrastructure/iam-guard';
 import { passwordChangeGuard } from '../infrastructure/onboarding-guard';
-import { planPreselectionGuard } from '../../subscription/infrastructure/plan-preselection-guard';
 
 /**
  * Lazy loads the sign-in form view component.
@@ -33,8 +32,7 @@ export const iamRoutes: Routes = [
   { path: 'onboarding', canActivate: [iamGuard], title: 'page-titles.onboarding',
     loadComponent: () => import('./views/onboarding/onboarding').then((m) => m.Onboarding) },
   { path: 'sign-in', loadComponent: signInForm, canActivate: [visitorGuard], title: 'page-titles.sign-in' },
-  // The guard goes first: someone already signed in is sent away by visitorGuard, and the plan of the link must be kept before that.
-  { path: 'sign-up', loadComponent: signUpForm, canActivate: [planPreselectionGuard, visitorGuard], title: 'page-titles.sign-up' },
+  { path: 'sign-up', loadComponent: signUpForm, canActivate: [visitorGuard], title: 'page-titles.sign-up' },
   { path: 'password-recovery', canActivate: [visitorGuard], title: 'page-titles.password-recovery',
     loadComponent: () => import('./views/password-recovery/password-recovery').then((m) => m.PasswordRecovery) },
   { path: 'change-password', canActivate: [iamGuard, passwordChangeGuard], title: 'page-titles.change-password',

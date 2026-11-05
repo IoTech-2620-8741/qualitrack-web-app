@@ -452,6 +452,7 @@ package "ra.presentation" {
 
   class Dashboard {
     #store: RaStore
+    #noticeComponent: Type<unknown> | null
     #summaryCards / batchDistribution / recentBatches
     #chartData / chartOptions
     #reloadAll(): void

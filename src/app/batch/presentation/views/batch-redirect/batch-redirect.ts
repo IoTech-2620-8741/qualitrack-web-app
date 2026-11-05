@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -34,6 +34,7 @@ export class BatchRedirect implements OnInit {
   private readonly store = inject(BatchStore);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
 
   /**
    * Translation key of the message shown when the batch cannot be opened; null while it is being resolved.
@@ -47,6 +48,8 @@ export class BatchRedirect implements OnInit {
     const batchId = Number(this.route.snapshot.paramMap.get('batchId'));
     try {
       const batch = await this.store.findBatch(batchId);
+      // Whoever left while the batch was being found stays where they went.
+      if (this.destroyRef.destroyed) return;
       if (!batch) this.message.set('batches.errors.not-found');
       else if (!batch.detailLink) this.message.set('batches.no-environment');
       else await this.router.navigate(batch.detailLink, { replaceUrl: true });

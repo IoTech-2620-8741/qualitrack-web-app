@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -48,9 +48,12 @@ export class InventoryHome implements OnInit {
   protected readonly store = inject(InventoryStore);
   protected readonly iam = inject(IamStore);
   private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
 
   async ngOnInit(): Promise<void> {
     await this.store.loadEnvironments();
+    // Whoever left while the environments were loading stays where they went.
+    if (this.destroyRef.destroyed) return;
     const environment = this.store.preferredEnvironment();
     if (environment) {
       await this.router.navigate(['/inventory/environments', environment.id, 'raw-materials'], {
