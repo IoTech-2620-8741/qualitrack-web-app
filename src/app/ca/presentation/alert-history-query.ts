@@ -4,6 +4,7 @@ import {
   AlertHistoryFilter,
   AlertHistoryPeriod,
   DEFAULT_ALERT_HISTORY_FILTER,
+  LABORATORY_OFFSET_IN_MILLISECONDS,
   periodRangeOf,
 } from '../domain/model/alert-history-filter';
 import { AlertOrigin, AlertSeverity, AlertStatus } from '../domain/model/deviation-alert.entity';
@@ -20,9 +21,6 @@ export const ALERT_HISTORY_ORIGINS: readonly AlertOrigin[] = ['ENVIRONMENT', 'CO
 
 /** A day written as `YYYY-MM-DD`. */
 const DAY = /^\d{4}-\d{2}-\d{2}$/;
-
-/** Hours that the laboratories, in Peru, are behind UTC. */
-const LABORATORY_OFFSET_IN_MILLISECONDS = -5 * 60 * 60 * 1000;
 
 /**
  * Reads the filter of the history from the query parameters of the address.
@@ -113,10 +111,13 @@ function laboratoryDayOf(moment: number): string {
  * Reads a day of the address.
  *
  * @param value - The parameter
- * @returns The day, or `null` when it is missing or is not written as `YYYY-MM-DD`
+ * @returns The day, or `null` when it is missing, is not written as `YYYY-MM-DD` or does not exist
  */
 function dayFrom(value: string | null): string | null {
-  return value !== null && DAY.test(value) ? value : null;
+  if (value === null || !DAY.test(value)) return null;
+  // The browser rejects 2026-13-45 and may move 2026-02-31 to March: only a day that reads back the same exists.
+  const day = new Date(`${value}T00:00:00Z`);
+  return !Number.isNaN(day.getTime()) && day.toISOString().startsWith(value) ? value : null;
 }
 
 /**

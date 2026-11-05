@@ -33,10 +33,10 @@ export const DEFAULT_ALERT_HISTORY_FILTER: AlertHistoryFilter = {
 };
 
 /** Milliseconds in one day. */
-const DAY_IN_MILLISECONDS = 24 * 60 * 60 * 1000;
+export const DAY_IN_MILLISECONDS = 24 * 60 * 60 * 1000;
 
-/** UTC offset of the laboratories, which all operate in Peru (America/Lima has no daylight saving time). */
-const LABORATORY_UTC_OFFSET = '-05:00';
+/** Distance from UTC to the time of the laboratories, which all operate in Peru (it has no daylight saving time). */
+export const LABORATORY_OFFSET_IN_MILLISECONDS = -5 * 60 * 60 * 1000;
 
 /**
  * Whether an alert started inside the period of the filter.
@@ -92,7 +92,7 @@ export function periodRangeOf(filter: AlertHistoryFilter, now: Date): AlertHisto
  * @returns Milliseconds since 1970 at midnight of that day
  */
 function startOfDay(day: string): number {
-  return Date.parse(`${day}T00:00:00${LABORATORY_UTC_OFFSET}`);
+  return Date.parse(`${day}T00:00:00Z`) - LABORATORY_OFFSET_IN_MILLISECONDS;
 }
 
 /**
