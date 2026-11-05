@@ -360,8 +360,7 @@
       "search": "Buscar",
       "refresh": "Actualizar"
     },
-    "undo": "Deshacer",
-    "breadcrumb": "Ruta de navegación"
+    "undo": "Deshacer"
   },
   "status": {
     "ON_TRACK": "En Camino",
@@ -1449,7 +1448,6 @@
     "subtitle": "Documentos de trazabilidad y cumplimiento listos para auditoría DIGEMID.",
     "generating": "Generando reporte...",
     "loading-options": "Cargando registros...",
-    "breadcrumbs": "Reportes y KPIs / Generador de reportes",
     "retry": "Reintentar",
     "format": "Formato",
     "step-1": "Tipo de reporte",

@@ -3,7 +3,7 @@
     <mat-spinner diameter="24" />{{ 'dashboard.overview.loading' | translate }}
   </div>
 } @else if (state() === 'error') {
-  <div class="state error" role="status">
+  <div class="state error" role="alert">
     <mat-icon>cloud_off</mat-icon>
     <span>{{ 'dashboard.overview.load-error' | translate }}</span>
     <button

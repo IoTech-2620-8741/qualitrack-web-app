@@ -90,7 +90,6 @@ package "shared" {
       #currentLang: string
       #languages: string[]
       #translate: TranslateService
-      #compact: Signal<boolean>
       +useLanguage(language: string): void
     }
 

@@ -1,79 +1,83 @@
 .chips {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
-}
-
-.panel-actions {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-end;
   gap: 8px;
 }
 
 section {
-  margin-top: 20px;
+  margin-top: 24px;
 }
 
 h3 {
   margin: 0 0 12px;
-  font-size: 15px;
-  font-weight: 600;
+  color: var(--qt-text);
+  font-size: 16px;
+  font-weight: 700;
 }
 
 .reading {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px 32px;
+  gap: 16px 40px;
   margin: 0;
 }
 
 .reading dt {
   color: var(--qt-text-muted);
   font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
 }
 
 .reading dd {
-  margin: 2px 0 0;
+  margin: 6px 0 0;
+  color: var(--qt-text);
   font-size: 16px;
-  font-weight: 500;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
 }
 
 .reading .value {
-  font-size: 22px;
+  font-size: 24px;
   font-weight: 700;
 }
 
 .message {
   margin: 0 0 12px;
-  padding: 10px 12px;
-  border-radius: var(--qt-radius-small);
-  font-size: 13px;
+  padding: 12px 16px;
+  border: 1px solid;
+  border-radius: var(--qt-radius-medium);
+  font-size: 14px;
+  line-height: 1.6;
   overflow-wrap: anywhere;
 }
 
 .reading + .message {
-  margin: 12px 0 0;
+  margin: 16px 0 0;
 }
 
 .error {
   background: var(--qt-error-surface);
+  border-color: var(--qt-error);
   color: var(--qt-error-text);
 }
 
 .notice {
   background: var(--qt-success-surface);
+  border-color: var(--qt-success);
   color: var(--qt-success-text);
 }
 
 .normalized {
-  background: var(--qt-info-surface);
-  color: var(--qt-info-text);
+  background: var(--qt-primary-surface);
+  border-color: var(--qt-primary);
+  color: var(--qt-primary-strong);
 }
 
 .muted {
   color: var(--qt-text-muted);
-  font-size: 13px;
+  font-size: 14px;
+  line-height: 1.6;
 }
 
 .actuations {
@@ -82,30 +86,108 @@ h3 {
   list-style: none;
 }
 
-.actuations li + li {
-  margin-top: 8px;
-  padding-top: 8px;
-  border-top: 1px solid var(--qt-border);
+.actuations li {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--qt-border);
+}
+
+.actuations li:first-child {
+  padding-top: 0;
+}
+
+.actuations li:last-child {
+  padding-bottom: 0;
+  border-bottom: none;
 }
 
 .actuations strong {
   margin-right: 8px;
+  color: var(--qt-text);
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .result {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: var(--qt-radius-pill);
+  background: var(--qt-success-surface);
   color: var(--qt-success-text);
   font-size: 12px;
+  font-weight: 500;
 }
 
 .result.failed {
+  background: var(--qt-error-surface);
   color: var(--qt-error-text);
 }
 
 .actuations small {
   display: block;
-  margin-top: 2px;
+  margin-top: 6px;
   color: var(--qt-text-muted);
   font-size: 12px;
+}
+
+.panel-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.panel-actions a[mat-button],
+.panel-actions button[mat-stroked-button],
+.panel-actions button[mat-flat-button] {
+  height: auto;
+  min-height: 48px;
+  padding: 8px 24px;
+  border-radius: var(--qt-radius-pill);
+  font-weight: 600;
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+.panel-actions a[mat-button],
+.panel-actions button[mat-stroked-button] {
+  border: 1px solid var(--qt-border);
+  color: var(--qt-text);
+}
+
+.panel-actions button[mat-stroked-button][disabled] {
+  color: var(--qt-neutral-text);
+}
+
+.panel-actions button[mat-flat-button] {
+  background: var(--qt-primary-strong);
+  color: var(--qt-surface);
+}
+
+.panel-actions button[mat-flat-button]:hover:not([disabled]) {
+  background: var(--qt-primary-hover);
+}
+
+.panel-actions button[mat-flat-button][disabled] {
+  background: var(--qt-border);
+  color: var(--qt-neutral-text);
+}
+
+.panel-actions a:focus-visible,
+.panel-actions button:focus-visible {
+  outline: 3px solid var(--qt-primary);
+  outline-offset: 2px;
+}
+
+@media (max-width: 480px) {
+  .panel-actions {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+
+  .panel-actions a[mat-button],
+  .panel-actions button[mat-stroked-button],
+  .panel-actions button[mat-flat-button] {
+    justify-content: center;
+    width: 100%;
+  }
 }

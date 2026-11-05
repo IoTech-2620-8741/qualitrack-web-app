@@ -12,15 +12,15 @@
   max-width: 520px;
   padding: 40px 32px;
   border-radius: 12px;
-  border: 1px solid #e2e8f0;
-  background: #fff;
+  border: 1px solid var(--qt-border);
+  background: var(--qt-surface);
   box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
   text-align: center;
 }
 
 .result-card h1 {
   margin: 0;
-  color: #1a3a5c;
+  color: var(--qt-heading);
   font-size: 28px;
   font-weight: 700;
   overflow-wrap: anywhere;
@@ -28,7 +28,7 @@
 
 .result-card p {
   margin: 12px 0 28px;
-  color: #64748b;
+  color: var(--qt-text-muted);
   font-size: 14px;
   line-height: 1.6;
 }
@@ -51,26 +51,26 @@
 
 /* Verifying */
 .icon-wrapper.neutral {
-  background: #f1f5f9;
-  color: #475569;
+  background: var(--qt-neutral-surface);
+  color: var(--qt-neutral-text);
 }
 
 /* Payment confirmed */
 .icon-wrapper.success {
-  background: #e8f5e9;
-  color: #1b5e20;
+  background: var(--qt-success-surface);
+  color: var(--qt-success-text);
 }
 
 /* Payment pending */
 .icon-wrapper.warning {
-  background: #fff8e1;
-  color: #7a5a00;
+  background: var(--qt-warning-surface);
+  color: var(--qt-warning-text);
 }
 
 /* Connection error */
 .icon-wrapper.error {
-  background: #ffebee;
-  color: #b71c1c;
+  background: var(--qt-error-surface);
+  color: var(--qt-error-text);
 }
 
 .actions {
@@ -89,33 +89,29 @@
 
 .primary-btn {
   padding: 0 28px;
-  --mdc-filled-button-container-color: #0f766e;
-  --mdc-filled-button-label-text-color: #fff;
-  --mdc-filled-button-disabled-container-color: #e2e8f0;
-  --mdc-filled-button-disabled-label-text-color: #475569;
-  background: #0f766e;
-  color: #fff;
+  background: var(--qt-primary-strong);
+  color: var(--qt-surface);
 }
 
 .primary-btn:hover:not([disabled]) {
-  background: #115e59;
+  background: var(--qt-primary-hover);
 }
 
 /* Disabled while the payment is being verified */
 .primary-btn[disabled] {
-  background: #e2e8f0;
-  color: #475569;
+  background: var(--qt-border);
+  color: var(--qt-neutral-text);
 }
 
 .secondary-btn {
   padding: 0 24px;
-  color: #0f172a;
-  border-color: #e2e8f0;
+  color: var(--qt-text);
+  border-color: var(--qt-border);
 }
 
 .primary-btn:focus-visible,
 .secondary-btn:focus-visible {
-  outline: 3px solid #0d9488;
+  outline: 3px solid var(--qt-primary);
   outline-offset: 2px;
 }
 

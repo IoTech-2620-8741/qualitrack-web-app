@@ -5,32 +5,26 @@
 
 .alert-card {
   display: flex;
-  flex-wrap: wrap;
+  align-items: stretch;
   justify-content: space-between;
-  gap: 16px 24px;
-  padding: 16px 20px;
-  border: 1px solid var(--qt-border);
-  border-left-width: 5px;
-  border-radius: var(--qt-radius-medium);
+  gap: 20px 28px;
+  min-width: 0;
+  padding: 24px;
   background: var(--qt-surface);
+  border: 1px solid var(--qt-border);
+  border-left: 4px solid var(--qt-text-subtle);
+  border-radius: var(--qt-radius-medium);
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
 }
 
 .alert-card:focus-visible {
-  outline: 2px solid var(--qt-primary-strong);
+  outline: 3px solid var(--qt-primary);
   outline-offset: 2px;
 }
 
-.severity-critical {
-  border-left-color: var(--qt-error);
-}
-
-.severity-warning {
-  border-left-color: var(--qt-warning);
-}
-
-.severity-low {
-  border-left-color: var(--qt-neutral-text);
-}
+.severity-critical { border-left-color: var(--qt-error); }
+.severity-warning  { border-left-color: var(--qt-warning); }
+.severity-low      { border-left-color: var(--qt-text-subtle); }
 
 .is-new {
   animation: arrived 3s ease-out;
@@ -44,22 +38,23 @@
 }
 
 .summary {
-  flex: 1 1 360px;
+  flex: 1 1 420px;
   min-width: 0;
 }
 
 .chips {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  align-items: center;
+  gap: 8px;
 }
 
 h2 {
-  margin: 10px 0 4px;
+  margin: 12px 0 8px;
   color: var(--qt-text);
-  font-size: 16px;
-  font-weight: 600;
-  line-height: 1.35;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.4;
   overflow-wrap: anywhere;
 }
 
@@ -71,16 +66,18 @@ p {
 .meta {
   display: flex;
   flex-wrap: wrap;
-  gap: 2px 14px;
+  align-items: center;
+  gap: 6px 16px;
   color: var(--qt-text-muted);
-  font-size: 13px;
+  font-size: 14px;
+  line-height: 1.6;
 }
 
 .origin span,
 .meta span {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
   min-width: 0;
   overflow-wrap: anywhere;
 }
@@ -97,13 +94,13 @@ p {
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
-  gap: 2px 10px;
-  margin: 10px 0;
+  gap: 4px 12px;
+  margin: 16px 0;
 }
 
 .value {
   color: var(--qt-text);
-  font-size: 22px;
+  font-size: 24px;
   font-weight: 700;
   line-height: 1.2;
   font-variant-numeric: tabular-nums;
@@ -111,57 +108,125 @@ p {
 
 .limit {
   color: var(--qt-text-muted);
-  font-size: 13px;
+  font-size: 14px;
 }
 
 .excess {
   display: inline-flex;
   align-items: center;
-  gap: 2px;
+  gap: 4px;
   color: var(--qt-error-text);
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
 }
 
 .excess mat-icon {
-  align-self: center;
   flex: none;
   width: 16px;
   height: 16px;
   font-size: 16px;
 }
 
-.actions {
-  display: flex;
-  flex-wrap: wrap;
-  align-self: flex-end;
-  justify-content: flex-end;
-  gap: 8px;
-  min-width: 0;
-  margin-left: auto; /* On the right also when they fall below the summary. */
+.meta {
+  padding-top: 12px;
+  border-top: 1px solid var(--qt-border);
+  font-size: 12px;
+  line-height: 1.5;
+  font-variant-numeric: tabular-nums;
 }
 
-@media (max-width: 600px) {
+/* Acciones */
+.actions {
+  display: flex;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: flex-end;
+  align-self: flex-end;
+  gap: 8px;
+  min-width: 0;
+  margin-left: auto;
+}
+
+.actions a,
+.actions button {
+  min-height: 40px;
+  height: auto;
+  padding: 8px 16px;
+  border-radius: var(--qt-radius-pill);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.actions a[mat-button] {
+  border: 1px solid var(--qt-border);
+  color: var(--qt-text);
+}
+
+.actions button[mat-stroked-button] {
+  border-color: var(--qt-border);
+  color: var(--qt-text);
+}
+
+.primary-btn {
+  background: var(--qt-primary-strong);
+  color: var(--qt-surface);
+}
+
+.primary-btn:hover:not(:disabled) {
+  background: var(--qt-primary-hover);
+}
+
+.actions a:focus-visible,
+.actions button:focus-visible {
+  outline: 3px solid var(--qt-primary);
+  outline-offset: 2px;
+}
+
+@media (max-width: 760px) {
   .alert-card {
-    padding: 14px;
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px;
   }
 
   .summary {
-    flex-basis: 100%;
+    flex-basis: auto;
+    width: 100%;
   }
 
   .actions {
-    flex-basis: 100%;
+    flex-basis: auto;
+    width: 100%;
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  h2 {
+    font-size: 16px;
+  }
+
+  .value {
+    font-size: 20px;
   }
 
   .actions a,
   .actions button {
-    flex: 1 1 auto;
+    flex: 1 1 100%;
+    white-space: normal;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+  }
+
   .is-new {
     animation: none;
     outline: 2px solid var(--qt-primary);

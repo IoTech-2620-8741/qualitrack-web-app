@@ -1,127 +1,287 @@
+/* ==========================================================================
+   Batch detail view
+   Same visual language as the product detail, catalog and billing views.
+   ========================================================================== */
+
 :host {
   display: block;
   min-width: 0;
-  color: #20343c;
+  min-height: 100%;
+  background: var(--qt-background);
+  color: var(--qt-text);
 }
+
+/* Same width and padding as the other views, so the title lines up */
 .operations-page {
-  max-width: 1280px;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 24px;
+  padding: 32px 24px 48px;
 }
-.page-heading,
-.actions {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-.page-heading {
-  justify-content: space-between;
-  margin-bottom: 20px;
-}
-h1 {
-  font-size: 24px;
-  margin: 0;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-h2 {
-  font-size: 19px;
-  margin: 12px 0 18px;
-}
-h3 {
-  font-size: 16px;
-}
+
 h1,
 h2,
-h3,
 p,
 a {
   overflow-wrap: anywhere;
   letter-spacing: 0;
 }
-.actions button {
-  white-space: normal;
-  height: auto;
-  min-height: 40px;
-  padding: 8px 16px;
+
+/* --------------------------------------------------------------------------
+   Back link (first link of the page, outside the actions)
+   -------------------------------------------------------------------------- */
+.operations-page > a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 16px;
+  color: var(--qt-primary-strong);
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
 }
-mat-form-field {
-  width: 100%;
-  min-width: 0;
+
+.operations-page > a::before {
+  content: '\2190';
+  content: '\2190' / '';
 }
-.summary-strip {
+
+.operations-page > a:hover {
+  text-decoration: underline;
+}
+
+.operations-page > a:focus-visible {
+  outline: 3px solid var(--qt-primary);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* --------------------------------------------------------------------------
+   Page heading: plain title on the left, decision actions on the right
+   -------------------------------------------------------------------------- */
+.page-heading,
+.actions {
   display: flex;
-  gap: 32px;
+  align-items: center;
   flex-wrap: wrap;
-  border-block: 1px solid #cfdbdf;
-  padding: 18px 0;
-  margin: 20px 0;
+  gap: 12px;
 }
-.summary-strip span {
-  display: block;
-  font-size: 13px;
-  color: #4b6068;
+
+.page-heading {
+  justify-content: space-between;
+  margin-bottom: 24px;
 }
-.summary-strip strong {
-  display: block;
-  font-size: 23px;
-  margin-top: 6px;
+
+h1 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  color: var(--qt-heading);
+  font-size: 28px;
+  font-weight: 700;
 }
-a {
-  color: #006e76;
+
+h1 mat-icon {
+  flex-shrink: 0;
+  color: var(--qt-primary);
+}
+
+/* Both action buttons: pill shape, minimum touch target */
+.actions a[mat-flat-button],
+.actions a[mat-stroked-button] {
+  height: auto;
+  min-height: 48px;
+  padding: 8px 24px;
+  border-radius: 999px;
   font-weight: 600;
+  white-space: normal;
+  text-decoration: none;
 }
+
+/* Release: solid teal (AA: white on #0f766e is 5.47:1) */
+.actions a[mat-flat-button] {
+  background: var(--qt-primary-strong);
+  color: var(--qt-surface);
+}
+
+.actions a[mat-flat-button]:hover {
+  background: var(--qt-primary-hover);
+}
+
+/* Reject: destructive action, outlined red with dark text for contrast */
+.actions a[mat-stroked-button] {
+  color: var(--qt-error-text);
+  border-color: var(--qt-error);
+}
+
+.actions a[mat-stroked-button]:hover {
+  background: var(--qt-error-surface);
+}
+
+.actions a:focus-visible {
+  outline: 3px solid var(--qt-primary);
+  outline-offset: 2px;
+}
+
+/* --------------------------------------------------------------------------
+   Messages: error, success and closed-batch notice
+   -------------------------------------------------------------------------- */
 .error,
 .success,
 .notice {
-  padding: 12px 16px;
-  border-left: 4px solid;
+  margin: 0 0 20px;
+  padding: 16px;
+  border: 1px solid;
+  border-radius: 12px;
+  font-size: 14px;
+  line-height: 1.6;
   overflow-wrap: anywhere;
 }
+
 .error {
-  background: #fff0f0;
-  color: #9d2424;
+  background: var(--qt-error-surface);
+  border-color: var(--qt-error);
+  color: var(--qt-error-text);
 }
+
 .success {
-  background: #e7f5ef;
-  color: #19664e;
+  background: var(--qt-success-surface);
+  border-color: var(--qt-success);
+  color: var(--qt-success-text);
 }
+
 .notice {
-  background: #fff6df;
-  color: #704f00;
+  background: var(--qt-warning-surface);
+  border-color: var(--qt-warning);
+  color: var(--qt-warning-text);
 }
-.status {
-  display: inline-block;
+
+/* --------------------------------------------------------------------------
+   Summary strip: status, quantity and dates in one card
+   -------------------------------------------------------------------------- */
+.summary-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 40px;
+  margin: 0 0 24px;
+  padding: 20px 24px;
+  background: var(--qt-surface);
+  border: 1px solid var(--qt-border);
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+}
+
+.summary-strip span {
+  display: block;
+  color: var(--qt-text-muted);
   font-size: 12px;
-  font-weight: 600;
-  color: #704f00;
-  padding: 4px 0;
+  font-weight: 500;
+  text-transform: uppercase;
 }
-.status.released {
-  color: #087957;
+
+.summary-strip strong {
+  display: block;
+  margin-top: 6px;
+  color: var(--qt-text);
+  font-size: 24px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
 }
-.status.rejected {
-  color: #a12d2d;
+
+/* --------------------------------------------------------------------------
+   Batch status chip (the status is a <strong class="status">)
+   Dark text variants for AA contrast. Default is amber (pending / in progress).
+   -------------------------------------------------------------------------- */
+.summary-strip .status {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: var(--qt-warning-surface);
+  color: var(--qt-warning-text);
+  font-size: 14px;
+  font-weight: 500;
 }
+
+.summary-strip .status.released {
+  background: var(--qt-success-surface);
+  color: var(--qt-success-text);
+}
+
+.summary-strip .status.rejected {
+  background: var(--qt-error-surface);
+  color: var(--qt-error-text);
+}
+
+/* --------------------------------------------------------------------------
+   Tabs: the whole group is a card, teal indicator and active label
+   -------------------------------------------------------------------------- */
+mat-tab-group {
+  overflow: hidden;
+  background: var(--qt-surface);
+  border: 1px solid var(--qt-border);
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+}
+
 .tab-content {
-  padding: 18px 0;
+  padding: 24px;
 }
+
+.tab-content h2 {
+  margin: 0 0 12px;
+  color: var(--qt-text);
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.tab-content p {
+  margin: 0;
+  color: var(--qt-text-muted);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* Loading message */
+p[role='status']:not(.notice) {
+  margin: 0;
+  padding: 32px 0;
+  color: var(--qt-text-muted);
+  font-size: 14px;
+  text-align: center;
+}
+
+/* --------------------------------------------------------------------------
+   Responsive
+   -------------------------------------------------------------------------- */
 @media (max-width: 760px) {
   .operations-page {
-    padding: 16px 10px;
+    padding: 20px 16px 36px;
   }
+
   h1 {
-    font-size: 21px;
+    font-size: 24px;
   }
+
+  .page-heading .actions {
+    width: 100%;
+  }
+
+  .actions a[mat-flat-button],
+  .actions a[mat-stroked-button] {
+    flex: 1;
+    justify-content: center;
+  }
+
   .summary-strip {
-    gap: 18px;
+    gap: 16px 24px;
+    padding: 16px;
   }
+
   .summary-strip strong {
     font-size: 20px;
   }
-  .page-heading .actions {
-    width: 100%;
+
+  .tab-content {
+    padding: 16px;
   }
 }

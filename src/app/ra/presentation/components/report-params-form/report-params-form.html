@@ -59,7 +59,7 @@
 
     <div class="format-section">
       <label class="input-label">{{ 'report-generator.format' | translate }}</label>
-      <mat-button-toggle-group class="w-full" [ngModel]="state.form().format" (ngModelChange)="state.updateForm({format: $event})">
+      <mat-button-toggle-group class="w-full" [hideSingleSelectionIndicator]="true" [ngModel]="state.form().format" (ngModelChange)="state.updateForm({format: $event})">
         <mat-button-toggle value="PDF"><mat-icon>picture_as_pdf</mat-icon> PDF</mat-button-toggle>
         <mat-button-toggle value="CSV"><mat-icon>table_chart</mat-icon> CSV</mat-button-toggle>
       </mat-button-toggle-group>
@@ -113,14 +113,14 @@
 <div class="panel-footer">
   <div class="actions">
     @if (state.form().format === 'PDF') {
-      <button mat-icon-button type="button" (click)="onPreview()" [disabled]="!isValid() || store.isLoading()"
+      <button mat-icon-button class="preview-btn" type="button" (click)="onPreview()" [disabled]="!isValid() || store.isLoading()"
               [attr.aria-label]="'report-generator.preview' | translate"
               [matTooltip]="'report-generator.preview' | translate">
         <mat-icon aria-hidden="true">visibility</mat-icon>
       </button>
     }
 
-    <button mat-flat-button color="primary" type="button" (click)="onGenerate()" [disabled]="!isValid() || store.isLoading()">
+    <button mat-flat-button class="primary-btn" type="button" (click)="onGenerate()" [disabled]="!isValid() || store.isLoading()">
       <mat-icon>download</mat-icon>
       {{ state.form().format === 'PDF' ? ('report-generator.generate-pdf' | translate) : ('report-generator.generate-excel' | translate) }}
     </button>
