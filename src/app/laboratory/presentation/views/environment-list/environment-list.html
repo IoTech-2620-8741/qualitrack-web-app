@@ -53,7 +53,9 @@
         <th>{{ 'environments.name' | translate }}</th>
         <th>{{ 'environments.usage' | translate }}</th>
         <th>{{ 'environments.description' | translate }}</th>
-        <th>{{ 'common.actions.label' | translate }}</th>
+        @if (store.canManageEnvironments()) {
+          <th>{{ 'common.actions.label' | translate }}</th>
+        }
       </tr>
       </thead>
 
@@ -78,46 +80,48 @@
               {{ environment.description ?? '—' }}
             </td>
 
-            <td [attr.data-label]="'common.actions.label' | translate">
-              <div class="row-actions">
-                <button
-                  mat-icon-button
-                  type="button"
-                  (click)="onEdit(environment)"
-                  [matTooltip]="'common.actions.edit' | translate"
-                  [attr.aria-label]="('common.actions.edit' | translate) + ' ' + environment.code"
-                >
-                  <mat-icon>edit</mat-icon>
-                </button>
+            @if (store.canManageEnvironments()) {
+              <td [attr.data-label]="'common.actions.label' | translate">
+                <div class="row-actions">
+                  <button
+                    mat-icon-button
+                    type="button"
+                    (click)="onEdit(environment)"
+                    [matTooltip]="'common.actions.edit' | translate"
+                    [attr.aria-label]="('common.actions.edit' | translate) + ' ' + environment.code"
+                  >
+                    <mat-icon>edit</mat-icon>
+                  </button>
 
-                <button
-                  mat-icon-button
-                  type="button"
-                  [matMenuTriggerFor]="usageMenu"
-                  [matTooltip]="'environments.assign-usage' | translate"
-                  [attr.aria-label]="('environments.assign-usage' | translate) + ' ' + environment.code"
-                >
-                  <mat-icon>category</mat-icon>
-                </button>
+                  <button
+                    mat-icon-button
+                    type="button"
+                    [matMenuTriggerFor]="usageMenu"
+                    [matTooltip]="'environments.assign-usage' | translate"
+                    [attr.aria-label]="('environments.assign-usage' | translate) + ' ' + environment.code"
+                  >
+                    <mat-icon>category</mat-icon>
+                  </button>
 
-                <mat-menu #usageMenu="matMenu">
-                  @for (usage of usages; track usage) {
-                    <button
-                      mat-menu-item
-                      type="button"
-                      [disabled]="usage === environment.usage"
-                      (click)="onAssignUsage(environment, usage)"
-                    >
-                      {{ 'environment-usage.' + usage | translate }}
-                    </button>
-                  }
-                </mat-menu>
-              </div>
-            </td>
+                  <mat-menu #usageMenu="matMenu">
+                    @for (usage of usages; track usage) {
+                      <button
+                        mat-menu-item
+                        type="button"
+                        [disabled]="usage === environment.usage"
+                        (click)="onAssignUsage(environment, usage)"
+                      >
+                        {{ 'environment-usage.' + usage | translate }}
+                      </button>
+                    }
+                  </mat-menu>
+                </div>
+              </td>
+            }
           </tr>
         } @empty {
           <tr>
-            <td colspan="5">{{ 'environments.empty' | translate }}</td>
+            <td [attr.colspan]="store.canManageEnvironments() ? 5 : 4">{{ 'environments.empty' | translate }}</td>
           </tr>
         }
       </tbody>

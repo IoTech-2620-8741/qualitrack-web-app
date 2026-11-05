@@ -61,7 +61,9 @@
           <th>{{ 'staff-list.access-role' | translate }}</th>
           <th>{{ 'staff-list.email' | translate }}</th>
           <th>{{ 'staff-list.status' | translate }}</th>
-          <th>{{ 'common.actions.label' | translate }}</th>
+          @if (iamStore.canManageQuality()) {
+            <th>{{ 'common.actions.label' | translate }}</th>
+          }
         </tr>
         </thead>
 
@@ -102,23 +104,25 @@
                 </span>
               </td>
 
-              <td [attr.data-label]="'common.actions.label' | translate">
-                <div class="row-actions">
-                  @if (member.active) {
-                    <button
-                      mat-icon-button
-                      class="danger-icon"
-                      type="button"
-                      [matTooltip]="'staff-list.deactivate' | translate"
-                      [attr.aria-label]="'staff-list.deactivate' | translate"
-                      [disabled]="store.isLoading()"
-                      (click)="onDeactivate(member)"
-                    >
-                      <mat-icon>person_off</mat-icon>
-                    </button>
-                  }
-                </div>
-              </td>
+              @if (iamStore.canManageQuality()) {
+                <td [attr.data-label]="'common.actions.label' | translate">
+                  <div class="row-actions">
+                    @if (member.active) {
+                      <button
+                        mat-icon-button
+                        class="danger-icon"
+                        type="button"
+                        [matTooltip]="'staff-list.deactivate' | translate"
+                        [attr.aria-label]="'staff-list.deactivate' | translate"
+                        [disabled]="store.isLoading()"
+                        (click)="onDeactivate(member)"
+                      >
+                        <mat-icon>person_off</mat-icon>
+                      </button>
+                    }
+                  </div>
+                </td>
+              }
             </tr>
           }
         </tbody>

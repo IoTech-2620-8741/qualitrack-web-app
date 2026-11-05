@@ -11,11 +11,9 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router, RouterLink } from '@angular/router';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
-import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatChipsModule } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { LaboratoryStore } from '../../../application/laboratory.store';
@@ -35,12 +33,10 @@ import { StaffMember } from '../../../domain/model/staff-member.entity';
   imports: [
     RouterLink,
     TranslatePipe,
-    MatTableModule,
     MatButtonModule,
     MatIconModule,
     MatTooltipModule,
     MatProgressSpinnerModule,
-    MatChipsModule,
   ],
   templateUrl: './staff-list.html',
   changeDetection: ChangeDetectionStrategy.Eager,
@@ -85,14 +81,9 @@ export class StaffList implements OnInit {
   );
 
   /**
-   * Columns displayed in the staff table; the actions are only shown to quality managers.
+   * Reads the staff members of the current laboratory again.
    */
-  protected readonly displayedColumns = computed(() => {
-    const columns = ['fullName', 'role', 'accessRole', 'email', 'active'];
-    return this.iamStore.canManageQuality() ? [...columns, 'actions'] : columns;
-  });
-
-  refresh(): void {
+  protected refresh(): void {
     this.store.loadStaff(this.iamStore.requireLaboratoryId());
   }
 
