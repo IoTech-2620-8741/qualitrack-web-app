@@ -778,10 +778,11 @@
       "open-for": "{{time}} abierta",
       "attention-after": "atención {{time}}",
       "export": "Exportar reporte",
+      "export-note": "«Exportar reporte» cubre todo el periodo y el ambiente: la severidad, el estado, el origen y la búsqueda solo afectan esta tabla.",
       "view": "Ver el detalle de la alerta de {{variable}}",
       "pages": {
         "label": "Páginas del historial",
-        "showing": "Mostrando {{first}}–{{last}} de {{total}} · 25 por página",
+        "showing": "Mostrando {{first}}–{{last}} de {{total}} · {{size}} por página",
         "current": "Página {{page}} de {{count}}",
         "previous": "Página anterior",
         "next": "Página siguiente"
