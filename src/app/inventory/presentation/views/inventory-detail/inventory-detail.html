@@ -116,40 +116,22 @@
       </mat-tab>
 
       @if (material.legacyId) {
-        <mat-tab [label]="'inventory.legacyHistory' | translate"
-          ><div class="tab-content">
+
+        <mat-tab [label]="'inventory.legacyHistory' | translate">
+          <div class="tab-content">
+
             <p class="notice">{{ 'inventory.legacyHistoryNotice' | translate }}</p>
+
             @if (store.legacyError()) {
               <p class="error" role="alert">{{ store.legacyError() | translate }}</p>
             }
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th>{{ 'inventory.productBatch' | translate }}</th>
-                  <th>{{ 'inventory.amount' | translate }}</th>
-                  <th>{{ 'inventory.date' | translate }}</th>
-                </tr>
-              </thead>
-              <tbody>
-                @for (usage of store.legacyHistory(); track usage.id) {
-                  <tr>
-                    <td>
-                      <a [routerLink]="['/batches', usage.batchId]"
-                        >#{{ usage.batchId }}</a
-                      >
-                    </td>
-                    <td>{{ usage.quantityUsed | number: '1.0-3' }} {{ usage.unit }}</td>
-                    <td>{{ usage.usageDate | dateTime }}</td>
-                  </tr>
-                } @empty {
-                  <tr>
-                    <td colspan="3">{{ 'inventory.noMovements' | translate }}</td>
-                  </tr>
-                }
-              </tbody>
-            </table>
-          </div></mat-tab
-        >
+
+            <app-legacy-material-history-table
+              [history]="store.legacyHistory()"
+            />
+
+          </div>
+        </mat-tab>
       }
     </mat-tab-group>
   }

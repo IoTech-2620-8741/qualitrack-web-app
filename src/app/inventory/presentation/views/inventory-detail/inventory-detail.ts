@@ -34,7 +34,6 @@ import {
 } from '../../../../shared/presentation/validators/date.validators';
 import { notBlankValidator } from '../../../../shared/presentation/validators/not-blank.validator';
 import { stockQuantityValidator } from '../../../../shared/presentation/validators/stock-quantity.validator';
-import { DateTimePipe } from '../../../../shared/presentation/pipes/date-time.pipe';
 
 import { InventorySummary } from '../../components/inventory-summary/inventory-summary';
 import { RawMaterialBatchesTable } from '../../components/raw-material-batches-table/raw-material-batches-table';
@@ -43,12 +42,12 @@ import { ReceiveBatchForm } from '../../components/receive-batch-form/receive-ba
 import { BatchReviewForm } from '../../components/batch-review-form/batch-review-form';
 import { ContainerAssignmentForm } from '../../components/container-assignment-form/container-assignment-form';
 import { InventoryMovementsTable } from '../../components/inventory-movements-table/inventory-movements-table';
+import { LegacyMaterialHistoryTable } from '../../components/legacy-material-history-table/legacy-material-history-table';
 
 @Component({
   selector: 'app-inventory-detail',
   standalone: true,
   imports: [
-    DateTimePipe,
     InventorySummary,
     RawMaterialBatchesTable,
     RawMaterialForm,
@@ -56,6 +55,7 @@ import { InventoryMovementsTable } from '../../components/inventory-movements-ta
     BatchReviewForm,
     ContainerAssignmentForm,
     InventoryMovementsTable,
+    LegacyMaterialHistoryTable,
     CommonModule,
     ReactiveFormsModule,
     RouterLink,
