@@ -13,9 +13,9 @@
     @for (receipt of receipts(); track receipt.id) {
       <tr>
         <td>
-          <strong>{{ receipt.batchNumber }}</strong
-          ><small>{{ receipt.supplier }}</small
-        ><small>#{{ receipt.id }} · {{ receipt.receivedOn }}</small>
+          <strong>{{ receipt.batchNumber }}</strong>
+          <small>{{ receipt.supplier }}</small>
+          <small>#{{ receipt.id }} · {{ receipt.receivedOn }}</small>
         </td>
         <td [attr.data-label]="'inventory.amount' | translate">
           {{ receipt.initialAmount | number: '1.0-3' }} {{ receipt.unit }}
@@ -34,9 +34,9 @@
             <a
               [routerLink]="['/tracking/history']"
               [queryParams]="{
-                          environmentId: environmentId(),
-                          deviceId: receipt.containerMonitorId,
-                        }"
+                environmentId: environmentId(),
+                deviceId: receipt.containerMonitorId,
+              }"
             ><small>{{ 'inventory.viewConditions' | translate }}</small></a
             >
           } @else {
@@ -46,11 +46,11 @@
             <div>
               <button
                 mat-button
+                type="button"
                 (click)="storageRequested.emit(receipt)"
                 [disabled]="saving()"
               >
-                <mat-icon>inventory</mat-icon
-                >{{
+                <mat-icon>inventory</mat-icon>{{
                   (receipt.containerMonitorId === null
                       ? 'inventory.storeInContainer'
                       : 'inventory.changeContainer'
@@ -60,13 +60,13 @@
             </div>
           }
         </td>
-        <td>
+        <td [attr.data-label]="'inventory.state' | translate">
           <span
             class="status"
             [class.released]="receipt.status === 'RELEASED'"
             [class.rejected]="receipt.status === 'REJECTED'"
-          >{{ 'inventory.status.' + receipt.status | translate }}
-          </span>
+          >{{ 'inventory.status.' + receipt.status | translate }}</span
+          >
           @if (receipt.availability && receipt.availability !== receipt.status) {
             <small>{{ 'inventory.status.' + receipt.availability | translate }}</small>
           }

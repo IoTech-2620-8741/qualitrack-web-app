@@ -1,29 +1,10 @@
-
 <div class="filters">
-
-  <mat-form-field
-    appearance="outline"
-    subscriptSizing="dynamic"
-  >
-    <mat-label>
-      {{ 'inventory.search' | translate }}
-    </mat-label>
-
-    <mat-icon matPrefix>search</mat-icon>
-
-    <input
-      matInput
-      type="search"
-      [ngModel]="search()"
-      (ngModelChange)="searchChange.emit($event)"
-    />
-  </mat-form-field>
-
-  <mat-checkbox
-    [checked]="lowOnly()"
-    (change)="lowOnlyChange.emit($event.checked)"
-  >
-    {{ 'inventory.lowStock' | translate }}
-  </mat-checkbox>
-
+  <mat-form-field appearance="outline" subscriptSizing="dynamic"
+    ><mat-label>{{ 'inventory.search' | translate }}</mat-label
+    ><mat-icon matPrefix>search</mat-icon
+    ><input matInput [ngModel]="search()" (ngModelChange)="searchChange.emit($event)"
+  /></mat-form-field>
+  <mat-checkbox [checked]="lowOnly()" (change)="lowOnlyChange.emit($event.checked)">{{
+    'inventory.lowStock' | translate
+  }}</mat-checkbox>
 </div>

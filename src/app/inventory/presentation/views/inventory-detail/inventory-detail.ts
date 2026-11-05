@@ -6,14 +6,11 @@ import {
   signal,
   ChangeDetectionStrategy,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
 import { MatTabsModule } from '@angular/material/tabs';
 import { TranslatePipe } from '@ngx-translate/core';
 import { InventoryStore } from '../../../application/inventory.store';
@@ -56,13 +53,10 @@ import { LegacyMaterialHistoryTable } from '../../components/legacy-material-his
     ContainerAssignmentForm,
     InventoryMovementsTable,
     LegacyMaterialHistoryTable,
-    CommonModule,
     ReactiveFormsModule,
     RouterLink,
     MatButtonModule,
     MatIconModule,
-    MatInputModule,
-    MatSelectModule,
     MatTabsModule,
     TranslatePipe,
   ],
@@ -79,7 +73,6 @@ export class InventoryDetail implements OnInit {
   readonly editing = signal(false);
   readonly reviewing = signal<RawMaterialBatch | null>(null);
   readonly storing = signal<RawMaterialBatch | null>(null);
-  readonly maxStock = MAX_STOCK;
   readonly minDate = MIN_DATE;
   /** Latest expiration date: ten years ahead, a generous shelf life for a raw material. */
   get maxExpiryDate(): string {
