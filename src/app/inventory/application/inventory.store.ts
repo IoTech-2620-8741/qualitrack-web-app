@@ -110,13 +110,6 @@ export class InventoryStore {
       });
   }
 
-  /** Batch number shown in history, with an identifier fallback when the batch is unavailable. */
-  legacyDetailBatchLabel(batchId: number): string {
-    return (
-      this.legacyDetailBatches().find((batch) => batch.id === batchId)?.batchNumber ?? '#' + batchId
-    );
-  }
-
   /**
    * Infrastructure facade for inventory operations.
    * @private
@@ -488,6 +481,7 @@ export class InventoryStore {
       ),
     );
   }
+
   /**
    * Imports a legacy raw material into the selected environment.
    *
@@ -512,7 +506,6 @@ export class InventoryStore {
    * Discards outdated responses using a generation counter.
    */
   async load(environmentId: number, id: number | null = null): Promise<boolean> {
-
     const environmentChanged = this.environmentId() !== environmentId;
     const generation = ++this.generation;
 

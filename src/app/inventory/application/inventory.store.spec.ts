@@ -6,6 +6,7 @@ import { IamStore } from '../../iam/application/iam.store';
 import { InventoryApi } from '../infrastructure/inventory-api';
 import { RawMaterialBatch, RawMaterialBatchStatus } from '../domain/model/raw-material-batch.entity';
 import { MaterialConsumption } from '../domain/model/material-consumption.entity';
+import { RawMaterial } from '../domain/model/raw-material.entity';
 import { InventoryStore } from './inventory.store';
 
 describe('InventoryStore affected batches', () => {
@@ -54,8 +55,7 @@ describe('InventoryStore legacy detail', () => {
     expect(store.legacyDetailMaterial()).toBe(material);
     expect(store.legacyDetailConsumptions()).toEqual([consumption]);
     expect(store.legacyDetailHasUnrecordedStock()).toBe(true);
-    expect(store.legacyDetailBatchLabel(8)).toBe('PB-8');
-    expect(store.legacyDetailBatchLabel(99)).toBe('#99');
+    expect(store.legacyDetailBatches().map((batch) => batch.batchNumber)).toEqual(['PB-8']);
     expect(api.legacyMaterialConsumptions).toHaveBeenCalledWith(7, 3);
     expect(store.legacyDetailLoading()).toBe(false);
   });
@@ -85,5 +85,62 @@ describe('InventoryStore legacy detail', () => {
     const store = TestBed.inject(InventoryStore); store.loadLegacyDetail(id);
     expect(api.legacyMaterialSnapshots).not.toHaveBeenCalled();
     expect(store.legacyDetailError()).toBe('material-history.not-found');
+  });
+});
+
+describe('InventoryStore writes and environments', () => {
+  const receipt = new RawMaterialBatch({
+    id: 11, laboratoryId: 1, rawMaterialId: 2, supplier: 'Supplier', batchNumber: 'SUP-1', unit: 'kg', initialAmount: 20, availableAmount: 20,
+    receivedOn: '2026-09-01', expiresOn: '2028-01-01', status: 'QUARANTINED',
+  });
+  const material = new RawMaterial({
+    id: 2, laboratoryId: 1, environmentId: 1, code: 'RM-001', name: 'Lactosa', unit: 'kg', minimumStock: 20, usableStock: 15, physicalStock: 60, stockStatus: 'LOW', legacyId: null,
+  });
+  const api = { materials: vi.fn(), review: vi.fn() };
+  beforeEach(() => {
+    api.materials.mockReset().mockReturnValue(of([material]));
+    api.review.mockReset().mockReturnValue(of({}));
+    TestBed.configureTestingModule({ providers: [
+      { provide: InventoryApi, useValue: api },
+      { provide: IamStore, useValue: { requireLaboratoryId: () => 7, canManageQuality: () => true, canOperate: () => true } },
+    ] });
+  });
+
+  it('keeps the saved notice after the reload that follows a change', async () => {
+    const store = TestBed.inject(InventoryStore);
+    await store.load(1);
+    expect(await store.review(receipt, { status: 'RELEASED', reason: 'Verified' })).toBe(true);
+    expect(store.notice()).toBe('inventory.saved');
+  });
+
+  it('does not announce a change that failed', async () => {
+    api.review.mockReturnValue(throwError(() => new Error('refused')));
+    const store = TestBed.inject(InventoryStore);
+    await store.load(1);
+    expect(await store.review(receipt, { status: 'RELEASED', reason: 'Verified' })).toBe(false);
+    expect(store.notice()).toBe('');
+    expect(store.error()).not.toBe('');
+  });
+
+  it('forgets the data of the previous environment as soon as another one opens', async () => {
+    const store = TestBed.inject(InventoryStore);
+    await store.load(1);
+    store.nearExpiry.set([receipt]);
+    store.lowStockMaterials.set([material]);
+    store.environmentUsage.set('RAW_MATERIAL_STORAGE');
+    api.materials.mockReturnValue(new Subject());
+    void store.load(2);
+    expect(store.materials()).toEqual([]);
+    expect(store.nearExpiry()).toEqual([]);
+    expect(store.lowStockMaterials()).toEqual([]);
+    expect(store.environmentUsage()).toBeNull();
+  });
+
+  it('keeps what is on screen while the same environment reloads', async () => {
+    const store = TestBed.inject(InventoryStore);
+    await store.load(1);
+    api.materials.mockReturnValue(new Subject());
+    void store.load(1);
+    expect(store.materials()).toEqual([material]);
   });
 });

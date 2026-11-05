@@ -79,6 +79,12 @@ export class InventoryApi extends BaseApi {
    */
   private readonly consumptionEndpoint: MaterialConsumptionApiEndpoint;
 
+  /** Reads the container monitors of Equipment Management where lots are stored. */
+  private readonly containerEndpoint: StorageContainerApiEndpoint;
+
+  /** Reads the environments of Laboratory Management where raw materials are kept. */
+  private readonly environmentEndpoint: StorageEnvironmentApiEndpoint;
+
   /**
    * Creates an instance of InventoryApi.
    *
@@ -120,12 +126,6 @@ export class InventoryApi extends BaseApi {
   legacyMaterialConsumptions(laboratoryId: number, legacyId: number) {
     return this.consumptionEndpoint.getByLegacyMaterial(laboratoryId, legacyId);
   }
-
-  /** Reads the container monitors of Equipment Management where lots are stored. */
-  private readonly containerEndpoint: StorageContainerApiEndpoint;
-
-  /** Reads the environments of Laboratory Management where raw materials are kept. */
-  private readonly environmentEndpoint: StorageEnvironmentApiEndpoint;
 
   /** Environments of the laboratory where raw materials can be kept. */
   environments(lab: number) {
