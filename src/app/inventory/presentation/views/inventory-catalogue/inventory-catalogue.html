@@ -13,7 +13,7 @@
         <button mat-stroked-button (click)="showImports()" [disabled]="store.saving()" [attr.aria-pressed]="importing()">
           <mat-icon>move_to_inbox</mat-icon>{{ 'inventory.legacy' | translate }}
         </button>
-        <a mat-flat-button [routerLink]="['/inventory/environments', store.environmentId(), 'raw-materials', 'new']">
+        <a mat-flat-button class="primary-btn" [routerLink]="['/inventory/environments', store.environmentId(), 'raw-materials', 'new']">
           <mat-icon>add</mat-icon>{{ 'inventory.newMaterial' | translate }}
         </a>
       }

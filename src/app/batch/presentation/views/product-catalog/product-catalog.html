@@ -1,18 +1,50 @@
 <main class="operations-page">
   <!-- Heading with the environment selector and the actions -->
   <header class="page-heading">
-    <h1><mat-icon aria-hidden="true">factory</mat-icon>{{ 'product-catalog.title' | translate }}</h1>
+    <div class="heading-title">
+      <h1>
+        <mat-icon aria-hidden="true">factory</mat-icon>
+        {{ 'product-catalog.title' | translate }}
+      </h1>
+    </div>
+
     <div class="actions">
-      <app-environment-selector [environments]="store.environments()" [selectedId]="store.productEnvironmentId()" (selectedChange)="changeEnvironment($event)" />
+      <app-environment-selector
+        [environments]="store.environments()"
+        [selectedId]="store.productEnvironmentId()"
+        (selectedChange)="changeEnvironment($event)"
+      />
+
       <a mat-stroked-button routerLink="/batches">
-        <mat-icon>list_alt</mat-icon>{{ 'batches.title' | translate }}
+        <mat-icon>list_alt</mat-icon>
+        {{ 'batches.title' | translate }}
       </a>
-      <!-- Registering products is reserved to quality roles -->
+
       @if (store.canManageProducts()) {
-        <a mat-flat-button [routerLink]="['/batches/environments', store.productEnvironmentId(), 'products', 'new']">
-          <mat-icon>add</mat-icon>{{ 'product-catalog.add' | translate }}
+        <a
+          mat-flat-button
+          [routerLink]="[
+          '/batches/environments',
+          store.productEnvironmentId(),
+          'products',
+          'new'
+        ]"
+        >
+          <mat-icon>add</mat-icon>
+          {{ 'product-catalog.add' | translate }}
         </a>
       }
+
+      <button
+        mat-icon-button
+        type="button"
+        (click)="refresh()"
+        [disabled]="store.productsLoading()"
+        [matTooltip]="'inventory.refresh' | translate"
+        [attr.aria-label]="'inventory.refresh' | translate"
+      >
+        <mat-icon>refresh</mat-icon>
+      </button>
     </div>
   </header>
   @if (store.productError()) {

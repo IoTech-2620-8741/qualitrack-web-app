@@ -1,10 +1,10 @@
-<div class="viewer-container">
-  <div class="section-header">
-    <div class="title-group">
-      <mat-icon class="title-icon">policy</mat-icon>
-      <h2>{{ 'audit-log.title' | translate }}</h2>
-    </div>
-  </div>
+<main class="operations-page">
+  <header class="page-heading">
+    <h1>
+      <mat-icon aria-hidden="true">policy</mat-icon>
+      {{ 'audit-log.title' | translate }}
+    </h1>
+  </header>
 
   <app-audit-log-filters [loading]="store.isLoading()" (search)="onSearch($event)" (clear)="onClear()" />
 
@@ -12,7 +12,5 @@
     <app-error-banner [messageKey]="store.error()!" />
   }
 
-  <div class="table-card mat-elevation-z2">
-    <app-audit-log-table [rows]="rows()" [loading]="store.isLoading()" />
-  </div>
-</div>
+  <app-audit-log-table [rows]="rows()" [loading]="store.isLoading()" />
+</main>

@@ -31,12 +31,12 @@ const deviationDetailPage = () =>
  * The view-named paths used before semantic routes redirect to their new address.
  */
 const raRoutes: Routes = [
-  { path: 'staff/:staffId/activity', loadComponent: () => import('./views/staff-activity/staff-activity').then((m) => m.StaffActivity), canActivate: [staffActivityGuard], title: 'Staff activity - QualiTrack' },
-  { path: 'kpis', loadComponent: kpiDashboard },
-  { path: 'deviation-trends/:equipmentId/:parameter', loadComponent: deviationDetailPage, title: 'Deviation detail - QualiTrack' },
-  { path: 'deviation-trends', loadComponent: deviationTrendChart },
-  { path: 'new', loadComponent: reportGenerator },
-  { path: 'audit-log', loadComponent: auditLogViewer },
+  { path: 'staff/:staffId/activity', loadComponent: () => import('./views/staff-activity/staff-activity').then((m) => m.StaffActivity), canActivate: [staffActivityGuard], title: 'page-titles.staff-activity' },
+  { path: 'kpis', loadComponent: kpiDashboard, title: 'page-titles.kpis' },
+  { path: 'deviation-trends/:equipmentId/:parameter', loadComponent: deviationDetailPage, title: 'page-titles.deviation-detail' },
+  { path: 'deviation-trends', loadComponent: deviationTrendChart, title: 'page-titles.deviation-trends' },
+  { path: 'new', loadComponent: reportGenerator, title: 'page-titles.report-generator' },
+  { path: 'audit-log', loadComponent: auditLogViewer, title: 'page-titles.audit-log' },
   { path: '', redirectTo: 'kpis', pathMatch: 'full' },
   // View-named paths used before semantic routes.
   { path: 'kpi-dashboard', redirectTo: '/reports/kpis', pathMatch: 'full' },

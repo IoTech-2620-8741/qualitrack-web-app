@@ -2,6 +2,8 @@ import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core
 import { DecimalPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 import { StatusChip } from '../../../../shared/presentation/components/status-chip/status-chip';
@@ -29,6 +31,8 @@ import { alertVariableName } from '../../alert-variable';
     ElapsedTimePipe,
     RouterLink,
     MatButtonModule,
+    MatIconModule,
+    MatTooltipModule,
     StatusChip,
     TranslatePipe,
   ],

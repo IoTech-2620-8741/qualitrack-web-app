@@ -5,30 +5,32 @@
 .filter-chip {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  min-height: 32px;
-  padding: 4px 12px;
+  gap: 6px;
+  min-height: 40px;
+  padding: 0 16px;
+  background: var(--qt-surface);
   border: 1px solid var(--qt-border);
   border-radius: var(--qt-radius-pill);
-  background: var(--qt-surface);
   color: var(--qt-text);
   font: inherit;
-  font-size: 13px;
+  font-size: 14px;
+  font-weight: 500;
   cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
 .filter-chip:hover {
-  border-color: var(--qt-primary);
+  background: var(--qt-background);
 }
 
 .filter-chip:focus-visible {
-  outline: 2px solid var(--qt-primary-strong);
+  outline: 3px solid var(--qt-primary);
   outline-offset: 2px;
 }
 
 .filter-chip.pressed {
-  border-color: var(--qt-primary-strong);
   background: var(--qt-primary-surface);
+  border-color: var(--qt-primary);
   color: var(--qt-primary-strong);
   font-weight: 600;
 }
@@ -41,9 +43,16 @@ mat-icon {
 
 .count {
   color: var(--qt-text-muted);
+  font-size: 12px;
   font-variant-numeric: tabular-nums;
 }
 
 .pressed .count {
   color: inherit;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+  }
 }

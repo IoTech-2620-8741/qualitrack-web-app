@@ -1,17 +1,33 @@
 <main class="operations-page">
   <!-- Heading with the refresh button and the link to the products -->
   <header class="page-heading">
-    <h1><mat-icon aria-hidden="true">list_alt</mat-icon>{{ 'batches.title' | translate }}</h1>
+    <div class="heading-content">
+      <h1>
+        <mat-icon aria-hidden="true">list_alt</mat-icon>
+        {{ 'batches.title' | translate }}
+      </h1>
+
+      <p class="muted">{{ 'batches.subtitle' | translate }}</p>
+    </div>
+
     <div class="actions">
-      <button mat-stroked-button type="button" (click)="refresh()" [disabled]="store.isLoading()">
-        <mat-icon>refresh</mat-icon>{{ 'inventory.refresh' | translate }}
-      </button>
       <a mat-flat-button routerLink="/batches/environments">
-        <mat-icon>factory</mat-icon>{{ 'product-catalog.title' | translate }}
+        <mat-icon>factory</mat-icon>
+        {{ 'product-catalog.title' | translate }}
       </a>
+
+      <button
+        mat-icon-button
+        type="button"
+        (click)="refresh()"
+        [disabled]="store.isLoading()"
+        [matTooltip]="'inventory.refresh' | translate"
+        [attr.aria-label]="'inventory.refresh' | translate"
+      >
+        <mat-icon>refresh</mat-icon>
+      </button>
     </div>
   </header>
-  <p class="muted">{{ 'batches.subtitle' | translate }}</p>
   @if (store.error()) {
     <p class="error" role="alert">{{ store.error()! | translate }}</p>
   }

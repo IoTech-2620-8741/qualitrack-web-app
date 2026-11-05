@@ -1,5 +1,6 @@
 <main class="operations-page">
-  <a [routerLink]="['/inventory/environments', store.environmentId(), 'raw-materials']">{{ 'inventory.title' | translate }}</a>
+  <a class="back-link" [routerLink]="['/inventory/environments', store.environmentId(), 'raw-materials']">{{ 'inventory.title' | translate }}</a>
+
   @if (store.error()) {
     <p class="error" role="alert">{{ store.error() | translate }}</p>
   }
@@ -9,10 +10,11 @@
   @if (store.loading()) {
     <p role="status">{{ 'inventory.loading' | translate }}</p>
   }
+
   @if (store.selected(); as material) {
     <header class="page-heading">
       <div>
-        <h1>{{ material.name }}</h1>
+        <h1><mat-icon aria-hidden="true">inventory_2</mat-icon>{{ material.name }}</h1>
         <p class="muted">{{ material.code }} · {{ material.unit }}</p>
       </div>
       <div class="actions">
@@ -25,25 +27,26 @@
           </button>
         }
         @if (store.canOperate()) {
-          <button mat-flat-button (click)="receiving.set(!receiving())" [disabled]="store.saving()">
+          <button mat-flat-button class="primary-btn" (click)="receiving.set(!receiving())" [disabled]="store.saving()">
             <mat-icon>add</mat-icon>{{ 'inventory.newReceipt' | translate }}
           </button>
         }
       </div>
     </header>
-    <app-inventory-summary [material]="material"/>
+
+    <app-inventory-summary [material]="material" />
+
     @if (store.affectedBatches().length) {
       <section class="notice">
         <h2>{{ 'inventory.affectedBatches' | translate }}</h2>
         @for (id of store.affectedBatches(); track id) {
           <p>
-            <a [routerLink]="['/batches', id]"
-              >{{ 'inventory.productBatch' | translate }} #{{ id }}</a
-            >
+            <a [routerLink]="['/batches', id]">{{ 'inventory.productBatch' | translate }} #{{ id }}</a>
           </p>
         }
       </section>
     }
+
     @if (editing()) {
       <app-raw-material-form
         [form]="metadata"
@@ -53,6 +56,7 @@
         (cancelRequested)="editing.set(false)"
       />
     }
+
     @if (receiving()) {
       <app-receive-batch-form
         [form]="receiptForm"
@@ -65,6 +69,7 @@
         (cancelRequested)="receiving.set(false)"
       />
     }
+
     @if (reviewing(); as receipt) {
       <app-batch-review-form
         [receipt]="receipt"
@@ -74,6 +79,7 @@
         (cancelRequested)="reviewing.set(null)"
       />
     }
+
     @if (storing(); as receipt) {
       <app-container-assignment-form
         [receipt]="receipt"
@@ -84,16 +90,15 @@
         (cancelRequested)="storing.set(null)"
       />
     }
+
     <mat-tab-group>
       <mat-tab [label]="'inventory.receipts' | translate">
         <div class="tab-content">
-
           @if (store.storageError()) {
             <p class="error" role="alert">{{ store.storageError() | translate }}</p>
           } @else if (store.environmentUsage() !== null && !store.storesInContainers()) {
             <p class="notice">{{ 'inventory.containerUsageNotice' | translate }}</p>
           }
-
           <app-raw-material-batches-table
             [receipts]="store.receipts()"
             [containers]="store.containers()"
@@ -105,7 +110,6 @@
             (storageRequested)="startStoring($event)"
             (reviewRequested)="startReview($event)"
           />
-
         </div>
       </mat-tab>
 
@@ -116,20 +120,13 @@
       </mat-tab>
 
       @if (material.legacyId) {
-
         <mat-tab [label]="'inventory.legacyHistory' | translate">
           <div class="tab-content">
-
             <p class="notice">{{ 'inventory.legacyHistoryNotice' | translate }}</p>
-
             @if (store.legacyError()) {
               <p class="error" role="alert">{{ store.legacyError() | translate }}</p>
             }
-
-            <app-legacy-material-history-table
-              [history]="store.legacyHistory()"
-            />
-
+            <app-legacy-material-history-table [history]="store.legacyHistory()" />
           </div>
         </mat-tab>
       }

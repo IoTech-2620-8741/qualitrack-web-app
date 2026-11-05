@@ -14,6 +14,7 @@
         <span class="status-badge"
               [class.status-badge--warning]="state === 'WARNING'"
               [class.status-badge--critical]="state === 'CRITICAL'"
+              [class.status-badge--unconfigured]="state === 'UNCONFIGURED'"
               [attr.aria-label]="statusLabelKey(state) | translate">
           <mat-icon>{{ statusIcon(state) }}</mat-icon>
           {{ statusLabelKey(state) | translate }}

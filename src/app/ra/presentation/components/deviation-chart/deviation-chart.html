@@ -6,7 +6,7 @@
         {{ trend().dataPoints.length }} {{ 'reporting.deviations.readings' | translate }}
       </p>
     </div>
-    <button mat-stroked-button color="primary" (click)="openDetail.emit()">
+    <button mat-stroked-button type="button" (click)="openDetail.emit()">
       <mat-icon>open_in_new</mat-icon>
       {{ 'reporting.deviations.view-detail' | translate }}
     </button>

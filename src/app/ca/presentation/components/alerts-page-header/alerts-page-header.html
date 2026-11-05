@@ -1,13 +1,10 @@
 <header class="page-header">
-  <nav class="breadcrumb" [attr.aria-label]="'common.breadcrumb' | translate">
-    <a routerLink="/alerts">{{ 'ca-alerts.page.title' | translate }}</a>
-    <span aria-hidden="true">/</span>
-    <span aria-current="page">{{ sectionTitleKey() | translate }}</span>
-  </nav>
-
   <div class="heading">
     <div class="titles">
-      <h1>{{ 'ca-alerts.page.title' | translate }}</h1>
+      <h1>
+        <mat-icon aria-hidden="true">notifications_active</mat-icon>
+        {{ 'ca-alerts.page.title' | translate }}
+      </h1>
       <p>{{ subtitleKey() | translate }}</p>
     </div>
     <div class="actions">

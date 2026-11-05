@@ -8,7 +8,7 @@
     <th scope="col">{{ 'ca-alerts.fields.severity' | translate }}</th>
     <th scope="col">{{ 'common.status' | translate }}</th>
     <th scope="col">{{ 'ca-alerts.history.columns.duration' | translate }}</th>
-    <th scope="col">{{ 'ca-alerts.history.columns.resolved-by' | translate }}</th>
+    <th scope="col" class="col-resolved">{{ 'ca-alerts.history.columns.resolved-by' | translate }}</th>
     <th scope="col" class="col-notes">
       {{ 'ca-alerts.history.columns.corrective-action' | translate }}
     </th>
@@ -92,12 +92,14 @@
         </td>
         <td>
           <a
-            mat-button
+            mat-icon-button
             [routerLink]="['/alerts/history', alert.id]"
             queryParamsHandling="preserve"
             [attr.aria-label]="'ca-alerts.history.view' | translate: { variable: variableOf(alert) }"
-          >{{ 'ca-alerts.history.view-short' | translate }}</a
+            [matTooltip]="'ca-alerts.actions.view-details' | translate"
           >
+            <mat-icon aria-hidden="true">visibility</mat-icon>
+          </a>
         </td>
       </tr>
     }

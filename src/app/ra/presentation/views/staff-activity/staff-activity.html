@@ -1,13 +1,13 @@
 <section class="operations-page" [attr.aria-busy]="store.staffActivityLoading()">
   <a class="back-link" [routerLink]="staffId() ? ['/laboratories/staff', staffId()] : ['/laboratories/staff']">
-    <mat-icon aria-hidden="true">arrow_back</mat-icon>{{ 'staff.detail.back' | translate }}
+    {{ 'staff.detail.back' | translate }}
   </a>
   @if (store.staffActivityLoading()) {
     <div class="loading"><mat-spinner diameter="40" [attr.aria-label]="'onboarding.loading-data' | translate" /></div>
   } @else if (store.staffActivityError(); as error) {
     <p class="error" role="alert">{{ error | translate }}</p>
   } @else if (store.auditedStaffMember(); as current) {
-    <div class="page-heading"><div><h1>{{ current.fullName }}</h1><p class="muted">{{ current.role }}</p></div></div>
+    <div class="page-heading"><div><h1><mat-icon aria-hidden="true">person</mat-icon>{{ current.fullName }}</h1><p class="muted">{{ current.role }}</p></div></div>
     <div class="summary-strip">
       <div>
         <span>{{ 'staff.detail.activities' | translate }}</span>

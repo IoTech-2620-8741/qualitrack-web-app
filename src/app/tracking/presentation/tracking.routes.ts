@@ -14,9 +14,9 @@ const environmentalProfiles = () =>
  * profiles (thresholds and actuation rules).
  */
 const trackingRoutes: Routes = [
-  { path: 'monitoring', loadComponent: environmentalMonitoring },
-  { path: 'history', loadComponent: telemetryHistory },
-  { path: 'profiles', loadComponent: environmentalProfiles },
+  { path: 'monitoring', loadComponent: environmentalMonitoring, title: 'page-titles.monitoring' },
+  { path: 'history', loadComponent: telemetryHistory, title: 'page-titles.telemetry-history' },
+  { path: 'profiles', loadComponent: environmentalProfiles, title: 'page-titles.environmental-profiles' },
   // The analysis chart is part of the history of each device.
   { path: 'analysis', redirectTo: 'history', pathMatch: 'full' },
   // View-named path used before semantic routes.
