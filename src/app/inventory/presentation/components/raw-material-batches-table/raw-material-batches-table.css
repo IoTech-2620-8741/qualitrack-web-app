@@ -1,0 +1,87 @@
+
+:host {
+  display: block;
+  min-width: 0;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  font-size: 14px;
+}
+
+.data-table th {
+  text-align: left;
+  color: #415a63;
+  background: #edf3f4;
+  font-weight: 600;
+}
+
+.data-table td,
+.data-table th {
+  padding: 14px 12px;
+  border-bottom: 1px solid #d4dfe3;
+  overflow-wrap: anywhere;
+  vertical-align: top;
+}
+
+.data-table small {
+  display: block;
+  color: #60727a;
+  margin-top: 5px;
+}
+
+a {
+  color: #006e76;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.status {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 600;
+  color: #704f00;
+  padding: 4px 0;
+}
+
+.status.released {
+  color: #087957;
+}
+
+.status.rejected {
+  color: #a12d2d;
+}
+
+@media (max-width: 760px) {
+  .data-table thead {
+    display: none;
+  }
+
+  .data-table,
+  .data-table tbody,
+  .data-table tr,
+  .data-table td {
+    display: block;
+    width: auto;
+  }
+
+  .data-table tr {
+    border-bottom: 2px solid #bcced5;
+    padding: 8px 0;
+  }
+
+  .data-table td {
+    border: 0;
+    padding: 6px 4px;
+  }
+
+  .data-table td[data-label]::before {
+    content: attr(data-label);
+    display: block;
+    font-size: 12px;
+    color: #5c7079;
+    margin-bottom: 4px;
+  }
+}
