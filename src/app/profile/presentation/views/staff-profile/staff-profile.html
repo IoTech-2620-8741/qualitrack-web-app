@@ -1,13 +1,13 @@
-<section class="operations-page" [attr.aria-busy]="loading()">
-  <a class="back-link" [routerLink]="staffId() ? ['/laboratories/staff', staffId()] : ['/laboratories/staff']">
-    <mat-icon aria-hidden="true">arrow_back</mat-icon>{{ 'staff.detail.back' | translate }}
-  </a>
-  <div class="page-heading"><h1>{{ 'staff.profile.title' | translate }}</h1></div>
+<main class="operations-page" [attr.aria-busy]="loading()">
+  <a class="back-link" [routerLink]="staffId() ? ['/laboratories/staff', staffId()] : ['/laboratories/staff']">{{ 'staff.detail.back' | translate }}</a>
+  <header class="page-heading">
+    <h1><mat-icon aria-hidden="true">person</mat-icon>{{ 'staff.profile.title' | translate }}</h1>
+  </header>
   @if (loading()) {
     <div class="loading"><mat-spinner diameter="40" [attr.aria-label]="'onboarding.loading-data' | translate" /></div>
   } @else {
     @if (profile(); as staffProfile) {
-      <section class="staff-profile" aria-labelledby="staff-profile-title">
+      <section class="staff-profile" [attr.aria-label]="'staff.profile.title' | translate">
         <div class="staff-photo">
           @if (staffProfile.photoUrl; as photo) {
             <img [src]="photo" [alt]="'profile.photo.alt' | translate: { name: staffProfile.profile.displayName }">
@@ -16,7 +16,6 @@
           }
         </div>
         <div class="staff-profile-data">
-          <h2 id="staff-profile-title">{{ 'staff.profile.title' | translate }}</h2>
           @if (staffProfile.profile.updatedAt) {
             <p class="muted">{{ 'profile.updated-at' | translate: { date: (staffProfile.profile.updatedAt | dateTime) } }}</p>
           } @else {
@@ -35,6 +34,5 @@
     } @else {
       <p class="notice" role="status">{{ 'staff.profile.unavailable' | translate }}</p>
     }
-
   }
-</section>
+</main>

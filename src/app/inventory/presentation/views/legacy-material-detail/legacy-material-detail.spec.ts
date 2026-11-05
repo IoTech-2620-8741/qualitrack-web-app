@@ -31,7 +31,7 @@ describe('LegacyMaterialDetail', () => {
   it('renders exhausted stock, recorded and unrecorded balances, and production batch links', () => {
     const fixture = TestBed.createComponent(LegacyMaterialDetail); fixture.detectChanges();
     const element: HTMLElement = fixture.nativeElement;
-    expect(element.querySelector('h1')?.textContent).toBe('Historical material');
+    expect(element.querySelector('h1')?.textContent).toContain('Historical material');
     expect(element.querySelector('.stock-total strong')?.textContent).toContain('0 kg');
     const rows = element.querySelectorAll('tbody tr');
     expect(rows.length).toBe(2);

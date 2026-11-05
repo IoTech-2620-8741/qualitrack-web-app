@@ -360,8 +360,7 @@
       "search": "Search",
       "refresh": "Refresh"
     },
-    "undo": "Undo",
-    "breadcrumb": "Breadcrumb"
+    "undo": "Undo"
   },
   "status": {
     "ON_TRACK": "On Track",
@@ -1450,7 +1449,6 @@
     "subtitle": "Traceability and compliance documents ready for DIGEMID audit.",
     "generating": "Generating report...",
     "loading-options": "Loading records...",
-    "breadcrumbs": "Reports & KPIs / Report Generator",
     "retry": "Try again",
     "format": "Format",
     "step-1": "Report type",

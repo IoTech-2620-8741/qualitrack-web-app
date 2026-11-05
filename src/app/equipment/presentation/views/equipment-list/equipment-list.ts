@@ -15,7 +15,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { TranslatePipe } from '@ngx-translate/core';
-
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { EquipmentStore } from '../../../application/equipment.store';
 import { Equipment } from '../../../domain/model/equipment.entity';
 import { ATTENTION_STATUSES } from '../../../domain/model/equipment-status';
@@ -43,6 +43,7 @@ type EquipmentFilter = 'all' | 'equipment' | 'devices';
     MatIconModule,
     MatInputModule,
     TranslatePipe,
+    MatTooltipModule
   ],
   templateUrl: './equipment-list.html',
   changeDetection: ChangeDetectionStrategy.Eager,

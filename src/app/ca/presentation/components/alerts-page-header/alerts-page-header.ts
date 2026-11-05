@@ -9,7 +9,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 export type AlertsSection = 'active' | 'history';
 
 /**
- * Standard heading of the alerts pages: breadcrumb, title, notification preferences and the tabs of its sections.
+ * Standard heading of the alerts pages: title, notification preferences and the tabs of its sections.
  *
  * @remarks
  * The page projects its own actions next to the notification preferences. The environment chosen in a section travels
@@ -35,9 +35,6 @@ export class AlertsPageHeader {
 
   /** Environment chosen in the section, kept when moving to the other one; `null` means every environment. */
   readonly environmentId = input<number | null>(null);
-
-  /** Translation key of the section, the last step of the breadcrumb. */
-  protected readonly sectionTitleKey = computed(() => `ca-alerts.${this.section()}.title`);
 
   /** Query parameters that keep the environment when moving between the sections. */
   protected readonly tabQueryParams = computed(() => {

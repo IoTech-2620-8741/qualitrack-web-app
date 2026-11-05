@@ -5,7 +5,7 @@
       <p class="muted">{{ 'reporting.deviations.subtitle' | translate }}</p>
     </div>
     <div class="actions">
-      <mat-button-toggle-group [value]="days()" (change)="changePeriod($event.value)" [disabled]="store.isLoading()">
+      <mat-button-toggle-group [hideSingleSelectionIndicator]="true" [value]="days()" (change)="changePeriod($event.value)" [disabled]="store.isLoading()">
         @for (option of periods; track option) {
           <mat-button-toggle [value]="option">{{ 'reporting.period.days-' + option | translate }}</mat-button-toggle>
         }
@@ -17,7 +17,7 @@
   @if (store.error()) {
     <p class="error" role="alert">{{ store.error()! | translate }}</p>
   } @else if (store.environmentsEmpty()) {
-    <p class="notice">{{ 'reporting.no-environments' | translate }}</p>
+    <p class="notice" role="status">{{ 'reporting.no-environments' | translate }}</p>
   } @else if (store.isLoading()) {
     <div class="loading"><mat-spinner diameter="40" /></div>
   } @else if (environmentId() !== null) {
