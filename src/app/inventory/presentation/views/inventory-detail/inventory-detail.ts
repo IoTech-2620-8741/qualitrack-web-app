@@ -36,10 +36,22 @@ import { notBlankValidator } from '../../../../shared/presentation/validators/no
 import { stockQuantityValidator } from '../../../../shared/presentation/validators/stock-quantity.validator';
 import { DateTimePipe } from '../../../../shared/presentation/pipes/date-time.pipe';
 
+import { InventorySummary } from '../../components/inventory-summary/inventory-summary';
+import { RawMaterialBatchesTable } from '../../components/raw-material-batches-table/raw-material-batches-table';
+import { RawMaterialForm } from '../../components/raw-material-form/raw-material-form';
+import { ReceiveBatchForm } from '../../components/receive-batch-form/receive-batch-form';
+import { BatchReviewForm } from '../../components/batch-review-form/batch-review-form';
+
 @Component({
   selector: 'app-inventory-detail',
   standalone: true,
-  imports: [DateTimePipe, 
+  imports: [
+    DateTimePipe,
+    InventorySummary,
+    RawMaterialBatchesTable,
+    RawMaterialForm,
+    ReceiveBatchForm,
+    BatchReviewForm,
     CommonModule,
     ReactiveFormsModule,
     RouterLink,
