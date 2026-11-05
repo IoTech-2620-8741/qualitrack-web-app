@@ -1,6 +1,7 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { IamStore } from '../../iam/application/iam.store';
+import { errorStatus } from '../../shared/infrastructure/api-error';
 
 import { SubscriptionApi } from '../infrastructure/subscription-api';
 import { SubscriptionPlan } from '../domain/model/subscription-plan.entity';
@@ -253,7 +254,12 @@ export class SubscriptionStore {
           window.location.href = session.checkoutUrl;
         }
       },
-      error: (error) => this.failRequest(error, 'Failed to create checkout session'),
+      error: (error) => {
+        if (errorStatus(error) === 409) {
+          this._error.set('subscription.plans.already-active');
+          this._isLoading.set(false);
+        } else this.failRequest(error, 'Failed to create checkout session');
+      },
     });
   }
 

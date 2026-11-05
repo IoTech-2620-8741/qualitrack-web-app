@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { throwError, of } from 'rxjs';
 
 import { IamStore } from '../../iam/application/iam.store';
+import { ApiError } from '../../shared/infrastructure/api-error';
 import { SubscriptionApi } from '../infrastructure/subscription-api';
 import { SubscriptionStore } from './subscription.store';
 
@@ -46,6 +47,16 @@ describe('SubscriptionStore', () => {
     store.selectPlan({ planCode: 'BASIC', billingCycle: 'MONTHLY' });
     store.createCheckoutSession(command);
     expect(store.selectedPlanCode()).toBeNull();
+  });
+
+  it('explains a 409 with the already-subscribed notice and keeps the chosen plan', () => {
+    createCheckoutSession.mockReturnValue(throwError(() => new ApiError('Conflict', 409)));
+    const store = create();
+    store.selectPlan({ planCode: 'BASIC', billingCycle: 'MONTHLY' });
+    store.createCheckoutSession(command);
+    expect(store.error()).toBe('subscription.plans.already-active');
+    expect(store.isLoading()).toBe(false);
+    expect(store.selectedPlanCode()).toBe('BASIC');
   });
 
   it('keeps the generic message for any other failure', () => {

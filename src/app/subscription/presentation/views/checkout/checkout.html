@@ -24,7 +24,7 @@
   @if (store.error()) {
     <div class="error-container">
       <mat-icon>error_outline</mat-icon>
-      <p role="alert">{{ store.error() }}</p>
+      <p role="alert">{{ store.error() | translate }}</p>
     </div>
   }
 
