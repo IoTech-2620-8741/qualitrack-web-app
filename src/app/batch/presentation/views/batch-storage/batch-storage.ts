@@ -12,13 +12,14 @@ import { RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
-import { TranslatePipe } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { BatchStore, batchError } from '../../../application/batch.store';
 import { BatchPath } from '../../../domain/model/batch-path';
 import { ProductionEquipment } from '../../../domain/model/production-equipment.entity';
 import { ProductionEnvironment } from '../../../domain/model/production-environment.entity';
 import { IamStore } from '../../../../iam/application/iam.store';
 import { DateTimePipe } from '../../../../shared/presentation/pipes/date-time.pipe';
+import { personLabel } from '../../batch-people';
 
 /**
  * Operational container monitors of one product storage environment.
@@ -71,6 +72,7 @@ export class BatchStorage implements OnInit {
   readonly batchId = input.required<number>();
   protected readonly store = inject(BatchStore);
   protected readonly iam = inject(IamStore);
+  private readonly translate = inject(TranslateService);
 
   /** Equipment and devices of the laboratory. */
   protected readonly equipment = signal<ProductionEquipment[]>([]);
@@ -113,6 +115,16 @@ export class BatchStorage implements OnInit {
     } catch (error) {
       this.loadError.set(batchError(error));
     }
+  }
+
+  /**
+   * Name of the person who stored the batch.
+   *
+   * @param userId - The user account
+   * @returns The full name, "you" or the user id
+   */
+  protected person(userId: number | null): string {
+    return personLabel(this.store, this.translate, userId);
   }
 
   /**
