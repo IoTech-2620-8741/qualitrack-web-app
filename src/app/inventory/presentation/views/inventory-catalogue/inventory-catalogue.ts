@@ -88,18 +88,48 @@ export class InventoryCatalogue implements OnInit {
   changeEnvironment(environmentId: number) {
     void this.router.navigate(['/inventory/environments', environmentId, 'raw-materials']);
   }
-  reload() {
+
+  /**
+   * Reloads the current environment inventory and refreshes
+   * the active catalogue filters.
+   *
+   * Filter requests are only started when the main inventory
+   * reload completes successfully for the same environment.
+   */
+  async reload(): Promise<void> {
     const environmentId = this.store.environmentId();
-    if (environmentId !== null) void this.store.load(environmentId);
+
+    if (environmentId === null) return;
+
+    const loaded = await this.store.load(environmentId);
+
+    if (!loaded || this.store.environmentId() !== environmentId) return;
+
+    const requests: Promise<void>[] = [];
+
+    if (this.lowOnly()) { requests.push(this.store.loadLowStock()); }
+
+    if (this.showNearExpiry()) { requests.push(this.store.loadNearExpiry()); }
+
+    await Promise.all(requests);
   }
-  async toggleLowOnly(checked: boolean) {
-    if (checked) await this.store.loadLowStock();
+
+  /**
+   * Enables or disables the low-stock catalogue filter.
+   *
+   * The UI state updates immediately while the matching
+   * materials are requested asynchronously.
+   */
+  toggleLowOnly(checked: boolean): void {
     this.lowOnly.set(checked);
+    if (checked) { void this.store.loadLowStock(); }
   }
+
   async toggleNearExpiry() {
     this.showNearExpiry.set(!this.showNearExpiry());
     if (this.showNearExpiry()) await this.store.loadNearExpiry();
   }
+
   async showImports() {
     this.importing.set(!this.importing());
     if (this.importing()) await this.store.loadLegacy();
