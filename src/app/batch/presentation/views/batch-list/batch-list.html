@@ -28,65 +28,61 @@
       </button>
     </div>
   </header>
+
   @if (store.error()) {
     <p class="error" role="alert">{{ store.error()! | translate }}</p>
   }
-  <!-- Filters: text search and status -->
-  <div class="filters">
-    <mat-form-field appearance="outline" subscriptSizing="dynamic">
-      <mat-label>{{ 'common.search' | translate }}</mat-label>
-      <mat-icon matPrefix>search</mat-icon>
-      <input matInput [ngModel]="search()" (ngModelChange)="search.set($event)" />
-    </mat-form-field>
-    <mat-form-field appearance="outline" subscriptSizing="dynamic">
-      <mat-label>{{ 'batches.fields.status' | translate }}</mat-label>
-      <mat-select [ngModel]="status()" (ngModelChange)="status.set($event)">
-        <mat-option value="">{{ 'batches.all-statuses' | translate }}</mat-option>
-        @for (value of statuses; track value) {
-          <mat-option [value]="value">{{ 'batches.status.' + statusKey(value) | translate }}</mat-option>
-        }
-      </mat-select>
-    </mat-form-field>
-  </div>
-  @if (store.isLoading()) {
-    <p role="status">{{ 'common.status-loading' | translate }}</p>
-  } @else {
-    <!-- Table of batches -->
-    <table class="data-table">
-      <thead>
-      <tr>
-        <th>{{ 'batches.fields.number' | translate }}</th>
-        <th>{{ 'batches.fields.product' | translate }}</th>
-        <th>{{ 'batches.fields.quantity' | translate }}</th>
-        <th>{{ 'batches.fields.date' | translate }}</th>
-        <th>{{ 'batches.fields.status' | translate }}</th>
-      </tr>
-      </thead>
-      <tbody>
-        @for (batch of filtered(); track batch.id) {
-          <tr>
-            <!-- Batches without an environment cannot be opened -->
-            <td>
-              @if (batch.detailLink; as link) {
-                <a [routerLink]="link">{{ batch.batchNumber }}</a>
-              } @else {
-                {{ batch.batchNumber }}
-                <small>{{ 'batches.no-environment' | translate }}</small>
-              }
-            </td>
-            <td [attr.data-label]="'batches.fields.product' | translate">{{ batch.productName }}</td>
-            <td [attr.data-label]="'batches.fields.quantity' | translate">{{ batch.quantity | number: '1.0-3' }} {{ batch.unit }}</td>
-            <td [attr.data-label]="'batches.fields.date' | translate">{{ batch.startDate | dateOnly }}</td>
-            <td [attr.data-label]="'batches.fields.status' | translate">
-              <span class="status" [class.released]="batch.status === 'RELEASED'" [class.rejected]="batch.status === 'REJECTED'">
-                {{ 'batches.status.' + statusKey(batch.status) | translate }}
-              </span>
-            </td>
-          </tr>
-        } @empty {
-          <tr><td colspan="5">{{ 'batches.empty' | translate }}</td></tr>
-        }
-      </tbody>
-    </table>
+
+  @if (store.batches().length) {
+    <!-- Indicators: every batch and each status; they also filter the list -->
+    <app-batch-kpi-cards
+      class="kpis"
+      [batches]="inContext()"
+      [selected]="filter().status"
+      (statusSelected)="chooseStatus($event)"
+    />
+
+    <!-- Criteria: text, environment and start period; the indicators above filter by status -->
+    <app-batch-filters
+      class="list-filters"
+      [filter]="filter()"
+      [environments]="environments()"
+      (filterChange)="filter.set($event)"
+      (cleared)="clearFilters()"
+    />
+
+    @if (filtered().length) {
+      <!-- Table of batches with sorting and pagination -->
+      <app-batch-table [batches]="filtered()" [environments]="store.environments()" />
+    } @else {
+      <div class="empty-card">
+        <app-empty-state
+          icon="filter_alt_off"
+          titleKey="batches.empty-state.no-match-title"
+          messageKey="batches.empty-state.no-match-message"
+        >
+          <button mat-stroked-button type="button" (click)="clearFilters()">
+            {{ 'batches.filters.clear' | translate }}
+          </button>
+        </app-empty-state>
+      </div>
+    }
+  } @else if (store.isLoading()) {
+    <div class="loading" role="status">
+      <mat-spinner diameter="40" [attr.aria-label]="'common.status-loading' | translate" />
+    </div>
+  } @else if (!store.error()) {
+    <div class="empty-card">
+      <app-empty-state
+        icon="inventory_2"
+        titleKey="batches.empty-state.none-title"
+        messageKey="batches.empty-state.none-message"
+      >
+        <a mat-stroked-button routerLink="/batches/environments">
+          <mat-icon aria-hidden="true">factory</mat-icon>
+          {{ 'product-catalog.title' | translate }}
+        </a>
+      </app-empty-state>
+    </div>
   }
 </main>

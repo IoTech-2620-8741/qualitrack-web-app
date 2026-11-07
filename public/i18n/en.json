@@ -980,13 +980,57 @@
       "view": "View Traceability",
       "view-detail": "View Batch Detail"
     },
-    "all-statuses": "All statuses",
     "no-environment": "Registered before environments; assign it an environment to open it.",
     "errors": {
       "connection": "The server could not be reached. Check your connection and try again.",
       "forbidden": "Your account cannot perform this action.",
       "not-found": "The batch or product was not found in this laboratory.",
       "failed": "The operation could not be completed."
+    },
+    "kpi": {
+      "label": "Batch indicators",
+      "total": "Total batches",
+      "products-one": "{{count}} product",
+      "products-many": "{{count}} products",
+      "pending-hint": "No raw material consumed yet",
+      "in-progress-hint": "Being manufactured",
+      "release-rate": "{{rate}} % of closed batches",
+      "rejection-rate": "{{rate}} % of closed batches",
+      "status": {
+        "PENDING": "Pending",
+        "IN_PROGRESS": "In progress",
+        "RELEASED": "Released",
+        "REJECTED": "Rejected"
+      }
+    },
+    "filters": {
+      "label": "Batch filters",
+      "search": "Batch number or product",
+      "period": "Start date range",
+      "from": "From",
+      "to": "To",
+      "clear": "Clear filters"
+    },
+    "table": {
+      "paginator": {
+        "per-page": "Batches per page",
+        "first": "First page",
+        "previous": "Previous page",
+        "next": "Next page",
+        "last": "Last page",
+        "range": "{{start}} – {{end}} of {{length}}",
+        "empty": "0 of 0"
+      }
+    },
+    "empty-state": {
+      "none-title": "No batches yet",
+      "none-message": "Batches are registered from their product. Open the pharmaceutical products to start one.",
+      "no-match-title": "No batch matches the filters",
+      "no-match-message": "Change or clear the filters to see more batches."
+    },
+    "people": {
+      "you": "{{name}} (you)",
+      "user": "User #{{id}}"
     }
   },
   "batch-form": {
@@ -1027,7 +1071,9 @@
     "notes": "BPM Notes",
     "no-notes": "No notes recorded for this batch.",
     "closed-on": "Closed on",
-    "closed-notice": "This batch is closed: no more raw materials, equipment or staff can be added."
+    "closed-notice": "This batch is closed: no more raw materials, equipment or staff can be added.",
+    "back-to": "Back to {{product}}",
+    "summary": "Batch summary"
   },
   "batch-release": {
     "title": "Release Batch",
@@ -1833,10 +1879,25 @@
     "equipment": "Equipment",
     "staff": "Staff",
     "decision": "Quality decision",
-    "released": "Released on {{date}} and signed by user #{{user}}.",
+    "released": "Released on {{date}} and signed by {{user}}.",
     "rejected": "Rejected on {{date}}:",
     "pending": "The batch has not been released or rejected yet.",
-    "container": "Container"
+    "container": "Container",
+    "signature": "SHA-256 signature",
+    "stock-change": "Lot stock (before → after)",
+    "registered-by": "Registered by"
+  },
+  "batch-timeline": {
+    "title": "Timeline",
+    "started": "Manufacturing of {{product}} started",
+    "staff": "{{name}} joined the batch",
+    "equipment": "{{equipment}} registered for the batch",
+    "consumption": "{{quantity}} {{unit}} of {{material}} consumed",
+    "consumption-lot": "{{quantity}} {{unit}} of {{material}} consumed from lot #{{lot}}",
+    "stored": "Stored in {{container}}",
+    "released": "Batch released",
+    "rejected": "Batch rejected",
+    "by": "by {{name}}"
   },
   "equipment": {
     "errors": {
@@ -1947,7 +2008,7 @@
     "container": "Container",
     "environment": "Environment",
     "assigned-at": "Stored on",
-    "assigned-by": "By user #{{user}}",
+    "assigned-by": "By {{user}}",
     "view-conditions": "View container conditions",
     "empty": "Not stored in a container yet",
     "hint": "Operational container monitors of product storage environments",

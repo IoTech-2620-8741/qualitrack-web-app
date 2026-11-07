@@ -10,9 +10,10 @@
       <p class="success" role="status">{{ 'batch-usage.saved' | translate }}</p>
     }
     <form class="editor form-grid" [formGroup]="form">
-      <!-- Environment where the raw material is kept -->
+      <!-- Environment where the raw material is kept, across the whole form -->
       <div class="full-width">
         <app-environment-selector
+          class="full-width"
           [environments]="store.environments()"
           [selectedId]="store.consumptionEnvironmentId()"
           (selectedChange)="changeEnvironment($event)"

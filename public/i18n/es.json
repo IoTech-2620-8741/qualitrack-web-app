@@ -980,13 +980,57 @@
       "view": "Ver Trazabilidad",
       "view-detail": "Ver Detalle del Lote"
     },
-    "all-statuses": "Todos los estados",
     "no-environment": "Registrado antes de los ambientes; asígnale un ambiente para abrirlo.",
     "errors": {
       "connection": "No se pudo conectar con el servidor. Revisa tu conexión e inténtalo de nuevo.",
       "forbidden": "Tu cuenta no puede realizar esta acción.",
       "not-found": "No se encontró el lote o el producto en este laboratorio.",
       "failed": "No se pudo completar la operación."
+    },
+    "kpi": {
+      "label": "Indicadores de lotes",
+      "total": "Total de lotes",
+      "products-one": "{{count}} producto",
+      "products-many": "{{count}} productos",
+      "pending-hint": "Aún sin consumo de materias primas",
+      "in-progress-hint": "En fabricación",
+      "release-rate": "{{rate}} % de los lotes cerrados",
+      "rejection-rate": "{{rate}} % de los lotes cerrados",
+      "status": {
+        "PENDING": "Pendientes",
+        "IN_PROGRESS": "En progreso",
+        "RELEASED": "Liberados",
+        "REJECTED": "Rechazados"
+      }
+    },
+    "filters": {
+      "label": "Filtros de lotes",
+      "search": "Número de lote o producto",
+      "period": "Rango de fecha de inicio",
+      "from": "Desde",
+      "to": "Hasta",
+      "clear": "Limpiar filtros"
+    },
+    "table": {
+      "paginator": {
+        "per-page": "Lotes por página",
+        "first": "Primera página",
+        "previous": "Página anterior",
+        "next": "Página siguiente",
+        "last": "Última página",
+        "range": "{{start}} – {{end}} de {{length}}",
+        "empty": "0 de 0"
+      }
+    },
+    "empty-state": {
+      "none-title": "Aún no hay lotes",
+      "none-message": "Los lotes se registran desde su producto. Abre los productos farmacéuticos para iniciar uno.",
+      "no-match-title": "Ningún lote coincide con los filtros",
+      "no-match-message": "Cambia o limpia los filtros para ver más lotes."
+    },
+    "people": {
+      "you": "{{name}} (tú)",
+      "user": "Usuario #{{id}}"
     }
   },
   "batch-form": {
@@ -1027,7 +1071,9 @@
     "notes": "Notas BPM",
     "no-notes": "No hay notas registradas para este lote.",
     "closed-on": "Cerrado el",
-    "closed-notice": "Este lote está cerrado: ya no se pueden agregar materias primas, equipos ni personal."
+    "closed-notice": "Este lote está cerrado: ya no se pueden agregar materias primas, equipos ni personal.",
+    "back-to": "Volver a {{product}}",
+    "summary": "Resumen del lote"
   },
   "batch-release": {
     "title": "Liberar Lote",
@@ -1832,10 +1878,25 @@
     "equipment": "Equipos",
     "staff": "Personal",
     "decision": "Decisión de calidad",
-    "released": "Liberado el {{date}} y firmado por el usuario #{{user}}.",
+    "released": "Liberado el {{date}} y firmado por {{user}}.",
     "rejected": "Rechazado el {{date}}:",
     "pending": "El lote aún no ha sido liberado ni rechazado.",
-    "container": "Contenedor"
+    "container": "Contenedor",
+    "signature": "Firma SHA-256",
+    "stock-change": "Stock del lote (antes → después)",
+    "registered-by": "Registrado por"
+  },
+  "batch-timeline": {
+    "title": "Línea de tiempo",
+    "started": "Inicio de la fabricación de {{product}}",
+    "staff": "{{name}} se unió al lote",
+    "equipment": "Se registró el equipo {{equipment}}",
+    "consumption": "Consumo de {{quantity}} {{unit}} de {{material}}",
+    "consumption-lot": "Consumo de {{quantity}} {{unit}} de {{material}} del lote #{{lot}}",
+    "stored": "Guardado en {{container}}",
+    "released": "Lote liberado",
+    "rejected": "Lote rechazado",
+    "by": "por {{name}}"
   },
   "equipment": {
     "errors": {
@@ -1946,7 +2007,7 @@
     "container": "Contenedor",
     "environment": "Ambiente",
     "assigned-at": "Guardado el",
-    "assigned-by": "Por el usuario #{{user}}",
+    "assigned-by": "Por {{user}}",
     "view-conditions": "Ver condiciones del contenedor",
     "empty": "Aún no se guarda en un contenedor",
     "hint": "Monitores de contenedor operativos de ambientes de almacenamiento de productos",
