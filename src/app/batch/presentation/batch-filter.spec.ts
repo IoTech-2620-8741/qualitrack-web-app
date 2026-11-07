@@ -46,7 +46,7 @@ describe('batch filter', () => {
     expect(filterBatches(batches, EMPTY_BATCH_FILTER)).toEqual(batches);
   });
 
-  it('combines the text, status, environment, product and start days', () => {
+  it('combines the text, status, environment and start days', () => {
     expect(
       filterBatches(batches, { ...EMPTY_BATCH_FILTER, search: 'paracetamol' }).map((b) => b.id),
     ).toEqual([2]);
@@ -59,9 +59,6 @@ describe('batch filter', () => {
     expect(
       filterBatches(batches, { ...EMPTY_BATCH_FILTER, environmentId: 1 }).map((b) => b.id),
     ).toEqual([3, 1]);
-    expect(
-      filterBatches(batches, { ...EMPTY_BATCH_FILTER, productId: 6 }).map((b) => b.id),
-    ).toEqual([2]);
     expect(
       filterBatches(batches, { ...EMPTY_BATCH_FILTER, from: '2026-09-01', to: '2026-10-05' }).map(
         (b) => b.id,

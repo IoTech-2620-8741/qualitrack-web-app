@@ -979,7 +979,6 @@
       "view": "Ver Trazabilidad",
       "view-detail": "Ver Detalle del Lote"
     },
-    "all-statuses": "Todos los estados",
     "no-environment": "Registrado antes de los ambientes; asígnale un ambiente para abrirlo.",
     "errors": {
       "connection": "No se pudo conectar con el servidor. Revisa tu conexión e inténtalo de nuevo.",
@@ -1006,10 +1005,9 @@
     "filters": {
       "label": "Filtros de lotes",
       "search": "Número de lote o producto",
-      "all-products": "Todos los productos",
       "period": "Rango de fecha de inicio",
-      "from": "Inicio desde",
-      "to": "Inicio hasta",
+      "from": "Desde",
+      "to": "Hasta",
       "clear": "Limpiar filtros"
     },
     "table": {

@@ -42,12 +42,11 @@
       (statusSelected)="chooseStatus($event)"
     />
 
-    <!-- Criteria: text, status, environment, product and start days -->
+    <!-- Criteria: text, environment and start period; the indicators above filter by status -->
     <app-batch-filters
       class="list-filters"
       [filter]="filter()"
       [environments]="environments()"
-      [products]="products()"
       (filterChange)="filter.set($event)"
       (cleared)="clearFilters()"
     />

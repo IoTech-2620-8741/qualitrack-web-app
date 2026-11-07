@@ -1,80 +1,57 @@
 <section class="filters" [attr.aria-label]="'batches.filters.label' | translate">
-  <div class="filter-row">
-    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="search">
-      <mat-label>{{ 'batches.filters.search' | translate }}</mat-label>
-      <mat-icon matPrefix aria-hidden="true">search</mat-icon>
+  <mat-form-field appearance="outline" subscriptSizing="dynamic" class="search">
+    <mat-label>{{ 'batches.filters.search' | translate }}</mat-label>
+    <mat-icon matPrefix aria-hidden="true">search</mat-icon>
+    <input
+      matInput
+      type="search"
+      [value]="filter().search"
+      (input)="patch({ search: $any($event.target).value })"
+    />
+  </mat-form-field>
+
+  <div class="environment">
+    <app-environment-selector
+      class="full-width"
+      allOptionKey="environments.all"
+      [environments]="environments()"
+      [selectedId]="filter().environmentId"
+      (selectedChange)="patch({ environmentId: $event })"
+      (allSelected)="patch({ environmentId: null })"
+    />
+  </div>
+
+  <!-- Start period, chosen in the calendar -->
+  <mat-form-field appearance="outline" subscriptSizing="dynamic" class="period">
+    <mat-label>{{ 'batches.filters.period' | translate }}</mat-label>
+    <mat-date-range-input [rangePicker]="picker">
       <input
-        matInput
-        type="search"
-        [value]="filter().search"
-        (input)="patch({ search: $any($event.target).value })"
+        matStartDate
+        readonly
+        [value]="from()"
+        [placeholder]="'batches.filters.from' | translate"
+        (click)="picker.open()"
+        (keydown.alt.arrowdown)="picker.open()"
+        (dateChange)="chooseDay('from', $event.value)"
       />
-    </mat-form-field>
-
-    <mat-form-field appearance="outline" subscriptSizing="dynamic">
-      <mat-label>{{ 'batches.fields.status' | translate }}</mat-label>
-      <mat-select [value]="filter().status" (selectionChange)="patch({ status: $event.value })">
-        <mat-option value="">{{ 'batches.all-statuses' | translate }}</mat-option>
-        @for (status of statuses; track status) {
-          <mat-option [value]="status">{{ chips[status].labelKey | translate }}</mat-option>
-        }
-      </mat-select>
-    </mat-form-field>
-
-    <div class="environment">
-      <app-environment-selector
-        class="full-width"
-        allOptionKey="environments.all"
-        [environments]="environments()"
-        [selectedId]="filter().environmentId"
-        (selectedChange)="patch({ environmentId: $event, productId: null })"
-        (allSelected)="patch({ environmentId: null, productId: null })"
+      <input
+        matEndDate
+        readonly
+        [value]="to()"
+        [placeholder]="'batches.filters.to' | translate"
+        (click)="picker.open()"
+        (keydown.alt.arrowdown)="picker.open()"
+        (dateChange)="chooseDay('to', $event.value)"
       />
-    </div>
+    </mat-date-range-input>
+    <mat-datepicker-toggle matIconSuffix [for]="picker" />
+    <mat-date-range-picker #picker />
+  </mat-form-field>
 
-    <mat-form-field appearance="outline" subscriptSizing="dynamic">
-      <mat-label>{{ 'batches.fields.product' | translate }}</mat-label>
-      <mat-select
-        [value]="filter().productId ?? ''"
-        (selectionChange)="patch({ productId: $event.value || null })"
-      >
-        <mat-option value="">{{ 'batches.filters.all-products' | translate }}</mat-option>
-        @for (product of products(); track product.id) {
-          <mat-option [value]="product.id">{{ product.name }}</mat-option>
-        }
-      </mat-select>
-    </mat-form-field>
-  </div>
-
-  <div class="filter-row">
-    <div class="period" role="group" [attr.aria-label]="'batches.filters.period' | translate">
-      <mat-form-field appearance="outline" subscriptSizing="dynamic">
-        <mat-label>{{ 'batches.filters.from' | translate }}</mat-label>
-        <input
-          matInput
-          type="date"
-          [value]="filter().from ?? ''"
-          [max]="filter().to ?? ''"
-          (change)="chooseDay('from', $any($event.target).value)"
-        />
-      </mat-form-field>
-      <mat-form-field appearance="outline" subscriptSizing="dynamic">
-        <mat-label>{{ 'batches.filters.to' | translate }}</mat-label>
-        <input
-          matInput
-          type="date"
-          [value]="filter().to ?? ''"
-          [min]="filter().from ?? ''"
-          (change)="chooseDay('to', $any($event.target).value)"
-        />
-      </mat-form-field>
-    </div>
-
-    @if (applied()) {
-      <button mat-stroked-button type="button" class="clear" (click)="cleared.emit()">
-        <mat-icon aria-hidden="true">filter_alt_off</mat-icon>
-        {{ 'batches.filters.clear' | translate }}
-      </button>
-    }
-  </div>
+  @if (applied()) {
+    <button mat-stroked-button type="button" class="clear" (click)="cleared.emit()">
+      <mat-icon aria-hidden="true">filter_alt_off</mat-icon>
+      {{ 'batches.filters.clear' | translate }}
+    </button>
+  }
 </section>

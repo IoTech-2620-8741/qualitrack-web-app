@@ -979,7 +979,6 @@
       "view": "View Traceability",
       "view-detail": "View Batch Detail"
     },
-    "all-statuses": "All statuses",
     "no-environment": "Registered before environments; assign it an environment to open it.",
     "errors": {
       "connection": "The server could not be reached. Check your connection and try again.",
@@ -1006,10 +1005,9 @@
     "filters": {
       "label": "Batch filters",
       "search": "Batch number or product",
-      "all-products": "All products",
       "period": "Start date range",
-      "from": "Started from",
-      "to": "Started until",
+      "from": "From",
+      "to": "To",
       "clear": "Clear filters"
     },
     "table": {

@@ -12,8 +12,6 @@ export interface BatchFilter {
   status: BatchStatus | '';
   /** Environment of the batch; null means every environment. */
   environmentId: number | null;
-  /** Product of the batch; null means every product. */
-  productId: number | null;
   /** First start day included, `yyyy-MM-dd`; null for no lower bound. */
   from: string | null;
   /** Last start day included, `yyyy-MM-dd`; null for no upper bound. */
@@ -27,7 +25,6 @@ export const EMPTY_BATCH_FILTER: Readonly<BatchFilter> = {
   search: '',
   status: '',
   environmentId: null,
-  productId: null,
   from: null,
   to: null,
 };
@@ -51,7 +48,6 @@ export function isBatchFilterApplied(filter: BatchFilter): boolean {
     filter.search.trim() !== '' ||
     filter.status !== '' ||
     filter.environmentId !== null ||
-    filter.productId !== null ||
     filter.from !== null ||
     filter.to !== null
   );
@@ -70,7 +66,6 @@ export function matchesBatchFilter(batch: Batch, filter: BatchFilter): boolean {
   return (
     (filter.status === '' || batch.status === filter.status) &&
     (filter.environmentId === null || batch.environmentId === filter.environmentId) &&
-    (filter.productId === null || batch.productId === filter.productId) &&
     (filter.from === null || day >= filter.from) &&
     (filter.to === null || day <= filter.to) &&
     `${batch.batchNumber} ${batch.productName}`.toLowerCase().includes(term)

@@ -5,12 +5,6 @@
 
 .filters {
   display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.filter-row {
-  display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 12px;
@@ -23,11 +17,7 @@ mat-form-field {
   --mat-form-field-focus-select-arrow-color: var(--qt-primary);
 }
 
-.filter-row > mat-form-field {
-  flex: 1 1 180px;
-}
-
-.filter-row > .search {
+.search {
   flex: 2 1 260px;
 }
 
@@ -36,22 +26,21 @@ mat-form-field {
   min-width: 0;
 }
 
+.period {
+  flex: 1.2 1 240px;
+}
+
+/* The days are picked in the calendar, so the inputs only show them */
+.period input {
+  cursor: pointer;
+}
+
 input {
   caret-color: var(--qt-primary);
 }
 
 mat-icon[matPrefix] {
   color: var(--qt-text-muted);
-}
-
-.period {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-
-.period mat-form-field {
-  flex: 0 1 200px;
 }
 
 .clear {
@@ -70,37 +59,14 @@ mat-icon[matPrefix] {
 }
 
 @media (max-width: 760px) {
-  /* Two columns: text, environment, days and the clear button take the whole row */
-  .filter-row {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    grid-auto-flow: row dense;
+  .filters {
     gap: 10px;
   }
 
-  .filter-row > mat-form-field,
-  .environment {
-    width: 100%;
-  }
-
-  .filter-row > .search,
+  .search,
   .environment,
   .period,
   .clear {
-    grid-column: 1 / -1;
-  }
-
-  .period {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 10px;
-  }
-
-  .period mat-form-field {
-    width: 100%;
-  }
-
-  .clear {
-    width: 100%;
+    flex: 1 1 100%;
   }
 }

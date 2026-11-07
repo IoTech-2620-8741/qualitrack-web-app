@@ -22,7 +22,7 @@ import {
   filterBatches,
   isBatchFilterApplied,
 } from '../../batch-filter';
-import { BatchFilters, BatchProductOption } from '../../components/batch-filters/batch-filters';
+import { BatchFilters } from '../../components/batch-filters/batch-filters';
 import { BatchKpiCards } from '../../components/batch-kpi-cards/batch-kpi-cards';
 import { BatchTable } from '../../components/batch-table/batch-table';
 
@@ -87,21 +87,6 @@ export class BatchList implements OnInit {
   protected readonly environments = computed(() => {
     const ids = new Set(this.store.batches().map((batch) => batch.environmentId));
     return this.store.environments().filter((environment) => ids.has(environment.id));
-  });
-
-  /**
-   * Products that have batches in the chosen environment, offered by the product filter.
-   */
-  protected readonly products = computed<BatchProductOption[]>(() => {
-    const environmentId = this.filter().environmentId;
-    const names = new Map<number, string>();
-    for (const batch of this.store.batches()) {
-      if (environmentId === null || batch.environmentId === environmentId)
-        names.set(batch.productId, batch.productName);
-    }
-    return [...names]
-      .map(([id, name]) => ({ id, name }))
-      .sort((a, b) => a.name.localeCompare(b.name));
   });
 
   /**
