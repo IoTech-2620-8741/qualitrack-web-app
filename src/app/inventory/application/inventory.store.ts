@@ -343,6 +343,18 @@ export class InventoryStore {
   private generation = 0;
 
   /**
+   * Identifies the latest low-stock filter request.
+   * Prevents outdated responses from updating the store.
+   */
+  private lowStockRequestId = 0;
+
+  /**
+   * Identifies the latest near-expiry filter request.
+   * Prevents outdated responses from updating the store.
+   */
+  private nearExpiryRequestId = 0;
+
+  /**
    * Gets the identifier of the current laboratory.
    *
    * @returns The laboratory identifier from the IAM store.
@@ -509,6 +521,10 @@ export class InventoryStore {
     const environmentChanged = this.environmentId() !== environmentId;
     const generation = ++this.generation;
 
+    // Invalidate filter requests started before this reload.
+    ++this.lowStockRequestId;
+    ++this.nearExpiryRequestId;
+
     if (environmentChanged) {
       this.materials.set([]);
       this.lowStockMaterials.set([]);
@@ -611,42 +627,64 @@ export class InventoryStore {
   }
 
   /**
-   * Loads raw materials classified as low stock.
+   * Loads low-stock materials for the currently selected environment.
    *
-   * @returns A Promise that resolves when the operation finishes.
-   *
-   * @remarks
-   * Requests materials classified as LOW by the backend
-   * and updates the lowStockMaterials signal
+   * Discards responses from outdated requests, including those
+   * started before an environment change or inventory reload.
    */
   async loadLowStock(): Promise<void> {
+    const environmentId = this.environment;
+    const generation = this.generation;
+    const requestId = ++this.lowStockRequestId;
+
     try {
-      this.lowStockMaterials.set(
-        await firstValueFrom(this.api.materials(this.lab, this.environment, 'LOW')),
-      );
+      const materials = await firstValueFrom(this.api.materials(this.lab, environmentId, 'LOW'));
+      if (
+        generation !== this.generation ||
+        requestId !== this.lowStockRequestId ||
+        environmentId !== this.environmentId()
+      ) {
+        return;
+      }
+      this.lowStockMaterials.set(materials);
     } catch (error) {
+      if (
+        generation !== this.generation ||
+        requestId !== this.lowStockRequestId ||
+        environmentId !== this.environmentId()
+      ) {
+        return;
+      }
       this.error.set(inventoryError(error));
     }
   }
 
   /**
-   * Loads raw material batches approaching expiration.
+   * Loads batches approaching expiration for the selected environment.
    *
-   * @param withinDays - Optional number of days for expiration filtering.
-   * @returns A Promise that resolves when the operation finishes.
+   * Ignores outdated responses when the environment changes,
+   * inventory reloads, or a newer filter request is started.
    *
-   * @remarks
-   * Requests batches classified as NEAR_EXPIRY
-   * and updates the nearExpiry signal.
+   * @param withinDays Optional expiration threshold in days.
    */
   async loadNearExpiry(withinDays?: number): Promise<void> {
+    const environmentId = this.environment;
+    const generation = this.generation;
+    const requestId = ++this.nearExpiryRequestId;
+
     try {
-      this.nearExpiry.set(
-        await firstValueFrom(
-          this.api.environmentReceipts(this.lab, this.environment, 'NEAR_EXPIRY', withinDays),
-        ),
+      const batches = await firstValueFrom(
+        this.api.environmentReceipts(this.lab, environmentId, 'NEAR_EXPIRY', withinDays),
       );
+
+      if (generation !== this.generation || requestId !== this.nearExpiryRequestId || environmentId !== this.environmentId()) {
+        return;
+      }
+      this.nearExpiry.set(batches);
     } catch (error) {
+      if (generation !== this.generation || requestId !== this.nearExpiryRequestId || environmentId !== this.environmentId()) {
+        return;
+      }
       this.error.set(inventoryError(error));
     }
   }
