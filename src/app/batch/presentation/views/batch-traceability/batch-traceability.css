@@ -8,7 +8,7 @@ h2 {
   margin: 28px 0 12px;
   color: var(--qt-text);
   font-size: 20px;
-  font-weight: 700;
+  font-weight: 500;
 }
 
 h2,
@@ -45,7 +45,7 @@ a {
   margin-top: 6px;
   color: var(--qt-text);
   font-size: 20px;
-  font-weight: 700;
+  font-weight: 400;
   font-variant-numeric: tabular-nums;
   overflow-wrap: anywhere;
 }
@@ -87,7 +87,7 @@ a {
 }
 
 .decision-title {
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .decision.released {
@@ -115,7 +115,7 @@ a {
 
 .signature span {
   display: block;
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .signature code {

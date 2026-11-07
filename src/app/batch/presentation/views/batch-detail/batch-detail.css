@@ -212,7 +212,7 @@ h1 mat-icon {
   min-width: 0;
   color: var(--qt-text);
   font-size: 16px;
-  font-weight: 700;
+  font-weight: 400;
   font-variant-numeric: tabular-nums;
   overflow-wrap: anywhere;
 }
@@ -236,7 +236,7 @@ mat-tab-group {
   margin: 0 0 12px;
   color: var(--qt-text);
   font-size: 20px;
-  font-weight: 700;
+  font-weight: 500;
 }
 
 .tab-content p {
