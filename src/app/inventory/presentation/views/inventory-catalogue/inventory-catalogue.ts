@@ -49,11 +49,28 @@ export class InventoryCatalogue implements OnInit {
   readonly lowOnly = signal(false);
   readonly importing = signal(false);
   readonly showNearExpiry = signal(false);
-  readonly filtered = computed(() =>
-    (this.lowOnly() ? this.store.lowStockMaterials() : this.store.materials()).filter((material) =>
-      (material.name + ' ' + material.code).toLowerCase().includes(this.search().toLowerCase()),
-    ),
-  );
+
+  /**
+   * Returns raw materials matching the current search
+   * and low-stock filters.
+   *
+   * The search is case-insensitive and ignores leading
+   * and trailing whitespace.
+   */
+  readonly filtered = computed(() => {
+    const query = this.search().trim().toLowerCase();
+
+    const materials = this.lowOnly() ? this.store.lowStockMaterials() : this.store.materials();
+
+    if (!query) {
+      return materials;
+    }
+
+    return materials.filter((material) =>
+      `${material.name} ${material.code}`.toLowerCase().includes(query),
+    );
+  });
+
   readonly materialNames = computed(
     () => new Map(this.store.materials().map((material) => [material.id, material.name])),
   );
@@ -65,8 +82,7 @@ export class InventoryCatalogue implements OnInit {
       this.showNearExpiry.set(false);
       this.importing.set(false);
       // Only environments the account can open become the default one.
-      if (await this.store.load(environmentId))
-        this.store.rememberEnvironment(environmentId);
+      if (await this.store.load(environmentId)) this.store.rememberEnvironment(environmentId);
     });
   }
   changeEnvironment(environmentId: number) {
