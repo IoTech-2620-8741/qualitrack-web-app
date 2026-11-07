@@ -18,6 +18,7 @@ import { InventoryMaterialTable } from '../../components/inventory-material-tabl
 import { NearExpiryTable } from '../../components/near-expiry-table/near-expiry-table';
 import { InventoryFilters } from '../../components/inventory-filters/inventory-filters';
 import { LegacyImportPanel } from '../../components/legacy-import-panel/legacy-import-panel';
+import { InventoryCatalogueStats } from '../../components/inventory-catalogue-stats/inventory-catalogue-stats';
 
 /**
  * Raw material catalogue of an environment (US36), with low stock (US41) and near expiry (US42) views.
@@ -35,6 +36,7 @@ import { LegacyImportPanel } from '../../components/legacy-import-panel/legacy-i
     NearExpiryTable,
     InventoryFilters,
     LegacyImportPanel,
+    InventoryCatalogueStats
   ],
   templateUrl: './inventory-catalogue.html',
   changeDetection: ChangeDetectionStrategy.Eager,

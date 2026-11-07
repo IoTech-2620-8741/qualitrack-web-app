@@ -43,14 +43,10 @@
       />
     </section>
   }
-  <section class="summary-strip">
-    <div>
-      <span>{{ 'inventory.materials' | translate }}</span><strong>{{ store.materials().length }}</strong>
-    </div>
-    <div>
-      <span>{{ 'inventory.lowStock' | translate }}</span><strong>{{ store.lowCount() }}</strong>
-    </div>
-  </section>
+  <app-inventory-catalogue-stats
+    [materialsCount]="store.materials().length"
+    [lowStockCount]="store.lowCount()"
+  />
   <app-inventory-filters
     [search]="search()"
     [lowOnly]="lowOnly()"
