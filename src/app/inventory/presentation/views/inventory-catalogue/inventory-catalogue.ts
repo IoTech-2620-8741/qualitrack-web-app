@@ -18,6 +18,7 @@ import { InventoryMaterialTable } from '../../components/inventory-material-tabl
 import { NearExpiryTable } from '../../components/near-expiry-table/near-expiry-table';
 import { InventoryFilters } from '../../components/inventory-filters/inventory-filters';
 import { LegacyImportPanel } from '../../components/legacy-import-panel/legacy-import-panel';
+import { InventoryCatalogueStats } from '../../components/inventory-catalogue-stats/inventory-catalogue-stats';
 
 /**
  * Raw material catalogue of an environment (US36), with low stock (US41) and near expiry (US42) views.
@@ -35,6 +36,7 @@ import { LegacyImportPanel } from '../../components/legacy-import-panel/legacy-i
     NearExpiryTable,
     InventoryFilters,
     LegacyImportPanel,
+    InventoryCatalogueStats
   ],
   templateUrl: './inventory-catalogue.html',
   changeDetection: ChangeDetectionStrategy.Eager,
@@ -49,11 +51,28 @@ export class InventoryCatalogue implements OnInit {
   readonly lowOnly = signal(false);
   readonly importing = signal(false);
   readonly showNearExpiry = signal(false);
-  readonly filtered = computed(() =>
-    (this.lowOnly() ? this.store.lowStockMaterials() : this.store.materials()).filter((material) =>
-      (material.name + ' ' + material.code).toLowerCase().includes(this.search().toLowerCase()),
-    ),
-  );
+
+  /**
+   * Returns raw materials matching the current search
+   * and low-stock filters.
+   *
+   * The search is case-insensitive and ignores leading
+   * and trailing whitespace.
+   */
+  readonly filtered = computed(() => {
+    const query = this.search().trim().toLowerCase();
+
+    const materials = this.lowOnly() ? this.store.lowStockMaterials() : this.store.materials();
+
+    if (!query) {
+      return materials;
+    }
+
+    return materials.filter((material) =>
+      `${material.name} ${material.code}`.toLowerCase().includes(query),
+    );
+  });
+
   readonly materialNames = computed(
     () => new Map(this.store.materials().map((material) => [material.id, material.name])),
   );
@@ -65,25 +84,54 @@ export class InventoryCatalogue implements OnInit {
       this.showNearExpiry.set(false);
       this.importing.set(false);
       // Only environments the account can open become the default one.
-      if (await this.store.load(environmentId))
-        this.store.rememberEnvironment(environmentId);
+      if (await this.store.load(environmentId)) this.store.rememberEnvironment(environmentId);
     });
   }
   changeEnvironment(environmentId: number) {
     void this.router.navigate(['/inventory/environments', environmentId, 'raw-materials']);
   }
-  reload() {
+
+  /**
+   * Reloads the current environment inventory and refreshes
+   * the active catalogue filters.
+   *
+   * Filter requests are only started when the main inventory
+   * reload completes successfully for the same environment.
+   */
+  async reload(): Promise<void> {
     const environmentId = this.store.environmentId();
-    if (environmentId !== null) void this.store.load(environmentId);
+
+    if (environmentId === null) return;
+
+    const loaded = await this.store.load(environmentId);
+
+    if (!loaded || this.store.environmentId() !== environmentId) return;
+
+    const requests: Promise<void>[] = [];
+
+    if (this.lowOnly()) { requests.push(this.store.loadLowStock()); }
+
+    if (this.showNearExpiry()) { requests.push(this.store.loadNearExpiry()); }
+
+    await Promise.all(requests);
   }
-  async toggleLowOnly(checked: boolean) {
-    if (checked) await this.store.loadLowStock();
+
+  /**
+   * Enables or disables the low-stock catalogue filter.
+   *
+   * The UI state updates immediately while the matching
+   * materials are requested asynchronously.
+   */
+  toggleLowOnly(checked: boolean): void {
     this.lowOnly.set(checked);
+    if (checked) { void this.store.loadLowStock(); }
   }
+
   async toggleNearExpiry() {
     this.showNearExpiry.set(!this.showNearExpiry());
     if (this.showNearExpiry()) await this.store.loadNearExpiry();
   }
+
   async showImports() {
     this.importing.set(!this.importing());
     if (this.importing()) await this.store.loadLegacy();
