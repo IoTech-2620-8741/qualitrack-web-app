@@ -288,3 +288,10 @@ mat-tab-group {
     padding: 16px;
   }
 }
+
+/* Two columns leave too little room for a product or environment name, so they take the whole row */
+@media (max-width: 480px) {
+  .summary-chip.wide {
+    grid-column: 1 / -1;
+  }
+}

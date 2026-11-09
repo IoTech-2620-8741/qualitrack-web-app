@@ -36,15 +36,15 @@
         </div>
       }
     </header>
-    <!-- Summary: product, environment, quantity and dates -->
+    <!-- Summary: product, environment, quantity and dates; on a phone the names take the whole width -->
     <section class="summary-chips" [attr.aria-label]="'batch-detail.summary' | translate">
-      <div class="summary-chip">
+      <div class="summary-chip wide">
         <mat-icon aria-hidden="true">medication</mat-icon>
         <span class="label">{{ 'batches.fields.product' | translate }}</span>
         <strong>{{ productName() ?? batch.productName }}</strong>
       </div>
       @if (environmentName(); as environment) {
-        <div class="summary-chip">
+        <div class="summary-chip wide">
           <mat-icon aria-hidden="true">meeting_room</mat-icon>
           <span class="label">{{ 'batch-storage.environment' | translate }}</span>
           <strong>{{ environment }}</strong>
