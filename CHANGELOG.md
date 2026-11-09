@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.4.0] - 2026-11-09
+
+### Changed
+
+- Release: package and lockfile versions are now 2.4.0.
+
+### Fixed
+
+- Subscription (subscription): the billing summary calls the start of the current period "Current Period From" instead of "Started At", which read as the day the subscription began; after a renewal it shows the renewal day (#98).
+
 ## [2.3.0] - 2026-11-09
 
 ### Added
