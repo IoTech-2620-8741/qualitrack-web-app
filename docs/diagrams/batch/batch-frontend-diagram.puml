@@ -8,11 +8,15 @@ hide empty members
 
 package "shared" {
   class EnvironmentSelector <<component>>
+  class StatFilterCard <<component>>
+  class StatusChip <<component>>
+  class EmptyState <<component>>
+  class DateOnlyPipe <<pipe>>
+  class DateTimePipe <<pipe>>
   interface BaseEntity
   class BaseApi
   class BaseApiEndpoint
   interface BaseAssembler
-  class "operations-page.css" as OperationsPage <<stylesheet>>
   class localIsoDate <<function>>
 }
 
@@ -20,6 +24,8 @@ package "iam.application" {
   class IamStore {
     +requireLaboratoryId(): number
     +canManageQuality: Signal<boolean>
+    +currentUserId: Signal<number | null>
+    +currentUsername: Signal<string | null>
   }
 }
 
@@ -224,6 +230,11 @@ package "batch.application" {
     +rememberProductionEnvironment(environmentId)
     +preferredStorageEnvironment(): ProductionEnvironment | null
     +loadStaff(): Promise<ProductionStaffMember[]>
+    +people: Signal<ReadonlyMap<number, string>>
+    +currentUsername: Signal<string | null>
+    +loadPeople(): Promise<void>
+    +personName(userId): string | null
+    +isCurrentUser(userId): boolean
     +loadBatches(labId)
     +findBatch(batchId): Promise<Batch | undefined>
     +loadProductBatches(path)
@@ -258,6 +269,8 @@ note bottom of BatchStore
   Inventory decides lot eligibility and available stock.
   Remembers the production environment ("production") and reads the
   raw material storage remembered by Inventory ("inventory").
+  loadStaff() also keeps the name of each staff member with an account,
+  so the batch views name who registered each step instead of a user id.
 end note
 
 package "batch.presentation" {
@@ -280,6 +293,55 @@ package "batch.presentation" {
   }
   class BatchRedirect
   class BatchRoutes
+  class BatchFilters <<component>> {
+    +filter: InputSignal<BatchFilter>
+    +environments: InputSignal<EnvironmentOption[]>
+    +filterChange: OutputEmitterRef<BatchFilter>
+    +cleared: OutputEmitterRef<void>
+  }
+  class BatchKpiCards <<component>> {
+    +batches: InputSignal<Batch[]>
+    +selected: InputSignal<BatchStatus | ''>
+    +statusSelected: OutputEmitterRef<BatchStatus | ''>
+  }
+  class BatchTable <<component>> {
+    +batches: InputSignal<Batch[]>
+    +environments: InputSignal<EnvironmentOption[]>
+    #sort: Signal<Sort>
+    #sortColumn: Signal<BatchSortColumn | ''>
+    #sortBy(column): void
+    #sortDirection(direction): void
+  }
+  class BatchStatusChip <<component>> {
+    +status: InputSignal<BatchStatus>
+  }
+  class BatchTimeline <<component>> {
+    +trace: InputSignal<BatchTraceability>
+  }
+  class BatchFilter <<interface>> {
+    +search: string
+    +environmentId: number | null
+    +status: BatchStatus | ''
+    +from: string | null
+    +to: string | null
+  }
+  class "batch-filter" as BatchFilterFunctions <<functions>> {
+    +isBatchFilterApplied(filter): boolean
+    +filterBatches(batches, filter): Batch[]
+    +countBatches(batches): BatchCounts
+    +decisionRate(counts, decision): number | null
+    +sortBatches(batches, sort): Batch[]
+  }
+  class "batch-chips" as BatchChips <<constants>> {
+    +BATCH_STATUSES
+    +BATCH_STATUS_CHIPS
+  }
+  class "batch-timeline" as BatchTimelineFunctions <<functions>> {
+    +buildBatchTimeline(trace): BatchTimelineEntry[]
+  }
+  class "batch-people" as BatchPeople <<functions>> {
+    +personLabel(store, translate, userId): string
+  }
 }
 
 BatchHome --> BatchStore
@@ -288,12 +350,40 @@ ProductCatalog --> EnvironmentSelector
 ProductForm --> BatchStore
 ProductDetail --> BatchStore
 BatchList --> BatchStore
+BatchList *-- BatchKpiCards
+BatchList *-- BatchFilters
+BatchList *-- BatchTable
+BatchList --> EmptyState
+BatchList ..> BatchFilterFunctions
+BatchKpiCards --> StatFilterCard
+BatchKpiCards ..> BatchChips
+BatchKpiCards ..> BatchFilterFunctions
+BatchFilters --> EnvironmentSelector
+BatchFilters ..> BatchFilter
+BatchFilterFunctions ..> BatchFilter
+BatchTable *-- BatchStatusChip
+BatchTable ..> BatchFilterFunctions
+BatchTable ..> DateOnlyPipe
+BatchStatusChip --> StatusChip
+BatchStatusChip ..> BatchChips
+note bottom of BatchTable
+  Ten, 25 or 50 batches a page; without a chosen column the batches keep
+  the order of the store (newest first). On a phone the rows become cards
+  without headers, so two lists above them choose the column and the direction.
+end note
+note bottom of BatchFilters
+  The status is chosen with the indicators of BatchKpiCards.
+  The start period is picked in a calendar, which opens on a click
+  anywhere on the field; its days cannot be typed.
+end note
 BatchForm --> BatchStore
 BatchDetail --> BatchStore
 BatchDetail *-- RawMaterialUsageComponent
 BatchDetail *-- BatchParticipants
 BatchDetail *-- BatchTraceabilityView
 BatchDetail *-- BatchStorage
+BatchDetail *-- BatchStatusChip
+BatchDetail ..> DateOnlyPipe
 BatchReleaseForm --> BatchStore
 BatchRejectForm --> BatchStore
 RawMaterialUsageComponent --> BatchStore
@@ -305,6 +395,14 @@ note bottom of BatchParticipants
   Auditors only consult the batch (no usage or participation forms).
 end note
 BatchTraceabilityView --> BatchStore
+BatchTraceabilityView *-- BatchTimeline
+BatchTraceabilityView ..> BatchPeople
+BatchTraceabilityView ..> DateTimePipe
+BatchTimeline --> BatchStore
+BatchTimeline ..> BatchTimelineFunctions
+BatchTimeline ..> BatchPeople
+BatchStorage ..> BatchPeople
+BatchPeople ..> BatchStore
 BatchStorage --> BatchStore
 BatchStorage --> IamStore
 note bottom of BatchStorage
@@ -316,8 +414,6 @@ BatchRedirect --> BatchStore
 BatchForm ..> localIsoDate
 BatchReleaseForm ..> localIsoDate
 BatchRejectForm ..> localIsoDate
-ProductCatalog ..> OperationsPage
-BatchDetail ..> OperationsPage
 
 note bottom of BatchRoutes
   /batches: every batch of the laboratory
