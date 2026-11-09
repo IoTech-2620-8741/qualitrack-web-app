@@ -92,6 +92,33 @@ describe('SubscriptionStore', () => {
     });
   });
 
+  describe('loadCurrentPlan', () => {
+    it('keeps the active subscription of the laboratory without the loading state of the plans', () => {
+      const paid = { id: 9, laboratoryId: 42, planCode: 'BASIC', billingCycle: 'MONTHLY', status: 'ACTIVE' };
+      getCurrentSubscription.mockReturnValue(of(paid));
+      const store = create();
+
+      store.loadCurrentPlan(42);
+
+      expect(getCurrentSubscription).toHaveBeenCalledWith(42);
+      expect(store.currentSubscription()).toBe(paid);
+      expect(store.isLoading()).toBe(false);
+    });
+
+    it('forgets the subscription read before when the new one cannot be read, and shows no error', () => {
+      getCurrentSubscription.mockReturnValueOnce(of({ id: 9, laboratoryId: 42, status: 'ACTIVE' }));
+      getCurrentSubscription.mockReturnValueOnce(throwError(() => new HttpErrorResponse({ status: 500 })));
+      const store = create();
+
+      store.loadCurrentPlan(42);
+      store.loadCurrentPlan(42);
+
+      expect(store.currentSubscription()).toBeNull();
+      expect(store.error()).toBeNull();
+      expect(store.isLoading()).toBe(false);
+    });
+  });
+
   it('forgets the chosen plan when the person signs out', () => {
     const store = create();
     store.selectPlan({ planCode: 'BASIC', billingCycle: 'MONTHLY' });

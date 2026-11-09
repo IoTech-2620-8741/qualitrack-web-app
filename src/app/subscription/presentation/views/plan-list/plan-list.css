@@ -88,6 +88,11 @@
   margin: 0;
 }
 
+.info-banner a {
+  color: inherit;
+  font-weight: 600;
+}
+
 /* Plans grid */
 .plans-grid {
   display: grid;
@@ -123,6 +128,11 @@
   background: var(--qt-primary-surface);
 }
 
+/* The plan the laboratory pays for */
+.plan-card.current {
+  border: 2px solid var(--qt-primary-strong);
+}
+
 /* Recommended badge */
 .plan-badge {
   position: absolute;
@@ -153,7 +163,8 @@
   text-align: center;
 }
 
-.plan-card.highlight .plan-head {
+.plan-card.highlight .plan-head,
+.plan-card.current .plan-head {
   padding-top: 52px;
 }
 
@@ -212,18 +223,63 @@
   color: var(--qt-surface);
 }
 
-.select-btn:hover:not([disabled]) {
+.select-btn:hover {
   background: var(--qt-primary-hover);
 }
 
-.select-btn[disabled] {
-  background: var(--qt-border);
-  color: var(--qt-neutral-text);
-}
-
-.select-btn:focus-visible {
+.select-btn:focus-visible,
+.billing-link:focus-visible {
   outline: 3px solid var(--qt-primary);
   outline-offset: 2px;
+}
+
+/* While a subscription is active: the state of the paid plan and the way to Billing for the others */
+.plan-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  margin: 0;
+  padding: 4px 16px;
+  border-radius: 999px;
+  background: var(--qt-primary-surface);
+  border: 1px solid var(--qt-primary);
+  color: var(--qt-primary-strong);
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.plan-status mat-icon {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  font-size: 20px;
+}
+
+.plan-status span {
+  text-wrap: balance;
+}
+
+.billing-link {
+  width: 100%;
+  height: 48px;
+  border-radius: 999px;
+  border-color: var(--qt-primary);
+  color: var(--qt-primary-strong);
+  font-weight: 600;
+}
+
+.plan-note {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  margin: 0;
+  color: var(--qt-text-muted);
+  font-size: 14px;
+  text-align: center;
 }
 
 /* Divider and features */

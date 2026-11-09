@@ -11,22 +11,27 @@
          [attr.aria-label]="'subscription.plans.period-label' | translate">
       <button type="button"
               [attr.aria-pressed]="billingPeriod() === 'MONTHLY'"
-              (click)="billingPeriod.set('MONTHLY')">
+              (click)="choosePeriod('MONTHLY')">
         {{ 'subscription.plans.toggle-monthly' | translate }}
       </button>
       <button type="button"
               [attr.aria-pressed]="billingPeriod() === 'YEARLY'"
-              (click)="billingPeriod.set('YEARLY')">
+              (click)="choosePeriod('YEARLY')">
         {{ 'subscription.plans.toggle-yearly' | translate }}
       </button>
     </div>
   </header>
 
-  <!-- Shown when the user already has an active subscription (plan buttons are disabled) -->
-  @if (iamStore.onboarding()?.subscriptionStatus === 'ACTIVE') {
+  <!-- Shown when the user already has an active subscription (no plan can be bought) -->
+  @if (subscribed()) {
     <div class="info-banner" role="status">
       <mat-icon>info</mat-icon>
-      <p>{{ 'subscription.plans.already-active' | translate }}</p>
+      <p>
+        {{ 'subscription.plans.already-active' | translate }}
+        @if (hasLaboratory()) {
+          <a routerLink="/subscriptions/billing">{{ 'subscription.plans.open-billing' | translate }}</a>
+        }
+      </p>
     </div>
   }
 
@@ -59,9 +64,14 @@
   @if (!store.isLoading() && !store.error()) {
     <div class="plans-grid">
       @for (plan of visiblePlans(); track plan.id) {
-        <mat-card class="plan-card" [class.highlight]="plan.code === 'ENTERPRISE'">
-          <!-- Badge for the recommended plan (icon + text, not color only) -->
-          @if (plan.code === 'ENTERPRISE') {
+        <mat-card class="plan-card" [class.highlight]="plan.code === 'ENTERPRISE'" [class.current]="isCurrent(plan)">
+          <!-- Badge for the plan the laboratory pays for, or for the recommended plan (icon + text, not color only) -->
+          @if (isCurrent(plan)) {
+            <span class="plan-badge">
+              <mat-icon>check_circle</mat-icon>
+              {{ 'subscription.plans.current-plan' | translate }}
+            </span>
+          } @else if (plan.code === 'ENTERPRISE') {
             <span class="plan-badge">
               <mat-icon>star</mat-icon>
               {{ 'subscription.plans.recommended' | translate }}
@@ -83,11 +93,27 @@
               </span>
             </div>
 
-            <!-- Primary action -->
-            <button mat-flat-button class="select-btn" (click)="onSelectPlan(plan)"
-                    [disabled]="iamStore.onboarding()?.subscriptionStatus === 'ACTIVE'">
-              {{ 'subscription.plans.get' | translate: { name: plan.name } }}
-            </button>
+            <!-- Primary action: buy the plan, or, while a subscription is active, its state or the way to Billing -->
+            @if (!subscribed()) {
+              <button mat-flat-button class="select-btn" (click)="onSelectPlan(plan)">
+                {{ 'subscription.plans.get' | translate: { name: plan.name } }}
+              </button>
+            } @else if (isCurrent(plan) && currentSubscription(); as current) {
+              <p class="plan-status">
+                <mat-icon>check_circle</mat-icon>
+                <span>
+                  {{ (current.cancelAtPeriodEnd ? 'subscription.plans.current-until' : 'subscription.plans.current-renews')
+                    | translate: { date: (current.currentPeriodEnd | dateOnly) } }}
+                </span>
+              </p>
+            } @else if (hasLaboratory()) {
+              <a mat-stroked-button class="billing-link" routerLink="/subscriptions/billing">
+                {{ 'subscription.plans.manage-in-billing' | translate }}
+                <mat-icon iconPositionEnd>arrow_forward</mat-icon>
+              </a>
+            } @else {
+              <p class="plan-note">{{ 'subscription.plans.unavailable' | translate }}</p>
+            }
 
             <hr class="divider" />
 

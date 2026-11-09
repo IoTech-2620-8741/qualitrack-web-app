@@ -564,7 +564,12 @@
       "toggle-yearly": "Annually",
       "period-label": "Billing period",
       "get": "Get {{name}}",
-      "already-active": "You already have an active subscription. To switch plans, cancel the renewal in Billing and choose another plan when the current period ends."
+      "already-active": "You already have an active subscription. To switch plans, cancel the renewal in Billing and choose another plan when the current period ends.",
+      "open-billing": "Go to Billing",
+      "current-renews": "Your current plan · renews on {{date}}",
+      "current-until": "Your current plan · active until {{date}}",
+      "manage-in-billing": "Manage in Billing",
+      "unavailable": "Not available while your subscription is active."
     },
     "billing-period": {
       "monthly": "Monthly",
