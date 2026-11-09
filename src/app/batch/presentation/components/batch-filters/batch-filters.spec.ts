@@ -79,4 +79,18 @@ describe('BatchFilters', () => {
     expect(await (await range.getEndInput()).getValue()).toBe('15/10/2026');
     expect(element.querySelector('button.clear')).not.toBeNull();
   });
+
+  it.each(['mat-label', 'input[matEndDate]'])(
+    'opens the calendar when the empty period is clicked on its %s',
+    async (target) => {
+      const { element, fixture, documentLoader } = create();
+
+      element
+        .querySelector<HTMLElement>(`.period ${target}`)!
+        .dispatchEvent(new MouseEvent('click', { bubbles: true }));
+      fixture.detectChanges();
+
+      expect(await documentLoader.getAllHarnesses(MatCalendarHarness)).toHaveLength(1);
+    },
+  );
 });

@@ -28,6 +28,7 @@ mat-form-field {
 
 .period {
   flex: 1.2 1 240px;
+  cursor: pointer;
 }
 
 /* The days are picked in the calendar, so the inputs only show them */
