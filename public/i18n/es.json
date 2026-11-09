@@ -620,7 +620,7 @@
       "plan-id": "ID del Plan",
       "status": "Estado",
       "start-date": "Fecha de Inicio",
-      "started-at": "Inició El",
+      "period-start": "Periodo actual desde",
       "end-date": "Fecha de Fin",
       "payments-title": "Historial de Pagos",
       "payment-history": "Historial de Pagos",
