@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Product Batch (batch): on a phone, where the batch cards hide the headers of the table, two lists above them choose the column and the direction of the order (#93).
+
+- Product Batch (batch): the batch list shows indicators by status that also filter it, a search by batch number or product, an environment filter, a start date range, sorting and 10, 25 or 50 batches per page (#91).
+
+- Product Batch (batch): the detail of a batch has a heading with its status and a summary of the product, environment, quantity and dates, and its traceability shows a timeline of the batch next to its tables (#91).
+
+- Product Batch (batch): the batch views name who registered each step, and mark the current user with "(you)", instead of showing a user id (#91).
+
 - Subscription (subscription): when someone who already pays for a plan arrives from a website plan link with another one, the dashboard opens a notice that names both plans, says when the current period ends and sends them to Billing to cancel the renewal, since the platform has no direct plan switch.
 
 - Identity & Access (iam): the sign-up page keeps the plan of the website link (`plan` and `billingCycle`) even when the person goes on to sign in, so the checkout of that plan opens after signing in.
@@ -16,6 +24,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Subscription (subscription): a plan chosen on the website (`plan` and `billingCycle` in the link) is remembered by `planPreselectionGuard`; the plans view sends an account without a subscription straight to the checkout of that plan, leaving the checkout or signing out forgets it.
 
 ### Changed
+
+- Inventory (inventory): reloading the catalogue asks again for the low stock and the lots near expiry shown, and answers of earlier requests or of an environment that was left are ignored (#92).
+
+- Inventory (inventory): the counts of the catalogue are a component of their own, and the inventory home page has its own template (#92).
 
 - Compliance & Alerts (ca): the alert history says that "Export report" covers the whole period and environment when a chip or the search narrows the table (#90).
 
@@ -54,6 +66,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Presentation: 356 custom properties this version of Angular Material does not read, and the rules no element of their component can match (#82).
 
 ### Fixed
+
+- Inventory (inventory): while the low stock or the lots near expiry are loading, the catalogue says so instead of "No materials match this view." or "No lots expire soon in this environment." (#93).
+
+- Product Batch (batch): a click anywhere on the start date range of the batch list, also on its label, opens the calendar (#93).
+
+- Product Batch (batch): on a phone the summary of a batch gives the product and the environment the whole width, so their names are no longer split in the middle of a word (#93).
 
 - Subscription (subscription): the checkout of an account that already has a subscription shows the translated already-active notice instead of a generic conflict message.
 

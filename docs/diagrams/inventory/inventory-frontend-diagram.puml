@@ -11,7 +11,6 @@ package "shared" {
   class BaseApi
   class BaseApiEndpoint
   interface BaseAssembler
-  class "operations-page.css" as OperationsPage <<stylesheet>>
 }
 
 package "iam.application" {
@@ -171,8 +170,10 @@ package "inventory.application" {
     +environmentId: Signal<number>
     +materials: Signal<RawMaterial[]>
     +lowStockMaterials: Signal<RawMaterial[]>
+    +lowStockLoading: Signal<boolean>
     +receipts: Signal<RawMaterialBatch[]>
     +nearExpiry: Signal<RawMaterialBatch[]>
+    +nearExpiryLoading: Signal<boolean>
     +movements: Signal<InventoryMovement[]>
     +usages: Signal<MaterialConsumption[]>
     +affectedBatches: Signal<number[]>
@@ -183,8 +184,8 @@ package "inventory.application" {
     +availableContainers: Signal<StorageContainer[]>
     +storesInContainers: Signal<boolean>
     +load(environmentId, id?): Promise<boolean>
-    +loadLowStock()
-    +loadNearExpiry(withinDays?)
+    +loadLowStock(): Promise<void>
+    +loadNearExpiry(withinDays?): Promise<void>
     +saveMaterial(command, id?)
     +receive(material, command)
     +review(receipt, command)
@@ -199,11 +200,23 @@ InventoryStore --> InventoryApi
 InventoryStore --> IamStore
 InventoryStore --> EnvironmentPreference
 InventoryStore ..> StorageContainer
+note bottom of InventoryStore
+  load() starts a new generation; loadLowStock() and loadNearExpiry() keep
+  only the answer of their latest request for the same environment and
+  generation, and say they are loading until that answer arrives.
+end note
 
 package "inventory.presentation" {
   class LegacyMaterialDetail
   class InventoryHome
-  class InventoryCatalogue
+  class InventoryCatalogue {
+    +lowOnly: Signal<boolean>
+    +showNearExpiry: Signal<boolean>
+    +filtered: Signal<RawMaterial[]>
+    +waiting: Signal<boolean>
+    +reload(): Promise<void>
+    +toggleLowOnly(checked): void
+  }
   class InventoryDetail
   class RegisterMaterial
   class InventoryRoutes
@@ -224,6 +237,10 @@ package "inventory.presentation.components" {
   class InventoryMaterialTable <<component>>
   class NearExpiryTable <<component>>
   class LegacyImportPanel <<component>>
+  class InventoryCatalogueStats <<component>> {
+    +materialsCount: InputSignal<number>
+    +lowStockCount: InputSignal<number>
+  }
   class LegacyMaterialSummary <<component>>
   class LegacyConsumptionHistoryTable <<component>> {
     #batchNames: Signal<Map<number, string>>
@@ -242,6 +259,12 @@ InventoryCatalogue *-- InventoryFilters
 InventoryCatalogue *-- InventoryMaterialTable
 InventoryCatalogue *-- NearExpiryTable
 InventoryCatalogue *-- LegacyImportPanel
+InventoryCatalogue *-- InventoryCatalogueStats
+note bottom of InventoryCatalogue
+  Reloading asks again for the low stock and the lots near expiry shown.
+  While their answer is on its way the view says it is loading,
+  instead of saying that nothing matches.
+end note
 LegacyMaterialDetail *-- LegacyMaterialSummary
 LegacyMaterialDetail *-- LegacyConsumptionHistoryTable
 
@@ -251,8 +274,6 @@ InventoryCatalogue --> InventoryStore
 InventoryCatalogue --> EnvironmentSelector
 InventoryDetail --> InventoryStore
 RegisterMaterial --> InventoryStore
-InventoryCatalogue ..> OperationsPage
-InventoryDetail ..> OperationsPage
 note right of InventoryDetail
   Lots tab: container of each lot, "Store in container" for operators
   when the environment is RAW_MATERIAL_STORAGE (US43, US44) and

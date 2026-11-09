@@ -21,8 +21,13 @@
     />
   </div>
 
-  <!-- Start period, chosen in the calendar -->
-  <mat-form-field appearance="outline" subscriptSizing="dynamic" class="period">
+  <!-- Start period, chosen in the calendar; a click anywhere on the field opens it, also on the label of an empty field -->
+  <mat-form-field
+    appearance="outline"
+    subscriptSizing="dynamic"
+    class="period"
+    (click)="picker.open()"
+  >
     <mat-label>{{ 'batches.filters.period' | translate }}</mat-label>
     <mat-date-range-input [rangePicker]="picker">
       <input
@@ -30,7 +35,6 @@
         readonly
         [value]="from()"
         [placeholder]="'batches.filters.from' | translate"
-        (click)="picker.open()"
         (keydown.alt.arrowdown)="picker.open()"
         (dateChange)="chooseDay('from', $event.value)"
       />
@@ -39,7 +43,6 @@
         readonly
         [value]="to()"
         [placeholder]="'batches.filters.to' | translate"
-        (click)="picker.open()"
         (keydown.alt.arrowdown)="picker.open()"
         (dateChange)="chooseDay('to', $event.value)"
       />

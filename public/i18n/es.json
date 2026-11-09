@@ -1022,6 +1022,13 @@
         "empty": "0 de 0"
       }
     },
+    "sort": {
+      "label": "Ordenar por",
+      "newest": "Más recientes",
+      "direction": "Orden",
+      "ascending": "Ascendente",
+      "descending": "Descendente"
+    },
     "empty-state": {
       "none-title": "Aún no hay lotes",
       "none-message": "Los lotes se registran desde su producto. Abre los productos farmacéuticos para iniciar uno.",

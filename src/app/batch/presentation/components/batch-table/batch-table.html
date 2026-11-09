@@ -1,4 +1,28 @@
 <div class="table-card">
+  <!-- On a phone the batches are cards without headers, so the order is chosen here -->
+  <div class="phone-sort">
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label>{{ 'batches.sort.label' | translate }}</mat-label>
+      <mat-select [value]="sortColumn()" (selectionChange)="sortBy($event.value)">
+        <mat-option value="">{{ 'batches.sort.newest' | translate }}</mat-option>
+        @for (column of sortColumns; track column.id) {
+          <mat-option [value]="column.id">{{ column.labelKey | translate }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label>{{ 'batches.sort.direction' | translate }}</mat-label>
+      <mat-select
+        [value]="sort().direction || 'asc'"
+        [disabled]="!sortColumn()"
+        (selectionChange)="sortDirection($event.value)"
+      >
+        <mat-option value="asc">{{ 'batches.sort.ascending' | translate }}</mat-option>
+        <mat-option value="desc">{{ 'batches.sort.descending' | translate }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+
   <table
     mat-table
     matSort

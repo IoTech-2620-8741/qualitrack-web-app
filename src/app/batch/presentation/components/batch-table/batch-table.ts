@@ -11,13 +11,14 @@ import { DecimalPipe } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatPaginatorIntl, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
-import { MatSortModule, Sort } from '@angular/material/sort';
+import { MatSelectModule } from '@angular/material/select';
+import { MatSortModule, Sort, SortDirection } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { TranslatePipe } from '@ngx-translate/core';
 import { EnvironmentOption } from '../../../../shared/presentation/components/environment-selector/environment-selector';
 import { DateOnlyPipe } from '../../../../shared/presentation/pipes/date-only.pipe';
 import { Batch } from '../../../domain/model/batch.entity';
-import { sortBatches } from '../../batch-filter';
+import { BatchSortColumn, sortBatches } from '../../batch-filter';
 import { BatchStatusChip } from '../batch-status-chip/batch-status-chip';
 import { batchPaginatorIntl } from './batch-paginator-intl';
 
@@ -30,7 +31,8 @@ const PAGE_SIZES = [10, 25, 50];
  * @remarks
  * Clicking a row opens the batch; the batch number is also a link, so the table can be used with the keyboard.
  * Batches registered before environments existed cannot be opened. Without a chosen column the batches keep their
- * order (newest first). Changing the batches, the order or the page size goes back to the first page.
+ * order (newest first). Changing the batches, the order or the page size goes back to the first page. A phone shows
+ * the batches as cards without headers, so it chooses the column and the direction in two lists above them.
  *
  * @example
  * ```html
@@ -48,6 +50,7 @@ const PAGE_SIZES = [10, 25, 50];
     DecimalPipe,
     MatIconModule,
     MatPaginatorModule,
+    MatSelectModule,
     MatSortModule,
     MatTableModule,
     RouterLink,
@@ -80,8 +83,20 @@ export class BatchTable {
   /** Page sizes offered by the paginator. */
   protected readonly pageSizes = PAGE_SIZES;
 
-  /** Column and direction chosen in the headers; no column keeps the order of the list. */
+  /** Columns offered by the order list of a phone, with the key of their name. */
+  protected readonly sortColumns: readonly { id: BatchSortColumn; labelKey: string }[] = [
+    { id: 'batchNumber', labelKey: 'batches.fields.number' },
+    { id: 'product', labelKey: 'batches.fields.product' },
+    { id: 'quantity', labelKey: 'batches.fields.quantity' },
+    { id: 'startDate', labelKey: 'batches.fields.date' },
+    { id: 'status', labelKey: 'batches.fields.status' },
+  ];
+
+  /** Column and direction chosen in the headers or in the order lists; no column keeps the order of the list. */
   protected readonly sort = signal<Sort>({ active: '', direction: '' });
+
+  /** Column that orders the batches, or an empty string while they keep the order of the list. */
+  protected readonly sortColumn = computed(() => (this.sort().direction ? this.sort().active : ''));
 
   /** Number of batches of a page. */
   protected readonly pageSize = signal(PAGE_SIZES[0]);
@@ -114,6 +129,28 @@ export class BatchTable {
    */
   protected environmentCode(environmentId: number | null): string | null {
     return environmentId === null ? null : (this.environmentCodes().get(environmentId) ?? null);
+  }
+
+  /**
+   * Orders the batches by a column chosen in the order list of a phone, keeping the direction already chosen.
+   *
+   * @param column - The column, or an empty string for the order of the list
+   */
+  protected sortBy(column: BatchSortColumn | ''): void {
+    this.sort.set(
+      column
+        ? { active: column, direction: this.sort().direction || 'asc' }
+        : { active: '', direction: '' },
+    );
+  }
+
+  /**
+   * Changes the direction of the order chosen in the order list of a phone.
+   *
+   * @param direction - Ascending or descending
+   */
+  protected sortDirection(direction: SortDirection): void {
+    this.sort.update((sort) => ({ ...sort, direction }));
   }
 
   /**

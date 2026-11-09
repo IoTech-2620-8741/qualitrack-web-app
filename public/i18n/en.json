@@ -1022,6 +1022,13 @@
         "empty": "0 of 0"
       }
     },
+    "sort": {
+      "label": "Sort by",
+      "newest": "Newest first",
+      "direction": "Order",
+      "ascending": "Ascending",
+      "descending": "Descending"
+    },
     "empty-state": {
       "none-title": "No batches yet",
       "none-message": "Batches are registered from their product. Open the pharmaceutical products to start one.",

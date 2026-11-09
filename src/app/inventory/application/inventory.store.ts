@@ -174,6 +174,14 @@ export class InventoryStore {
   readonly lowStockMaterials = signal<RawMaterial[]>([]);
 
   /**
+   * Signal indicating whether the latest low-stock request is still waiting for its answer.
+   *
+   * @remarks
+   * Until then {@link InventoryStore.lowStockMaterials} is empty or belongs to an earlier answer.
+   */
+  readonly lowStockLoading = signal(false);
+
+  /**
    * Signal containing the loaded raw material batches.
    */
   readonly receipts = signal<RawMaterialBatch[]>([]);
@@ -182,6 +190,14 @@ export class InventoryStore {
    * Signal containing batches approaching their expiration date.
    */
   readonly nearExpiry = signal<RawMaterialBatch[]>([]);
+
+  /**
+   * Signal indicating whether the latest near-expiry request is still waiting for its answer.
+   *
+   * @remarks
+   * Until then {@link InventoryStore.nearExpiry} is empty or belongs to an earlier answer.
+   */
+  readonly nearExpiryLoading = signal(false);
 
   /**
    * Signal containing inventory movements of the selected material.
@@ -524,6 +540,8 @@ export class InventoryStore {
     // Invalidate filter requests started before this reload.
     ++this.lowStockRequestId;
     ++this.nearExpiryRequestId;
+    this.lowStockLoading.set(false);
+    this.nearExpiryLoading.set(false);
 
     if (environmentChanged) {
       this.materials.set([]);
@@ -636,26 +654,19 @@ export class InventoryStore {
     const environmentId = this.environment;
     const generation = this.generation;
     const requestId = ++this.lowStockRequestId;
+    const current = () =>
+      generation === this.generation &&
+      requestId === this.lowStockRequestId &&
+      environmentId === this.environmentId();
+    this.lowStockLoading.set(true);
 
     try {
       const materials = await firstValueFrom(this.api.materials(this.lab, environmentId, 'LOW'));
-      if (
-        generation !== this.generation ||
-        requestId !== this.lowStockRequestId ||
-        environmentId !== this.environmentId()
-      ) {
-        return;
-      }
-      this.lowStockMaterials.set(materials);
+      if (current()) this.lowStockMaterials.set(materials);
     } catch (error) {
-      if (
-        generation !== this.generation ||
-        requestId !== this.lowStockRequestId ||
-        environmentId !== this.environmentId()
-      ) {
-        return;
-      }
-      this.error.set(inventoryError(error));
+      if (current()) this.error.set(inventoryError(error));
+    } finally {
+      if (current()) this.lowStockLoading.set(false);
     }
   }
 
@@ -671,21 +682,21 @@ export class InventoryStore {
     const environmentId = this.environment;
     const generation = this.generation;
     const requestId = ++this.nearExpiryRequestId;
+    const current = () =>
+      generation === this.generation &&
+      requestId === this.nearExpiryRequestId &&
+      environmentId === this.environmentId();
+    this.nearExpiryLoading.set(true);
 
     try {
       const batches = await firstValueFrom(
         this.api.environmentReceipts(this.lab, environmentId, 'NEAR_EXPIRY', withinDays),
       );
-
-      if (generation !== this.generation || requestId !== this.nearExpiryRequestId || environmentId !== this.environmentId()) {
-        return;
-      }
-      this.nearExpiry.set(batches);
+      if (current()) this.nearExpiry.set(batches);
     } catch (error) {
-      if (generation !== this.generation || requestId !== this.nearExpiryRequestId || environmentId !== this.environmentId()) {
-        return;
-      }
-      this.error.set(inventoryError(error));
+      if (current()) this.error.set(inventoryError(error));
+    } finally {
+      if (current()) this.nearExpiryLoading.set(false);
     }
   }
 

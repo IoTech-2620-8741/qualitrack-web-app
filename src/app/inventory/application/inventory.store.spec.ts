@@ -144,3 +144,127 @@ describe('InventoryStore writes and environments', () => {
     expect(store.materials()).toEqual([material]);
   });
 });
+
+describe('InventoryStore low-stock and near-expiry requests', () => {
+  const material = (id: number, stockStatus: 'LOW' | 'SUFFICIENT') => new RawMaterial({
+    id, laboratoryId: 7, environmentId: 1, code: `RM-${id}`, name: `Material ${id}`, unit: 'kg', minimumStock: 20,
+    usableStock: stockStatus === 'LOW' ? 5 : 50, physicalStock: 50, stockStatus, legacyId: null,
+  });
+  const lot = new RawMaterialBatch({
+    id: 11, laboratoryId: 7, rawMaterialId: 1, supplier: 'Supplier', batchNumber: 'SUP-1', unit: 'kg', initialAmount: 20, availableAmount: 20,
+    receivedOn: '2026-09-01', expiresOn: '2026-11-20', status: 'RELEASED',
+  });
+  const api = { materials: vi.fn(), environmentReceipts: vi.fn() };
+  beforeEach(() => {
+    api.materials.mockReset().mockReturnValue(of([material(1, 'LOW'), material(2, 'SUFFICIENT')]));
+    api.environmentReceipts.mockReset();
+    TestBed.configureTestingModule({ providers: [
+      { provide: InventoryApi, useValue: api },
+      { provide: IamStore, useValue: { requireLaboratoryId: () => 7, canManageQuality: () => true, canOperate: () => true } },
+    ] });
+  });
+
+  it('says the low stock is loading until its answer arrives', async () => {
+    const answer = new Subject<RawMaterial[]>();
+    const store = TestBed.inject(InventoryStore);
+    await store.load(1);
+    api.materials.mockReturnValue(answer);
+
+    const request = store.loadLowStock();
+
+    expect(api.materials).toHaveBeenLastCalledWith(7, 1, 'LOW');
+    expect(store.lowStockLoading()).toBe(true);
+    answer.next([material(1, 'LOW')]);
+    answer.complete();
+    await request;
+    expect(store.lowStockLoading()).toBe(false);
+    expect(store.lowStockMaterials().map((item) => item.id)).toEqual([1]);
+  });
+
+  it('keeps only the answer of the latest low-stock request', async () => {
+    const first = new Subject<RawMaterial[]>();
+    const second = new Subject<RawMaterial[]>();
+    const store = TestBed.inject(InventoryStore);
+    await store.load(1);
+    api.materials.mockReturnValueOnce(first).mockReturnValueOnce(second);
+
+    const older = store.loadLowStock();
+    const newer = store.loadLowStock();
+    first.next([material(2, 'SUFFICIENT')]);
+    first.complete();
+    await older;
+
+    expect(store.lowStockMaterials()).toEqual([]);
+    expect(store.lowStockLoading()).toBe(true);
+    second.next([material(1, 'LOW')]);
+    second.complete();
+    await newer;
+    expect(store.lowStockMaterials().map((item) => item.id)).toEqual([1]);
+    expect(store.lowStockLoading()).toBe(false);
+  });
+
+  it('ignores a low-stock answer, or its failure, that arrives after the inventory reloads', async () => {
+    const stale = new Subject<RawMaterial[]>();
+    const failed = new Subject<RawMaterial[]>();
+    const store = TestBed.inject(InventoryStore);
+    await store.load(1);
+    api.materials.mockReturnValueOnce(stale).mockReturnValueOnce(failed);
+    const request = store.loadLowStock();
+    const failing = store.loadLowStock();
+
+    await store.load(1);
+    stale.next([material(1, 'LOW')]);
+    stale.complete();
+    failed.error(new Error('unavailable'));
+    await Promise.all([request, failing]);
+
+    expect(store.lowStockMaterials()).toEqual([]);
+    expect(store.lowStockLoading()).toBe(false);
+    expect(store.error()).toBe('');
+  });
+
+  it('reports the failure of the latest low-stock request', async () => {
+    const store = TestBed.inject(InventoryStore);
+    await store.load(1);
+    api.materials.mockReturnValue(throwError(() => new Error('unavailable')));
+
+    await store.loadLowStock();
+
+    expect(store.error()).toBe('inventory.error');
+    expect(store.lowStockLoading()).toBe(false);
+  });
+
+  it('says the lots near expiry are loading until their answer arrives', async () => {
+    const answer = new Subject<RawMaterialBatch[]>();
+    api.environmentReceipts.mockReturnValue(answer);
+    const store = TestBed.inject(InventoryStore);
+    await store.load(1);
+
+    const request = store.loadNearExpiry(30);
+
+    expect(api.environmentReceipts).toHaveBeenCalledWith(7, 1, 'NEAR_EXPIRY', 30);
+    expect(store.nearExpiryLoading()).toBe(true);
+    answer.next([lot]);
+    answer.complete();
+    await request;
+    expect(store.nearExpiry()).toEqual([lot]);
+    expect(store.nearExpiryLoading()).toBe(false);
+  });
+
+  it('ignores the lots near expiry of an environment that was left', async () => {
+    const stale = new Subject<RawMaterialBatch[]>();
+    api.environmentReceipts.mockReturnValue(stale);
+    const store = TestBed.inject(InventoryStore);
+    await store.load(1);
+    const request = store.loadNearExpiry();
+
+    await store.load(2);
+    stale.next([lot]);
+    stale.complete();
+    await request;
+
+    expect(store.environmentId()).toBe(2);
+    expect(store.nearExpiry()).toEqual([]);
+    expect(store.nearExpiryLoading()).toBe(false);
+  });
+});

@@ -91,6 +91,19 @@ td.col-open mat-icon {
   vertical-align: middle;
 }
 
+/* Order lists of a phone, where the headers are hidden */
+.phone-sort {
+  display: none;
+}
+
+.phone-sort mat-form-field {
+  flex: 1 1 160px;
+  min-width: 0;
+  --mat-form-field-outlined-focus-outline-color: var(--qt-primary);
+  --mat-form-field-outlined-focus-label-text-color: var(--qt-primary-strong);
+  --mat-form-field-focus-select-arrow-color: var(--qt-primary);
+}
+
 mat-paginator {
   border-top: 1px solid var(--qt-border);
   background: var(--qt-surface);
@@ -131,6 +144,14 @@ mat-paginator {
 
   .data-table tr[mat-header-row] {
     display: none;
+  }
+
+  /* Side by side, or one under the other when both names do not fit */
+  .phone-sort {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 12px;
   }
 
   /* The table builds its own thead and tbody, outside the styles of this component */
