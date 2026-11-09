@@ -620,7 +620,7 @@
       "plan-id": "Plan ID",
       "status": "Status",
       "start-date": "Start Date",
-      "started-at": "Started At",
+      "period-start": "Current Period From",
       "end-date": "End Date",
       "payments-title": "Payment History",
       "payment-history": "Payment History",
