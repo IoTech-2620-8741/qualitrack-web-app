@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.3.0] - 2026-11-09
+
 ### Added
 
 - Product Batch (batch): on a phone, where the batch cards hide the headers of the table, two lists above them choose the column and the direction of the order (#93).
@@ -24,6 +26,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Subscription (subscription): a plan chosen on the website (`plan` and `billingCycle` in the link) is remembered by `planPreselectionGuard`; the plans view sends an account without a subscription straight to the checkout of that plan, leaving the checkout or signing out forgets it.
 
 ### Changed
+
+- Release: package and lockfile versions are now 2.3.0.
 
 - Inventory (inventory): reloading the catalogue asks again for the low stock and the lots near expiry shown, and answers of earlier requests or of an environment that was left are ignored (#92).
 
