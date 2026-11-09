@@ -564,7 +564,12 @@
       "toggle-yearly": "Anual",
       "period-label": "Periodo de facturación",
       "get": "Obtener {{name}}",
-      "already-active": "Ya tienes una suscripción activa. Para cambiar de plan, cancela la renovación en Facturación y elige otro plan cuando termine el periodo actual."
+      "already-active": "Ya tienes una suscripción activa. Para cambiar de plan, cancela la renovación en Facturación y elige otro plan cuando termine el periodo actual.",
+      "open-billing": "Ir a Facturación",
+      "current-renews": "Tu plan actual · se renueva el {{date}}",
+      "current-until": "Tu plan actual · activo hasta el {{date}}",
+      "manage-in-billing": "Gestionar en Facturación",
+      "unavailable": "No disponible mientras tu suscripción esté activa."
     },
     "billing-period": {
       "monthly": "Mensual",

@@ -194,6 +194,20 @@ export class SubscriptionStore {
   }
 
   /**
+   * Reads the active subscription of a laboratory so the plans view can mark the plan it pays for. Unlike
+   * {@link loadCurrentSubscription} it leaves the loading and error state of the plans alone and reads no payments:
+   * when the subscription cannot be read, the plans are shown without the mark.
+   *
+   * @param laboratoryId - Numeric identifier of the laboratory
+   */
+  loadCurrentPlan(laboratoryId: number): void {
+    this.api.getCurrentSubscription(laboratoryId).subscribe({
+      next: (subscription) => this._currentSubscription.set(subscription),
+      error: () => this._currentSubscription.set(null),
+    });
+  }
+
+  /**
    * Loads payment history for a subscription.
    *
    * @param subscriptionId - Numeric identifier of the subscription

@@ -67,6 +67,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Subscription (subscription): while the laboratory pays for a plan, the plans view no longer offers buttons that do nothing. The card of the paid plan says it is the current plan and when it renews or ends, the view opens on its billing period, and the other plans link to Billing, where the renewal is cancelled (#95).
+
+- Subscription (subscription): the icon of the already-active notice of the plans view no longer shrinks on narrow screens (#95).
+
 - Inventory (inventory): while the low stock or the lots near expiry are loading, the catalogue says so instead of "No materials match this view." or "No lots expire soon in this environment." (#93).
 
 - Product Batch (batch): a click anywhere on the start date range of the batch list, also on its label, opens the calendar (#93).

@@ -133,6 +133,7 @@ package "subscription" {
       +hasActiveSubscription: Signal<boolean>
       +loadPlans(): void
       +loadCurrentSubscription(laboratoryId: number): void
+      +loadCurrentPlan(laboratoryId: number): void
       +loadPayments(subscriptionId: number): void
       +selectPlan(command: SelectPlanCommand): void
       +clearSelectedPlan(): void
@@ -283,7 +284,13 @@ package "subscription" {
       -router: Router
       +billingPeriod: Signal<"MONTHLY | YEARLY">
       +visiblePlans: Signal<SubscriptionPlan[]>
+      #subscribed: Signal<boolean>
+      #hasLaboratory: Signal<boolean>
+      #currentSubscription: Signal<Subscription | null>
+      -periodChosen: boolean
       +ngOnInit(): void
+      #choosePeriod(period: BillingCycle): void
+      #isCurrent(plan: SubscriptionPlan): boolean
       +onSelectPlan(plan: SubscriptionPlan): void
       +formatPrice(plan: SubscriptionPlan): string
     }
@@ -373,6 +380,12 @@ SubscriptionStore ..> CheckoutSessionResource
 PlanList --> SubscriptionStore
 PlanList --> IamStore
 PlanList ..> SubscriptionPlan
+PlanList ..> Subscription
+note bottom of PlanList
+  While the account pays for a plan, nothing can be bought: the card of the
+  paid plan (loadCurrentPlan) shows its renewal or end date and opens on its
+  billing period; the other cards link to /subscriptions/billing.
+end note
 Checkout --> SubscriptionStore
 Checkout --> IamStore
 PlanSwitchNotice --> SubscriptionStore
