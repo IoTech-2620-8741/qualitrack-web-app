@@ -73,6 +73,16 @@ export class InventoryCatalogue implements OnInit {
     );
   });
 
+  /**
+   * Whether the materials of the current view are still being read.
+   *
+   * @remarks
+   * While the low-stock answer has not arrived, the view says so instead of showing an empty list.
+   */
+  readonly waiting = computed(
+    () => this.store.loading() || (this.lowOnly() && this.store.lowStockLoading()),
+  );
+
   readonly materialNames = computed(
     () => new Map(this.store.materials().map((material) => [material.id, material.name])),
   );

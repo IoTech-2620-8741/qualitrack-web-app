@@ -36,11 +36,15 @@
     <section class="editor" aria-labelledby="near-expiry-title">
       <h2 id="near-expiry-title">{{ 'inventory.nearExpiry' | translate }}</h2>
       <p class="notice">{{ 'inventory.nearExpiryNotice' | translate }}</p>
-      <app-near-expiry-table
-        [batches]="store.nearExpiry()"
-        [materialNames]="materialNames()"
-        [environmentId]="store.environmentId()"
-      />
+      @if (store.nearExpiryLoading()) {
+        <p role="status">{{ 'inventory.loading' | translate }}</p>
+      } @else {
+        <app-near-expiry-table
+          [batches]="store.nearExpiry()"
+          [materialNames]="materialNames()"
+          [environmentId]="store.environmentId()"
+        />
+      }
     </section>
   }
   <app-inventory-catalogue-stats
@@ -53,7 +57,7 @@
     (searchChange)="search.set($event)"
     (lowOnlyChange)="toggleLowOnly($event)"
   />
-  @if (store.loading()) {
+  @if (waiting()) {
     <p role="status">{{ 'inventory.loading' | translate }}</p>
   } @else {
     <app-inventory-material-table
