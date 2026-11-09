@@ -1,42 +1,67 @@
-.viewer-container {
+:host {
+  display: block;
+  min-width: 0;
+  min-height: 100%;
+  background: var(--qt-background);
+  color: var(--qt-text);
+}
+
+.operations-page {
+  max-width: 1280px;
+  margin: 0 auto;
   padding: 24px;
 }
 
-/* Header */
-.section-header {
+.page-heading {
   display: flex;
-  justify-content: space-between;
+  flex-wrap: wrap;
   align-items: center;
+  justify-content: space-between;
+  gap: 12px;
   margin-bottom: 24px;
 }
 
-.title-group {
+h1 {
   display: flex;
   align-items: center;
-  gap: 12px;
-}
-
-.title-icon {
-  width: 32px;
-  height: 32px;
-  color: #1a3a5c;
-  font-size: 32px;
-}
-
-.title-group h2 {
+  gap: 10px;
   margin: 0;
-  color: #1a3a5c;
+  color: var(--qt-heading);
+  font-size: 28px;
   font-weight: 700;
+  letter-spacing: 0;
+  overflow-wrap: anywhere;
 }
 
+h1 mat-icon {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  color: var(--qt-primary);
+  font-size: 28px;
+}
+
+app-error-banner,
+app-audit-log-table {
+  display: block;
+}
+
+app-error-banner {
+  margin-bottom: 24px;
+}
 
 @media (max-width: 760px) {
-  .viewer-container {
+  .operations-page {
     padding: 16px;
   }
 
-  .table-card {
-    overflow-x: auto;
+  h1 {
+    font-size: 24px;
   }
 
+  h1 mat-icon {
+    width: 24px;
+    height: 24px;
+    font-size: 24px;
+  }
 }

@@ -47,11 +47,11 @@ const billingSummary = () =>
  * subscription, while success, cancel, and billing (`billing`) views support the payment lifecycle.
  */
 export const subscriptionRoutes: Routes = [
-  { path: 'plans', loadComponent: planList, canActivate: [subscriptionGuard] },
-  { path: 'checkout', loadComponent: checkout, canActivate: [subscriptionGuard] },
-  { path: 'success', loadComponent: paymentSuccess, canActivate: [subscriptionGuard] },
-  { path: 'cancel', loadComponent: paymentCancel, canActivate: [subscriptionGuard] },
-  { path: 'billing', loadComponent: billingSummary, canActivate: [onboardingGuard] },
+  { path: 'plans', loadComponent: planList, canActivate: [subscriptionGuard], title: 'page-titles.plans' },
+  { path: 'checkout', loadComponent: checkout, canActivate: [subscriptionGuard], title: 'page-titles.checkout' },
+  { path: 'success', loadComponent: paymentSuccess, canActivate: [subscriptionGuard], title: 'page-titles.payment-success' },
+  { path: 'cancel', loadComponent: paymentCancel, canActivate: [subscriptionGuard], title: 'page-titles.payment-cancel' },
+  { path: 'billing', loadComponent: billingSummary, canActivate: [onboardingGuard], title: 'page-titles.billing' },
   // View-named path used before semantic routes.
   { path: 'billing-summary', redirectTo: 'billing', pathMatch: 'full' },
   { path: '', redirectTo: 'plans', pathMatch: 'full' },

@@ -452,6 +452,7 @@ package "ra.presentation" {
 
   class Dashboard {
     #store: RaStore
+    #noticeComponent: Type<unknown> | null
     #summaryCards / batchDistribution / recentBatches
     #chartData / chartOptions
     #reloadAll(): void
@@ -558,6 +559,8 @@ package "ra.presentation" {
     +trend / points / thresholds
     #limitOf(point): number | null
   }
+
+  class "reportConfigFromQuery()" as ReportGeneratorQuery
 
   class ReportGeneratorComponent {
     +ngOnInit(): void
@@ -705,6 +708,7 @@ DeviationTrendChartComponent ..> LastDays
 
 ReportGeneratorComponent --> RaStore : loadEquipment(), loadBatches()
 ReportGeneratorComponent *-- ReportGeneratorState : provides
+ReportGeneratorComponent ..> ReportGeneratorQuery : values of the address
 ReportGeneratorComponent *-- ReportTypeSelector
 ReportGeneratorComponent *-- ReportParamsForm
 ReportTypeSelector --> ReportGeneratorState

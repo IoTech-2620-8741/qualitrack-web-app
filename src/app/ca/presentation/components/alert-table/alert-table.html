@@ -1,55 +1,106 @@
 <table class="data-table">
+  <caption class="visually-hidden">{{ 'ca-alerts.history.title' | translate }}</caption>
   <thead>
-    <tr>
-      <th>{{ 'ca-alerts.fields.detected' | translate }}</th>
-      <th>{{ 'ca-alerts.fields.origin' | translate }}</th>
-      <th>{{ 'ca-alerts.fields.parameter' | translate }}</th>
-      <th>{{ 'ca-alerts.fields.severity' | translate }}</th>
-      <th>{{ 'common.status' | translate }}</th>
-      <th></th>
-    </tr>
+  <tr>
+    <th scope="col" class="col-detected">{{ 'ca-alerts.fields.detected' | translate }}</th>
+    <th scope="col">{{ 'ca-alerts.fields.origin' | translate }}</th>
+    <th scope="col">{{ 'ca-alerts.fields.parameter' | translate }}</th>
+    <th scope="col">{{ 'ca-alerts.fields.severity' | translate }}</th>
+    <th scope="col">{{ 'common.status' | translate }}</th>
+    <th scope="col">{{ 'ca-alerts.history.columns.duration' | translate }}</th>
+    <th scope="col" class="col-resolved">{{ 'ca-alerts.history.columns.resolved-by' | translate }}</th>
+    <th scope="col" class="col-notes">
+      {{ 'ca-alerts.history.columns.corrective-action' | translate }}
+    </th>
+    <th scope="col" class="col-view">
+      <span class="visually-hidden">{{ 'ca-alerts.actions.view-details' | translate }}</span>
+    </th>
+  </tr>
   </thead>
   <tbody>
     @for (alert of alerts(); track alert.id) {
-      <tr>
+      <tr [class]="'severity-' + alert.severity.toLowerCase()">
         <td>
           <strong>{{ alert.timestamp | dateTime }}</strong>
-          @if (alert.deviationCount > 1 && alert.lastDetectedAt) {
-            <small>{{ 'ca-alerts.fields.last-deviation' | translate }}: {{ alert.lastDetectedAt | dateTime }}</small>
+          @if (alert.deviationCount > 1) {
+            <small>{{
+                'ca-alerts.fields.deviations' | translate: { count: alert.deviationCount }
+              }}</small>
           }
         </td>
         <td [attr.data-label]="'ca-alerts.fields.origin' | translate">
-          <strong>{{ (alert.origin ? 'ca-alerts.origin.' + alert.origin : 'ca-alerts.origin.EQUIPMENT') | translate }}</strong>
-          <small>{{ store.deviceName(alert.equipmentId) ?? '#' + alert.equipmentId }}</small>
+          <strong>{{ store.deviceName(alert.equipmentId) ?? '#' + alert.equipmentId }}</strong>
+          <small>{{
+              (alert.origin ? 'ca-alerts.origin.' + alert.origin : 'ca-alerts.origin.EQUIPMENT')
+                | translate
+            }}</small>
         </td>
         <td [attr.data-label]="'ca-alerts.fields.parameter' | translate">
-          <strong>{{ variable(alert.parameterName) }}</strong>
-          <small>{{ alert.recordedValue | number: '1.0-2' }} {{ alert.unit }} · {{ 'ca-alerts.fields.threshold' | translate }}
-            {{ alert.thresholdValue | number: '1.0-2' }} {{ alert.unit }}</small>
+          <strong>{{ variableOf(alert) }}</strong>
+          <small
+          >{{ alert.recordedValue | number: '1.0-2' }} {{ alert.unit }} ·
+            {{ 'ca-alerts.fields.threshold' | translate }}
+            {{ alert.thresholdValue | number: '1.0-2' }} {{ alert.unit }}</small
+          >
         </td>
-        <td [attr.data-label]="'ca-alerts.fields.severity' | translate">
-          <span class="status" [class.rejected]="alert.severity === 'CRITICAL'">{{ 'ca-alerts.severity.' + alert.severity.toLowerCase() | translate }}</span>
+        <td class="chip-cell" [attr.data-label]="'ca-alerts.fields.severity' | translate">
+          <app-status-chip
+            [tone]="severityChips[alert.severity].tone"
+            [icon]="severityChips[alert.severity].icon"
+            [labelKey]="severityChips[alert.severity].labelKey"
+          />
         </td>
-        <td [attr.data-label]="'common.status' | translate">
-          <span class="status" [class.released]="alert.status === 'RESOLVED'">{{ 'ca-alerts.status.' + alert.status.toLowerCase() | translate }}</span>
-          @if (alert.deviationCount > 1) {
-            <small>{{ 'ca-alerts.fields.deviations' | translate: { count: alert.deviationCount } }}</small>
+        <td class="chip-cell" [attr.data-label]="'common.status' | translate">
+          <app-status-chip
+            [tone]="statusChips[alert.status].tone"
+            [icon]="statusChips[alert.status].icon"
+            [labelKey]="statusChips[alert.status].labelKey"
+          />
+        </td>
+        <td [attr.data-label]="'ca-alerts.history.columns.duration' | translate">
+          @if (alert.resolvedAt) {
+            <strong>{{ alert.timestamp | elapsedTime: alert.resolvedAt }}</strong>
+          } @else {
+            <strong class="still-open">{{
+                'ca-alerts.history.open-for'
+                  | translate: { time: (alert.timestamp | elapsedTime: now()) }
+              }}</strong>
           }
-          @if (alert.isNormalized) {
-            <small>{{ 'ca-alerts.normalized' | translate }}</small>
+          @if (alert.acknowledgedAt) {
+            <small>{{
+                'ca-alerts.history.attention-after'
+                  | translate: { time: (alert.timestamp | elapsedTime: alert.acknowledgedAt) }
+              }}</small>
+          }
+        </td>
+        <td [attr.data-label]="'ca-alerts.history.columns.resolved-by' | translate">
+          @if (resolvedByOf(alert); as name) {
+            <span class="person">
+              <span class="avatar" aria-hidden="true">{{ initialsOf(name) }}</span>
+              {{ name }}
+            </span>
+          } @else {
+            <span aria-hidden="true">—</span>
+          }
+        </td>
+        <td [attr.data-label]="'ca-alerts.history.columns.corrective-action' | translate">
+          @if (alert.resolutionNotes) {
+            <span class="notes">{{ alert.resolutionNotes }}</span>
+          } @else {
+            <span aria-hidden="true">—</span>
           }
         </td>
         <td>
-          <a mat-icon-button [routerLink]="['/alerts', alert.id]"
-             [attr.aria-label]="'ca-alerts.actions.view-details' | translate"
-             [matTooltip]="'ca-alerts.actions.view-details' | translate">
+          <a
+            mat-icon-button
+            [routerLink]="['/alerts/history', alert.id]"
+            queryParamsHandling="preserve"
+            [attr.aria-label]="'ca-alerts.history.view' | translate: { variable: variableOf(alert) }"
+            [matTooltip]="'ca-alerts.actions.view-details' | translate"
+          >
             <mat-icon aria-hidden="true">visibility</mat-icon>
           </a>
         </td>
-      </tr>
-    } @empty {
-      <tr>
-        <td colspan="6">{{ emptyKey() | translate }}</td>
       </tr>
     }
   </tbody>

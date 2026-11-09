@@ -160,7 +160,8 @@ export class AlertDetailPanel implements OnDestroy {
     if (this.router.lastSuccessfulNavigation()?.previousNavigation) {
       this.location.back();
     } else {
-      void this.router.navigate(['/alerts'], {
+      void this.router.navigate(['..'], {
+        relativeTo: this.route,
         queryParams: { panel: null },
         queryParamsHandling: 'merge',
         replaceUrl: true,

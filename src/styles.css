@@ -10,10 +10,14 @@ mat-card-title, mat-card-subtitle, h1, h2, h3, p { overflow-wrap: anywhere; }
 :root {
   --qt-primary: #0d9488;
   --qt-primary-strong: #0f766e; /* Reaches AA on white, so it is the one used for text and filled buttons. */
+  --qt-primary-hover: #115e59;
   --qt-primary-surface: #f0fdfa;
   --qt-primary-on-dark: #5eead4;
+  --qt-primary-soft: #99d5cf;
+  --qt-heading: #1a3a5c; /* Only the titles of the pages. */
   --qt-text: #0f172a;
   --qt-text-muted: #64748b; /* Reaches AA only on white; use --qt-neutral-text over other backgrounds. */
+  --qt-text-subtle: #94a3b8;
   --qt-background: #f3f4f6;
   --qt-surface: #ffffff;
   --qt-border: #e2e8f0;

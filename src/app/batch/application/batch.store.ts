@@ -119,6 +119,7 @@ export class BatchStore {
   private readonly _consumptionSaving = signal(false);
   private readonly _consumptionError = signal<string | null>(null);
   private readonly _consumptionSaved = signal(false);
+  private readonly _people = signal<ReadonlyMap<number, string>>(new Map());
 
   // Properties
   /** Batches of every product of the laboratory, newest first. */
@@ -181,6 +182,10 @@ export class BatchStore {
   readonly consumptionError = this._consumptionError.asReadonly();
   /** Whether the last consumption was registered. */
   readonly consumptionSaved = this._consumptionSaved.asReadonly();
+  /** Full names of the staff by user account, to name who signed, stored or registered something. */
+  readonly people = this._people.asReadonly();
+  /** Username of the signed-in user, to name them when they are not in the staff of the laboratory. */
+  readonly currentUsername = this.iam.currentUsername;
   /** The chosen lot; null while none is chosen or it is no longer usable. */
   readonly consumptionLot = computed(
     () => this._consumptionLots().find((lot) => lot.id === this._consumptionLotId()) ?? null,
@@ -215,10 +220,52 @@ export class BatchStore {
   /**
    * Reads the staff of the laboratory, to assign them to a batch (Laboratory → Product Batch).
    *
+   * @remarks
+   * The names of the staff with a user account are kept in {@link BatchStore.people}.
+   *
    * @returns The staff members of the laboratory of the session.
    */
   async loadStaff(): Promise<ProductionStaffMember[]> {
-    return firstValueFrom(this.api.getStaff(this.laboratoryId));
+    const staff = await firstValueFrom(this.api.getStaff(this.laboratoryId));
+    const people = new Map<number, string>();
+    for (const member of staff) if (member.userId !== null) people.set(member.userId, member.fullName);
+    this._people.set(people);
+    return staff;
+  }
+
+  /**
+   * Reads the staff of the laboratory only to name the people of a batch: who signed the release, stored the batch or
+   * registered equipment and staff.
+   *
+   * @remarks
+   * Names are a convenience: when the staff cannot be read, the views keep showing the user ids.
+   */
+  async loadPeople(): Promise<void> {
+    try {
+      await this.loadStaff();
+    } catch {
+      // The ids are shown instead of the names.
+    }
+  }
+
+  /**
+   * Full name of the staff member behind a user account.
+   *
+   * @param userId - The user account identifier.
+   * @returns The full name, or null when the account is not in the staff of the laboratory.
+   */
+  personName(userId: number | null): string | null {
+    return userId === null ? null : (this._people().get(userId) ?? null);
+  }
+
+  /**
+   * Whether a user account is the one of the signed-in user.
+   *
+   * @param userId - The user account identifier.
+   * @returns True when the account is the one of the session.
+   */
+  isCurrentUser(userId: number | null): boolean {
+    return userId !== null && userId === this.iam.currentUserId();
   }
 
   /**

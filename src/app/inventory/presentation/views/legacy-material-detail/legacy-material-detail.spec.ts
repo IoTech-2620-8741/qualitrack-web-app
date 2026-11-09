@@ -5,6 +5,7 @@ import { provideTranslateService } from '@ngx-translate/core';
 import { BehaviorSubject } from 'rxjs';
 import { InventoryStore } from '../../../application/inventory.store';
 import { LegacyMaterialSnapshot } from '../../../domain/model/legacy-material-snapshot.entity';
+import { ConsumingBatch } from '../../../domain/model/consuming-batch.entity';
 import { MaterialConsumption } from '../../../domain/model/material-consumption.entity';
 import { LegacyMaterialDetail } from './legacy-material-detail';
 
@@ -17,7 +18,7 @@ describe('LegacyMaterialDetail', () => {
       new MaterialConsumption({ id: 2, batchId: 8, quantityUsed: 2, unit: 'kg', usageDate: '2026-08-01' }),
     ]),
     legacyDetailLoading: signal(false), legacyDetailError: signal(null),
-    legacyDetailHasUnrecordedStock: () => true, legacyDetailBatchLabel: () => 'PB-8',
+    legacyDetailHasUnrecordedStock: () => true, legacyDetailBatches: signal([new ConsumingBatch({ id: 8, batchNumber: 'PB-8' })]),
     loadLegacyDetail: vi.fn(), clearLegacyDetail: vi.fn(),
   };
   beforeEach(() => {
@@ -31,7 +32,7 @@ describe('LegacyMaterialDetail', () => {
   it('renders exhausted stock, recorded and unrecorded balances, and production batch links', () => {
     const fixture = TestBed.createComponent(LegacyMaterialDetail); fixture.detectChanges();
     const element: HTMLElement = fixture.nativeElement;
-    expect(element.querySelector('h1')?.textContent).toBe('Historical material');
+    expect(element.querySelector('h1')?.textContent).toContain('Historical material');
     expect(element.querySelector('.stock-total strong')?.textContent).toContain('0 kg');
     const rows = element.querySelectorAll('tbody tr');
     expect(rows.length).toBe(2);

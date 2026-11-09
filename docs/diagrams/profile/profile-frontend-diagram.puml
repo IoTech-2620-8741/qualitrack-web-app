@@ -12,7 +12,6 @@ package "shared" <<External>> {
   abstract class ErrorHandlingEnabledBaseType
   class errorStatus <<function>>
   class Layout
-  class "operations-page.css" as OperationsPage <<stylesheet>>
 }
 
 package "iam.application" <<External>> {
@@ -154,7 +153,6 @@ ProfileRoutes --> ProfilePage
 ProfilePage --> ProfileStore
 ProfilePage --> IamStore : account and password
 ProfilePage ..> errorStatus
-ProfilePage ..> OperationsPage
 note bottom of ProfilePage
   /profile, opened from the name in the toolbar: photo (JPG, PNG or WebP
   up to 2 MB), personal data, account (username and e-mail confirmed with

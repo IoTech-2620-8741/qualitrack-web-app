@@ -174,7 +174,6 @@ StaffForm ..> errorStatus
 StaffForm ..> RegisteredStaff
 StaffList --> IamStore
 StaffDetail --> LaboratoryStore
-StaffDetail ..> OperationsPage
 note right of StaffForm
   Quality managers register operators and auditors; the credentials are e-mailed
   or shown once (username and temporary password) when the e-mail cannot be sent.

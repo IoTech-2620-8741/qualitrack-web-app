@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -52,12 +52,15 @@ import { BatchStore } from '../../../application/batch.store';
 export class BatchHome implements OnInit {
   protected readonly store = inject(BatchStore);
   private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
 
   /**
    * Lifecycle hook that loads the environments and opens the products of the preferred one.
    */
   async ngOnInit(): Promise<void> {
     await this.store.loadEnvironments();
+    // Whoever left while the environments were loading stays where they went.
+    if (this.destroyRef.destroyed) return;
     const environment = this.store.preferredProductionEnvironment();
     if (environment) {
       await this.router.navigate(['/batches/environments', environment.id, 'products'], {

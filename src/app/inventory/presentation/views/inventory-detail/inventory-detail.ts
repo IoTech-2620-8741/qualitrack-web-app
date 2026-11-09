@@ -6,14 +6,11 @@ import {
   signal,
   ChangeDetectionStrategy,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
 import { MatTabsModule } from '@angular/material/tabs';
 import { TranslatePipe } from '@ngx-translate/core';
 import { InventoryStore } from '../../../application/inventory.store';
@@ -34,19 +31,32 @@ import {
 } from '../../../../shared/presentation/validators/date.validators';
 import { notBlankValidator } from '../../../../shared/presentation/validators/not-blank.validator';
 import { stockQuantityValidator } from '../../../../shared/presentation/validators/stock-quantity.validator';
-import { DateTimePipe } from '../../../../shared/presentation/pipes/date-time.pipe';
+
+import { InventorySummary } from '../../components/inventory-summary/inventory-summary';
+import { RawMaterialBatchesTable } from '../../components/raw-material-batches-table/raw-material-batches-table';
+import { RawMaterialForm } from '../../components/raw-material-form/raw-material-form';
+import { ReceiveBatchForm } from '../../components/receive-batch-form/receive-batch-form';
+import { BatchReviewForm } from '../../components/batch-review-form/batch-review-form';
+import { ContainerAssignmentForm } from '../../components/container-assignment-form/container-assignment-form';
+import { InventoryMovementsTable } from '../../components/inventory-movements-table/inventory-movements-table';
+import { LegacyMaterialHistoryTable } from '../../components/legacy-material-history-table/legacy-material-history-table';
 
 @Component({
   selector: 'app-inventory-detail',
   standalone: true,
-  imports: [DateTimePipe, 
-    CommonModule,
+  imports: [
+    InventorySummary,
+    RawMaterialBatchesTable,
+    RawMaterialForm,
+    ReceiveBatchForm,
+    BatchReviewForm,
+    ContainerAssignmentForm,
+    InventoryMovementsTable,
+    LegacyMaterialHistoryTable,
     ReactiveFormsModule,
     RouterLink,
     MatButtonModule,
     MatIconModule,
-    MatInputModule,
-    MatSelectModule,
     MatTabsModule,
     TranslatePipe,
   ],
@@ -63,7 +73,6 @@ export class InventoryDetail implements OnInit {
   readonly editing = signal(false);
   readonly reviewing = signal<RawMaterialBatch | null>(null);
   readonly storing = signal<RawMaterialBatch | null>(null);
-  readonly maxStock = MAX_STOCK;
   readonly minDate = MIN_DATE;
   /** Latest expiration date: ten years ahead, a generous shelf life for a raw material. */
   get maxExpiryDate(): string {

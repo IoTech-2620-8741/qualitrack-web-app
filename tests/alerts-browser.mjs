@@ -451,8 +451,8 @@ try {
     await page.waitForURL('**/alerts/history');
     await page.locator('app-environment-selector mat-select').click();
     await page.getByRole('option', { name: /CAD-FRIO-01/ }).click();
-    await page.locator('app-alert-table a[href*="/alerts/102"]').click();
-    await page.waitForURL('**/alerts/102');
+    await page.locator('app-alert-table a[href*="/alerts/history/102"]').click();
+    await page.waitForURL('**/alerts/history/102**');
     await dialog.waitFor();
     await dialog.getByRole('button', { name: 'Close' }).click();
     await page.waitForURL('**/alerts/history**');
@@ -511,6 +511,34 @@ try {
     await page.getByRole('searchbox').focus();
     await page.keyboard.type('aj');
     assert.equal(await page.getByRole('searchbox').inputValue(), 'aj', 'Typing is typing');
+    await context.close();
+  }
+
+  // Typing a date goes through years such as 0202: the chart stays small and the browser history does not fill up.
+  {
+    const { context, page, errors } = await openInbox(browser);
+    await page.goto(origin + '/alerts/history?period=custom');
+    await page.locator('app-alert-table tbody tr').first().waitFor();
+    assert.match(await page.locator('.pager [role=status]').innerText(), /25 per page/);
+    const entries = await page.evaluate(() => history.length);
+    await page.locator('input[type=date]').first().click({ position: { x: 8, y: 8 } });
+    await page.keyboard.type('0110202', { delay: 30 });
+    await page.waitForURL('**from=0202-10-01**');
+    await page.waitForTimeout(200);
+    assert.ok((await page.locator('app-alert-week-chart tbody tr').count()) < 110, 'The chart must not draw centuries of empty weeks');
+    await page.keyboard.press('6');
+    await page.waitForURL('**from=2026-10-01**');
+    assert.equal(await page.evaluate(() => history.length), entries);
+
+    // A day that does not exist is ignored.
+    await page.goto(origin + '/alerts/history?period=custom&to=2026-13-45');
+    await page.locator('app-alert-table tbody tr').first().waitFor();
+
+    // The report does not follow the chips, and the page says so only when one is pressed.
+    assert.equal(await page.locator('.export-note').count(), 0);
+    await page.locator('app-filter-chip button').filter({ hasText: 'Critical' }).click();
+    await page.locator('.export-note').waitFor();
+    assert.deepEqual(errors, []);
     await context.close();
   }
 

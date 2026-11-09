@@ -1,6 +1,7 @@
-import { Component, computed, inject, ChangeDetectionStrategy } from '@angular/core';
+import { Component, computed, inject, ChangeDetectionStrategy, Type } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { ActivatedRoute } from '@angular/router';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -28,6 +29,9 @@ import { LABORATORY_TIME_ZONE } from '../../../../shared/presentation/utils/loca
  *
  * It computes derived data (like chart configurations and batch distributions)
  * and passes the data down to the pure presentational components.
+ *
+ * Another context can tell something on arrival: the route hands the dashboard a component to render (see
+ * `app.routes.ts`), so the dashboard does not import that context.
  */
 @Component({
   selector: 'app-dashboard',
@@ -57,6 +61,9 @@ export class Dashboard {
 
   /** Translation service for language formatting. */
   private readonly translate = inject(TranslateService);
+
+  /** Component that the route hands over, rendered as it is. */
+  protected readonly noticeComponent = (inject(ActivatedRoute).snapshot.data['noticeComponent'] ?? null) as Type<unknown> | null;
 
   /** Re-evaluates when the language changes to reformat dates in charts. */
   private readonly language = toSignal(this.translate.onLangChange);

@@ -360,8 +360,7 @@
       "search": "Buscar",
       "refresh": "Actualizar"
     },
-    "undo": "Deshacer",
-    "breadcrumb": "Ruta de navegación"
+    "undo": "Deshacer"
   },
   "status": {
     "ON_TRACK": "En Camino",
@@ -539,6 +538,13 @@
     }
   },
   "subscription": {
+    "plan-switch": {
+      "title": "¿Cambiar de plan?",
+      "summary": "Elegiste {{chosen}} en el sitio web, y tu cuenta tiene {{current}}.",
+      "until": "Tu plan actual dura hasta el {{date}}.",
+      "later": "Ahora no",
+      "billing": "Ir a facturación"
+    },
     "plans": {
       "title": "Planes de Suscripción",
       "subtitle": "Elige el plan que mejor se adapte a las operaciones de tu laboratorio.",
@@ -558,7 +564,12 @@
       "toggle-yearly": "Anual",
       "period-label": "Periodo de facturación",
       "get": "Obtener {{name}}",
-      "already-active": "Ya tienes una suscripción activa. Para cambiar de plan, cancela la renovación en Facturación y elige otro plan cuando termine el periodo actual."
+      "already-active": "Ya tienes una suscripción activa. Para cambiar de plan, cancela la renovación en Facturación y elige otro plan cuando termine el periodo actual.",
+      "open-billing": "Ir a Facturación",
+      "current-renews": "Tu plan actual · se renueva el {{date}}",
+      "current-until": "Tu plan actual · activo hasta el {{date}}",
+      "manage-in-billing": "Gestionar en Facturación",
+      "unavailable": "No disponible mientras tu suscripción esté activa."
     },
     "billing-period": {
       "monthly": "Mensual",
@@ -730,8 +741,57 @@
     },
     "history": {
       "title": "Historial de alertas",
-      "subtitle": "Todas las alertas del ambiente, incluidas las resueltas.",
-      "empty": "No hay alertas con estos filtros."
+      "subtitle": "Todas las alertas del periodo, incluidas las resueltas, con sus tiempos de atención.",
+      "empty": "No hay alertas con estos filtros.",
+      "none-all": "Ningún ambiente registró alertas en los últimos 90 días.",
+      "none-one": "Este ambiente no registró alertas en los últimos 90 días.",
+      "unavailable": "No se pudieron leer las alertas de: {{environments}}. El historial no las incluye.",
+      "filters": {
+        "label": "Filtros del historial",
+        "period": "Periodo",
+        "search": "Buscar dispositivo, variable o nota",
+        "from": "Desde",
+        "to": "Hasta",
+        "clear": "Limpiar filtros"
+      },
+      "periods": {
+        "days-7": "7 días",
+        "days-30": "30 días",
+        "days-90": "90 días",
+        "custom": "Personalizado"
+      },
+      "columns": {
+        "duration": "Duración",
+        "resolved-by": "Resuelta por",
+        "corrective-action": "Acción correctiva"
+      },
+      "metrics": {
+        "alerts": "Alertas",
+        "resolved": "Resueltas",
+        "percent": "{{value}} %",
+        "resolved-of": "{{resolved}} de {{total}}",
+        "attention": "T. medio de atención",
+        "attention-hint": "De la detección a la atención",
+        "resolution": "T. medio de resolución",
+        "resolution-hint": "De la detección a la resolución",
+        "no-time": "—"
+      },
+      "chart": {
+        "title": "Alertas por semana",
+        "week": "Semana del"
+      },
+      "open-for": "{{time}} abierta",
+      "attention-after": "atención {{time}}",
+      "export": "Exportar reporte",
+      "export-note": "«Exportar reporte» cubre todo el periodo y el ambiente: la severidad, el estado, el origen y la búsqueda solo afectan esta tabla.",
+      "view": "Ver el detalle de la alerta de {{variable}}",
+      "pages": {
+        "label": "Páginas del historial",
+        "showing": "Mostrando {{first}}–{{last}} de {{total}} · {{size}} por página",
+        "current": "Página {{page}} de {{count}}",
+        "previous": "Página anterior",
+        "next": "Página siguiente"
+      }
     },
     "detail": {
       "alert": "Alerta",
@@ -751,9 +811,18 @@
       "corrective-action": "Acción correctiva",
       "templates": {
         "label": "Plantillas de acción correctiva",
-        "ventilation": { "label": "Ventilación ajustada", "text": "Se ajustó la ventilación del área y se verificó que la lectura volvió al rango." },
-        "filter": { "label": "Filtro reemplazado", "text": "Se reemplazó el filtro y se verificó que la lectura volvió al rango." },
-        "sensor": { "label": "Sensor recalibrado", "text": "Se recalibró el sensor y se verificó que la lectura es correcta." }
+        "ventilation": {
+          "label": "Ventilación ajustada",
+          "text": "Se ajustó la ventilación del área y se verificó que la lectura volvió al rango."
+        },
+        "filter": {
+          "label": "Filtro reemplazado",
+          "text": "Se reemplazó el filtro y se verificó que la lectura volvió al rango."
+        },
+        "sensor": {
+          "label": "Sensor recalibrado",
+          "text": "Se recalibró el sensor y se verificó que la lectura es correcta."
+        }
       },
       "actions-title": "Actuaciones relacionadas",
       "no-actions": "El monitor del contenedor no registró actuaciones para esta variable durante el incidente.",
@@ -916,13 +985,64 @@
       "view": "Ver Trazabilidad",
       "view-detail": "Ver Detalle del Lote"
     },
-    "all-statuses": "Todos los estados",
     "no-environment": "Registrado antes de los ambientes; asígnale un ambiente para abrirlo.",
     "errors": {
       "connection": "No se pudo conectar con el servidor. Revisa tu conexión e inténtalo de nuevo.",
       "forbidden": "Tu cuenta no puede realizar esta acción.",
       "not-found": "No se encontró el lote o el producto en este laboratorio.",
       "failed": "No se pudo completar la operación."
+    },
+    "kpi": {
+      "label": "Indicadores de lotes",
+      "total": "Total de lotes",
+      "products-one": "{{count}} producto",
+      "products-many": "{{count}} productos",
+      "pending-hint": "Aún sin consumo de materias primas",
+      "in-progress-hint": "En fabricación",
+      "release-rate": "{{rate}} % de los lotes cerrados",
+      "rejection-rate": "{{rate}} % de los lotes cerrados",
+      "status": {
+        "PENDING": "Pendientes",
+        "IN_PROGRESS": "En progreso",
+        "RELEASED": "Liberados",
+        "REJECTED": "Rechazados"
+      }
+    },
+    "filters": {
+      "label": "Filtros de lotes",
+      "search": "Número de lote o producto",
+      "period": "Rango de fecha de inicio",
+      "from": "Desde",
+      "to": "Hasta",
+      "clear": "Limpiar filtros"
+    },
+    "table": {
+      "paginator": {
+        "per-page": "Lotes por página",
+        "first": "Primera página",
+        "previous": "Página anterior",
+        "next": "Página siguiente",
+        "last": "Última página",
+        "range": "{{start}} – {{end}} de {{length}}",
+        "empty": "0 de 0"
+      }
+    },
+    "sort": {
+      "label": "Ordenar por",
+      "newest": "Más recientes",
+      "direction": "Orden",
+      "ascending": "Ascendente",
+      "descending": "Descendente"
+    },
+    "empty-state": {
+      "none-title": "Aún no hay lotes",
+      "none-message": "Los lotes se registran desde su producto. Abre los productos farmacéuticos para iniciar uno.",
+      "no-match-title": "Ningún lote coincide con los filtros",
+      "no-match-message": "Cambia o limpia los filtros para ver más lotes."
+    },
+    "people": {
+      "you": "{{name}} (tú)",
+      "user": "Usuario #{{id}}"
     }
   },
   "batch-form": {
@@ -963,7 +1083,9 @@
     "notes": "Notas BPM",
     "no-notes": "No hay notas registradas para este lote.",
     "closed-on": "Cerrado el",
-    "closed-notice": "Este lote está cerrado: ya no se pueden agregar materias primas, equipos ni personal."
+    "closed-notice": "Este lote está cerrado: ya no se pueden agregar materias primas, equipos ni personal.",
+    "back-to": "Volver a {{product}}",
+    "summary": "Resumen del lote"
   },
   "batch-release": {
     "title": "Liberar Lote",
@@ -1391,7 +1513,6 @@
     "subtitle": "Documentos de trazabilidad y cumplimiento listos para auditoría DIGEMID.",
     "generating": "Generando reporte...",
     "loading-options": "Cargando registros...",
-    "breadcrumbs": "Reportes y KPIs / Generador de reportes",
     "retry": "Reintentar",
     "format": "Formato",
     "step-1": "Tipo de reporte",
@@ -1769,10 +1890,25 @@
     "equipment": "Equipos",
     "staff": "Personal",
     "decision": "Decisión de calidad",
-    "released": "Liberado el {{date}} y firmado por el usuario #{{user}}.",
+    "released": "Liberado el {{date}} y firmado por {{user}}.",
     "rejected": "Rechazado el {{date}}:",
     "pending": "El lote aún no ha sido liberado ni rechazado.",
-    "container": "Contenedor"
+    "container": "Contenedor",
+    "signature": "Firma SHA-256",
+    "stock-change": "Stock del lote (antes → después)",
+    "registered-by": "Registrado por"
+  },
+  "batch-timeline": {
+    "title": "Línea de tiempo",
+    "started": "Inicio de la fabricación de {{product}}",
+    "staff": "{{name}} se unió al lote",
+    "equipment": "Se registró el equipo {{equipment}}",
+    "consumption": "Consumo de {{quantity}} {{unit}} de {{material}}",
+    "consumption-lot": "Consumo de {{quantity}} {{unit}} de {{material}} del lote #{{lot}}",
+    "stored": "Guardado en {{container}}",
+    "released": "Lote liberado",
+    "rejected": "Lote rechazado",
+    "by": "por {{name}}"
   },
   "equipment": {
     "errors": {
@@ -1883,7 +2019,7 @@
     "container": "Contenedor",
     "environment": "Ambiente",
     "assigned-at": "Guardado el",
-    "assigned-by": "Por el usuario #{{user}}",
+    "assigned-by": "Por {{user}}",
     "view-conditions": "Ver condiciones del contenedor",
     "empty": "Aún no se guarda en un contenedor",
     "hint": "Monitores de contenedor operativos de ambientes de almacenamiento de productos",
@@ -1891,5 +2027,62 @@
     "change": "Cambiar contenedor",
     "saved": "El lote se guardó en el contenedor.",
     "no-containers": "No hay monitores de contenedor operativos en ambientes de almacenamiento de productos. Clasifica un ambiente como almacenamiento de productos y ubica allí un monitor de contenedor."
+  },
+  "page-titles": {
+    "home": "Inicio",
+    "about": "Acerca de",
+    "dashboard": "Panel de control",
+    "not-found": "Página no encontrada",
+    "onboarding": "Primeros pasos",
+    "sign-in": "Iniciar sesión",
+    "sign-up": "Crear cuenta",
+    "password-recovery": "Recuperar contraseña",
+    "change-password": "Cambiar contraseña",
+    "lab-new": "Registrar laboratorio",
+    "lab-profile": "Perfil del laboratorio",
+    "environment-list": "Ambientes",
+    "environment-new": "Registrar ambiente",
+    "environment-edit": "Editar ambiente",
+    "staff-list": "Personal",
+    "staff-new": "Registrar personal",
+    "staff-detail": "Miembro del personal",
+    "equipment-list": "Equipos",
+    "equipment-new": "Registrar equipo",
+    "device-new": "Registrar dispositivo IoT",
+    "equipment-detail": "Detalle del equipo",
+    "bpm-config": "Configuración BPM",
+    "maintenance-new": "Registro de actividad técnica",
+    "batch-list": "Lotes de producción",
+    "product-catalog": "Productos",
+    "product-new": "Registrar producto",
+    "product-detail": "Detalle del producto",
+    "batch-new": "Crear lote de producción",
+    "batch-detail": "Detalle del lote",
+    "batch-release": "Liberar lote",
+    "batch-reject": "Rechazar lote",
+    "inventory": "Inventario",
+    "raw-material-new": "Registrar materia prima",
+    "raw-material-detail": "Detalle de la materia prima",
+    "material-history": "Historial del material",
+    "alerts": "Alertas activas",
+    "alert-history": "Historial de alertas",
+    "alert-detail": "Detalle de la alerta",
+    "notification-preferences": "Preferencias de notificación",
+    "monitoring": "Monitoreo ambiental",
+    "telemetry-history": "Historial de telemetría",
+    "environmental-profiles": "Perfiles ambientales",
+    "kpis": "Resumen ambiental",
+    "deviation-trends": "Indicadores de desviación",
+    "deviation-detail": "Detalle de la desviación",
+    "report-generator": "Generador de reportes",
+    "audit-log": "Registro de auditoría",
+    "staff-activity": "Actividad del personal",
+    "plans": "Planes de suscripción",
+    "checkout": "Pago",
+    "payment-success": "Pago confirmado",
+    "payment-cancel": "Pago cancelado",
+    "billing": "Resumen de facturación",
+    "profile": "Perfil",
+    "staff-profile": "Perfil del personal"
   }
 }

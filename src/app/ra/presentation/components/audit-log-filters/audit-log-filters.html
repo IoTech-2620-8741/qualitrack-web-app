@@ -1,4 +1,4 @@
-<mat-card class="filter-card mat-elevation-z1">
+<mat-card class="filter-card">
   <mat-card-content class="filter-content">
     <mat-form-field appearance="outline" class="filter-field" subscriptSizing="dynamic">
       <mat-label>{{ 'audit-log.filters.equipment' | translate }}</mat-label>
@@ -60,7 +60,7 @@
 
       <button
         mat-flat-button
-        color="primary"
+        class="primary-btn"
         type="button"
         [disabled]="loading() || !filtersValid"
         (click)="onSearch()">

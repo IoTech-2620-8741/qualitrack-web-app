@@ -1,10 +1,19 @@
-import { Component, DestroyRef, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  OnInit,
+  computed,
+  inject,
+  signal,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TranslatePipe } from '@ngx-translate/core';
 import { BatchStore } from '../../../application/batch.store';
 import { IamStore } from '../../../../iam/application/iam.store';
@@ -14,6 +23,7 @@ import { BatchParticipants } from '../batch-participants/batch-participants';
 import { BatchTraceabilityView } from '../batch-traceability/batch-traceability';
 import { BatchStorage } from '../batch-storage/batch-storage';
 import { DateOnlyPipe } from '../../../../shared/presentation/pipes/date-only.pipe';
+import { BatchStatusChip } from '../../components/batch-status-chip/batch-status-chip';
 
 /**
  * Detail of a product batch: its data, the raw materials it consumed, the equipment and
@@ -30,12 +40,14 @@ import { DateOnlyPipe } from '../../../../shared/presentation/pipes/date-only.pi
   selector: 'app-batch-detail',
   standalone: true,
   imports: [
+    BatchStatusChip,
     DateOnlyPipe,
     DecimalPipe,
     RouterLink,
     MatTabsModule,
     MatButtonModule,
     MatIconModule,
+    MatProgressSpinnerModule,
     TranslatePipe,
     RawMaterialUsageComponent,
     BatchParticipants,
@@ -63,9 +75,33 @@ export class BatchDetail implements OnInit {
   protected batchId = 0;
 
   /**
-   * Lifecycle hook that reads the route parameters and loads the batch with its traceability.
+   * Environment of the batch, taken from the route.
+   */
+  private readonly environmentId = signal<number | null>(null);
+
+  /**
+   * Name of the product of the batch; null until the batch is loaded.
+   */
+  protected readonly productName = computed(
+    () =>
+      this.store.traceability()?.product?.name ?? this.store.selectedBatch()?.productName ?? null,
+  );
+
+  /**
+   * Code and name of the environment of the batch; null while the environments are not loaded.
+   */
+  protected readonly environmentName = computed(() => {
+    const environment = this.store.environments().find((item) => item.id === this.environmentId());
+    return environment ? `${environment.code} · ${environment.name}` : null;
+  });
+
+  /**
+   * Lifecycle hook that reads the route parameters and loads the batch with its traceability, plus the environments
+   * and the staff of the laboratory to name them.
    */
   ngOnInit(): void {
+    void this.store.loadEnvironments();
+    void this.store.loadPeople();
     this.route.paramMap.pipe(takeUntilDestroyed(this.destroy)).subscribe((params) => {
       this.path = {
         laboratoryId: this.iam.requireLaboratoryId(),
@@ -73,6 +109,7 @@ export class BatchDetail implements OnInit {
         productId: Number(params.get('productId')),
       };
       this.batchId = Number(params.get('batchId'));
+      this.environmentId.set(this.path.environmentId);
       this.store.clearMessages();
       void this.store.loadBatch(this.path, this.batchId);
     });
@@ -101,15 +138,5 @@ export class BatchDetail implements OnInit {
    */
   protected decisionLink(batchId: number, decision: 'release' | 'reject'): (string | number)[] {
     return [...this.productLink, 'batches', batchId, decision];
-  }
-
-  /**
-   * Builds the translation key suffix of a batch status (e.g., `IN_PROGRESS` becomes `in-progress`).
-   *
-   * @param status - The batch status.
-   * @returns The key suffix, or `unknown` when there is no status.
-   */
-  protected statusKey(status?: string): string {
-    return status ? status.toLowerCase().replace(/_/g, '-') : 'unknown';
   }
 }

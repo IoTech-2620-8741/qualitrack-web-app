@@ -63,7 +63,10 @@ try {
       else if (path === '/laboratories/42/subscriptions') {
         body = mode === 'empty' ? [] : [{ id: 73, laboratoryId: 42, planCode: 'BASIC', billingCycle: 'MONTHLY', status: 'ACTIVE', currentPeriodEnd: '2026-12-05T06:59:19Z' }];
       } else if (path === '/subscription-plans') {
-        body = [{ id: 1, code: 'BASIC', name: 'Standard Lab', billingCycle: 'MONTHLY', amount: 199, currency: 'USD', maxUsers: 10, maxEquipment: 5, active: true }];
+        body = [
+          { id: 1, code: 'BASIC', name: 'Standard Lab', billingCycle: 'MONTHLY', amount: 199, currency: 'USD', maxUsers: 10, maxEquipment: 5, active: true },
+          { id: 2, code: 'ENTERPRISE', name: 'Enterprise', billingCycle: 'YEARLY', amount: 4990, currency: 'USD', maxUsers: 50, maxEquipment: 50, active: true },
+        ];
       }
       await route.fulfill({ status, contentType: 'application/json', body: JSON.stringify(body) });
     });
@@ -115,9 +118,23 @@ try {
     await page.getByText(spanish.dashboard.overview['no-devices'], { exact: true }).waitFor();
     await page.getByTestId('subscription').getByText(spanish.dashboard.cards['no-subscription'], { exact: true }).waitFor();
     assert.equal(await page.locator('canvas').count(), 0);
+
+    // Someone who already pays for a plan follows a website link with another one, signed in: the notice appears once.
+    mode = 'ready';
+    await page.goto(origin + '/iam/sign-up?plan=ENTERPRISE&billingCycle=YEARLY');
+    await page.waitForURL('**/dashboard');
+    const notice = page.getByRole('dialog');
+    await notice.getByText(/Enterprise \(Yearly\).*Standard Lab \(Monthly\)/).waitFor();
+    await notice.getByRole('button', { name: 'Not now' }).click();
+    await notice.waitFor({ state: 'detached' });
+    await page.reload();
+    await page.getByText('Standard Lab', { exact: true }).waitFor();
+    await page.waitForLoadState('networkidle');
+    assert.equal(await page.getByRole('dialog').count(), 0, 'The notice must appear only once');
+
     assert.deepEqual(errors, []);
     await context.close();
-    console.log(`PASS dashboard ${width}px: telemetry selection, units, subscription, Spanish, partial error, empty state, no overflow`);
+    console.log(`PASS dashboard ${width}px: telemetry selection, units, subscription, Spanish, partial error, empty state, no overflow, plan switch notice`);
   }
 } finally {
   await browser.close();

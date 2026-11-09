@@ -7,6 +7,102 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.3.0] - 2026-11-09
+
+### Added
+
+- Product Batch (batch): on a phone, where the batch cards hide the headers of the table, two lists above them choose the column and the direction of the order (#93).
+
+- Product Batch (batch): the batch list shows indicators by status that also filter it, a search by batch number or product, an environment filter, a start date range, sorting and 10, 25 or 50 batches per page (#91).
+
+- Product Batch (batch): the detail of a batch has a heading with its status and a summary of the product, environment, quantity and dates, and its traceability shows a timeline of the batch next to its tables (#91).
+
+- Product Batch (batch): the batch views name who registered each step, and mark the current user with "(you)", instead of showing a user id (#91).
+
+- Subscription (subscription): when someone who already pays for a plan arrives from a website plan link with another one, the dashboard opens a notice that names both plans, says when the current period ends and sends them to Billing to cancel the renewal, since the platform has no direct plan switch.
+
+- Identity & Access (iam): the sign-up page keeps the plan of the website link (`plan` and `billingCycle`) even when the person goes on to sign in, so the checkout of that plan opens after signing in.
+
+- Subscription (subscription): a plan chosen on the website (`plan` and `billingCycle` in the link) is remembered by `planPreselectionGuard`; the plans view sends an account without a subscription straight to the checkout of that plan, leaving the checkout or signing out forgets it.
+
+### Changed
+
+- Release: package and lockfile versions are now 2.3.0.
+
+- Inventory (inventory): reloading the catalogue asks again for the low stock and the lots near expiry shown, and answers of earlier requests or of an environment that was left are ignored (#92).
+
+- Inventory (inventory): the counts of the catalogue are a component of their own, and the inventory home page has its own template (#92).
+
+- Compliance & Alerts (ca): the alert history says that "Export report" covers the whole period and environment when a chip or the search narrows the table (#90).
+
+- Subscription (subscription): the root routes compose the guard of the plan link and the plan switch notice, so `iam` and `ra` no longer import `subscription`; a plan link is remembered on every IAM page (#89).
+
+- Inventory (inventory): the raw material, catalogue and legacy views are split into 14 components that receive their data and report what the user asks for (#88).
+
+- Presentation: the views share one visual language, with cards, titles with an icon, pill buttons and tables that become cards on a phone; the logo no longer has empty margins, and the alerts and the report generator no longer show breadcrumbs (#81).
+
+- Shared (shared): the colors of the component styles use the design tokens again, with new `--qt-primary-hover`, `--qt-primary-soft`, `--qt-heading` and `--qt-text-subtle` tokens (#82).
+
+- Compliance & Alerts (ca): "Export report" in the alert history opens the report generator with an environmental compliance report of the same environment and period.
+
+- Reporting & Analytics (ra): the report generator reads `type`, `environmentId`, `from` and `to` from the address, so another view can prepare the form.
+
+- Compliance & Alerts (ca): the alert history shows the alerts, the share resolved and the average attention and resolution times of the filter, and a weekly chart of stacked bars by severity with a table for screen readers.
+
+- Compliance & Alerts (ca): the detail of an alert opens over the alert history, at `/alerts/history/:alertId`, and closing it goes back to the history with its filter.
+
+- Shared: `app-filter-chip` is a chip that can be pressed and tells how many results it leaves.
+
+- Compliance & Alerts (ca): the alert history filters by period, severity, status, origin and text with chips that show their counts, custom days and 25 alerts per page; the filter stays in the address, so going back, reloading or sharing the page keeps it.
+
+- Compliance & Alerts (ca): the table of the alert history shows how long each alert lasted, who resolved it and its corrective action, and an empty state when nothing matches.
+
+- Compliance & Alerts (ca): the alert history can be filtered on the client by period, severity, status, origin and text, with `filterAlertHistory`.
+
+- Compliance & Alerts (ca): `summarizeAlertHistory` counts the alerts of the history by severity and averages their attention and resolution times.
+
+- Compliance & Alerts (ca): `countAlertsByWeek` counts the alerts of the history in weeks that start on Monday in Peru, by severity, for the weekly chart.
+
+- Compliance & Alerts (ca): `CaStore.loadAlertHistory` reads every alert, open or resolved, of one environment or of the whole laboratory; an environment that fails does not hide the others.
+
+### Removed
+
+- Presentation: 356 custom properties this version of Angular Material does not read, and the rules no element of their component can match (#82).
+
+### Fixed
+
+- Subscription (subscription): while the laboratory pays for a plan, the plans view no longer offers buttons that do nothing. The card of the paid plan says it is the current plan and when it renews or ends, the view opens on its billing period, and the other plans link to Billing, where the renewal is cancelled (#95).
+
+- Subscription (subscription): the icon of the already-active notice of the plans view no longer shrinks on narrow screens (#95).
+
+- Inventory (inventory): while the low stock or the lots near expiry are loading, the catalogue says so instead of "No materials match this view." or "No lots expire soon in this environment." (#93).
+
+- Product Batch (batch): a click anywhere on the start date range of the batch list, also on its label, opens the calendar (#93).
+
+- Product Batch (batch): on a phone the summary of a batch gives the product and the environment the whole width, so their names are no longer split in the middle of a word (#93).
+
+- Subscription (subscription): the checkout of an account that already has a subscription shows the translated already-active notice instead of a generic conflict message.
+
+- Laboratory (laboratory): the action columns of the staff and environment lists are only offered to quality managers again (#82).
+
+- Compliance & Alerts (ca): on a phone the title of the alerts no longer splits a word, the sort options wrap and the export link fits, and the alert table scrolls inside its own area on every width that does not show cards (#82).
+
+- Product Batch (batch), Inventory (inventory) and Laboratory (laboratory): the product catalog actions, the tables of a raw material and the staff table keep their words whole on a tablet (#82).
+
+- Reporting & Analytics (ra): the styles of the subscription section no longer end in a cut rule (#82).
+
+- Shared (shared): the application stays in Roboto instead of falling back to the font of the system (#82).
+
+- Shared (shared): the browser tab no longer keeps the title of the previous page. Every page has a title in the language of the application, in the format `Page - QualiTrack` (#83).
+
+- Compliance & Alerts (ca): the view action of the alert history shows only the eye icon again, with its words as label and tooltip (#84).
+
+- Inventory (inventory): the "Changes saved" message stays visible after the reload that follows a change, and opening another environment no longer shows the data of the previous one (#88).
+
+- Inventory (inventory), Product Batch (batch): leaving the inventory home, the product home or a link to a batch while it loads no longer pulls you back to the page it was about to open (#89).
+
+- Compliance & Alerts (ca): typing a date in the custom period of the alert history no longer freezes the page or leaves a step per digit in the browser history, and a day that does not exist in the address no longer breaks the view (#90).
+
 ## [2.2.0] - 2026-11-04
 
 ### Added

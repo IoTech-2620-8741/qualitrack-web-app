@@ -16,6 +16,7 @@ import { MatInputModule } from '@angular/material/input';
 import { TranslatePipe } from '@ngx-translate/core';
 import { BatchStore } from '../../../application/batch.store';
 import { EnvironmentSelector } from '../../../../shared/presentation/components/environment-selector/environment-selector';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 /**
  * Pharmaceutical products of an environment, with registration for quality roles.
@@ -37,6 +38,7 @@ import { EnvironmentSelector } from '../../../../shared/presentation/components/
     MatInputModule,
     TranslatePipe,
     EnvironmentSelector,
+    MatTooltipModule,
   ],
   templateUrl: './product-catalog.html',
   changeDetection: ChangeDetectionStrategy.Eager,
@@ -75,6 +77,17 @@ export class ProductCatalog implements OnInit {
       if (await this.store.loadProducts(environmentId))
         this.store.rememberProductionEnvironment(environmentId);
     });
+  }
+
+  /**
+   * Reads the products of the chosen environment again.
+   */
+  protected refresh(): void {
+    const environmentId = this.store.productEnvironmentId();
+
+    if (environmentId !== null) {
+      void this.store.loadProducts(environmentId);
+    }
   }
 
   /**

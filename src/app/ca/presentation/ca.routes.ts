@@ -21,7 +21,8 @@ const notificationSettings = () =>
  * @remarks
  * All the views load lazily and are addressed by resource:
  * - empty path: active alerts of an environment (US85).
- * - `history`: every alert of an environment, filtered by status and severity (TS74).
+ * - `history`: every alert of one environment or of the whole laboratory, filtered in the browser (TS74).
+ * - `history/:alertId`: detail of an alert in a panel over the history, which keeps its filter.
  * - `notification-settings`: notification preferences of the signed-in user.
  * - `:alertId`: detail of the deviation alert with that numeric id, in a panel over the active alerts (US86).
  *
@@ -29,8 +30,17 @@ const notificationSettings = () =>
  * platform still link to `deviation-detail/:id`.
  */
 const caRoutes: Routes = [
-  { path: 'history', loadComponent: alertHistory },
-  { path: 'notification-settings', loadComponent: notificationSettings, title: 'Notification preferences - QualiTrack' },
+  {
+    path: 'history',
+    loadComponent: alertHistory,
+    title: 'page-titles.alert-history',
+    children: [{ path: ':alertId', loadComponent: alertDetailPanel, title: 'page-titles.alert-detail' }],
+  },
+  {
+    path: 'notification-settings',
+    loadComponent: notificationSettings,
+    title: 'page-titles.notification-preferences',
+  },
   // View-named paths used before semantic routes, declared before the identifier so they are not read as one.
   { path: 'alert-dashboard', redirectTo: '/alerts', pathMatch: 'full' },
   { path: 'alert-history', redirectTo: '/alerts/history', pathMatch: 'full' },
@@ -39,7 +49,8 @@ const caRoutes: Routes = [
   {
     path: '',
     loadComponent: alertDashboard,
-    children: [{ path: ':alertId', loadComponent: alertDetailPanel }],
+    title: 'page-titles.alerts',
+    children: [{ path: ':alertId', loadComponent: alertDetailPanel, title: 'page-titles.alert-detail' }],
   },
 ];
 

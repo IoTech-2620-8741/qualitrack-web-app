@@ -90,7 +90,6 @@ package "shared" {
       #currentLang: string
       #languages: string[]
       #translate: TranslateService
-      #compact: Signal<boolean>
       +useLanguage(language: string): void
     }
 
@@ -118,6 +117,10 @@ package "shared" {
     class DashboardState
     class StatusChip {
       +tone / icon / labelKey
+    }
+    class FilterChip {
+      +labelKey / icon / count / pressed
+      +toggled: OutputEmitterRef<void>
     }
     class StatFilterCard {
       +icon / labelKey / value
@@ -192,6 +195,12 @@ package "shared" {
 
   package "presentation.tokens" {
     class SIGNED_IN <<InjectionToken<Signal<boolean>>>>
+  }
+
+  package "presentation.utils" {
+    class TranslatedTitleStrategy {
+      +updateTitle(snapshot: RouterStateSnapshot): void
+    }
   }
 }
 

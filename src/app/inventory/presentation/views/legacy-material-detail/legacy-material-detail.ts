@@ -1,5 +1,4 @@
 import { Component, DestroyRef, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
@@ -8,8 +7,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslatePipe } from '@ngx-translate/core';
 import { InventoryStore } from '../../../application/inventory.store';
-import { DateOnlyPipe } from '../../../../shared/presentation/pipes/date-only.pipe';
-import { DateTimePipe } from '../../../../shared/presentation/pipes/date-time.pipe';
+import { LegacyMaterialSummary } from '../../components/legacy-material-summary/legacy-material-summary';
+import { LegacyConsumptionHistoryTable } from '../../components/legacy-consumption-history-table/legacy-consumption-history-table';
 
 /**
  * Component that shows a raw material and the history of its usages in production batches.
@@ -21,14 +20,15 @@ import { DateTimePipe } from '../../../../shared/presentation/pipes/date-time.pi
 @Component({
   selector: 'app-legacy-material-detail',
   standalone: true,
-  imports: [DateOnlyPipe, DateTimePipe, 
-    CommonModule,
+  imports: [
     RouterLink,
     TranslatePipe,
     MatButtonModule,
     MatIconModule,
     MatProgressSpinnerModule,
     MatTooltipModule,
+    LegacyMaterialSummary,
+    LegacyConsumptionHistoryTable
   ],
   templateUrl: './legacy-material-detail.html',
   changeDetection: ChangeDetectionStrategy.Eager,
