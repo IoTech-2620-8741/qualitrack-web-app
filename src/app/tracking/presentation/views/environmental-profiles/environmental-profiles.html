@@ -5,15 +5,13 @@
         <mat-icon aria-hidden="true">tune</mat-icon>
         {{ 'tracking.profiles.title' | translate }}
       </h1>
-      <p class="muted">{{ 'tracking.profiles.subtitle' | translate }}</p>
-    </div>
-
-    <div class="actions">
       <app-environment-selector
+        appearance="inline"
         [environments]="store.environments()"
         [selectedId]="store.environmentId()"
         (selectedChange)="changeEnvironment($event)"
       />
+      <p class="muted">{{ 'tracking.profiles.subtitle' | translate }}</p>
     </div>
   </header>
   @if (!store.canConfigure()) {

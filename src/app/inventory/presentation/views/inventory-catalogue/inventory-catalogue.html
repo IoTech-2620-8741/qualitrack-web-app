@@ -1,8 +1,10 @@
 <main class="operations-page">
   <header class="page-heading">
-    <h1><mat-icon aria-hidden="true">inventory_2</mat-icon>{{ 'inventory.title' | translate }}</h1>
+    <div class="heading-title">
+      <h1><mat-icon aria-hidden="true">inventory_2</mat-icon>{{ 'inventory.title' | translate }}</h1>
+      <app-environment-selector appearance="inline" [environments]="store.environments()" [selectedId]="store.environmentId()" (selectedChange)="changeEnvironment($event)" />
+    </div>
     <div class="actions">
-      <app-environment-selector [environments]="store.environments()" [selectedId]="store.environmentId()" (selectedChange)="changeEnvironment($event)" />
       <button mat-stroked-button (click)="reload()" [disabled]="store.loading() || store.saving()">
         <mat-icon>refresh</mat-icon>{{ 'inventory.refresh' | translate }}
       </button>
