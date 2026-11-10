@@ -5,6 +5,7 @@
         <mat-icon aria-hidden="true">notifications_active</mat-icon>
         {{ 'ca-alerts.page.title' | translate }}
       </h1>
+      <div class="context"><ng-content select="[alertsContext]" /></div>
       <p>{{ subtitleKey() | translate }}</p>
     </div>
     <div class="actions">
