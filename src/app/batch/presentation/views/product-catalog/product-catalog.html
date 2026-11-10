@@ -1,20 +1,21 @@
 <main class="operations-page">
-  <!-- Heading with the environment selector and the actions -->
+  <!-- Heading: the title with the environment being shown under it, and the actions -->
   <header class="page-heading">
     <div class="heading-title">
       <h1>
         <mat-icon aria-hidden="true">factory</mat-icon>
         {{ 'product-catalog.title' | translate }}
       </h1>
-    </div>
 
-    <div class="actions">
       <app-environment-selector
+        appearance="inline"
         [environments]="store.environments()"
         [selectedId]="store.productEnvironmentId()"
         (selectedChange)="changeEnvironment($event)"
       />
+    </div>
 
+    <div class="actions">
       <a mat-stroked-button routerLink="/batches">
         <mat-icon>list_alt</mat-icon>
         {{ 'batches.title' | translate }}
