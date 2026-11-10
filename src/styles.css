@@ -54,3 +54,32 @@ mat-card-title, mat-card-subtitle, h1, h2, h3, p { overflow-wrap: anywhere; }
   --mat-snack-bar-supporting-text-color: var(--qt-surface);
   --mat-snack-bar-button-color: var(--qt-primary-on-dark);
 }
+
+/* The list of the inline environment selector is rendered outside the component, so its shape is set here. */
+.environment-panel.mat-mdc-select-panel {
+  min-width: 300px;
+  padding: 6px;
+  border-radius: var(--qt-radius-medium);
+  box-shadow:
+    0 10px 30px rgb(15 23 42 / 14%),
+    0 2px 6px rgb(15 23 42 / 8%);
+  --mat-select-panel-background-color: var(--qt-surface);
+  --mat-option-hover-state-layer-color: var(--qt-neutral-surface);
+  --mat-option-focus-state-layer-color: var(--qt-neutral-surface);
+  --mat-option-selected-state-layer-color: var(--qt-primary-surface);
+}
+
+.environment-panel .mat-mdc-option {
+  min-height: 56px;
+  border-radius: var(--qt-radius-small);
+}
+
+.environment-panel .mat-mdc-option .mat-pseudo-checkbox {
+  --mat-pseudo-checkbox-minimal-selected-checkmark-color: var(--qt-primary-strong);
+}
+
+/* The chosen environment stays tinted while the keyboard or the mouse is on it. */
+.environment-panel
+  .mat-mdc-option.mdc-list-item--selected:is(.mat-mdc-option-active, :focus, :hover) {
+  background-color: color-mix(in srgb, var(--qt-primary) 8%, transparent);
+}
