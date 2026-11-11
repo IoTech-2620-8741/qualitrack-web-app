@@ -59,7 +59,7 @@ h1 mat-icon {
 .heading-content app-environment-selector {
   display: block;
   max-width: 100%;
-  margin-top: 6px;
+  margin-top: 20px;
 }
 
 .heading-content p.muted {
