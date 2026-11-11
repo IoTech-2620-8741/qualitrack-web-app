@@ -165,6 +165,27 @@ h1 mat-icon {
   font-size: 18px;
 }
 
+.api-key {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+}
+
+.api-key-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  color: var(--qt-text);
+  font-weight: 500;
+}
+
+.api-key-status.issued {
+  color: var(--qt-success-text);
+}
+
 mat-tab-group {
   overflow: hidden;
   background: var(--qt-surface);
