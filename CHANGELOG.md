@@ -19,7 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Equipment (equipment): an Edge Gateway is no longer counted or shown as process equipment, and its type is translated instead of showing `EDGE_GATEWAY`.
+- Equipment (equipment): an Edge Gateway is no longer counted or shown as process equipment, its type is translated instead of showing `EDGE_GATEWAY`, and its detail hides the BPM limits.
 
 - Laboratory (laboratory): the code of each environment in the environment list opens the equipment of that environment.
 

@@ -34,7 +34,8 @@ import { EdgeGatewayApiKeyDialog } from '../../components/edge-gateway-api-key-d
  *
  * @remarks
  * For an Edge Gateway it also tells whether its API key was already issued and lets a quality
- * manager generate it. The key is shown once in a dialog and is not kept anywhere else.
+ * manager generate it. The key is shown once in a dialog and is not kept anywhere else. A gateway
+ * has no process parameters, so its detail hides the BPM limits.
  */
 @Component({
   selector: 'app-equipment-detail',

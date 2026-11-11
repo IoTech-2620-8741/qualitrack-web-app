@@ -203,38 +203,40 @@
         </div>
       </mat-tab>
 
-      <mat-tab>
-        <ng-template mat-tab-label>
-          <mat-icon class="tab-icon">settings_input_component</mat-icon>
-          {{ 'equipment-detail.tabs.bpm' | translate }}
-        </ng-template>
+      @if (!current.isEdgeGateway) {
+        <mat-tab>
+          <ng-template mat-tab-label>
+            <mat-icon class="tab-icon">settings_input_component</mat-icon>
+            {{ 'equipment-detail.tabs.bpm' | translate }}
+          </ng-template>
 
-        <div class="tab-content">
-          <div class="tab-header">
-            <h3>{{ 'bpm-config.title' | translate }}</h3>
+          <div class="tab-content">
+            <div class="tab-header">
+              <h3>{{ 'bpm-config.title' | translate }}</h3>
 
-            @if (store.canOperate()) {
-              <a mat-flat-button class="primary-btn" [routerLink]="['/equipments', current.id, 'bpm-configuration']">
-                <mat-icon>add</mat-icon>
-                {{ 'bpm-config.fields.parameter' | translate }}
-              </a>
+              @if (store.canOperate()) {
+                <a mat-flat-button class="primary-btn" [routerLink]="['/equipments', current.id, 'bpm-configuration']">
+                  <mat-icon>add</mat-icon>
+                  {{ 'bpm-config.fields.parameter' | translate }}
+                </a>
+              }
+            </div>
+
+            @for (config of store.bpmConfigs(); track config.id) {
+              <mat-card class="config-card" appearance="outlined">
+                <mat-card-content>
+                  <div class="config-content">
+                    <strong>{{ config.parameterName }}</strong>
+                    <span>{{ config.minValue }} - {{ config.maxValue }} {{ config.unit }}</span>
+                  </div>
+                </mat-card-content>
+              </mat-card>
+            } @empty {
+              <p class="empty-msg">{{ 'bpm-config.empty' | translate }}</p>
             }
           </div>
-
-          @for (config of store.bpmConfigs(); track config.id) {
-            <mat-card class="config-card" appearance="outlined">
-              <mat-card-content>
-                <div class="config-content">
-                  <strong>{{ config.parameterName }}</strong>
-                  <span>{{ config.minValue }} - {{ config.maxValue }} {{ config.unit }}</span>
-                </div>
-              </mat-card-content>
-            </mat-card>
-          } @empty {
-            <p class="empty-msg">{{ 'bpm-config.empty' | translate }}</p>
-          }
-        </div>
-      </mat-tab>
+        </mat-tab>
+      }
 
       <mat-tab>
         <ng-template mat-tab-label>
