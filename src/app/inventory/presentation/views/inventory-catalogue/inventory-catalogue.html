@@ -8,9 +8,7 @@
       <button mat-stroked-button (click)="reload()" [disabled]="store.loading() || store.saving()">
         <mat-icon>refresh</mat-icon>{{ 'inventory.refresh' | translate }}
       </button>
-      <button mat-stroked-button (click)="toggleNearExpiry()" [attr.aria-pressed]="showNearExpiry()">
-        <mat-icon>event_busy</mat-icon>{{ 'inventory.nearExpiry' | translate }}
-      </button>
+
       @if (store.canReview()) {
         <button mat-stroked-button (click)="showImports()" [disabled]="store.saving()" [attr.aria-pressed]="importing()">
           <mat-icon>move_to_inbox</mat-icon>{{ 'inventory.legacy' | translate }}
@@ -34,37 +32,55 @@
       (importRequested)="import($event)"
     />
   }
-  @if (showNearExpiry()) {
-    <section class="editor" aria-labelledby="near-expiry-title">
-      <h2 id="near-expiry-title">{{ 'inventory.nearExpiry' | translate }}</h2>
-      <p class="notice">{{ 'inventory.nearExpiryNotice' | translate }}</p>
-      @if (store.nearExpiryLoading()) {
-        <p role="status">{{ 'inventory.loading' | translate }}</p>
-      } @else {
-        <app-near-expiry-table
-          [batches]="store.nearExpiry()"
-          [materialNames]="materialNames()"
-          [environmentId]="store.environmentId()"
-        />
-      }
-    </section>
-  }
+
   <app-inventory-catalogue-stats
     [materialsCount]="store.materials().length"
     [lowStockCount]="store.lowCount()"
   />
-  <app-inventory-filters
-    [search]="search()"
-    [lowOnly]="lowOnly()"
-    (searchChange)="search.set($event)"
-    (lowOnlyChange)="toggleLowOnly($event)"
-  />
-  @if (waiting()) {
-    <p role="status">{{ 'inventory.loading' | translate }}</p>
-  } @else {
-    <app-inventory-material-table
-      [materials]="filtered()"
-      [environmentId]="store.environmentId()"
-    />
-  }
+
+  <mat-tab-group
+    [selectedIndex]="selectedTabIndex()"
+    (selectedIndexChange)="selectTab($event)"
+  >
+    <mat-tab [label]="'inventory.catalogue' | translate">
+      <div class="tab-content">
+        <app-inventory-filters
+          [search]="search()"
+          [lowOnly]="lowOnly()"
+          (searchChange)="search.set($event)"
+          (lowOnlyChange)="toggleLowOnly($event)"
+        />
+
+        @if (waiting()) {
+          <p role="status">{{ 'inventory.loading' | translate }}</p>
+        } @else {
+          <app-inventory-material-table
+            [materials]="filtered()"
+            [environmentId]="store.environmentId()"
+          />
+        }
+      </div>
+    </mat-tab>
+
+    <mat-tab [label]="'inventory.nearExpiry' | translate">
+      <ng-template matTabContent>
+        <div class="tab-content">
+          <p class="notice">
+            {{ 'inventory.nearExpiryNotice' | translate }}
+          </p>
+
+          @if (store.loading() || store.nearExpiryLoading()) {
+            <p role="status">{{ 'inventory.loading' | translate }}</p>
+          } @else {
+            <app-near-expiry-table
+              [batches]="store.nearExpiry()"
+              [materialNames]="materialNames()"
+              [environmentId]="store.environmentId()"
+            />
+          }
+        </div>
+      </ng-template>
+    </mat-tab>
+  </mat-tab-group>
 </main>
+

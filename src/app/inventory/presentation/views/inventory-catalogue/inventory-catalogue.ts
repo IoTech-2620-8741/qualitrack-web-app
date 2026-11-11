@@ -19,6 +19,7 @@ import { NearExpiryTable } from '../../components/near-expiry-table/near-expiry-
 import { InventoryFilters } from '../../components/inventory-filters/inventory-filters';
 import { LegacyImportPanel } from '../../components/legacy-import-panel/legacy-import-panel';
 import { InventoryCatalogueStats } from '../../components/inventory-catalogue-stats/inventory-catalogue-stats';
+import { MatTabsModule } from '@angular/material/tabs';
 
 /**
  * Raw material catalogue of an environment (US36), with low stock (US41) and near expiry (US42) views.
@@ -36,7 +37,8 @@ import { InventoryCatalogueStats } from '../../components/inventory-catalogue-st
     NearExpiryTable,
     InventoryFilters,
     LegacyImportPanel,
-    InventoryCatalogueStats
+    InventoryCatalogueStats,
+    MatTabsModule,
   ],
   templateUrl: './inventory-catalogue.html',
   changeDetection: ChangeDetectionStrategy.Eager,
@@ -50,7 +52,7 @@ export class InventoryCatalogue implements OnInit {
   readonly search = signal('');
   readonly lowOnly = signal(false);
   readonly importing = signal(false);
-  readonly showNearExpiry = signal(false);
+  readonly selectedTabIndex = signal(0);
 
   /**
    * Returns raw materials matching the current search
@@ -91,7 +93,7 @@ export class InventoryCatalogue implements OnInit {
     this.route.paramMap.pipe(takeUntilDestroyed(this.destroy)).subscribe(async (params) => {
       const environmentId = Number(params.get('environmentId'));
       this.lowOnly.set(false);
-      this.showNearExpiry.set(false);
+      this.selectedTabIndex.set(0);
       this.importing.set(false);
       // Only environments the account can open become the default one.
       if (await this.store.load(environmentId)) this.store.rememberEnvironment(environmentId);
@@ -119,9 +121,13 @@ export class InventoryCatalogue implements OnInit {
 
     const requests: Promise<void>[] = [];
 
-    if (this.lowOnly()) { requests.push(this.store.loadLowStock()); }
+    if (this.lowOnly()) {
+      requests.push(this.store.loadLowStock());
+    }
 
-    if (this.showNearExpiry()) { requests.push(this.store.loadNearExpiry()); }
+    if (this.selectedTabIndex() === 1) {
+      requests.push(this.store.loadNearExpiry());
+    }
 
     await Promise.all(requests);
   }
@@ -134,12 +140,21 @@ export class InventoryCatalogue implements OnInit {
    */
   toggleLowOnly(checked: boolean): void {
     this.lowOnly.set(checked);
-    if (checked) { void this.store.loadLowStock(); }
+    if (checked) {
+      void this.store.loadLowStock();
+    }
   }
 
-  async toggleNearExpiry() {
-    this.showNearExpiry.set(!this.showNearExpiry());
-    if (this.showNearExpiry()) await this.store.loadNearExpiry();
+  /**
+   * Changes the active catalogue tab and loads near-expiry
+   * batches when the corresponding tab is selected.
+   */
+  selectTab(index: number): void {
+    this.selectedTabIndex.set(index);
+
+    if (index === 1 && this.store.environmentId() !== null) {
+      void this.store.loadNearExpiry();
+    }
   }
 
   async showImports() {
