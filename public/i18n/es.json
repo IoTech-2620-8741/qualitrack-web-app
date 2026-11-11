@@ -1175,12 +1175,16 @@
       "label": "Mostrar",
       "all": "Todos",
       "equipment": "Equipos",
-      "devices": "Dispositivos IoT"
+      "devices": "Dispositivos IoT",
+      "gateways": "Edge Gateways",
+      "environment": "Ambiente",
+      "all-environments": "Todos los ambientes"
     },
     "search": "Buscar por nombre, modelo, serie o identificador",
     "summary": {
       "equipment": "Equipos de proceso",
       "devices": "Dispositivos IoT",
+      "gateways": "Edge Gateways",
       "attention": "En mantenimiento o fuera de servicio"
     }
   },
@@ -2028,6 +2032,69 @@
     "saved": "El lote se guardó en el contenedor.",
     "no-containers": "No hay monitores de contenedor operativos en ambientes de almacenamiento de productos. Clasifica un ambiente como almacenamiento de productos y ubica allí un monitor de contenedor."
   },
+  "edge-gateway": {
+    "type": "Edge Gateway",
+    "add-button": "Registrar Edge Gateway",
+    "form": {
+      "title": "Registrar Edge Gateway",
+      "subtitle": "El Edge Gateway recibe las lecturas de los dispositivos IoT de su ambiente y las envía a QualiTrack.",
+      "save": "Registrar Edge Gateway",
+      "placeholders": {
+        "name": "Ej. Edge Gateway - Almacén de materias primas",
+        "identifier": "Ej. EDGE-001",
+        "serial": "Ej. RPI-0001"
+      },
+      "hints": {
+        "identifier": "Único en QualiTrack; el Edge lo usa junto con su API key para conectarse.",
+        "environment": "Opcional; también se puede ubicar después desde su detalle. Un ambiente puede tener varios Edge Gateways."
+      }
+    },
+    "api-key": {
+      "title": "API key",
+      "hint": "El Edge Gateway la usa para conectarse a QualiTrack. Se genera una sola vez.",
+      "issued": "API key ya generada",
+      "not-issued": "Aún sin API key",
+      "unknown": "No se pudo consultar el estado de la API key.",
+      "generate": "Generar API key",
+      "requires-location": "Ubica el Edge Gateway en un ambiente para generar su API key.",
+      "requires-operational": "El Edge Gateway debe estar operativo para generar su API key.",
+      "dialog": {
+        "title": "API key del Edge Gateway",
+        "once": "Copia la API key ahora. Solo se muestra esta vez y no se puede recuperar después.",
+        "device-id": "Identificador",
+        "key": "API key",
+        "copy": "Copiar",
+        "copied": "Copiado al portapapeles.",
+        "hint": "Coloca ambos valores en el archivo .env del Edge Gateway.",
+        "close": "Ya la copié"
+      }
+    }
+  },
+  "environment-equipment": {
+    "title": "Equipos del ambiente",
+    "subtitle": "Edge Gateways, dispositivos IoT y equipos ubicados en este ambiente.",
+    "open": "Ver los equipos y dispositivos de este ambiente",
+    "view-in-list": "Ver en la lista de equipos",
+    "uncovered-warning": "{{count}} dispositivo(s) IoT no tienen Edge Gateway. Cada Edge Gateway cubre hasta {{max}} dispositivos: agrega otro a este ambiente.",
+    "summary": {
+      "uncovered": "Dispositivos sin Edge Gateway"
+    },
+    "gateways": {
+      "title": "Edge Gateways",
+      "hint": "Los dispositivos IoT se reparten automáticamente, hasta {{max}} por Edge Gateway, en orden de registro.",
+      "load": "Dispositivos cubiertos",
+      "capacity": "{{count}} de {{max}}",
+      "empty": "Este ambiente aún no tiene un Edge Gateway."
+    },
+    "devices": {
+      "title": "Dispositivos IoT",
+      "empty": "Este ambiente no tiene dispositivos IoT."
+    },
+    "equipment": {
+      "title": "Equipos de proceso",
+      "empty": "Este ambiente no tiene equipos de proceso."
+    }
+  },
   "page-titles": {
     "home": "Inicio",
     "about": "Acerca de",
@@ -2049,6 +2116,8 @@
     "equipment-list": "Equipos",
     "equipment-new": "Registrar equipo",
     "device-new": "Registrar dispositivo IoT",
+    "edge-gateway-new": "Registrar Edge Gateway",
+    "environment-equipment": "Equipos del ambiente",
     "equipment-detail": "Detalle del equipo",
     "bpm-config": "Configuración BPM",
     "maintenance-new": "Registro de actividad técnica",
