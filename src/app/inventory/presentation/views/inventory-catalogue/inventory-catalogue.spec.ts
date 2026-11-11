@@ -9,6 +9,7 @@ import { InventoryApi } from '../../../infrastructure/inventory-api';
 import { RawMaterial } from '../../../domain/model/raw-material.entity';
 import { RawMaterialBatch } from '../../../domain/model/raw-material-batch.entity';
 import { InventoryCatalogue } from './inventory-catalogue';
+import { MAT_TABS_CONFIG } from '@angular/material/tabs';
 
 describe('InventoryCatalogue', () => {
   const material = (id: number, stockStatus: 'LOW' | 'SUFFICIENT') =>
@@ -62,6 +63,10 @@ describe('InventoryCatalogue', () => {
             component: InventoryCatalogue,
           },
         ]),
+        {
+          provide: MAT_TABS_CONFIG,
+          useValue: { animationDuration: '0ms' },
+        },
         { provide: InventoryApi, useValue: api },
         {
           provide: IamStore,
@@ -89,6 +94,16 @@ describe('InventoryCatalogue', () => {
     [...element.querySelectorAll('[role=status]')].map((item) => item.textContent?.trim());
   const lowOnly = (element: HTMLElement) =>
     element.querySelector<HTMLInputElement>('app-inventory-filters input[type=checkbox]')!;
+  /**
+   * Returns the Angular Material tab for near-expiry batches.
+   */
+  const nearExpiryTab = (element: HTMLElement): HTMLElement => {
+    const tab = [...element.querySelectorAll<HTMLElement>('[role="tab"]')].find((item) =>
+      item.textContent?.includes('inventory.nearExpiry'),
+    );
+    if (!tab) {throw new Error('Near-expiry tab not found');}
+    return tab;
+  };
   const lowStockRequests = () =>
     api.materials.mock.calls.filter(([, , stockStatus]) => stockStatus === 'LOW').length;
 
@@ -113,43 +128,59 @@ describe('InventoryCatalogue', () => {
     expect(element.textContent).not.toContain('Material 2');
   });
 
+
   it('says the lots near expiry are loading until they arrive', async () => {
     const answer = new Subject<RawMaterialBatch[]>();
     nearExpiry = () => answer;
+
     const { harness, element } = await open();
-    const button = [...element.querySelectorAll('button')].find((item) =>
-      item.textContent?.includes('inventory.nearExpiry'),
-    )!;
-
-    button.click();
+    // Select the near-expiry tab.
+    nearExpiryTab(element).click();
     harness.detectChanges();
-
-    expect(element.querySelector('app-near-expiry-table')).toBeNull();
-    expect(element.querySelector('#near-expiry-title')?.closest('section')?.textContent).toContain(
+    // Allow Angular Material to initialize the lazy tab content.
+    await harness.fixture.whenStable();
+    harness.detectChanges();
+    // Verify that the request has started.
+    expect(api.environmentReceipts).toHaveBeenCalledTimes(1);
+    // Allow the active tab's content to finish rendering.
+    await harness.fixture.whenStable();
+    harness.detectChanges();
+    // Verify that the loading message is displayed
+    // while the response is pending.
+    const activeTab = element.querySelector('.mat-mdc-tab-body-active');
+    expect(activeTab).not.toBeNull();
+    expect(activeTab?.querySelector('app-near-expiry-table')).toBeNull();
+    expect(activeTab?.querySelector('[role="status"]')?.textContent?.trim()).toContain(
       'inventory.loading',
     );
+    // Complete the pending request.
     answer.next([lot]);
     answer.complete();
     await harness.fixture.whenStable();
     harness.detectChanges();
+    // Verify that the received batch is displayed.
     expect(element.querySelector('app-near-expiry-table')?.textContent).toContain('SUP-1');
   });
 
   it('asks again for the low stock and the lots near expiry shown when it reloads', async () => {
     const { harness, element } = await open();
+    // Enable the low-stock filter.
     lowOnly(element).click();
-    [...element.querySelectorAll('button')]
-      .find((item) => item.textContent?.includes('inventory.nearExpiry'))!
-      .click();
+    harness.detectChanges();
+    // Select the near-expiry tab.
+    nearExpiryTab(element).click();
     await harness.fixture.whenStable();
+    harness.detectChanges();
+    // Verify the initial requests.
     expect(lowStockRequests()).toBe(1);
     expect(api.environmentReceipts).toHaveBeenCalledTimes(1);
-
+    // Reload the current inventory.
     await harness.routeDebugElement!.componentInstance.reload();
-
+    // Both active requests should execute again.
     expect(lowStockRequests()).toBe(2);
     expect(api.environmentReceipts).toHaveBeenCalledTimes(2);
   });
+
 
   it('does not ask for the low stock or the lots near expiry when they are not shown', async () => {
     const { harness } = await open();
