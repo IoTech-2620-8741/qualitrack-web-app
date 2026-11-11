@@ -1,7 +1,7 @@
 import { Component, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
@@ -85,7 +85,7 @@ export class EdgeGatewayForm implements OnInit {
       notBlankValidator,
       Validators.maxLength(100),
     ]),
-    environmentId: this.fb.control<number | null>(null),
+    environmentId: this.fb.control<number | null>(readEnvironmentId(inject(ActivatedRoute))),
   });
 
   constructor() {
@@ -117,4 +117,15 @@ export class EdgeGatewayForm implements OnInit {
       state: { locationError },
     });
   }
+}
+
+/**
+ * Reads the environment the form opens with, from the `environmentId` query parameter.
+ *
+ * @param route - The active route
+ * @returns The identifier of the environment, or `null` if the parameter is missing or is not a positive integer
+ */
+function readEnvironmentId(route: ActivatedRoute): number | null {
+  const value = Number(route.snapshot.queryParamMap.get('environmentId'));
+  return Number.isInteger(value) && value > 0 ? value : null;
 }

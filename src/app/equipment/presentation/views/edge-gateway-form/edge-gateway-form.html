@@ -28,7 +28,7 @@
       }
     </mat-form-field>
 
-    <mat-form-field appearance="outline">
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
       <mat-label>{{ 'device-form.fields.identifier' | translate }}</mat-label>
       <input matInput formControlName="sensorExternalId" maxlength="50" autocomplete="off" [placeholder]="'edge-gateway.form.placeholders.identifier' | translate">
       <mat-hint>{{ 'edge-gateway.form.hints.identifier' | translate }}</mat-hint>
@@ -68,7 +68,7 @@
       }
     </mat-form-field>
 
-    <mat-form-field appearance="outline" class="full-width">
+    <mat-form-field appearance="outline" class="full-width" subscriptSizing="dynamic">
       <mat-label>{{ 'device-form.fields.environment' | translate }}</mat-label>
       <mat-select formControlName="environmentId">
         <mat-option [value]="null">{{ 'device-form.no-environment' | translate }}</mat-option>

@@ -42,17 +42,17 @@
 
   <section class="summary-strip">
     <div>
-      <span>{{ 'equipment-list.summary.equipment' | translate }}</span><strong>{{ store.processEquipment().length }}</strong>
+      <span>{{ 'equipment-list.summary.equipment' | translate }}</span><strong>{{ summary().equipment }}</strong>
     </div>
     <div>
-      <span>{{ 'equipment-list.summary.devices' | translate }}</span><strong>{{ store.iotDevices().length }}</strong>
+      <span>{{ 'equipment-list.summary.devices' | translate }}</span><strong>{{ summary().devices }}</strong>
     </div>
     <div>
-      <span>{{ 'equipment-list.summary.gateways' | translate }}</span><strong>{{ store.edgeGateways().length }}</strong>
+      <span>{{ 'equipment-list.summary.gateways' | translate }}</span><strong>{{ summary().gateways }}</strong>
     </div>
     <div>
       <span>{{ 'equipment-list.summary.attention' | translate }}</span>
-      <strong [class.warning]="store.needsMaintenance().length > 0">{{ store.needsMaintenance().length }}</strong>
+      <strong [class.warning]="summary().attention > 0">{{ summary().attention }}</strong>
     </div>
   </section>
 

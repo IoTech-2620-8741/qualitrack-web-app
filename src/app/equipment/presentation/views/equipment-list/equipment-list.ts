@@ -64,19 +64,36 @@ export class EquipmentList implements OnInit {
   /** Identifier of the environment the list is narrowed to, or `null` to show every environment. */
   protected readonly environmentId = signal<number | null>(readEnvironmentId(inject(ActivatedRoute)));
 
-  protected readonly visibleEquipment = computed(() => {
-    const byType =
-      this.filter() === 'equipment'
-        ? this.store.processEquipment()
-        : this.filter() === 'devices'
-          ? this.store.iotDevices()
-          : this.filter() === 'gateways'
-            ? this.store.edgeGateways()
-            : this.store.equipmentList();
-    const text = this.search().trim().toLowerCase();
+  /** Equipment of the chosen environment, or of every environment; the summary counts it. */
+  protected readonly scopedEquipment = computed(() => {
     const environmentId = this.environmentId();
-    return byType
-      .filter((equipment) => environmentId === null || equipment.environmentId === environmentId)
+    return this.store
+      .equipmentList()
+      .filter((equipment) => environmentId === null || equipment.environmentId === environmentId);
+  });
+
+  /** Counters of the summary, for the chosen environment. */
+  protected readonly summary = computed(() => {
+    const equipment = this.scopedEquipment();
+    return {
+      equipment: equipment.filter((item) => !item.isIotDevice && !item.isEdgeGateway).length,
+      devices: equipment.filter((item) => item.isIotDevice).length,
+      gateways: equipment.filter((item) => item.isEdgeGateway).length,
+      attention: equipment.filter((item) => this.needsAttention(item)).length,
+    };
+  });
+
+  protected readonly visibleEquipment = computed(() => {
+    const kind = this.filter();
+    const text = this.search().trim().toLowerCase();
+    return this.scopedEquipment()
+      .filter(
+        (equipment) =>
+          kind === 'all' ||
+          (kind === 'equipment' && !equipment.isIotDevice && !equipment.isEdgeGateway) ||
+          (kind === 'devices' && equipment.isIotDevice) ||
+          (kind === 'gateways' && equipment.isEdgeGateway),
+      )
       .filter((equipment) => !this.attentionOnly() || this.needsAttention(equipment))
       .filter(
         (equipment) =>

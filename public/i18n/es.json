@@ -386,6 +386,7 @@
     "equipment-list": "Catálogo de equipos",
     "register-equipment": "Registrar equipo",
     "register-device": "Registrar dispositivo IoT",
+    "register-edge-gateway": "Registrar Edge Gateway",
     "alerts": "Alertas de cumplimiento",
     "alert-dashboard": "Alertas activas",
     "alert-history": "Historial de alertas",
@@ -2075,7 +2076,7 @@
     "subtitle": "Edge Gateways, dispositivos IoT y equipos ubicados en este ambiente.",
     "open": "Ver los equipos y dispositivos de este ambiente",
     "view-in-list": "Ver en la lista de equipos",
-    "uncovered-warning": "{{count}} dispositivo(s) IoT no tienen Edge Gateway. Cada Edge Gateway cubre hasta {{max}} dispositivos: agrega otro a este ambiente.",
+    "uncovered-warning": "{{count}} dispositivo(s) IoT no tienen Edge Gateway, así que sus lecturas no llegan a QualiTrack. Cada Edge Gateway cubre hasta {{max}} dispositivos.",
     "summary": {
       "uncovered": "Dispositivos sin Edge Gateway"
     },

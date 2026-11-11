@@ -44,6 +44,15 @@
         <span>
           {{ 'environment-equipment.uncovered-warning' | translate: { count: current.uncoveredDeviceCount, max: current.maxDevicesPerGateway } }}
         </span>
+        @if (store.canManage()) {
+          <a
+            mat-stroked-button
+            routerLink="/equipments/edge-gateways/new"
+            [queryParams]="{ environmentId: environmentId() }">
+            <mat-icon>router</mat-icon>
+            {{ 'edge-gateway.add-button' | translate }}
+          </a>
+        }
       </p>
     }
 

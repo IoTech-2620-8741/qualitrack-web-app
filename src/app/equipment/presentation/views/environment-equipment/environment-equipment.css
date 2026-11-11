@@ -173,6 +173,19 @@ h1 mat-icon {
   flex-shrink: 0;
 }
 
+.notice span {
+  flex: 1;
+  align-self: center;
+}
+
+.notice a {
+  flex-shrink: 0;
+}
+
+.notice a mat-icon {
+  color: inherit;
+}
+
 section + section {
   margin-top: 32px;
 }
