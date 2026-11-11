@@ -13,6 +13,7 @@ import { AlertsPageHeader, AlertsSection } from './alerts-page-header';
       [activeCount]="activeCount()"
       [environmentId]="environmentId()"
     >
+      <span alertsContext class="page-context">Environment</span>
       <button type="button" class="page-action">Action</button>
       <section alertsSection class="page-content">Content</section>
     </app-alerts-page-header>
@@ -73,9 +74,11 @@ describe('AlertsPageHeader', () => {
     ]);
   });
 
-  it('places the actions and the content of the page', () => {
+  it('places what the page shows, its actions and its content', () => {
     const { element } = create();
 
+    expect(element.querySelector('.titles .context .page-context')).not.toBeNull();
+    expect(element.querySelector('.actions .page-context')).toBeNull();
     expect(element.querySelector('.actions .page-action')).not.toBeNull();
     expect(element.querySelector('mat-tab-nav-panel .page-content')).not.toBeNull();
     expect(element.querySelector('.actions')?.textContent).toContain('ca-alerts.page.preferences');

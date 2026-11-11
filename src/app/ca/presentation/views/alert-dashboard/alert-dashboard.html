@@ -1,7 +1,13 @@
 <main class="operations-page qt-theme">
-  <div class="context-bar">
+  <app-alerts-page-header
+    section="active"
+    subtitleKey="ca-alerts.active.subtitle"
+    [activeCount]="stats().open"
+    [environmentId]="environmentId()"
+  >
     <app-environment-selector
-      class="full-width"
+      alertsContext
+      appearance="inline"
       allOptionKey="environments.all"
       [environments]="store.environments()"
       [selectedId]="environmentId()"
@@ -29,14 +35,6 @@
         <mat-icon aria-hidden="true">refresh</mat-icon>{{ 'common.refresh' | translate }}
       </button>
     </div>
-  </div>
-
-  <app-alerts-page-header
-    section="active"
-    subtitleKey="ca-alerts.active.subtitle"
-    [activeCount]="stats().open"
-    [environmentId]="environmentId()"
-  >
     <div alertsSection class="inbox">
       @if ((store.error() || store.notice()) && !detailOpen()) {
         <div class="feedback">

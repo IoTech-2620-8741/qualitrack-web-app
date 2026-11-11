@@ -62,9 +62,11 @@ a {
   line-height: 1.6;
 }
 
+/* The environment being shown, under the title */
 app-environment-selector {
   display: block;
-  min-width: 0;
+  max-width: 100%;
+  margin-top: 20px;
 }
 
 /* Selector segmentado */
@@ -217,10 +219,6 @@ mat-button-toggle-group ::ng-deep .mat-button-toggle-button:focus-visible {
 
   mat-button-toggle-group ::ng-deep .mat-button-toggle-label-content {
     padding: 0 12px;
-  }
-
-  app-environment-selector {
-    width: 100%;
   }
 }
 

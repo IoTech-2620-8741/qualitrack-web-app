@@ -12,8 +12,9 @@ export type AlertsSection = 'active' | 'history';
  * Standard heading of the alerts pages: title, notification preferences and the tabs of its sections.
  *
  * @remarks
- * The page projects its own actions next to the notification preferences. The environment chosen in a section travels
- * in the links of the tabs as the `environmentId` query parameter.
+ * The page projects its own actions next to the notification preferences, and what it is showing (such as its
+ * environment selector) under the title with the `alertsContext` attribute. The environment chosen in a section
+ * travels in the links of the tabs as the `environmentId` query parameter.
  */
 @Component({
   selector: 'app-alerts-page-header',

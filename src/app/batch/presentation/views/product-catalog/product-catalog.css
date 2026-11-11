@@ -26,8 +26,15 @@
 
 .heading-title {
   display: flex;
-  align-items: center;
-  flex-shrink: 0;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 20px;
+  min-width: 0;
+}
+
+/* The environment starts at the same edge as the search and the cards under it, and is cut when it does not fit */
+.heading-title app-environment-selector {
+  max-width: 100%;
 }
 
 .heading-title h1 {
@@ -59,10 +66,6 @@ a {
   flex-wrap: wrap;
   gap: 12px;
   margin-left: auto;
-}
-
-.actions app-environment-selector {
-  min-width: 180px;
 }
 
 .actions a[mat-stroked-button],
@@ -253,27 +256,20 @@ p[role='status'] {
     display: contents;
   }
 
-  .actions app-environment-selector {
-    grid-column: 1 / -1;
-    grid-row: 2;
-    display: block;
-    width: 100%;
-    min-width: 0;
-  }
-
   .actions a[mat-stroked-button] {
     grid-column: 1 / -1;
-    grid-row: 3;
+    grid-row: 2;
   }
 
   .actions a[mat-flat-button] {
     grid-column: 1 / -1;
-    grid-row: 4;
+    grid-row: 3;
   }
 
   .actions button[mat-icon-button] {
     grid-column: 2;
     grid-row: 1;
+    align-self: start;
     justify-self: end;
     width: 40px;
     height: 40px;

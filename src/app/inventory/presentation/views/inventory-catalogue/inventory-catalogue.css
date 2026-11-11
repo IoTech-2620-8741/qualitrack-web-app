@@ -21,6 +21,19 @@
   margin-bottom: 24px;
 }
 
+/* The title with the environment being shown under it */
+.heading-title {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 20px;
+  min-width: 0;
+}
+
+.heading-title app-environment-selector {
+  max-width: 100%;
+}
+
 .actions {
   display: flex;
   flex-wrap: wrap;

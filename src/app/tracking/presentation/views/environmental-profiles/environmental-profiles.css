@@ -41,9 +41,11 @@ a {
   overflow-wrap: anywhere;
 }
 
-.page-heading .actions {
-  flex-shrink: 0;
-  margin-left: auto;
+/* The environment being shown, under the title */
+.heading-content app-environment-selector {
+  display: block;
+  max-width: 100%;
+  margin-top: 20px;
 }
 
 .page-heading {
@@ -184,23 +186,12 @@ p.muted {
 }
 
 @media (max-width: 760px) {
-  .actions app-environment-selector {
-    grid-column: 1 / -1;
-    grid-row: 3;
-    width: 100%;
-    min-width: 0;
-  }
-
   .operations-page {
     padding: 20px 16px 36px;
   }
 
   h1 {
     font-size: 24px;
-  }
-
-  .page-heading .actions {
-    width: 100%;
   }
 
   .device-card {
@@ -220,9 +211,5 @@ p.muted {
 
   .heading-content p.muted {
     margin-top: 6px;
-  }
-
-  .page-heading .actions {
-    width: 100%;
   }
 }

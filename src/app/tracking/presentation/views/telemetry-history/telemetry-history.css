@@ -24,7 +24,6 @@ a {
 }
 
 .page-heading,
-.actions,
 .filters {
   display: flex;
   align-items: center;
@@ -54,6 +53,13 @@ h1 {
 h1 mat-icon {
   flex-shrink: 0;
   color: var(--qt-primary);
+}
+
+/* The environment being shown, under the title */
+.heading-content app-environment-selector {
+  display: block;
+  max-width: 100%;
+  margin-top: 20px;
 }
 
 .heading-content p.muted {
@@ -312,13 +318,6 @@ mat-button-toggle-group ::ng-deep .mat-button-toggle:has(.mat-button-toggle-butt
 }
 
 @media (max-width: 760px) {
-  .actions app-environment-selector {
-    grid-column: 1 / -1;
-    grid-row: 3;
-    width: 100%;
-    min-width: 0;
-  }
-
   .operations-page {
     padding: 20px 16px 36px;
   }
@@ -340,10 +339,6 @@ mat-button-toggle-group ::ng-deep .mat-button-toggle:has(.mat-button-toggle-butt
 
   .heading-content p.muted {
     margin-top: 6px;
-  }
-
-  .page-heading .actions {
-    width: 100%;
   }
 
   .filters {

@@ -20,19 +20,6 @@ a {
   letter-spacing: 0;
 }
 
-.context-bar {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  margin-bottom: 16px;
-}
-
-.context-bar app-environment-selector {
-  display: block;
-  width: 100%;
-  max-width: 520px;
-}
-
 /* Contenido proyectado en el encabezado */
 .history {
   display: flex;
@@ -279,10 +266,6 @@ mat-icon[matPrefix] {
 
   .history {
     gap: 16px;
-  }
-
-  .context-bar app-environment-selector {
-    max-width: none;
   }
 
   .filters {
