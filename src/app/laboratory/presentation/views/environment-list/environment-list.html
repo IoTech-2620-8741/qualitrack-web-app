@@ -63,7 +63,11 @@
         @for (environment of store.environments(); track environment.id) {
           <tr>
             <td>
-              <strong class="environment-code">{{ environment.code }}</strong>
+              <a
+                class="environment-code"
+                [routerLink]="['/equipments/environments', environment.id]"
+                [matTooltip]="'environment-equipment.open' | translate"
+              >{{ environment.code }}</a>
             </td>
 
             <td [attr.data-label]="'environments.name' | translate">

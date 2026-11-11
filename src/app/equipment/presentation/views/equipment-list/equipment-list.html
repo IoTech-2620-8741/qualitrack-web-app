@@ -7,6 +7,11 @@
 
     <div class="actions">
       @if (store.canManage()) {
+        <a mat-stroked-button routerLink="/equipments/edge-gateways/new">
+          <mat-icon>router</mat-icon>
+          {{ 'edge-gateway.add-button' | translate }}
+        </a>
+
         <a mat-stroked-button routerLink="/equipments/devices/new">
           <mat-icon>sensors</mat-icon>
           {{ 'device-form.add-button' | translate }}
@@ -43,6 +48,9 @@
       <span>{{ 'equipment-list.summary.devices' | translate }}</span><strong>{{ store.iotDevices().length }}</strong>
     </div>
     <div>
+      <span>{{ 'equipment-list.summary.gateways' | translate }}</span><strong>{{ store.edgeGateways().length }}</strong>
+    </div>
+    <div>
       <span>{{ 'equipment-list.summary.attention' | translate }}</span>
       <strong [class.warning]="store.needsMaintenance().length > 0">{{ store.needsMaintenance().length }}</strong>
     </div>
@@ -54,6 +62,15 @@
       <mat-icon matPrefix>search</mat-icon>
       <input matInput [ngModel]="search()" (ngModelChange)="search.set($event)">
     </mat-form-field>
+    <mat-form-field class="environment-filter" appearance="outline" subscriptSizing="dynamic">
+      <mat-label>{{ 'equipment-list.filter.environment' | translate }}</mat-label>
+      <mat-select [value]="environmentId()" (selectionChange)="environmentId.set($event.value)">
+        <mat-option [value]="null">{{ 'equipment-list.filter.all-environments' | translate }}</mat-option>
+        @for (environment of store.environments(); track environment.id) {
+          <mat-option [value]="environment.id">{{ environment.code }} · {{ environment.name }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
     <mat-button-toggle-group
       [hideSingleSelectionIndicator]="true"
       [value]="filter()"
@@ -62,6 +79,7 @@
       <mat-button-toggle value="all">{{ 'equipment-list.filter.all' | translate }}</mat-button-toggle>
       <mat-button-toggle value="equipment">{{ 'equipment-list.filter.equipment' | translate }}</mat-button-toggle>
       <mat-button-toggle value="devices">{{ 'equipment-list.filter.devices' | translate }}</mat-button-toggle>
+      <mat-button-toggle value="gateways">{{ 'equipment-list.filter.gateways' | translate }}</mat-button-toggle>
     </mat-button-toggle-group>
     <mat-checkbox [checked]="attentionOnly()" (change)="attentionOnly.set($event.checked)">
       {{ 'equipment-list.summary.attention' | translate }}
@@ -93,13 +111,18 @@
                   <mat-icon aria-hidden="true">sensors</mat-icon>{{ 'device-types.' + equipment.deviceType | translate }}
                 </span>
                 <small>{{ equipment.sensorExternalId }}</small>
+              } @else if (equipment.isEdgeGateway) {
+                <span class="device-type">
+                  <mat-icon aria-hidden="true">router</mat-icon>{{ 'edge-gateway.type' | translate }}
+                </span>
+                <small>{{ equipment.sensorExternalId }}</small>
               } @else {
                 {{ equipment.type }}
               }
             </td>
             <td [attr.data-label]="'equipment-list.fields.environment' | translate">
               @if (environmentName(equipment); as name) {
-                {{ name }}
+                <a class="environment-link" [routerLink]="['/equipments/environments', equipment.environmentId]">{{ name }}</a>
               } @else {
                 <span class="muted">{{ 'equipment-list.not-located' | translate }}</span>
               }

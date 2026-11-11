@@ -8,27 +8,29 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 import { TranslatePipe } from '@ngx-translate/core';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { EquipmentStore } from '../../../application/equipment.store';
 import { Equipment } from '../../../domain/model/equipment.entity';
 import { ATTENTION_STATUSES } from '../../../domain/model/equipment-status';
 
-/** Which equipment the list shows: everything, process equipment or IoT devices. */
-type EquipmentFilter = 'all' | 'equipment' | 'devices';
+/** Which equipment the list shows: everything, process equipment, IoT devices or Edge Gateways. */
+type EquipmentFilter = 'all' | 'equipment' | 'devices' | 'gateways';
 
 /**
- * Equipment and IoT devices of the laboratory with their location and status (US46).
+ * Equipment, IoT devices and Edge Gateways of the laboratory with their location and status (US46).
  *
  * @remarks
  * Equipment in maintenance or out of service is counted in the summary and can be filtered,
- * like low stock materials in the inventory.
+ * like low stock materials in the inventory. The list can also be narrowed to one environment;
+ * the `environmentId` query parameter opens it already filtered.
  */
 @Component({
   selector: 'app-equipment-list',
@@ -42,6 +44,7 @@ type EquipmentFilter = 'all' | 'equipment' | 'devices';
     MatCheckboxModule,
     MatIconModule,
     MatInputModule,
+    MatSelectModule,
     TranslatePipe,
     MatTooltipModule
   ],
@@ -58,15 +61,22 @@ export class EquipmentList implements OnInit {
 
   protected readonly attentionOnly = signal(false);
 
+  /** Identifier of the environment the list is narrowed to, or `null` to show every environment. */
+  protected readonly environmentId = signal<number | null>(readEnvironmentId(inject(ActivatedRoute)));
+
   protected readonly visibleEquipment = computed(() => {
     const byType =
       this.filter() === 'equipment'
         ? this.store.processEquipment()
         : this.filter() === 'devices'
           ? this.store.iotDevices()
-          : this.store.equipmentList();
+          : this.filter() === 'gateways'
+            ? this.store.edgeGateways()
+            : this.store.equipmentList();
     const text = this.search().trim().toLowerCase();
+    const environmentId = this.environmentId();
     return byType
+      .filter((equipment) => environmentId === null || equipment.environmentId === environmentId)
       .filter((equipment) => !this.attentionOnly() || this.needsAttention(equipment))
       .filter(
         (equipment) =>
@@ -101,4 +111,15 @@ export class EquipmentList implements OnInit {
       ? `${environment.code} · ${environment.name}`
       : `#${equipment.environmentId}`;
   }
+}
+
+/**
+ * Reads the environment the list must open filtered by.
+ *
+ * @param route - The active route, whose `environmentId` query parameter is read.
+ * @returns The identifier of the environment, or `null` if the parameter is missing or is not a positive integer.
+ */
+function readEnvironmentId(route: ActivatedRoute): number | null {
+  const value = Number(route.snapshot.queryParamMap.get('environmentId'));
+  return Number.isInteger(value) && value > 0 ? value : null;
 }
