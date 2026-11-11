@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Equipment (equipment): a quality manager registers an Edge Gateway, with its identifier and an optional environment, from the equipment list.
+
+- Equipment (equipment): the detail of an Edge Gateway shows whether it has an API key and lets a quality manager generate it once it is located and operational; the key is shown only once, in a dialog with copy buttons, and is not kept in the app.
+
+- Equipment (equipment): each environment has a view with its Edge Gateways, how many IoT devices each one covers (up to 15), its devices and process equipment, and a warning when some devices have no Edge Gateway.
+
+- Equipment (equipment): the equipment list filters by environment (also with `?environmentId=`) and by Edge Gateways, and counts them in its summary.
+
+### Changed
+
+- Equipment (equipment): an Edge Gateway is no longer counted or shown as process equipment, and its type is translated instead of showing `EDGE_GATEWAY`.
+
+- Laboratory (laboratory): the code of each environment in the environment list opens the equipment of that environment.
+
 ## [2.4.0] - 2026-11-09
 
 ### Changed
