@@ -170,6 +170,27 @@ p[role='status'] {
   margin-bottom: 16px;
 }
 
+mat-tab-group {
+  overflow: hidden;
+  background: var(--qt-surface);
+  border: 1px solid var(--qt-border);
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+}
+
+.tab-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+  padding: 24px;
+  overflow-x: auto;
+}
+
+.tab-content .notice {
+  margin: 0;
+}
+
 @media (max-width: 760px) {
   .operations-page {
     padding: 16px;
@@ -193,6 +214,10 @@ p[role='status'] {
     padding: 16px;
   }
 
+  .tab-content {
+    padding: 16px;
+    overflow-x: visible;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
