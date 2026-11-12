@@ -281,7 +281,7 @@ describe('AlertDashboard', () => {
 
     it('searches by device without minding accents or capitals', async () => {
       const { harness, element, cardIds } = await open();
-      const search = element.querySelector<HTMLInputElement>('input[type="search"]')!;
+      const search = element.querySelector<HTMLInputElement>('.search input')!;
 
       search.value = 'CAMARA';
       search.dispatchEvent(new Event('input'));
@@ -295,7 +295,7 @@ describe('AlertDashboard', () => {
 
     it('offers to clear the filters when nothing matches', async () => {
       const { harness, element, press, cardIds } = await open();
-      const search = element.querySelector<HTMLInputElement>('input[type="search"]')!;
+      const search = element.querySelector<HTMLInputElement>('.search input')!;
       search.value = 'nothing like this';
       search.dispatchEvent(new Event('input'));
       harness.detectChanges();

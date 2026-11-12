@@ -5,7 +5,6 @@ import {
   computed,
   effect,
   inject,
-  linkedSignal,
   signal,
   untracked,
 } from '@angular/core';
@@ -52,7 +51,9 @@ import { alertVariableName } from '../../alert-variable';
 import { AlertHistoryCards } from '../../components/alert-history-cards/alert-history-cards';
 import { AlertTable } from '../../components/alert-table/alert-table';
 import { AlertWeekChart } from '../../components/alert-week-chart/alert-week-chart';
-import { AlertsPageHeader } from '../../components/alerts-page-header/alerts-page-header';
+import { PageHeader } from '../../../../shared/presentation/components/page-header/page-header';
+import { ListToolbar } from '../../../../shared/presentation/components/list-toolbar/list-toolbar';
+import { alertTabs } from '../../alert-tabs';
 import { SetupNotice } from '../../../../shared/presentation/components/setup-notice/setup-notice';
 import { IamStore } from '../../../../iam/application/iam.store';
 
@@ -87,7 +88,8 @@ const ORIGIN_ICONS: Readonly<Record<AlertOrigin, string>> = {
     AlertHistoryCards,
     AlertTable,
     AlertWeekChart,
-    AlertsPageHeader,
+    PageHeader,
+    ListToolbar,
     EmptyState,
     EnvironmentSelector,
     ErrorBanner,
@@ -129,6 +131,9 @@ export class AlertHistory implements OnInit {
       : null;
   });
 
+  /** Operations of the module, keeping the environment chosen. */
+  protected readonly tabs = computed(() => alertTabs(this.environmentId()));
+
   /** What the history reads: the environment chosen or, without one, every environment that exists. */
   private readonly scope = computed(() => {
     const environmentId = this.environmentId();
@@ -165,17 +170,13 @@ export class AlertHistory implements OnInit {
     return filter.severities.length + filter.statuses.length + filter.origins.length;
   });
 
-  /**
-   * Whether the filters of severity, status and origin are shown.
-   *
-   * @remarks
-   * They open by themselves when one of them starts to narrow the history, such as in an address that brings
-   * them, so a filter in use is never hidden; otherwise they stay as the person left them.
-   */
-  protected readonly moreFilters = linkedSignal<boolean, boolean>({
-    source: () => this.chipFilterCount() > 0,
-    computation: (inUse, previous) => inUse || (previous?.value ?? false),
-  });
+  /** How many filters narrow the history, which the folded row of filters tells. */
+  protected readonly activeFilterCount = computed(
+    () =>
+      this.chipFilterCount() +
+      (this.filter().period !== DEFAULT_ALERT_HISTORY_FILTER.period ? 1 : 0) +
+      (this.filter().search.trim() ? 1 : 0),
+  );
 
   /** Alerts that pass the filter, the latest first. */
   protected readonly shownAlerts = computed(() =>

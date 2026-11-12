@@ -310,6 +310,10 @@
     }
   },
   "common": {
+    "filters": "Filtros",
+    "clear-search": "Limpiar la búsqueda",
+    "updated": "Actualizado {{time}}",
+    "live": "En vivo · actualizado {{time}}",
     "paginator": {
       "per-page": "Filas por página",
       "first": "Primera página",
@@ -753,7 +757,6 @@
       "none-one": "Este ambiente no registró alertas en los últimos 90 días.",
       "unavailable": "No se pudieron leer las alertas de: {{environments}}. El historial no las incluye.",
       "filters": {
-        "more": "Más filtros",
         "label": "Filtros del historial",
         "period": "Periodo",
         "search": "Buscar dispositivo, variable o nota",
@@ -856,8 +859,6 @@
     },
     "active": {
       "title": "Alertas activas",
-      "live": "En vivo · actualizado {{time}}",
-      "live-partial": "Datos parciales · actualizado {{time}}",
       "unavailable": "No se pudieron leer las alertas de: {{environments}}. Lo que ves de esos ambientes puede no estar al día.",
       "retry": "Reintentar",
       "new-alerts": "Alertas nuevas: {{count}}.",
@@ -913,8 +914,7 @@
       "failed": "No se pudo enviar el correo. Revisa que el envío de correos esté configurado en la plataforma."
     },
     "page": {
-      "title": "Alertas de cumplimiento",
-      "sections": "Secciones de alertas"
+      "title": "Alertas de cumplimiento"
     },
     "tabs": {
       "active": "Activas",

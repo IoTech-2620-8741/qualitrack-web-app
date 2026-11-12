@@ -28,12 +28,6 @@ a {
   min-width: 0;
 }
 
-/* The environment opens the content of the history, like it opens the inbox */
-.history > app-environment-selector {
-  align-self: flex-start;
-  max-width: 100%;
-}
-
 .history p {
   margin: 0;
 }
@@ -89,23 +83,12 @@ app-empty-state button:focus-visible {
 }
 
 /* Filtros (tarjeta) */
-.filters {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  min-width: 0;
-  padding: 16px 20px;
-  background: var(--qt-surface);
-  border: 1px solid var(--qt-border);
-  border-radius: var(--qt-radius-medium);
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
-}
-
-.filter-row {
+/* The groups of chips of the toolbar: period, severity, status and origin */
+.chip-groups {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
-  gap: 16px 24px;
+  align-items: flex-start;
+  gap: 12px 28px;
   min-width: 0;
 }
 
@@ -126,64 +109,12 @@ app-empty-state button:focus-visible {
   text-transform: uppercase;
 }
 
-.search {
-  flex: 1 1 240px;
-  min-width: 200px;
-  max-width: 360px;
-}
-
-/* The button of the other filters, and how many of them are in use */
-.more-filters,
-.operations-page > app-alerts-page-header a[mat-stroked-button] {
-  min-height: 40px;
-  border-color: var(--qt-border);
-  border-radius: var(--qt-radius-pill);
-  color: var(--qt-text);
-  font-weight: 600;
-}
-
-.more-filters[aria-expanded='true'] {
-  background: var(--qt-primary-surface);
-  border-color: var(--qt-primary);
-  color: var(--qt-primary-strong);
-}
-
-.more-count {
-  min-width: 20px;
-  margin-left: 6px;
-  padding: 1px 7px;
-  background: var(--qt-primary-strong);
-  border-radius: var(--qt-radius-pill);
-  color: var(--qt-surface);
-  font-size: 12px;
-  text-align: center;
-}
-
-mat-form-field {
-  width: 100%;
-  min-width: 0;
-  --mat-form-field-outlined-focus-outline-color: var(--qt-primary);
-  --mat-form-field-outlined-focus-label-text-color: var(--qt-primary-strong);
-  --mat-form-field-focus-select-arrow-color: var(--qt-primary);
-}
-
-.filters mat-form-field {
-  margin: 0;
-}
-
-input {
-  caret-color: var(--qt-primary);
-}
-
-mat-icon[matPrefix] {
-  margin-left: 12px;
-  color: var(--qt-text-muted);
-}
-
-.export-note {
-  color: var(--qt-text-muted);
-  font-size: 13px;
-  line-height: 1.5;
+/* Under the chips: the days of a custom period, clearing the filters and the note about the report */
+.more {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 16px;
 }
 
 .custom-period {
@@ -198,20 +129,21 @@ mat-icon[matPrefix] {
   max-width: 240px;
 }
 
-.filters button[mat-button] {
+.clear-filters {
   min-height: 40px;
   padding: 8px 16px;
   border: 1px solid var(--qt-border);
   border-radius: var(--qt-radius-pill);
   color: var(--qt-text);
-  font-size: 14px;
   font-weight: 600;
   white-space: nowrap;
 }
 
-.filters button[mat-button]:focus-visible {
-  outline: 3px solid var(--qt-primary);
-  outline-offset: 2px;
+.export-note {
+  flex-basis: 100%;
+  color: var(--qt-text-muted);
+  font-size: 13px;
+  line-height: 1.5;
 }
 
 /* Métricas y gráfico */
@@ -234,10 +166,6 @@ mat-icon[matPrefix] {
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .search {
-    flex: 1 1 100%;
-    max-width: none;
-  }
 }
 
 @media (max-width: 760px) {
@@ -247,21 +175,6 @@ mat-icon[matPrefix] {
 
   .history {
     gap: 16px;
-  }
-
-  .filters {
-    padding: 16px;
-  }
-
-  .filter-row {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .search {
-    flex-basis: auto;
-    min-width: 0;
-    max-width: none;
   }
 
   .custom-period {
@@ -275,7 +188,7 @@ mat-icon[matPrefix] {
     max-width: none;
   }
 
-  .filters button[mat-button] {
+  .clear-filters {
     width: 100%;
   }
 }

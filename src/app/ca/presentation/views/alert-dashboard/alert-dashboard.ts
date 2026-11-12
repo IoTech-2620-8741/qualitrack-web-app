@@ -18,9 +18,7 @@ import { LiveAnnouncer } from '@angular/cdk/a11y';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { filter, fromEvent, interval, map, merge, timer } from 'rxjs';
 
@@ -29,7 +27,8 @@ import { EmptyState } from '../../../../shared/presentation/components/empty-sta
 import { EnvironmentSelector } from '../../../../shared/presentation/components/environment-selector/environment-selector';
 import { ErrorBanner } from '../../../../shared/presentation/components/error-banner/error-banner';
 import { FilterChip } from '../../../../shared/presentation/components/filter-chip/filter-chip';
-import { RelativeTimePipe } from '../../../../shared/presentation/pipes/relative-time.pipe';
+import { PageHeader } from '../../../../shared/presentation/components/page-header/page-header';
+import { ListToolbar } from '../../../../shared/presentation/components/list-toolbar/list-toolbar';
 import { CaStore } from '../../../application/ca.store';
 import {
   compareAlertsByNewest,
@@ -39,7 +38,7 @@ import { AlertSeverity, DeviationAlert } from '../../../domain/model/deviation-a
 import { AlertAttentionFlow } from '../../alert-attention-flow';
 import { alertVariableName } from '../../alert-variable';
 import { AlertCard } from '../../components/alert-card/alert-card';
-import { AlertsPageHeader } from '../../components/alerts-page-header/alerts-page-header';
+import { alertTabs } from '../../alert-tabs';
 import { SetupNotice } from '../../../../shared/presentation/components/setup-notice/setup-notice';
 import { IamStore } from '../../../../iam/application/iam.store';
 
@@ -93,16 +92,14 @@ function searchable(text: string): string {
     MatButtonModule,
     MatFormFieldModule,
     MatIconModule,
-    MatInputModule,
     MatSelectModule,
-    MatTooltipModule,
     ActionBanner,
     AlertCard,
-    AlertsPageHeader,
+    PageHeader,
+    ListToolbar,
     EmptyState,
     EnvironmentSelector,
     ErrorBanner,
-    RelativeTimePipe,
   ],
   templateUrl: './alert-dashboard.html',
   changeDetection: ChangeDetectionStrategy.Eager,
@@ -130,6 +127,9 @@ export class AlertDashboard implements OnInit {
       ? environmentId
       : null;
   });
+
+  /** Operations of the module, keeping the environment chosen. */
+  protected readonly tabs = computed(() => alertTabs(this.environmentId()));
 
   /** What the inbox reads: the environment chosen or, without one, every environment that exists. */
   private readonly scope = computed(() => {

@@ -1,8 +1,14 @@
 <main class="operations-page qt-theme">
-  <app-alerts-page-header section="preferences">
-    <section alertsSection class="preferences">
+  <app-page-header
+    icon="notifications_active"
+    titleKey="ca-alerts.page.title"
+    [tabs]="tabs"
+    activeTab="/alerts/notification-settings"
+    [refreshable]="false"
+  >
+    <section class="preferences">
       <p class="muted">{{ 'profile.notifications.subtitle' | translate }}</p>
       <div class="settings-card"><app-notification-preferences-form /></div>
     </section>
-  </app-alerts-page-header>
+  </app-page-header>
 </main>

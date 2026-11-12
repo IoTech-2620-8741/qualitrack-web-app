@@ -27,6 +27,7 @@ h1 {
   font-size: 28px;
   font-weight: 700;
   letter-spacing: 0;
+  line-height: 1.25;
   overflow-wrap: anywhere;
 }
 
@@ -38,18 +39,41 @@ h1 mat-icon {
   font-size: 28px;
 }
 
-.actions {
+/* Next to the title: how fresh the data is, and the button to read it again */
+.status {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
-  justify-content: flex-end;
   gap: 8px;
-  min-width: 0;
   margin-left: auto;
 }
 
-.actions:empty {
-  display: none;
+.updated {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--qt-text-muted);
+  font-size: 13px;
+}
+
+.live-dot {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--qt-success);
+}
+
+.partial .live-dot {
+  background: var(--qt-warning);
+}
+
+.refresh {
+  color: var(--qt-text);
+}
+
+.refresh:focus-visible {
+  outline: 3px solid var(--qt-primary);
+  outline-offset: 2px;
 }
 
 [mat-tab-link] {

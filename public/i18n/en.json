@@ -310,6 +310,10 @@
     }
   },
   "common": {
+    "filters": "Filters",
+    "clear-search": "Clear the search",
+    "updated": "Updated {{time}}",
+    "live": "Live · updated {{time}}",
     "paginator": {
       "per-page": "Rows per page",
       "first": "First page",
@@ -753,7 +757,6 @@
       "none-one": "This environment recorded no alerts in the last 90 days.",
       "unavailable": "The alerts of {{environments}} could not be read. The history does not include them.",
       "filters": {
-        "more": "More filters",
         "label": "Filters of the history",
         "period": "Period",
         "search": "Search device, variable or note",
@@ -856,8 +859,6 @@
     },
     "active": {
       "title": "Active Alerts",
-      "live": "Live · updated {{time}}",
-      "live-partial": "Partial data · updated {{time}}",
       "unavailable": "The alerts of {{environments}} could not be read. What you see of those environments may be out of date.",
       "retry": "Try again",
       "new-alerts": "New alerts: {{count}}.",
@@ -913,8 +914,7 @@
       "failed": "The e-mail could not be sent. Check that e-mail is configured on the platform."
     },
     "page": {
-      "title": "Compliance alerts",
-      "sections": "Alert sections"
+      "title": "Compliance alerts"
     },
     "tabs": {
       "active": "Active",
