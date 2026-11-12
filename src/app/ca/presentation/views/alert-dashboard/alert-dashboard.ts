@@ -11,7 +11,7 @@ import {
   untracked,
   viewChildren,
 } from '@angular/core';
-import { DOCUMENT, DecimalPipe } from '@angular/common';
+import { DOCUMENT } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink, RouterOutlet } from '@angular/router';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { LiveAnnouncer } from '@angular/cdk/a11y';
@@ -19,6 +19,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { filter, fromEvent, interval, map, merge, timer } from 'rxjs';
 
@@ -26,14 +28,14 @@ import { ActionBanner } from '../../../../shared/presentation/components/action-
 import { EmptyState } from '../../../../shared/presentation/components/empty-state/empty-state';
 import { EnvironmentSelector } from '../../../../shared/presentation/components/environment-selector/environment-selector';
 import { ErrorBanner } from '../../../../shared/presentation/components/error-banner/error-banner';
-import { StatFilterCard } from '../../../../shared/presentation/components/stat-filter-card/stat-filter-card';
+import { FilterChip } from '../../../../shared/presentation/components/filter-chip/filter-chip';
 import { RelativeTimePipe } from '../../../../shared/presentation/pipes/relative-time.pipe';
 import { CaStore } from '../../../application/ca.store';
 import {
   compareAlertsByNewest,
   compareAlertsByPriority,
 } from '../../../domain/model/alert-priority';
-import { DeviationAlert } from '../../../domain/model/deviation-alert.entity';
+import { AlertSeverity, DeviationAlert } from '../../../domain/model/deviation-alert.entity';
 import { AlertAttentionFlow } from '../../alert-attention-flow';
 import { alertVariableName } from '../../alert-variable';
 import { AlertCard } from '../../components/alert-card/alert-card';
@@ -53,6 +55,12 @@ type AlertSortOrder = 'priority' | 'newest' | 'environment';
 /** Which alerts the attention filter leaves. */
 type AttentionFilter = 'unattended' | 'attending';
 
+/** Chips of the inbox: each one leaves a part of the open alerts, and only one is pressed at a time. */
+type InboxChip = 'all' | 'critical-unattended' | 'unattended' | 'attending';
+
+/** Order of the groups of the inbox, the most serious first. */
+const SEVERITY_ORDER: readonly AlertSeverity[] = ['CRITICAL', 'WARNING', 'LOW'];
+
 /** Removes accents and capitals, so nobody has to type a name exactly as it is stored. */
 function searchable(text: string): string {
   return text
@@ -66,7 +74,8 @@ function searchable(text: string): string {
  * unless the person narrows it to one, so that a critical alert is never hidden behind a selector.
  *
  * @remarks
- * The chosen environment lives in the `environmentId` query parameter; without it, every environment is shown. The list
+ * The alerts are grouped by severity, and one chip at a time narrows them to what needs attention. The chosen environment
+ * lives in the `environmentId` query parameter; without it, every environment is shown. The list
  * refreshes itself while the tab is visible and attention registered from here can be undone for a few seconds. The
  * detail of an alert opens in a panel over the list, which stays as it was. With the focus on the list, J and K move
  * between the cards and A attends the one that has it; they only work there so they cannot get in the way of a person
@@ -77,7 +86,7 @@ function searchable(text: string): string {
   standalone: true,
   imports: [
     SetupNotice,
-    DecimalPipe,
+    FilterChip,
     RouterLink,
     RouterOutlet,
     TranslatePipe,
@@ -85,6 +94,8 @@ function searchable(text: string): string {
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,
+    MatSelectModule,
+    MatTooltipModule,
     ActionBanner,
     AlertCard,
     AlertsPageHeader,
@@ -92,7 +103,6 @@ function searchable(text: string): string {
     EnvironmentSelector,
     ErrorBanner,
     RelativeTimePipe,
-    StatFilterCard,
   ],
   templateUrl: './alert-dashboard.html',
   changeDetection: ChangeDetectionStrategy.Eager,
@@ -135,14 +145,10 @@ export class AlertDashboard implements OnInit {
   });
 
   /** Orders offered by the inbox, with the key of their name. */
-  protected readonly sortOrders: readonly {
-    order: AlertSortOrder;
-    icon: string | null;
-    labelKey: string;
-  }[] = [
-    { order: 'priority', icon: 'priority_high', labelKey: 'ca-alerts.active.sort.priority' },
-    { order: 'newest', icon: null, labelKey: 'ca-alerts.active.sort.newest' },
-    { order: 'environment', icon: null, labelKey: 'ca-alerts.active.sort.environment' },
+  protected readonly sortOrders: readonly { order: AlertSortOrder; labelKey: string }[] = [
+    { order: 'priority', labelKey: 'ca-alerts.active.sort.priority' },
+    { order: 'newest', labelKey: 'ca-alerts.active.sort.newest' },
+    { order: 'environment', labelKey: 'ca-alerts.active.sort.environment' },
   ];
 
   protected readonly sortOrder = signal<AlertSortOrder>('priority');
@@ -185,33 +191,32 @@ export class AlertDashboard implements OnInit {
     return alerts.sort(this.comparator());
   });
 
-  /** Oldest of the critical alerts nobody attends, which the banner tells about. */
-  protected readonly oldestUnattendedCritical = computed(
-    () => this.unattendedAlerts().find((alert) => alert.severity === 'CRITICAL') ?? null,
+  /** The alerts of the list in groups by severity, the most serious first; a group without alerts is left out. */
+  protected readonly groups = computed(() =>
+    SEVERITY_ORDER.map((severity) => ({
+      severity,
+      alerts: this.visibleAlerts().filter((alert) => alert.severity === severity),
+    })).filter((group) => group.alerts.length),
   );
 
+  /** Chip pressed, read from the filters it sets. */
+  protected readonly chip = computed<InboxChip>(() => {
+    const attentionFilter = this.attentionFilter();
+    if (this.criticalOnly()) return 'critical-unattended';
+    return attentionFilter ?? 'all';
+  });
+
+  /** Critical alerts nobody attends, which the red chip counts. */
   protected readonly unattendedCriticalCount = computed(
     () => this.unattendedAlerts().filter((alert) => alert.severity === 'CRITICAL').length,
   );
 
-  /** What the summary cards show. */
-  protected readonly stats = computed(() => {
-    const open = this.openAlerts();
-    const environmentCount = new Set(open.map((alert) => alert.environmentId)).size;
-    const warningCount = open.filter((alert) => alert.severity === 'WARNING').length;
-    const normalizedCount = this.attendingAlerts().filter((alert) => alert.isNormalized).length;
-    return {
-      open: open.length,
-      environmentCount,
-      critical: open.filter((alert) => alert.severity === 'CRITICAL').length,
-      warningCount,
-      unattended: this.unattendedAlerts().length,
-      oldestUnattendedAt:
-        [...this.unattendedAlerts()].sort(compareAlertsByNewest).at(-1)?.timestamp ?? null,
-      attending: this.attendingAlerts().length,
-      normalizedCount,
-    };
-  });
+  /** What the chips and the tab count: every open alert, the ones nobody attends and the ones in progress. */
+  protected readonly stats = computed(() => ({
+    open: this.openAlerts().length,
+    unattended: this.unattendedAlerts().length,
+    attending: this.attendingAlerts().length,
+  }));
 
   /** Names of the environments that could not be read, for the warning that says so. */
   protected readonly unavailableEnvironments = computed(() => {
@@ -308,20 +313,14 @@ export class AlertDashboard implements OnInit {
   }
 
   /**
-   * Applies a filter of attention, or removes it when it was applied.
+   * Leaves the part of the open alerts a chip stands for; pressing the chip already pressed goes back to every alert.
    *
-   * @param attentionFilter - The filter the person pressed
+   * @param chip - The chip the person pressed
    */
-  protected toggleAttentionFilter(attentionFilter: AttentionFilter): void {
-    this.attentionFilter.update((current) =>
-      current === attentionFilter ? null : attentionFilter,
-    );
-  }
-
-  /** Leaves only the critical alerts nobody attends, which is what the banner warns about. */
-  protected showUnattendedCritical(): void {
-    this.criticalOnly.set(true);
-    this.attentionFilter.set('unattended');
+  protected selectChip(chip: InboxChip): void {
+    const next = chip === this.chip() ? 'all' : chip;
+    this.criticalOnly.set(next === 'critical-unattended');
+    this.attentionFilter.set(next === 'all' ? null : next === 'critical-unattended' ? 'unattended' : next);
   }
 
   /**
@@ -417,7 +416,7 @@ export class AlertDashboard implements OnInit {
    * @param alert - The alert
    * @returns The name, or the identifier while it is unknown
    */
-  protected deviceLabelOf(alert: DeviationAlert): string {
+  private deviceLabelOf(alert: DeviationAlert): string {
     return this.store.deviceName(alert.equipmentId) ?? `#${alert.equipmentId}`;
   }
 
@@ -427,7 +426,7 @@ export class AlertDashboard implements OnInit {
    * @param alert - The alert
    * @returns The translated name
    */
-  protected variableOf(alert: DeviationAlert): string {
+  private variableOf(alert: DeviationAlert): string {
     return alertVariableName(this.translate, alert.parameterName);
   }
 

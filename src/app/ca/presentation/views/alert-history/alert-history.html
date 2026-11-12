@@ -1,23 +1,23 @@
 <main class="operations-page">
   <app-alerts-page-header
     section="history"
-    subtitleKey="ca-alerts.history.subtitle"
     [environmentId]="environmentId()"
   >
-    <app-environment-selector
-      alertsContext
-      appearance="inline"
-      allOptionKey="environments.all"
-      [environments]="store.environments()"
-      [selectedId]="environmentId()"
-      (selectedChange)="chooseEnvironment($event)"
-      (allSelected)="chooseAllEnvironments()"
-    />
     <a mat-stroked-button routerLink="/reports/new" [queryParams]="reportQuery()">
       <mat-icon aria-hidden="true">description</mat-icon>
       {{ 'ca-alerts.history.export' | translate }}
     </a>
     <div alertsSection class="history">
+      <app-environment-selector
+        class="environment"
+        appearance="inline"
+        allOptionKey="environments.all"
+        [environments]="store.environments()"
+        [selectedId]="environmentId()"
+        (selectedChange)="chooseEnvironment($event)"
+        (allSelected)="chooseAllEnvironments()"
+      />
+
       @if (!detailOpen() && store.error(); as error) {
         <app-error-banner
           [messageKey]="error"

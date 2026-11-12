@@ -26,7 +26,12 @@ a {
   flex-direction: column;
   gap: 24px;
   min-width: 0;
-  margin-top: 24px;
+}
+
+/* The environment opens the content of the history, like it opens the inbox */
+.history > app-environment-selector {
+  align-self: flex-start;
+  max-width: 100%;
 }
 
 .history p {

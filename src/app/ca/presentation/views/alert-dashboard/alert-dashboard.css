@@ -7,7 +7,7 @@
 }
 
 .operations-page {
-  max-width: 1200px;
+  max-width: 1280px;
   margin: 0 auto;
   padding: 32px 24px 48px;
 }
@@ -18,13 +18,7 @@ a {
   letter-spacing: 0;
 }
 
-.live-status {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px 16px;
-}
-
+/* Next to the title: how fresh the list is, and a button to read it again */
 .live {
   display: inline-flex;
   align-items: center;
@@ -45,31 +39,14 @@ a {
   background: var(--qt-warning);
 }
 
-.live-status button[mat-stroked-button] {
-  height: auto;
-  min-height: 40px;
-  padding: 8px 16px;
-  border-radius: var(--qt-radius-pill);
-  border-color: var(--qt-border);
+.refresh {
   color: var(--qt-text);
-  font-weight: 600;
-  white-space: nowrap;
-}
-
-.live-status button[mat-stroked-button][disabled] {
-  color: var(--qt-neutral-text);
-}
-
-.live-status button:focus-visible {
-  outline: 3px solid var(--qt-primary);
-  outline-offset: 2px;
 }
 
 .inbox {
   display: flex;
   flex-direction: column;
   gap: 16px;
-  margin-top: 24px;
 }
 
 .inbox p {
@@ -85,26 +62,14 @@ a {
   gap: 8px;
 }
 
-.success,
-.notice {
+.success {
   padding: 16px;
-  border: 1px solid;
+  background: var(--qt-success-surface);
+  border: 1px solid var(--qt-success);
   border-radius: var(--qt-radius-medium);
+  color: var(--qt-success-text);
   font-size: 14px;
   line-height: 1.6;
-  overflow-wrap: anywhere;
-}
-
-.success {
-  background: var(--qt-success-surface);
-  border-color: var(--qt-success);
-  color: var(--qt-success-text);
-}
-
-.notice {
-  background: var(--qt-warning-surface);
-  border-color: var(--qt-warning);
-  color: var(--qt-warning-text);
 }
 
 .loading {
@@ -114,140 +79,91 @@ a {
   text-align: center;
 }
 
-.banner-detail {
-  display: block;
-  font-size: 13px;
-}
-
-.stats {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 16px;
-}
-
-.filters {
+/* First the environment and the search, then the chips that narrow the list */
+.toolbar {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px 24px;
+  gap: 12px;
 }
 
-.sort {
+.chips {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
-  gap: 8px 12px;
-  color: var(--qt-text-muted);
-  font-size: 14px;
+  flex-basis: 100%;
+  gap: 8px;
 }
 
-.segmented {
-  display: inline-flex;
-  gap: 4px;
-  max-width: 100%;
-  padding: 4px;
-  overflow-x: auto;
-  background: var(--qt-surface);
-  border: 1px solid var(--qt-border);
-  border-radius: var(--qt-radius-pill);
+.chips app-filter-chip {
+  flex: none;
 }
 
-.sort-pill {
-  display: inline-flex;
-  flex: 0 0 auto;
-  align-items: center;
-  gap: 6px;
-  min-height: 44px;
-  padding: 0 20px;
-  border: 0;
-  border-radius: var(--qt-radius-pill);
-  background: transparent;
-  color: var(--qt-text-muted);
-  font: inherit;
-  font-size: 14px;
-  font-weight: 500;
-  white-space: nowrap;
-  cursor: pointer;
-  transition:
-    background 0.2s ease,
-    color 0.2s ease;
-}
-
-.sort-pill:hover:not(.selected) {
-  background: var(--qt-background);
-}
-
-.sort-pill:focus-visible {
-  outline: 3px solid var(--qt-primary);
-  outline-offset: 2px;
-}
-
-.sort-pill.selected {
-  background: var(--qt-primary-strong);
-  color: var(--qt-surface);
-  font-weight: 600;
-}
-
-.sort-pill mat-icon {
-  width: 18px;
-  height: 18px;
-  font-size: 18px;
-}
-
-.search {
-  flex: 0 1 320px;
+.find {
+  display: flex;
+  flex: 1 1 360px;
+  justify-content: flex-end;
+  gap: 8px;
   min-width: 0;
-  --mat-form-field-outlined-focus-outline-color: var(--qt-primary);
-  --mat-form-field-outlined-focus-label-text-color: var(--qt-primary-strong);
 }
 
-.search input {
-  caret-color: var(--qt-primary);
+.find .search {
+  flex: 1 1 220px;
+  max-width: 320px;
+  min-width: 0;
 }
 
-.search mat-icon[matPrefix] {
-  color: var(--qt-text-muted);
+.find .sort {
+  flex: 0 0 170px;
 }
 
 .result-count {
   color: var(--qt-text-muted);
-  font-size: 14px;
+  font-size: 13px;
 }
 
-.shortcuts {
-  color: var(--qt-text-muted);
-  font-size: 12px;
-}
-
-.shortcuts kbd {
-  padding: 1px 6px;
-  border: 1px solid var(--qt-border);
-  border-radius: 4px;
-  background: var(--qt-surface);
-  font: inherit;
-  font-weight: 600;
-}
-
-@media (hover: none) {
-  .shortcuts {
-    display: none;
-  }
-}
-
-.alert-list {
+.alert-groups {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 20px;
+}
+
+.group-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 8px;
+  color: var(--qt-text-muted);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.group-count {
+  min-width: 20px;
+  padding: 1px 7px;
+  background: var(--qt-neutral-surface);
+  border-radius: var(--qt-radius-pill);
+  color: var(--qt-neutral-text);
+  font-size: 12px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+/* The alerts of a group are rows of one card */
+.alert-list {
   margin: 0;
   padding: 0;
+  overflow: hidden;
+  background: var(--qt-surface);
+  border: 1px solid var(--qt-border);
+  border-radius: var(--qt-radius-medium);
+  box-shadow: 0 1px 3px rgb(15 23 42 / 8%);
   list-style: none;
 }
 
-@media (max-width: 960px) {
-  .stats {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
+.alert-list li + li {
+  border-top: 1px solid var(--qt-border);
 }
 
 @media (max-width: 760px) {
@@ -255,40 +171,44 @@ a {
     padding: 20px 16px 36px;
   }
 
-  .stats {
-    gap: 10px;
-  }
-
-  .sort {
+  .chips {
+    flex-wrap: nowrap;
     width: 100%;
+    overflow-x: auto;
+    scrollbar-width: none;
   }
 
-  .search {
+  .find {
     flex-basis: 100%;
   }
 
-  .live-status {
-    width: 100%;
-    justify-content: space-between;
-  }
-}
-
-@media (max-width: 480px) {
-  .segmented {
-    flex-wrap: wrap;
-    overflow-x: visible;
-    border-radius: 24px;
+  .find .search {
+    max-width: none;
   }
 
-  .sort-pill {
-    flex: 1 1 auto;
-    justify-content: center;
-    padding: 0 12px;
+  .find .sort {
+    flex-basis: 140px;
   }
-}
 
-@media (prefers-reduced-motion: reduce) {
-  * {
-    transition: none !important;
+  /* On a phone the alerts are separate cards */
+  .alert-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    overflow: visible;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+  }
+
+  .alert-list li + li {
+    border-top: 0;
+  }
+
+  .alert-list li {
+    overflow: hidden;
+    border: 1px solid var(--qt-border);
+    border-radius: var(--qt-radius-medium);
+    box-shadow: 0 1px 3px rgb(15 23 42 / 8%);
   }
 }

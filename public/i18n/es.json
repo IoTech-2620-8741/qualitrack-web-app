@@ -399,6 +399,7 @@
     "alerts": "Alertas de cumplimiento",
     "alert-dashboard": "Alertas activas",
     "alert-history": "Historial de alertas",
+    "alert-preferences": "Preferencias de notificación",
     "reports": "Reportes y KPIs",
     "kpi-dashboard": "Resumen ambiental",
     "deviation-trends": "Indicadores de desviación",
@@ -707,11 +708,6 @@
   "ca-alerts": {
     "empty": "No se encontraron alertas de cumplimiento. Todo está dentro de los parámetros BPM.",
     "not-found": "Alerta no encontrada.",
-    "kpi": {
-      "critical": "Críticas",
-      "open": "Alertas abiertas",
-      "attending": "En atención"
-    },
     "fields": {
       "parameter": "Variable",
       "severity": "Severidad",
@@ -866,22 +862,17 @@
       "search": "Buscar dispositivo o variable",
       "results": "Se muestran {{shown}} de {{total}} alertas.",
       "no-results": "No hay alertas con estos filtros.",
-      "critical-banner": {
-        "title-one": "1 alerta crítica sin atender.",
-        "title-many": "{{count}} alertas críticas sin atender.",
-        "oldest": "La más antigua: {{device}} · {{variable}} {{value}} {{unit}}.",
-        "detail": "Abierta {{time}} · nadie la ha registrado en atención",
-        "action": "Ver críticas sin atender"
-      },
-      "stats": {
+      "filters": {
+        "label": "Filtrar las alertas",
+        "all": "Todas",
+        "critical-unattended": "Críticas sin atender",
         "unattended": "Sin atender",
-        "environments-one": "en 1 ambiente",
-        "environments-many": "en {{count}} ambientes",
-        "warnings-one": "1 advertencia",
-        "warnings-many": "{{count}} advertencias",
-        "oldest": "más antigua: {{time}}",
-        "normalized-one": "1 ya normalizada",
-        "normalized-many": "{{count}} ya normalizadas"
+        "attending": "En atención"
+      },
+      "groups": {
+        "CRITICAL": "Críticas",
+        "WARNING": "Advertencias",
+        "LOW": "Bajas"
       },
       "sort": {
         "label": "Ordenar por",
@@ -889,16 +880,13 @@
         "newest": "Más recientes",
         "environment": "Ambiente"
       },
-      "shortcuts": {
-        "label": "Atajos con el foco en la lista:",
-        "move": "moverse"
-      },
       "card": {
         "limit": "límite {{value}} {{unit}}",
         "opened": "Abierta {{time}}",
         "no-owner": "Sin responsable",
         "attending": "En atención {{time}}",
         "attending-by": "En atención por {{name}} · {{time}}",
+        "more": "Más acciones",
         "notify": "Avisar",
         "resolve": "Resolver"
       },
@@ -927,7 +915,8 @@
     },
     "tabs": {
       "active": "Activas",
-      "history": "Historial"
+      "history": "Historial",
+      "preferences": "Preferencias"
     }
   },
   "notifications": {

@@ -9,11 +9,9 @@ import { AlertsPageHeader, AlertsSection } from './alerts-page-header';
   template: `
     <app-alerts-page-header
       [section]="section()"
-      subtitleKey="alerts.subtitle"
       [activeCount]="activeCount()"
       [environmentId]="environmentId()"
     >
-      <span alertsContext class="page-context">Environment</span>
       <button type="button" class="page-action">Action</button>
       <section alertsSection class="page-content">Content</section>
     </app-alerts-page-header>
@@ -38,15 +36,23 @@ describe('AlertsPageHeader', () => {
     return { fixture, element, tabs };
   }
 
-  it('links the two sections and marks the one of the page', () => {
+  it('links the three sections and marks the one of the page', () => {
     const { fixture, tabs } = create();
 
-    expect(tabs().map((tab) => tab.getAttribute('href'))).toEqual(['/alerts', '/alerts/history']);
+    expect(tabs().map((tab) => tab.getAttribute('href'))).toEqual([
+      '/alerts',
+      '/alerts/history',
+      '/alerts/notification-settings',
+    ]);
     expect(tabs()[0].classList).toContain('mdc-tab--active');
 
     fixture.componentInstance.section.set('history');
     fixture.detectChanges();
     expect(tabs()[1].classList).toContain('mdc-tab--active');
+
+    fixture.componentInstance.section.set('preferences');
+    fixture.detectChanges();
+    expect(tabs()[2].classList).toContain('mdc-tab--active');
   });
 
   it('shows the count of open alerts only when there are some', () => {
@@ -71,16 +77,14 @@ describe('AlertsPageHeader', () => {
     expect(tabs().map((tab) => tab.getAttribute('href'))).toEqual([
       '/alerts?environmentId=5',
       '/alerts/history?environmentId=5',
+      '/alerts/notification-settings',
     ]);
   });
 
-  it('places what the page shows, its actions and its content', () => {
+  it('places the actions of the page next to the title and its content under the tabs', () => {
     const { element } = create();
 
-    expect(element.querySelector('.titles .context .page-context')).not.toBeNull();
-    expect(element.querySelector('.actions .page-context')).toBeNull();
-    expect(element.querySelector('.actions .page-action')).not.toBeNull();
+    expect(element.querySelector('.heading .actions .page-action')).not.toBeNull();
     expect(element.querySelector('mat-tab-nav-panel .page-content')).not.toBeNull();
-    expect(element.querySelector('.actions')?.textContent).toContain('ca-alerts.page.preferences');
   });
 });

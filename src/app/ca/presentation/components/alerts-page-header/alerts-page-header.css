@@ -5,6 +5,7 @@
 
 .page-header {
   min-width: 0;
+  margin-bottom: 20px;
 }
 
 .heading {
@@ -13,19 +14,14 @@
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  margin-bottom: 16px;
-}
-
-.titles {
-  flex: 1 1 320px;
-  min-width: 0;
-  max-width: 800px;
+  margin-bottom: 8px;
 }
 
 h1 {
   display: flex;
   align-items: center;
   gap: 10px;
+  min-width: 0;
   margin: 0;
   color: var(--qt-heading);
   font-size: 28px;
@@ -42,66 +38,24 @@ h1 mat-icon {
   font-size: 28px;
 }
 
-/* What the page is showing, such as its environment, under the title */
-.context {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  min-width: 0;
-  margin-top: 20px;
-}
-
-.context:empty {
-  display: none;
-}
-
-p {
-  margin: 8px 0 0;
-  color: var(--qt-text-muted);
-  font-size: 14px;
-  line-height: 1.6;
-  overflow-wrap: anywhere;
-}
-
 .actions {
   display: flex;
-  flex: 0 1 auto;
   flex-wrap: wrap;
   align-items: center;
   justify-content: flex-end;
-  gap: 12px;
+  gap: 8px;
   min-width: 0;
   margin-left: auto;
 }
 
-.actions a[mat-stroked-button] {
-  min-height: 40px;
-  height: auto;
-  padding: 8px 16px;
-  border-color: var(--qt-border);
-  border-radius: var(--qt-radius-pill);
-  color: var(--qt-text);
-  font-size: 14px;
-  font-weight: 600;
-  text-decoration: none;
-  white-space: nowrap;
+.actions:empty {
+  display: none;
 }
 
-.actions a:focus-visible {
-  outline: 3px solid var(--qt-primary);
-  outline-offset: 2px;
-}
-
-/* Pestañas de navegación */
 [mat-tab-link] {
   min-width: auto;
   font-size: 14px;
   font-weight: 500;
-}
-
-[mat-tab-link] mat-icon {
-  flex: none;
-  margin-right: 8px;
 }
 
 .tab-count {
@@ -116,7 +70,7 @@ p {
   border-radius: var(--qt-radius-pill);
   color: var(--qt-error-text);
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 600;
   line-height: 1;
   font-variant-numeric: tabular-nums;
 }
@@ -130,17 +84,5 @@ p {
     width: 24px;
     height: 24px;
     font-size: 24px;
-  }
-
-  .actions {
-    width: 100%;
-    justify-content: flex-start;
-    margin-left: 0;
-  }
-}
-
-@media (max-width: 480px) {
-  [mat-tab-link] mat-icon {
-    display: none;
   }
 }

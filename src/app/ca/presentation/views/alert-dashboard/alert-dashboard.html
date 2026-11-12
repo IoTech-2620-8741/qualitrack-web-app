@@ -1,40 +1,32 @@
 <main class="operations-page qt-theme">
   <app-alerts-page-header
     section="active"
-    subtitleKey="ca-alerts.active.subtitle"
     [activeCount]="stats().open"
     [environmentId]="environmentId()"
   >
-    <app-environment-selector
-      alertsContext
-      appearance="inline"
-      allOptionKey="environments.all"
-      [environments]="store.environments()"
-      [selectedId]="environmentId()"
-      (selectedChange)="chooseEnvironment($event)"
-      (allSelected)="chooseAllEnvironments()"
-    />
-    <div class="live-status">
-      @if (store.alertsUpdatedAt(); as updatedAt) {
-        <span class="live" [class.partial]="store.unavailableEnvironmentIds().length">
-          <span class="live-dot" aria-hidden="true"></span>
-          {{
-            (store.unavailableEnvironmentIds().length
-                ? 'ca-alerts.active.live-partial'
-                : 'ca-alerts.active.live'
-            ) | translate: { time: (updatedAt | relativeTime: now()) }
-          }}
-        </span>
-      }
-      <button
-        mat-stroked-button
-        type="button"
-        [disabled]="store.loading() || store.refreshing()"
-        (click)="refresh()"
-      >
-        <mat-icon aria-hidden="true">refresh</mat-icon>{{ 'common.refresh' | translate }}
-      </button>
-    </div>
+    @if (store.alertsUpdatedAt(); as updatedAt) {
+      <span class="live" [class.partial]="store.unavailableEnvironmentIds().length">
+        <span class="live-dot" aria-hidden="true"></span>
+        {{
+          (store.unavailableEnvironmentIds().length
+              ? 'ca-alerts.active.live-partial'
+              : 'ca-alerts.active.live'
+          ) | translate: { time: (updatedAt | relativeTime: now()) }
+        }}
+      </span>
+    }
+    <button
+      mat-icon-button
+      type="button"
+      class="refresh"
+      [disabled]="store.loading() || store.refreshing()"
+      [attr.aria-label]="'common.refresh' | translate"
+      [matTooltip]="'common.refresh' | translate"
+      (click)="refresh()"
+    >
+      <mat-icon aria-hidden="true">refresh</mat-icon>
+    </button>
+
     <div alertsSection class="inbox">
       @if ((store.error() || store.notice()) && !detailOpen()) {
         <div class="feedback">
@@ -54,6 +46,73 @@
       @if (store.environmentsEmpty()) {
         <app-setup-notice messageKey="ca-alerts.no-environments" [actionLink]="iam.canManageQuality() ? '/laboratories/environments/new' : null" />
       } @else if (store.environmentsLoaded()) {
+        <!-- One line to narrow the inbox: the environment, what needs attention, and a search -->
+        <div class="toolbar">
+          <app-environment-selector
+            appearance="inline"
+            allOptionKey="environments.all"
+            [environments]="store.environments()"
+            [selectedId]="environmentId()"
+            (selectedChange)="chooseEnvironment($event)"
+            (allSelected)="chooseAllEnvironments()"
+          />
+
+          @if (stats().open) {
+            <div class="find">
+              <mat-form-field appearance="outline" subscriptSizing="dynamic" class="search">
+                <mat-icon matPrefix aria-hidden="true">search</mat-icon>
+                <input
+                  matInput
+                  type="search"
+                  [value]="searchTerm()"
+                  [placeholder]="'ca-alerts.active.search' | translate"
+                  [attr.aria-label]="'ca-alerts.active.search' | translate"
+                  (input)="searchTerm.set($any($event.target).value)"
+                />
+              </mat-form-field>
+              <mat-form-field appearance="outline" subscriptSizing="dynamic" class="sort">
+                <mat-label>{{ 'ca-alerts.active.sort.label' | translate }}</mat-label>
+                <mat-select [value]="sortOrder()" (selectionChange)="sortOrder.set($event.value)">
+                  @for (option of sortOrders; track option.order) {
+                    <mat-option [value]="option.order">{{ option.labelKey | translate }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+            </div>
+
+            <div class="chips" role="group" [attr.aria-label]="'ca-alerts.active.filters.label' | translate">
+              <app-filter-chip
+                labelKey="ca-alerts.active.filters.all"
+                [count]="stats().open"
+                [pressed]="chip() === 'all'"
+                (toggled)="selectChip('all')"
+              />
+              @if (unattendedCriticalCount()) {
+                <app-filter-chip
+                  tone="danger"
+                  icon="error"
+                  labelKey="ca-alerts.active.filters.critical-unattended"
+                  [count]="unattendedCriticalCount()"
+                  [pressed]="chip() === 'critical-unattended'"
+                  (toggled)="selectChip('critical-unattended')"
+                />
+              }
+              <app-filter-chip
+                labelKey="ca-alerts.active.filters.unattended"
+                [count]="stats().unattended"
+                [pressed]="chip() === 'unattended'"
+                (toggled)="selectChip('unattended')"
+              />
+              <app-filter-chip
+                labelKey="ca-alerts.active.filters.attending"
+                [count]="stats().attending"
+                [pressed]="chip() === 'attending'"
+                (toggled)="selectChip('attending')"
+              />
+            </div>
+          }
+        </div>
+
         @if (unavailableEnvironments(); as environments) {
           <app-action-banner
             icon="cloud_off"
@@ -93,120 +152,6 @@
             </a>
           </app-empty-state>
         } @else {
-          @if (oldestUnattendedCritical(); as oldest) {
-            <app-action-banner
-              actionKey="ca-alerts.active.critical-banner.action"
-              (action)="showUnattendedCritical()"
-            >
-              <strong>{{
-                  (unattendedCriticalCount() === 1
-                      ? 'ca-alerts.active.critical-banner.title-one'
-                      : 'ca-alerts.active.critical-banner.title-many'
-                  ) | translate: { count: unattendedCriticalCount() }
-                }}</strong>
-              {{
-                'ca-alerts.active.critical-banner.oldest'
-                  | translate
-                  : {
-                    device: deviceLabelOf(oldest),
-                    variable: variableOf(oldest),
-                    value: (oldest.recordedValue | number: '1.0-2'),
-                    unit: oldest.unit,
-                  }
-              }}
-              <span class="banner-detail">{{
-                  'ca-alerts.active.critical-banner.detail'
-                    | translate: { time: (oldest.timestamp | relativeTime: now()) }
-                }}</span>
-            </app-action-banner>
-          }
-
-          <section class="stats" [attr.aria-label]="'ca-alerts.active.title' | translate">
-            <app-stat-filter-card
-              icon="notifications"
-              labelKey="ca-alerts.kpi.open"
-              [value]="stats().open"
-              [hintKey]="
-                stats().environmentCount === 1
-                  ? 'ca-alerts.active.stats.environments-one'
-                  : 'ca-alerts.active.stats.environments-many'
-              "
-              [hintParams]="{ count: stats().environmentCount }"
-              [pressed]="!criticalOnly() && attentionFilter() === null"
-              (toggled)="criticalOnly.set(false); attentionFilter.set(null)"
-            />
-            <app-stat-filter-card
-              icon="error"
-              labelKey="ca-alerts.kpi.critical"
-              [value]="stats().critical"
-              [hintKey]="
-                stats().warningCount === 1
-                  ? 'ca-alerts.active.stats.warnings-one'
-                  : 'ca-alerts.active.stats.warnings-many'
-              "
-              [hintParams]="{ count: stats().warningCount }"
-              [pressed]="criticalOnly()"
-              (toggled)="criticalOnly.set(!criticalOnly())"
-            />
-            <app-stat-filter-card
-              icon="pending_actions"
-              labelKey="ca-alerts.active.stats.unattended"
-              [value]="stats().unattended"
-              [hintKey]="stats().oldestUnattendedAt ? 'ca-alerts.active.stats.oldest' : null"
-              [hintParams]="{ time: (stats().oldestUnattendedAt | relativeTime: now()) }"
-              [pressed]="attentionFilter() === 'unattended'"
-              (toggled)="toggleAttentionFilter('unattended')"
-            />
-            <app-stat-filter-card
-              icon="pan_tool"
-              labelKey="ca-alerts.kpi.attending"
-              [value]="stats().attending"
-              [hintKey]="
-                stats().normalizedCount === 1
-                  ? 'ca-alerts.active.stats.normalized-one'
-                  : stats().normalizedCount
-                    ? 'ca-alerts.active.stats.normalized-many'
-                    : null
-              "
-              [hintParams]="{ count: stats().normalizedCount }"
-              [pressed]="attentionFilter() === 'attending'"
-              (toggled)="toggleAttentionFilter('attending')"
-            />
-          </section>
-
-          <div class="filters">
-            <div class="sort" role="group" aria-labelledby="alert-sort-label">
-              <span id="alert-sort-label">{{ 'ca-alerts.active.sort.label' | translate }}</span>
-              <div class="segmented">
-                @for (option of sortOrders; track option.order) {
-                  <button
-                    type="button"
-                    class="sort-pill"
-                    [class.selected]="sortOrder() === option.order"
-                    [attr.aria-pressed]="sortOrder() === option.order"
-                    (click)="sortOrder.set(option.order)"
-                  >
-                    @if (option.icon) {
-                      <mat-icon aria-hidden="true">{{ option.icon }}</mat-icon>
-                    }
-                    {{ option.labelKey | translate }}
-                  </button>
-                }
-              </div>
-            </div>
-            <mat-form-field appearance="outline" subscriptSizing="dynamic" class="search">
-              <mat-icon matPrefix aria-hidden="true">search</mat-icon>
-              <input
-                matInput
-                type="search"
-                [value]="searchTerm()"
-                [placeholder]="'ca-alerts.active.search' | translate"
-                [attr.aria-label]="'ca-alerts.active.search' | translate"
-                (input)="searchTerm.set($any($event.target).value)"
-              />
-            </mat-form-field>
-          </div>
-
           @if (isFiltered()) {
             <p class="result-count" role="status">
               {{
@@ -216,37 +161,40 @@
             </p>
           }
 
-          <p class="shortcuts">
-            {{ 'ca-alerts.active.shortcuts.label' | translate }}
-            <kbd>J</kbd> <kbd>K</kbd> {{ 'ca-alerts.active.shortcuts.move' | translate }}
-            @if (store.canAttend()) {
-              · <kbd>A</kbd> {{ 'ca-alerts.actions.acknowledge' | translate }}
-            }
-          </p>
-
-          <ul
-            class="alert-list"
+          <!-- J and K move between the alerts and A registers attention, with the focus on the list -->
+          <div
+            class="alert-groups"
             [attr.aria-keyshortcuts]="store.canAttend() ? 'J K A' : 'J K'"
             (keydown)="handleListShortcut($event)"
           >
-            @for (alert of visibleAlerts(); track alert.id) {
-              <li>
-                <app-alert-card
-                  [alert]="alert"
-                  [deviceName]="store.deviceName(alert.equipmentId)"
-                  [environmentLabel]="environmentLabelOf(alert)"
-                  [attendedBy]="attendedByOf(alert)"
-                  [canAttend]="store.canAttend()"
-                  [saving]="store.saving()"
-                  [isNew]="store.newAlertIds().has(alert.id)"
-                  [now]="now()"
-                  (attend)="attend(alert)"
-                  (notify)="notify(alert)"
-                  (opening)="closeUndoWindow(alert)"
-                />
-              </li>
+            @for (group of groups(); track group.severity) {
+              <section class="group" [attr.aria-labelledby]="'alert-group-' + group.severity">
+                <h2 class="group-title" [id]="'alert-group-' + group.severity">
+                  {{ 'ca-alerts.active.groups.' + group.severity | translate }}
+                  <span class="group-count">{{ group.alerts.length }}</span>
+                </h2>
+                <ul class="alert-list">
+                  @for (alert of group.alerts; track alert.id) {
+                    <li>
+                      <app-alert-card
+                        [alert]="alert"
+                        [deviceName]="store.deviceName(alert.equipmentId)"
+                        [environmentLabel]="environmentLabelOf(alert)"
+                        [attendedBy]="attendedByOf(alert)"
+                        [canAttend]="store.canAttend()"
+                        [saving]="store.saving()"
+                        [isNew]="store.newAlertIds().has(alert.id)"
+                        [now]="now()"
+                        (attend)="attend(alert)"
+                        (notify)="notify(alert)"
+                        (opening)="closeUndoWindow(alert)"
+                      />
+                    </li>
+                  }
+                </ul>
+              </section>
             }
-          </ul>
+          </div>
 
           @if (!visibleAlerts().length && isFiltered()) {
             <app-empty-state messageKey="ca-alerts.active.no-results">

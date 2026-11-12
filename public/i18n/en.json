@@ -399,6 +399,7 @@
     "alerts": "Compliance Alerts",
     "alert-dashboard": "Active Alerts",
     "alert-history": "Alert History",
+    "alert-preferences": "Notification Preferences",
     "reports": "Reports & KPIs",
     "kpi-dashboard": "Environmental Summary",
     "deviation-trends": "Deviation Indicators",
@@ -707,11 +708,6 @@
   "ca-alerts": {
     "empty": "No compliance alerts found. Everything is within BPM parameters.",
     "not-found": "Alert not found.",
-    "kpi": {
-      "critical": "Critical",
-      "open": "Open alerts",
-      "attending": "In progress"
-    },
     "fields": {
       "parameter": "Variable",
       "severity": "Severity",
@@ -866,22 +862,17 @@
       "search": "Search device or variable",
       "results": "Showing {{shown}} of {{total}} alerts.",
       "no-results": "There are no alerts with these filters.",
-      "critical-banner": {
-        "title-one": "1 critical alert not attended.",
-        "title-many": "{{count}} critical alerts not attended.",
-        "oldest": "The oldest: {{device}} · {{variable}} {{value}} {{unit}}.",
-        "detail": "Opened {{time}} · nobody has registered attention",
-        "action": "View unattended critical"
-      },
-      "stats": {
+      "filters": {
+        "label": "Filter the alerts",
+        "all": "All",
+        "critical-unattended": "Critical not attended",
         "unattended": "Not attended",
-        "environments-one": "in 1 environment",
-        "environments-many": "in {{count}} environments",
-        "warnings-one": "1 warning",
-        "warnings-many": "{{count}} warnings",
-        "oldest": "oldest: {{time}}",
-        "normalized-one": "1 already normalized",
-        "normalized-many": "{{count}} already normalized"
+        "attending": "In progress"
+      },
+      "groups": {
+        "CRITICAL": "Critical",
+        "WARNING": "Warnings",
+        "LOW": "Low"
       },
       "sort": {
         "label": "Sort by",
@@ -889,16 +880,13 @@
         "newest": "Newest",
         "environment": "Environment"
       },
-      "shortcuts": {
-        "label": "Shortcuts with the focus on the list:",
-        "move": "move"
-      },
       "card": {
         "limit": "limit {{value}} {{unit}}",
         "opened": "Opened {{time}}",
         "no-owner": "No one assigned",
         "attending": "In progress {{time}}",
         "attending-by": "In progress by {{name}} · {{time}}",
+        "more": "More actions",
         "notify": "Notify",
         "resolve": "Resolve"
       },
@@ -927,7 +915,8 @@
     },
     "tabs": {
       "active": "Active",
-      "history": "History"
+      "history": "History",
+      "preferences": "Preferences"
     }
   },
   "notifications": {
