@@ -1406,7 +1406,6 @@
     }
   },
   "reporting": {
-    "all-environments": "All environments",
     "no-environments": "Register an environment of the laboratory to calculate its indicators.",
     "errors": {
       "load": "The indicators could not be loaded. Please try again."

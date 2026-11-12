@@ -9,7 +9,7 @@
 .operations-page {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 32px 24px;
+  padding: 32px 24px 48px;
 }
 
 .page-heading {
@@ -91,8 +91,11 @@ mat-form-field {
   --mat-form-field-focus-select-arrow-color: var(--qt-primary);
 }
 
-.scope-select {
-  width: 260px;
+/* The environment being shown, under the description, like on every page */
+.page-heading app-environment-selector {
+  display: block;
+  max-width: 100%;
+  margin-top: 16px;
 }
 
 .date-range {
@@ -277,10 +280,6 @@ mat-button-toggle-group ::ng-deep .mat-button-toggle-button:focus-visible {
 
   mat-button-toggle-group ::ng-deep .mat-button-toggle-label-content {
     padding: 0 12px;
-  }
-
-  .scope-select {
-    width: 100%;
   }
 
   .date-range {

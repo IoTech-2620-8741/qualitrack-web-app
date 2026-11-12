@@ -11,6 +11,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslatePipe } from '@ngx-translate/core';
 import { InventoryStore } from '../../../application/inventory.store';
 import { EnvironmentSelector } from '../../../../shared/presentation/components/environment-selector/environment-selector';
@@ -39,6 +40,7 @@ import { MatTabsModule } from '@angular/material/tabs';
     LegacyImportPanel,
     InventoryCatalogueStats,
     MatTabsModule,
+    MatTooltipModule,
   ],
   templateUrl: './inventory-catalogue.html',
   changeDetection: ChangeDetectionStrategy.Eager,

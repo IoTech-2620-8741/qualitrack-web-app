@@ -1,9 +1,9 @@
 <main class="dashboard">
   <header class="page-header">
-    <div>
-      <p class="eyebrow">{{ 'nav.dashboard' | translate }}</p>
-      <h1>{{ store.overviewLaboratory().data?.name || ('dashboard.fallback-title' | translate) }}</h1>
-    </div>
+    <h1>
+      <mat-icon aria-hidden="true">dashboard</mat-icon>
+      {{ store.overviewLaboratory().data?.name || ('dashboard.fallback-title' | translate) }}
+    </h1>
     <button
       mat-icon-button
       type="button"

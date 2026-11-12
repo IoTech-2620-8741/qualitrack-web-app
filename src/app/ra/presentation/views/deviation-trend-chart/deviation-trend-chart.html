@@ -2,8 +2,8 @@
   <header class="page-heading">
     <div>
       <h1><mat-icon aria-hidden="true">multiline_chart</mat-icon>{{ 'reporting.deviations.title' | translate }}</h1>
-      <app-environment-selector appearance="inline" [environments]="store.environments()" [selectedId]="environmentId()" (selectedChange)="changeEnvironment($event)" />
       <p class="muted">{{ 'reporting.deviations.subtitle' | translate }}</p>
+      <app-environment-selector appearance="inline" [environments]="store.environments()" [selectedId]="environmentId()" (selectedChange)="changeEnvironment($event)" />
     </div>
     <div class="actions">
       <mat-button-toggle-group [hideSingleSelectionIndicator]="true" [value]="days()" (change)="changePeriod($event.value)" [disabled]="store.isLoading()">

@@ -10,9 +10,7 @@ import {
 import { TranslatePipe } from '@ngx-translate/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
-import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
-import { MatSelectModule } from '@angular/material/select';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { DateTimePipe } from '../../../../shared/presentation/pipes/date-time.pipe';
@@ -21,6 +19,7 @@ import { ALL_ENVIRONMENTS, lastDays } from '../../../domain/model/indicator-peri
 import { KpiSummaryCards } from '../../components/kpi-summary-cards/kpi-summary-cards';
 import { KpiTable } from '../../components/kpi-table/kpi-table';
 import { KpiRecords } from '../../components/kpi-records/kpi-records';
+import { EnvironmentSelector } from '../../../../shared/presentation/components/environment-selector/environment-selector';
 
 /** Lengths of the period offered, in days; the platform accepts up to 31. */
 const PERIOD_DAYS = [1, 7, 31] as const;
@@ -43,9 +42,8 @@ const PERIOD_DAYS = [1, 7, 31] as const;
     TranslatePipe,
     MatButtonModule,
     MatButtonToggleModule,
-    MatFormFieldModule,
     MatIconModule,
-    MatSelectModule,
+    EnvironmentSelector,
     MatProgressSpinnerModule,
     KpiSummaryCards,
     KpiTable,

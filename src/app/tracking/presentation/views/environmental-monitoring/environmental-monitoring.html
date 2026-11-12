@@ -2,8 +2,8 @@
   <header class="page-heading">
     <div class="heading-content">
       <h1><mat-icon aria-hidden="true">sensors</mat-icon>{{ 'tracking.monitoring.title' | translate }}</h1>
-      <app-environment-selector appearance="inline" [environments]="store.environments()" [selectedId]="store.environmentId()" (selectedChange)="changeEnvironment($event)" />
       <p class="muted">{{ 'tracking.monitoring.subtitle' | translate }}</p>
+      <app-environment-selector appearance="inline" [environments]="store.environments()" [selectedId]="store.environmentId()" (selectedChange)="changeEnvironment($event)" />
     </div>
     <div class="actions">
       <button

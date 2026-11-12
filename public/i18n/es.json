@@ -1406,7 +1406,6 @@
     }
   },
   "reporting": {
-    "all-environments": "Todos los ambientes",
     "no-environments": "Registra un ambiente del laboratorio para calcular sus indicadores.",
     "errors": {
       "load": "No se pudieron cargar los indicadores. Vuelve a intentarlo."

@@ -3,6 +3,16 @@
     <div>
       <h1><mat-icon aria-hidden="true">insights</mat-icon>{{ 'reporting.summary.title' | translate }}</h1>
       <p class="muted">{{ 'reporting.summary.subtitle' | translate }}</p>
+      @if (!store.environmentsEmpty()) {
+        <app-environment-selector
+          appearance="inline"
+          allOptionKey="environments.all"
+          [environments]="store.environments()"
+          [selectedId]="environmentId()"
+          (selectedChange)="changeEnvironment($event)"
+          (allSelected)="changeEnvironment(ALL_ENVIRONMENTS)"
+        />
+      }
     </div>
   </header>
   <div class="filters-panel">
@@ -11,16 +21,6 @@
         <mat-button-toggle [value]="option">{{ 'reporting.period.days-' + option | translate }}</mat-button-toggle>
       }
     </mat-button-toggle-group>
-    @if (!store.environmentsEmpty()) {
-      <mat-form-field appearance="outline" subscriptSizing="dynamic" class="scope-select">
-        <mat-select [value]="environmentId() ?? ALL_ENVIRONMENTS" (selectionChange)="changeEnvironment($event.value)">
-          <mat-option [value]="ALL_ENVIRONMENTS">{{ 'reporting.all-environments' | translate }}</mat-option>
-          @for (environment of store.environments(); track environment.id) {
-            <mat-option [value]="environment.id">{{ environment.code }} · {{ environment.name }}</mat-option>
-          }
-        </mat-select>
-      </mat-form-field>
-    }
     @if (store.dashboard()?.from && store.dashboard()?.to) {
       <span class="date-range">
         {{ store.dashboard()!.from | dateTime }} - {{ store.dashboard()!.to | dateTime }}

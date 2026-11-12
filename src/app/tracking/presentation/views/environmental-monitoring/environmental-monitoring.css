@@ -340,16 +340,17 @@ p.muted {
     grid-row: 1;
   }
 
+  /* Title, description, then the environment, like on every page */
   .heading-content app-environment-selector {
     grid-column: 1 / -1;
-    grid-row: 2;
+    grid-row: 3;
     justify-self: stretch;
     margin-top: 8px;
   }
 
   .page-heading .muted {
     grid-column: 1 / -1;
-    grid-row: 3;
+    grid-row: 2;
     width: 100%;
     box-sizing: border-box;
   }
@@ -360,12 +361,12 @@ p.muted {
 
   .actions button[mat-icon-button] {
     grid-column: 2;
-    grid-row: 1 / 3;
+    grid-row: 1;
   }
 
   .actions button[mat-stroked-button] {
     grid-column: 1 / -1;
-    grid-row: 2;
+    grid-row: 4;
     justify-self: start;
   }
 

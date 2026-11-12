@@ -5,10 +5,6 @@
       <app-environment-selector appearance="inline" [environments]="store.environments()" [selectedId]="store.environmentId()" (selectedChange)="changeEnvironment($event)" />
     </div>
     <div class="actions">
-      <button mat-stroked-button (click)="reload()" [disabled]="store.loading() || store.saving()">
-        <mat-icon>refresh</mat-icon>{{ 'inventory.refresh' | translate }}
-      </button>
-
       @if (store.canReview()) {
         <button mat-stroked-button (click)="showImports()" [disabled]="store.saving()" [attr.aria-pressed]="importing()">
           <mat-icon>move_to_inbox</mat-icon>{{ 'inventory.legacy' | translate }}
@@ -17,6 +13,17 @@
           <mat-icon>add</mat-icon>{{ 'inventory.newMaterial' | translate }}
         </a>
       }
+      <button
+        mat-icon-button
+        type="button"
+        class="refresh"
+        (click)="reload()"
+        [disabled]="store.loading() || store.saving()"
+        [matTooltip]="'inventory.refresh' | translate"
+        [attr.aria-label]="'inventory.refresh' | translate"
+      >
+        <mat-icon>refresh</mat-icon>
+      </button>
     </div>
   </header>
   @if (store.error()) {
