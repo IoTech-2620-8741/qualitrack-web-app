@@ -543,7 +543,9 @@ try {
 
     // The report does not follow the chips, and the page says so only when one is pressed.
     assert.equal(await page.locator('.export-note').count(), 0);
-    await page.locator('.more-filters').click();
+    // The chips live in the foldable row of the toolbar, folded on a phone.
+    const toggle = page.locator('app-list-toolbar .toggle');
+    if ((await toggle.getAttribute('aria-expanded')) === 'false') await toggle.click();
     await page.locator('app-filter-chip button').filter({ hasText: 'Critical' }).click();
     await page.locator('.export-note').waitFor();
     assert.deepEqual(errors, []);

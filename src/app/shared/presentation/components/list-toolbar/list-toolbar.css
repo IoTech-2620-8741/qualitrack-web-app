@@ -148,3 +148,8 @@
     max-width: none;
   }
 }
+
+/* The field already has its own × to clear it */
+.search input::-webkit-search-cancel-button {
+  appearance: none;
+}

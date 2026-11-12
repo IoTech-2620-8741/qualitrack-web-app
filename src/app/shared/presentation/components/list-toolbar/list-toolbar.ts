@@ -79,7 +79,7 @@ let nextId = 0;
                 <input
                   #searchInput
                   matInput
-                  type="text"
+                  type="search"
                   [value]="search()"
                   [placeholder]="searchKey | translate"
                   [attr.aria-label]="searchKey | translate"
