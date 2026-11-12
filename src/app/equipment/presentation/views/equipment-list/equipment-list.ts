@@ -20,6 +20,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { EquipmentStore } from '../../../application/equipment.store';
 import { Equipment } from '../../../domain/model/equipment.entity';
 import { ATTENTION_STATUSES } from '../../../domain/model/equipment-status';
+import { TablePaginator, paginate } from '../../../../shared/presentation/components/table-paginator/table-paginator';
 
 /** Which equipment the list shows: everything, process equipment, IoT devices or Edge Gateways. */
 type EquipmentFilter = 'all' | 'equipment' | 'devices' | 'gateways';
@@ -36,7 +37,7 @@ type EquipmentFilter = 'all' | 'equipment' | 'devices' | 'gateways';
   selector: 'app-equipment-list',
   standalone: true,
   imports: [
-    CommonModule,
+    TablePaginator, CommonModule,
     FormsModule,
     RouterLink,
     MatButtonModule,
@@ -53,6 +54,9 @@ type EquipmentFilter = 'all' | 'equipment' | 'devices' | 'gateways';
   styleUrl: './equipment-list.css',
 })
 export class EquipmentList implements OnInit {
+  /** Page of the table shown; ten rows unless the person chooses more. */
+  protected readonly equipmentPage = paginate(() => this.visibleEquipment());
+
   protected readonly store = inject(EquipmentStore);
 
   protected readonly filter = signal<EquipmentFilter>('all');

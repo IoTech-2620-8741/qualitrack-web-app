@@ -89,72 +89,75 @@
   @if (store.isLoading() && !store.equipmentList().length) {
     <p role="status">{{ 'common.status-loading' | translate }}</p>
   } @else {
-    <table class="data-table">
-      <thead>
-        <tr>
-          <th>{{ 'equipment-list.fields.name' | translate }}</th>
-          <th>{{ 'equipment-list.fields.type' | translate }}</th>
-          <th>{{ 'equipment-list.fields.environment' | translate }}</th>
-          <th>{{ 'equipment-list.fields.status' | translate }}</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (equipment of visibleEquipment(); track equipment.id) {
+    <div class="table-card">
+      <table class="data-table">
+        <thead>
           <tr>
-            <td>
-              <a [routerLink]="['/equipments', equipment.id]">{{ equipment.name }}</a>
-              <small>{{ equipment.model }} · {{ equipment.serialNumber }}</small>
-            </td>
-            <td [attr.data-label]="'equipment-list.fields.type' | translate">
-              @if (equipment.deviceType) {
-                <span class="device-type">
-                  <mat-icon aria-hidden="true">sensors</mat-icon>{{ 'device-types.' + equipment.deviceType | translate }}
-                </span>
-                <small>{{ equipment.sensorExternalId }}</small>
-              } @else if (equipment.isEdgeGateway) {
-                <span class="device-type">
-                  <mat-icon aria-hidden="true">router</mat-icon>{{ 'edge-gateway.type' | translate }}
-                </span>
-                <small>{{ equipment.sensorExternalId }}</small>
-              } @else {
-                {{ equipment.type }}
-              }
-            </td>
-            <td [attr.data-label]="'equipment-list.fields.environment' | translate">
-              @if (environmentName(equipment); as name) {
-                <a class="environment-link" [routerLink]="['/equipments/environments', equipment.environmentId]">{{ name }}</a>
-              } @else {
-                <span class="muted">{{ 'equipment-list.not-located' | translate }}</span>
-              }
-            </td>
-            <td [attr.data-label]="'equipment-list.fields.status' | translate">
-              <span class="status" [ngClass]="equipment.status.toLowerCase()">
-                {{ 'equipment-status.' + equipment.status.toLowerCase() | translate }}
-              </span>
-            </td>
+            <th>{{ 'equipment-list.fields.name' | translate }}</th>
+            <th>{{ 'equipment-list.fields.type' | translate }}</th>
+            <th>{{ 'equipment-list.fields.environment' | translate }}</th>
+            <th>{{ 'equipment-list.fields.status' | translate }}</th>
           </tr>
-        } @empty {
-          <tr>
-            <td colspan="4" class="empty-cell">
-              @if (store.equipmentList().length && hasActiveFilters()) {
-                <p>{{ 'equipment-list.empty-filtered' | translate }}</p>
-                <button mat-stroked-button type="button" (click)="clearFilters()">
-                  <mat-icon aria-hidden="true">filter_alt_off</mat-icon>
-                  {{ 'equipment-list.clear-filters' | translate }}
-                </button>
-              } @else {
-                <p>{{ 'equipment-list.empty' | translate }}</p>
-                @if (!store.equipmentList().length && store.canManage()) {
-                  <a mat-flat-button routerLink="/equipments/new">
-                    <mat-icon aria-hidden="true">add</mat-icon>
-                    {{ 'equipment-list.add-button' | translate }}
-                  </a>
+        </thead>
+        <tbody>
+          @for (equipment of equipmentPage.rows(); track equipment.id) {
+            <tr>
+              <td>
+                <a [routerLink]="['/equipments', equipment.id]">{{ equipment.name }}</a>
+                <small>{{ equipment.model }} · {{ equipment.serialNumber }}</small>
+              </td>
+              <td [attr.data-label]="'equipment-list.fields.type' | translate">
+                @if (equipment.deviceType) {
+                  <span class="device-type">
+                    <mat-icon aria-hidden="true">sensors</mat-icon>{{ 'device-types.' + equipment.deviceType | translate }}
+                  </span>
+                  <small>{{ equipment.sensorExternalId }}</small>
+                } @else if (equipment.isEdgeGateway) {
+                  <span class="device-type">
+                    <mat-icon aria-hidden="true">router</mat-icon>{{ 'edge-gateway.type' | translate }}
+                  </span>
+                  <small>{{ equipment.sensorExternalId }}</small>
+                } @else {
+                  {{ equipment.type }}
                 }
-              }
-            </td>
-          </tr>
-        }
-      </tbody>
-    </table>
+              </td>
+              <td [attr.data-label]="'equipment-list.fields.environment' | translate">
+                @if (environmentName(equipment); as name) {
+                  <a class="environment-link" [routerLink]="['/equipments/environments', equipment.environmentId]">{{ name }}</a>
+                } @else {
+                  <span class="muted">{{ 'equipment-list.not-located' | translate }}</span>
+                }
+              </td>
+              <td [attr.data-label]="'equipment-list.fields.status' | translate">
+                <span class="status" [ngClass]="equipment.status.toLowerCase()">
+                  {{ 'equipment-status.' + equipment.status.toLowerCase() | translate }}
+                </span>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="4" class="empty-cell">
+                @if (store.equipmentList().length && hasActiveFilters()) {
+                  <p>{{ 'equipment-list.empty-filtered' | translate }}</p>
+                  <button mat-stroked-button type="button" (click)="clearFilters()">
+                    <mat-icon aria-hidden="true">filter_alt_off</mat-icon>
+                    {{ 'equipment-list.clear-filters' | translate }}
+                  </button>
+                } @else {
+                  <p>{{ 'equipment-list.empty' | translate }}</p>
+                  @if (!store.equipmentList().length && store.canManage()) {
+                    <a mat-flat-button routerLink="/equipments/new">
+                      <mat-icon aria-hidden="true">add</mat-icon>
+                      {{ 'equipment-list.add-button' | translate }}
+                    </a>
+                  }
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+      <app-table-paginator [page]="equipmentPage" />
+    </div>
   }
 </main>
