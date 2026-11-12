@@ -12,32 +12,8 @@
   padding: 32px 24px 48px;
 }
 
-.page-header {
-  margin-bottom: 24px;
-}
-
-.page-title {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin: 0;
-  color: var(--qt-heading);
-  font-size: 28px;
-  font-weight: 700;
-  letter-spacing: 0;
-  overflow-wrap: anywhere;
-}
-
-.page-title mat-icon {
-  flex-shrink: 0;
-  width: 28px;
-  height: 28px;
-  color: var(--qt-primary);
-  font-size: 28px;
-}
-
 .page-desc {
-  margin: 8px 0 0;
+  margin: 0 0 16px;
   color: var(--qt-text-muted);
   font-size: 14px;
   line-height: 1.6;
@@ -135,16 +111,6 @@
 @media (max-width: 760px) {
   .generator-container {
     padding: 16px;
-  }
-
-  .page-title {
-    font-size: 24px;
-  }
-
-  .page-title mat-icon {
-    width: 24px;
-    height: 24px;
-    font-size: 24px;
   }
 
   .main-panel {

@@ -1410,6 +1410,12 @@
     }
   },
   "reporting": {
+    "tabs": {
+      "summary": "Resumen",
+      "deviations": "Desviaciones",
+      "generator": "Nuevo reporte",
+      "audit-log": "Auditoría"
+    },
     "no-environments": "Registra un ambiente del laboratorio para calcular sus indicadores.",
     "errors": {
       "load": "No se pudieron cargar los indicadores. Vuelve a intentarlo."

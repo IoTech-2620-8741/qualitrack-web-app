@@ -25,6 +25,10 @@ import { DeviationChart } from '../../components/deviation-chart/deviation-chart
 import { DeviationChartFactory } from '../../components/deviation-chart/deviation-chart.factory';
 import { SetupNotice } from '../../../../shared/presentation/components/setup-notice/setup-notice';
 import { IamStore } from '../../../../iam/application/iam.store';
+import { PageHeader } from '../../../../shared/presentation/components/page-header/page-header';
+import { ListToolbar } from '../../../../shared/presentation/components/list-toolbar/list-toolbar';
+import { FilterChip } from '../../../../shared/presentation/components/filter-chip/filter-chip';
+import { REPORTS_TABS } from '../../reports-tabs';
 
 const PERIOD_DAYS = [1, 7, 31] as const;
 const DEFAULT_PERIOD_DAYS = 7;
@@ -42,6 +46,9 @@ const DEFAULT_PERIOD_DAYS = 7;
   selector: 'app-deviation-trend-chart',
   standalone: true,
   imports: [
+    PageHeader,
+    ListToolbar,
+    FilterChip,
     SetupNotice,
     TranslatePipe,
     MatButtonToggleModule,
@@ -57,6 +64,15 @@ const DEFAULT_PERIOD_DAYS = 7;
   styleUrl: './deviation-trend-chart.css',
 })
 export class DeviationTrendChartComponent implements OnInit {
+  /** Operations of the reports module. */
+  protected readonly tabs = REPORTS_TABS;
+
+  /** Reads the trends of the environment and the period again. */
+  protected reload(): void {
+    const environmentId = this.environmentId();
+    if (environmentId !== null) this.store.loadDeviationTrends(environmentId, lastDays(this.days()));
+  }
+
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);

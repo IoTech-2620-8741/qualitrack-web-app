@@ -20,6 +20,10 @@ import { KpiSummaryCards } from '../../components/kpi-summary-cards/kpi-summary-
 import { KpiTable } from '../../components/kpi-table/kpi-table';
 import { KpiRecords } from '../../components/kpi-records/kpi-records';
 import { EnvironmentSelector } from '../../../../shared/presentation/components/environment-selector/environment-selector';
+import { PageHeader } from '../../../../shared/presentation/components/page-header/page-header';
+import { ListToolbar } from '../../../../shared/presentation/components/list-toolbar/list-toolbar';
+import { FilterChip } from '../../../../shared/presentation/components/filter-chip/filter-chip';
+import { REPORTS_TABS } from '../../reports-tabs';
 
 /** Lengths of the period offered, in days; the platform accepts up to 31. */
 const PERIOD_DAYS = [1, 7, 31] as const;
@@ -38,6 +42,9 @@ const PERIOD_DAYS = [1, 7, 31] as const;
   selector: 'app-kpi-dashboard',
   standalone: true,
   imports: [
+    PageHeader,
+    ListToolbar,
+    FilterChip,
     DateTimePipe,
     TranslatePipe,
     MatButtonModule,
@@ -54,6 +61,9 @@ const PERIOD_DAYS = [1, 7, 31] as const;
   styleUrl: './kpi-dashboard.css',
 })
 export class KpiDashboardComponent implements OnInit {
+  /** Operations of the reports module. */
+  protected readonly tabs = REPORTS_TABS;
+
   /** The application store managing the Reporting and Analysis state. */
   protected readonly store = inject(RaStore);
 
