@@ -71,8 +71,9 @@ a {
 .actions a[mat-stroked-button],
 .actions a[mat-flat-button] {
   height: auto;
-  min-height: 48px;
-  padding: 8px 24px;
+  /* The height of the actions of every heading; a phone keeps 48px to touch them */
+  min-height: 40px;
+  padding: 8px 20px;
   border-radius: 999px;
   font-weight: 600;
   white-space: normal;
@@ -216,6 +217,7 @@ p[role='status'] {
   .actions a[mat-flat-button] {
     display: flex;
     width: 100%;
+    min-height: 48px;
     justify-content: center;
     box-sizing: border-box;
   }

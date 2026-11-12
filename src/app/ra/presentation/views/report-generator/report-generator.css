@@ -4,11 +4,12 @@
   background: var(--qt-background);
 }
 
+/* The same container as every other page */
 .generator-container {
   position: relative;
-  max-width: 1400px;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 32px;
+  padding: 32px 24px 48px;
 }
 
 .page-header {

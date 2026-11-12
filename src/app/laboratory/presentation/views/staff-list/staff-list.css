@@ -62,8 +62,9 @@ h1 mat-icon {
 
 .primary-btn {
   height: auto;
-  min-height: 48px;
-  padding: 8px 24px;
+  /* The height of the actions of every heading; a phone keeps 48px to touch them */
+  min-height: 40px;
+  padding: 8px 20px;
   border-radius: 999px;
   font-weight: 600;
   white-space: nowrap;
@@ -246,6 +247,7 @@ h1 mat-icon {
     grid-column: 1 / -1;
     grid-row: 2;
     width: 100%;
+    min-height: 48px;
     justify-content: center;
   }
 
