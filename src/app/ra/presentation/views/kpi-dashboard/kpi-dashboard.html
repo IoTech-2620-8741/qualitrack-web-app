@@ -2,6 +2,7 @@
   <app-page-header
     icon="insights"
     titleKey="reporting.summary.title"
+    subtitleKey="reporting.summary.subtitle"
     [tabs]="tabs"
     activeTab="/reports/kpis"
     [loading]="store.isLoading()"
@@ -68,7 +69,9 @@
             <mat-icon>query_stats</mat-icon>
             <h3>{{ 'reporting.summary.no-readings' | translate }}</h3>
             <p>{{ 'reporting.summary.no-readings-hint' | translate }}</p>
-            <button mat-stroked-button type="button" (click)="changePeriod(31)">{{ 'reporting.summary.view-31-days' | translate }}</button>
+            @if (days() !== 31) {
+              <button mat-stroked-button type="button" (click)="changePeriod(31)">{{ 'reporting.summary.view-31-days' | translate }}</button>
+            }
           </div>
         }
         <p class="muted formula">{{ 'reporting.summary.formula' | translate }}</p>
