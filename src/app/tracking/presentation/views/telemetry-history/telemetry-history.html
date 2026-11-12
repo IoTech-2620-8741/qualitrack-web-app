@@ -85,43 +85,46 @@
 
         <h2>{{ 'tracking.history.readings' | translate }} ({{ history.measurements.length }})</h2>
         @if (history.measurements.length) {
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>{{ 'tracking.history.moment' | translate }}</th>
-                <th>{{ 'tracking.history.metric' | translate }}</th>
-                <th>{{ 'tracking.history.value' | translate }}</th>
-                <th>{{ 'tracking.history.state' | translate }}</th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (reading of history.measurements; track reading.id) {
+          <div class="table-card">
+            <table class="data-table">
+              <thead>
                 <tr>
-                  <td [attr.data-label]="'tracking.history.moment' | translate">{{ reading.measuredAt | dateTime }}</td>
-                  <td [attr.data-label]="'tracking.history.metric' | translate">{{ 'tracking.metrics.' + reading.metric | translate }}</td>
-                  <td [attr.data-label]="'tracking.history.value' | translate">
-                    @if (reading.metric === 'RFID_TAG') {
-                      <span class="tag">{{ reading.textValue }}</span>
-                    } @else if (reading.metric === 'MOTION') {
-                      {{ (reading.value === 1 ? 'tracking.history.motion-detected' : 'tracking.history.motion-clear') | translate }}
-                    } @else {
-                      {{ reading.value | number: '1.0-2' }} {{ reading.unit }}
-                    }
-                  </td>
-                  <td [attr.data-label]="'tracking.history.state' | translate">
-                    @if (reading.state) {
-                      <span [class]="'state ' + reading.state.toLowerCase()">{{ 'tracking.states.' + reading.state | translate }}</span>
-                      @if (reading.thresholdValue !== null) {
-                        <small>{{ 'tracking.history.limit' | translate: { value: (reading.thresholdValue | number: '1.0-2'), unit: reading.unit } }}</small>
-                      }
-                    } @else {
-                      <span class="muted">—</span>
-                    }
-                  </td>
+                  <th>{{ 'tracking.history.moment' | translate }}</th>
+                  <th>{{ 'tracking.history.metric' | translate }}</th>
+                  <th>{{ 'tracking.history.value' | translate }}</th>
+                  <th>{{ 'tracking.history.state' | translate }}</th>
                 </tr>
-              }
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                @for (reading of readingPage.rows(); track reading.id) {
+                  <tr>
+                    <td [attr.data-label]="'tracking.history.moment' | translate">{{ reading.measuredAt | dateTime }}</td>
+                    <td [attr.data-label]="'tracking.history.metric' | translate">{{ 'tracking.metrics.' + reading.metric | translate }}</td>
+                    <td [attr.data-label]="'tracking.history.value' | translate">
+                      @if (reading.metric === 'RFID_TAG') {
+                        <span class="tag">{{ reading.textValue }}</span>
+                      } @else if (reading.metric === 'MOTION') {
+                        {{ (reading.value === 1 ? 'tracking.history.motion-detected' : 'tracking.history.motion-clear') | translate }}
+                      } @else {
+                        {{ reading.value | number: '1.0-2' }} {{ reading.unit }}
+                      }
+                    </td>
+                    <td [attr.data-label]="'tracking.history.state' | translate">
+                      @if (reading.state) {
+                        <span [class]="'state ' + reading.state.toLowerCase()">{{ 'tracking.states.' + reading.state | translate }}</span>
+                        @if (reading.thresholdValue !== null) {
+                          <small>{{ 'tracking.history.limit' | translate: { value: (reading.thresholdValue | number: '1.0-2'), unit: reading.unit } }}</small>
+                        }
+                      } @else {
+                        <span class="muted">—</span>
+                      }
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+            <app-table-paginator [page]="readingPage" />
+          </div>
         } @else {
           <p class="muted">{{ 'tracking.history.no-readings' | translate }}</p>
         }
@@ -129,32 +132,35 @@
         @if (history.device.deviceType === 'CONTAINER_MONITOR') {
           <h2>{{ 'tracking.history.actions' | translate }} ({{ history.actuationEvents.length }})</h2>
           @if (history.actuationEvents.length) {
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th>{{ 'tracking.history.moment' | translate }}</th>
-                  <th>{{ 'tracking.history.action' | translate }}</th>
-                  <th>{{ 'tracking.history.cause' | translate }}</th>
-                  <th>{{ 'tracking.history.result' | translate }}</th>
-                </tr>
-              </thead>
-              <tbody>
-                @for (event of history.actuationEvents; track event.id) {
+            <div class="table-card">
+              <table class="data-table">
+                <thead>
                   <tr>
-                    <td [attr.data-label]="'tracking.history.moment' | translate">{{ event.occurredAt | dateTime }}</td>
-                    <td [attr.data-label]="'tracking.history.action' | translate">{{ 'tracking.actions.' + event.action | translate }}</td>
-                    <td [attr.data-label]="'tracking.history.cause' | translate">
-                      @if (event.triggerMetric && event.triggerState) {
-                        {{ 'tracking.metrics.' + event.triggerMetric | translate }} · {{ 'tracking.states.' + event.triggerState | translate }}
-                      } @else {
-                        <span class="muted">—</span>
-                      }
-                    </td>
-                    <td [attr.data-label]="'tracking.history.result' | translate">{{ 'tracking.results.' + event.result | translate }}</td>
+                    <th>{{ 'tracking.history.moment' | translate }}</th>
+                    <th>{{ 'tracking.history.action' | translate }}</th>
+                    <th>{{ 'tracking.history.cause' | translate }}</th>
+                    <th>{{ 'tracking.history.result' | translate }}</th>
                   </tr>
-                }
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  @for (event of eventPage.rows(); track event.id) {
+                    <tr>
+                      <td [attr.data-label]="'tracking.history.moment' | translate">{{ event.occurredAt | dateTime }}</td>
+                      <td [attr.data-label]="'tracking.history.action' | translate">{{ 'tracking.actions.' + event.action | translate }}</td>
+                      <td [attr.data-label]="'tracking.history.cause' | translate">
+                        @if (event.triggerMetric && event.triggerState) {
+                          {{ 'tracking.metrics.' + event.triggerMetric | translate }} · {{ 'tracking.states.' + event.triggerState | translate }}
+                        } @else {
+                          <span class="muted">—</span>
+                        }
+                      </td>
+                      <td [attr.data-label]="'tracking.history.result' | translate">{{ 'tracking.results.' + event.result | translate }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+              <app-table-paginator [page]="eventPage" />
+            </div>
           } @else {
             <p class="muted">{{ 'tracking.history.no-actions' | translate }}</p>
           }

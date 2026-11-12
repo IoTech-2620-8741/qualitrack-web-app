@@ -31,6 +31,7 @@ import {
 import { DateTimePipe } from '../../../../shared/presentation/pipes/date-time.pipe';
 import { SetupNotice } from '../../../../shared/presentation/components/setup-notice/setup-notice';
 import { IamStore } from '../../../../iam/application/iam.store';
+import { TablePaginator, paginate } from '../../../../shared/presentation/components/table-paginator/table-paginator';
 
 /** Earliest moment the history can be asked for, as a datetime-local value. */
 export const MIN_HISTORY_START = '2020-01-01T00:00';
@@ -56,7 +57,7 @@ export const MIN_HISTORY_START = '2020-01-01T00:00';
   selector: 'app-telemetry-history',
   standalone: true,
   imports: [
-    SetupNotice,
+    TablePaginator, SetupNotice,
     DateTimePipe,
     DecimalPipe,
     FormsModule,
@@ -76,6 +77,12 @@ export const MIN_HISTORY_START = '2020-01-01T00:00';
   styleUrl: './telemetry-history.css',
 })
 export class TelemetryHistory implements OnInit {
+  /** Page of the table shown; ten rows unless the person chooses more. */
+  protected readonly eventPage = paginate(() => this.store.history()?.actuationEvents ?? []);
+
+  /** Page of the table shown; ten rows unless the person chooses more. */
+  protected readonly readingPage = paginate(() => this.store.history()?.measurements ?? []);
+
   protected readonly store = inject(TrackingStore);
   protected readonly iam = inject(IamStore);
   private readonly translate = inject(TranslateService);

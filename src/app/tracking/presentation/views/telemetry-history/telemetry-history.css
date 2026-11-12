@@ -229,56 +229,6 @@ mat-button-toggle-group ::ng-deep .mat-button-toggle:has(.mat-button-toggle-butt
   box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
 }
 
-.data-table {
-  width: 100%;
-  table-layout: fixed;
-  border-collapse: separate;
-  border-spacing: 0;
-  overflow: hidden;
-  background: var(--qt-surface);
-  border: 1px solid var(--qt-border);
-  border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
-  font-size: 14px;
-}
-
-.data-table th {
-  background: var(--qt-surface);
-  color: var(--qt-text-muted);
-  font-size: 12px;
-  font-weight: 500;
-  text-align: left;
-  text-transform: uppercase;
-}
-
-.data-table td,
-.data-table th {
-  padding: 16px 20px;
-  border-bottom: 1px solid var(--qt-border);
-  overflow-wrap: anywhere;
-  vertical-align: top;
-}
-
-.data-table td {
-  color: var(--qt-text);
-  font-variant-numeric: tabular-nums;
-}
-
-.data-table tbody tr:last-child td {
-  border-bottom: none;
-}
-
-.data-table tbody tr:hover {
-  background: var(--qt-background);
-}
-
-.data-table small {
-  display: block;
-  margin-top: 4px;
-  color: var(--qt-text-muted);
-  font-size: 12px;
-}
-
 .tag {
   font-family: monospace;
   font-size: 14px;
@@ -374,64 +324,10 @@ mat-button-toggle-group ::ng-deep .mat-button-toggle:has(.mat-button-toggle-butt
     padding: 12px;
   }
 
-  .data-table thead {
-    display: none;
-  }
-
-  .data-table {
-    display: block;
-    width: 100%;
-    overflow: visible;
-    background: transparent;
-    border: 0;
-    box-shadow: none;
-    box-sizing: border-box;
-  }
-
-  .data-table tbody {
-    display: block;
-    width: 100%;
-  }
-
-  .data-table tr {
-    display: block;
-    width: 100%;
-    margin: 0 0 12px;
-    padding: 8px 12px;
-    background: var(--qt-surface);
-    border: 1px solid var(--qt-border);
-    border-radius: 12px;
-    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
-    box-sizing: border-box;
-  }
-
-  .data-table tbody tr:hover {
-    background: var(--qt-surface);
-  }
-
-  .data-table td {
-    display: block;
-    width: 100%;
-    padding: 8px 4px;
-    border: 0;
-    box-sizing: border-box;
-  }
-
-  .data-table td[data-label]::before {
-    content: attr(data-label);
-    display: block;
-    margin-bottom: 4px;
-    color: var(--qt-text-muted);
-    font-size: 12px;
-    font-weight: 500;
-    text-transform: uppercase;
-  }
-
   .collapsible {
     width: 100%;
     margin-top: 20px;
   }
-
 }
 
 @media (prefers-reduced-motion: reduce) {
