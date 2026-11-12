@@ -172,14 +172,21 @@ p[role='status'] {
     align-items: center;
   }
 
+  /* The title shares its row with the refresh button; the environment takes the whole width under it. */
   .heading-title {
-    grid-column: 1;
-    grid-row: 1;
-    min-width: 0;
+    display: contents;
   }
 
   .heading-title h1 {
+    grid-column: 1;
+    grid-row: 1;
+    min-width: 0;
     font-size: 24px;
+  }
+
+  .heading-title app-environment-selector {
+    grid-column: 1 / -1;
+    grid-row: 2;
   }
 
   .page-heading .actions {
@@ -188,12 +195,12 @@ p[role='status'] {
 
   .actions a[mat-stroked-button] {
     grid-column: 1 / -1;
-    grid-row: 2;
+    grid-row: 3;
   }
 
   .actions a[mat-flat-button] {
     grid-column: 1 / -1;
-    grid-row: 3;
+    grid-row: 4;
   }
 
   .actions button[mat-icon-button] {

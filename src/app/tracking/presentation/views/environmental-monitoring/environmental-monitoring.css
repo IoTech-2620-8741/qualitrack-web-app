@@ -341,9 +341,9 @@ p.muted {
   }
 
   .heading-content app-environment-selector {
-    grid-column: 1;
+    grid-column: 1 / -1;
     grid-row: 2;
-    justify-self: start;
+    justify-self: stretch;
     margin-top: 8px;
   }
 
