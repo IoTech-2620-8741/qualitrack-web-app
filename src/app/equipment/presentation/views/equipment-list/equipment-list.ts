@@ -7,20 +7,18 @@ import {
   ChangeDetectionStrategy,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
-import { MatButtonToggleModule } from '@angular/material/button-toggle';
-import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
 import { TranslatePipe } from '@ngx-translate/core';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { EquipmentStore } from '../../../application/equipment.store';
 import { Equipment } from '../../../domain/model/equipment.entity';
 import { ATTENTION_STATUSES } from '../../../domain/model/equipment-status';
 import { TablePaginator, paginate } from '../../../../shared/presentation/components/table-paginator/table-paginator';
+import { PageHeader } from '../../../../shared/presentation/components/page-header/page-header';
+import { ListToolbar } from '../../../../shared/presentation/components/list-toolbar/list-toolbar';
+import { FilterChip } from '../../../../shared/presentation/components/filter-chip/filter-chip';
+import { EnvironmentSelector } from '../../../../shared/presentation/components/environment-selector/environment-selector';
 
 /** Which equipment the list shows: everything, process equipment, IoT devices or Edge Gateways. */
 type EquipmentFilter = 'all' | 'equipment' | 'devices' | 'gateways';
@@ -37,17 +35,16 @@ type EquipmentFilter = 'all' | 'equipment' | 'devices' | 'gateways';
   selector: 'app-equipment-list',
   standalone: true,
   imports: [
-    TablePaginator, CommonModule,
-    FormsModule,
+    TablePaginator,
+    CommonModule,
     RouterLink,
     MatButtonModule,
-    MatButtonToggleModule,
-    MatCheckboxModule,
     MatIconModule,
-    MatInputModule,
-    MatSelectModule,
     TranslatePipe,
-    MatTooltipModule
+    PageHeader,
+    ListToolbar,
+    FilterChip,
+    EnvironmentSelector,
   ],
   templateUrl: './equipment-list.html',
   changeDetection: ChangeDetectionStrategy.Eager,
@@ -80,12 +77,21 @@ export class EquipmentList implements OnInit {
   protected readonly summary = computed(() => {
     const equipment = this.scopedEquipment();
     return {
+      all: equipment.length,
       equipment: equipment.filter((item) => !item.isIotDevice && !item.isEdgeGateway).length,
       devices: equipment.filter((item) => item.isIotDevice).length,
       gateways: equipment.filter((item) => item.isEdgeGateway).length,
       attention: equipment.filter((item) => this.needsAttention(item)).length,
     };
   });
+
+  /** Chips of the kinds of equipment, with the key of their name. */
+  protected readonly kinds: readonly { value: EquipmentFilter; labelKey: string }[] = [
+    { value: 'all', labelKey: 'equipment-list.filter.all' },
+    { value: 'equipment', labelKey: 'equipment-list.filter.equipment' },
+    { value: 'devices', labelKey: 'equipment-list.filter.devices' },
+    { value: 'gateways', labelKey: 'equipment-list.filter.gateways' },
+  ];
 
   /** Whether any filter narrows the list, so an empty list may be the filters' doing. */
   protected readonly hasActiveFilters = computed(

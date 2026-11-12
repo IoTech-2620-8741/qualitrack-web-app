@@ -12,95 +12,22 @@
   padding: 32px 24px 48px;
 }
 
-.page-heading,
-.actions,
-.filters {
+/* The toolbar, the messages and the table, one under the other */
+.equipment {
   display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-
-.page-heading {
-  justify-content: space-between;
-  margin-bottom: 24px;
-}
-
-.heading-title {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  flex-direction: column;
+  gap: 16px;
   min-width: 0;
 }
 
-.refresh-button {
-  flex-shrink: 0;
-  color: var(--qt-heading);
-}
-
-.refresh-button mat-icon {
-  color: inherit;
-}
-
-.refresh-button:focus-visible {
-  outline: 3px solid var(--qt-primary);
-  outline-offset: 2px;
-}
-
-h1 {
+.kind-chips {
   display: flex;
-  align-items: center;
-  gap: 10px;
-  margin: 0;
-  color: var(--qt-heading);
-  font-size: 28px;
-  font-weight: 700;
-}
-
-h1 mat-icon {
-  flex-shrink: 0;
-  color: var(--qt-primary);
-}
-
-.actions button[mat-stroked-button],
-.actions a[mat-stroked-button],
-.actions a[mat-flat-button] {
-  height: auto;
-  min-height: 40px;
-  padding: 8px 16px;
-  border-radius: 999px;
-  font-weight: 600;
-  white-space: nowrap;
-  text-decoration: none;
-}
-
-.actions button[mat-stroked-button],
-.actions a[mat-stroked-button] {
-  color: var(--qt-text);
-  border-color: var(--qt-border);
-}
-
-.actions button[mat-stroked-button][disabled] {
-  color: var(--qt-neutral-text);
-}
-
-.actions a[mat-flat-button] {
-  background: var(--qt-primary-strong);
-  color: var(--qt-surface);
-}
-
-.actions a[mat-flat-button]:hover {
-  background: var(--qt-primary-hover);
-}
-
-.actions button:focus-visible,
-.actions a:focus-visible {
-  outline: 3px solid var(--qt-primary);
-  outline-offset: 2px;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 .error {
-  margin: 0 0 20px;
+  margin: 0;
   padding: 16px;
   border: 1px solid var(--qt-error);
   border-radius: 12px;
@@ -109,61 +36,6 @@ h1 mat-icon {
   font-size: 14px;
   line-height: 1.6;
   overflow-wrap: anywhere;
-}
-
-.summary-strip {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px 40px;
-  margin: 0 0 24px;
-  padding: 20px 24px;
-  background: var(--qt-surface);
-  border: 1px solid var(--qt-border);
-  border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
-}
-
-.summary-strip span {
-  display: block;
-  color: var(--qt-text-muted);
-  font-size: 12px;
-  font-weight: 500;
-  text-transform: uppercase;
-}
-
-.summary-strip strong {
-  display: block;
-  margin-top: 6px;
-  color: var(--qt-text);
-  font-size: 24px;
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
-}
-
-.summary-strip strong.warning {
-  color: var(--qt-warning-text);
-}
-
-.filters {
-  margin: 0 0 20px;
-}
-
-mat-form-field {
-  width: 100%;
-  min-width: 0;
-  --mat-form-field-outlined-focus-outline-color: var(--qt-primary);
-  --mat-form-field-outlined-focus-label-text-color: var(--qt-primary-strong);
-}
-
-.filters mat-form-field {
-  flex: 1;
-  min-width: 280px;
-  max-width: 440px;
-}
-
-.filters mat-form-field.environment-filter {
-  flex: 0 1 260px;
-  min-width: 200px;
 }
 
 .data-table td.empty-cell {
@@ -191,74 +63,6 @@ mat-form-field {
 
 .data-table a.environment-link {
   font-weight: 500;
-}
-
-.filters input {
-  caret-color: var(--qt-primary);
-}
-
-.filters mat-icon[matPrefix] {
-  color: var(--qt-text-muted);
-}
-
-mat-button-toggle-group {
-  display: inline-flex;
-  gap: 4px;
-  padding: 4px;
-  border: 1px solid var(--qt-border);
-  border-radius: 999px;
-  background: var(--qt-surface);
-  overflow: visible;
-}
-
-mat-button-toggle-group ::ng-deep .mat-button-toggle {
-  flex: 0 0 auto;
-  border: 0;
-  border-radius: 999px;
-  background: transparent;
-  color: var(--qt-text-muted);
-  font-family: inherit;
-}
-
-mat-button-toggle-group ::ng-deep .mat-button-toggle + .mat-button-toggle {
-  border-left: 0;
-}
-
-mat-button-toggle-group ::ng-deep .mat-button-toggle-label-content {
-  padding: 0 24px;
-  font-size: 14px;
-  font-weight: 500;
-  line-height: 44px;
-}
-
-mat-button-toggle-group ::ng-deep .mat-button-toggle:hover:not(.mat-button-toggle-checked) {
-  background: var(--qt-background);
-}
-
-mat-button-toggle-group ::ng-deep .mat-button-toggle-checked {
-  background: var(--qt-primary-strong);
-  color: var(--qt-surface);
-}
-
-mat-button-toggle-group ::ng-deep .mat-button-toggle-checked .mat-button-toggle-label-content {
-  font-weight: 600;
-}
-
-mat-button-toggle-group ::ng-deep mat-pseudo-checkbox {
-  display: none;
-}
-
-mat-button-toggle-group ::ng-deep .mat-button-toggle-focus-overlay {
-  border-radius: 999px;
-}
-
-mat-button-toggle-group ::ng-deep .mat-button-toggle:has(.mat-button-toggle-button:focus-visible) {
-  outline: 3px solid var(--qt-primary);
-  outline-offset: 2px;
-}
-
-mat-checkbox {
-  --mat-checkbox-label-text-color: var(--qt-text);
 }
 
 p[role='status'] {
@@ -315,83 +119,6 @@ p[role='status'] {
 @media (max-width: 760px) {
   .operations-page {
     padding: 20px 16px 36px;
-  }
-
-  .page-heading {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 12px;
-  }
-
-  .page-heading h1 {
-    order: 1;
-    flex: 1 1 calc(100% - 52px);
-    min-width: 0;
-    font-size: 24px;
-    white-space: nowrap;
-  }
-
-  .page-heading .actions {
-    display: contents;
-  }
-
-  .page-heading .actions button {
-    order: 2;
-    flex: 0 0 40px;
-    margin-left: auto;
-  }
-
-  .page-heading .actions a {
-    order: 3;
-    flex: 1 1 calc(50% - 6px);
-    min-width: 0;
-    min-height: 48px;
-    padding: 8px 10px;
-    justify-content: center;
-    text-align: center;
-    white-space: normal;
-    line-height: 1.3;
-  }
-
-  .summary-strip {
-    gap: 16px 24px;
-    padding: 16px;
-  }
-
-  .summary-strip strong {
-    font-size: 20px;
-  }
-
-  .filters {
-    align-items: stretch;
-    flex-direction: column;
-  }
-
-  /* In a column the flex basis becomes a height, so the fields return to their natural height. */
-  .filters mat-form-field,
-  .filters mat-form-field.environment-filter {
-    flex: none;
-    min-width: 0;
-    max-width: none;
-  }
-
-  /* The four types do not fit in a phone, so the group scrolls instead of cutting the last one. */
-  mat-button-toggle-group {
-    display: flex;
-    width: 100%;
-    overflow-x: auto;
-    scrollbar-width: none;
-  }
-
-  mat-button-toggle-group ::ng-deep .mat-button-toggle {
-    flex: 1 0 auto;
-  }
-
-  mat-button-toggle-group ::ng-deep .mat-button-toggle-label-content {
-    padding: 0 12px;
-    text-align: center;
   }
 }
 

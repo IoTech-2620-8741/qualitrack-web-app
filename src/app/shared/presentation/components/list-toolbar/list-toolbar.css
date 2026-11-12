@@ -90,7 +90,7 @@
 
 .find {
   display: flex;
-  flex: 1 1 360px;
+  flex: 1 1 240px;
   justify-content: flex-end;
   gap: 8px;
   min-width: 0;
@@ -101,7 +101,7 @@
 }
 
 .search {
-  flex: 1 1 220px;
+  flex: 1 1 200px;
   max-width: 340px;
   min-width: 0;
 }
