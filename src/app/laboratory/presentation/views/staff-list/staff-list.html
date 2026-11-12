@@ -68,7 +68,7 @@
         </thead>
 
         <tbody>
-          @for (member of store.staffList(); track member.id) {
+          @for (member of staffPage.rows(); track member.id) {
             <tr>
               <td class="name-cell">
                 @if (canSeeActivity()) {
@@ -127,6 +127,7 @@
           }
         </tbody>
       </table>
+      <app-table-paginator [page]="staffPage" />
     } @else if (!store.isLoading()) {
       <div class="empty-state">
         <mat-icon aria-hidden="true">people_outline</mat-icon>

@@ -10,6 +10,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { LaboratoryStore } from '../../../application/laboratory.store';
 import { Environment } from '../../../domain/model/environment.entity';
 import { ENVIRONMENT_USAGES, EnvironmentUsage } from '../../../domain/model/environment-usage';
+import { TablePaginator, paginate } from '../../../../shared/presentation/components/table-paginator/table-paginator';
 
 /**
  * Component that lists the environments of the current laboratory (US32).
@@ -23,7 +24,7 @@ import { ENVIRONMENT_USAGES, EnvironmentUsage } from '../../../domain/model/envi
   selector: 'app-environment-list',
   standalone: true,
   imports: [
-    RouterLink,
+    TablePaginator, RouterLink,
     TranslatePipe,
     MatButtonModule,
     MatIconModule,
@@ -35,6 +36,9 @@ import { ENVIRONMENT_USAGES, EnvironmentUsage } from '../../../domain/model/envi
   styleUrl: './environment-list.css',
 })
 export class EnvironmentList implements OnInit {
+  /** Page of the table shown; ten rows unless the person chooses more. */
+  protected readonly environmentPage = paginate(() => this.store.environments());
+
   /**
    * Store that manages the environments of the current laboratory.
    */

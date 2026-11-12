@@ -19,6 +19,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { LaboratoryStore } from '../../../application/laboratory.store';
 import { IamStore } from '../../../../iam/application/iam.store';
 import { StaffMember } from '../../../domain/model/staff-member.entity';
+import { TablePaginator, paginate } from '../../../../shared/presentation/components/table-paginator/table-paginator';
 
 /**
  * Component responsible for displaying and managing laboratory staff members.
@@ -31,7 +32,7 @@ import { StaffMember } from '../../../domain/model/staff-member.entity';
   selector: 'app-staff-list',
   standalone: true,
   imports: [
-    RouterLink,
+    TablePaginator, RouterLink,
     TranslatePipe,
     MatButtonModule,
     MatIconModule,
@@ -43,6 +44,9 @@ import { StaffMember } from '../../../domain/model/staff-member.entity';
   styleUrl: './staff-list.css',
 })
 export class StaffList implements OnInit {
+  /** Page of the table shown; ten rows unless the person chooses more. */
+  protected readonly staffPage = paginate(() => this.store.staffList());
+
   /**
    * Store that manages Laboratory bounded context state.
    */

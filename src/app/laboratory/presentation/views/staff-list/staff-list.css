@@ -107,15 +107,6 @@ h1 mat-icon {
   overflow-wrap: anywhere;
 }
 
-.table-card {
-  position: relative;
-  overflow-x: auto;
-  background: var(--qt-surface);
-  border: 1px solid var(--qt-border);
-  border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
-}
-
 .loading-overlay {
   position: absolute;
   inset: 0;
@@ -124,39 +115,6 @@ h1 mat-icon {
   align-items: center;
   justify-content: center;
   background: rgba(255, 255, 255, 0.72);
-}
-
-.data-table {
-  width: 100%;
-  border-collapse: collapse;
-  background: transparent;
-}
-
-.data-table th {
-  padding: 16px 20px;
-  background: var(--qt-surface);
-  border-bottom: 1px solid var(--qt-border);
-  color: var(--qt-text-muted);
-  font-size: 12px;
-  font-weight: 500;
-  text-align: left;
-  text-transform: uppercase;
-}
-
-.data-table td {
-  padding: 16px 20px;
-  border-bottom: 1px solid var(--qt-border);
-  color: var(--qt-text);
-  font-size: 14px;
-  vertical-align: middle;
-}
-
-.data-table tbody tr:last-child td {
-  border-bottom: none;
-}
-
-.data-table tbody tr:hover {
-  background: var(--qt-background);
 }
 
 .name-cell {
@@ -289,60 +247,6 @@ h1 mat-icon {
     grid-row: 2;
     width: 100%;
     justify-content: center;
-  }
-
-  .table-card {
-    overflow: visible;
-    background: transparent;
-    border: 0;
-    box-shadow: none;
-  }
-
-  .data-table,
-  .data-table tbody,
-  .data-table tr,
-  .data-table td {
-    display: block;
-    width: auto;
-  }
-
-  .data-table {
-    background: transparent;
-  }
-
-  .data-table thead {
-    display: none;
-  }
-
-  .data-table tr {
-    margin-bottom: 12px;
-    padding: 8px 12px;
-    background: var(--qt-surface);
-    border: 1px solid var(--qt-border);
-    border-radius: 12px;
-    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
-  }
-
-  .data-table tbody tr:hover {
-    background: var(--qt-surface);
-  }
-
-  .data-table td {
-    padding: 8px 4px;
-    border: 0;
-    color: var(--qt-text);
-    font-size: 14px;
-    overflow-wrap: anywhere;
-  }
-
-  .data-table td[data-label]::before {
-    content: attr(data-label);
-    display: block;
-    margin-bottom: 4px;
-    color: var(--qt-text-muted);
-    font-size: 12px;
-    font-weight: 500;
-    text-transform: uppercase;
   }
 
   .data-table td.name-cell {
