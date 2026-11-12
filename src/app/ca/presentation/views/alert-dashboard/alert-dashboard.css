@@ -171,13 +171,6 @@ a {
     padding: 20px 16px 36px;
   }
 
-  .chips {
-    flex-wrap: nowrap;
-    width: 100%;
-    overflow-x: auto;
-    scrollbar-width: none;
-  }
-
   .find {
     flex-basis: 100%;
   }
