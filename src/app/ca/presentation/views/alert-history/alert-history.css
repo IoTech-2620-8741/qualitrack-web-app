@@ -196,57 +196,6 @@ mat-icon[matPrefix] {
 }
 
 /* Paginador (tarjeta) */
-.pager {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 16px 24px;
-  background: var(--qt-surface);
-  border: 1px solid var(--qt-border);
-  border-radius: var(--qt-radius-medium);
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
-}
-
-.pager p {
-  padding: 0;
-  color: var(--qt-text-muted);
-  font-size: 14px;
-  text-align: left;
-}
-
-.pager-buttons {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.pager-buttons span {
-  color: var(--qt-text);
-  font-size: 14px;
-  font-weight: 500;
-  font-variant-numeric: tabular-nums;
-}
-
-.pager-buttons button {
-  color: var(--qt-text-muted);
-  transition: background-color 0.2s ease, color 0.2s ease;
-}
-
-.pager-buttons button:hover:not(:disabled) {
-  background: var(--qt-background);
-  color: var(--qt-primary-strong);
-}
-
-.pager-buttons button:disabled {
-  color: var(--qt-text-subtle);
-}
-
-.pager-buttons button:focus-visible {
-  outline: 3px solid var(--qt-primary);
-  outline-offset: 2px;
-}
 
 @media (max-width: 900px) {
   .insights {
@@ -294,16 +243,6 @@ mat-icon[matPrefix] {
 
   .filters button[mat-button] {
     width: 100%;
-  }
-
-  .pager {
-    flex-direction: column;
-    align-items: stretch;
-    padding: 16px;
-  }
-
-  .pager-buttons {
-    justify-content: space-between;
   }
 }
 

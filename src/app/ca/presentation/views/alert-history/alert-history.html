@@ -158,39 +158,8 @@
             <app-alert-week-chart [weeks]="weeks()" />
           </div>
 
-          <app-alert-table [alerts]="pageAlerts()" [now]="now()" />
+          <app-alert-table [alerts]="shownAlerts()" [now]="now()" />
 
-          <nav class="pager" [attr.aria-label]="'ca-alerts.history.pages.label' | translate">
-            <p role="status">
-              {{ 'ca-alerts.history.pages.showing' | translate: pageRange() }}
-            </p>
-            @if (pageCount() > 1) {
-              <div class="pager-buttons">
-                <button
-                  mat-icon-button
-                  type="button"
-                  [disabled]="page() === 1"
-                  [attr.aria-label]="'ca-alerts.history.pages.previous' | translate"
-                  (click)="goToPage(page() - 1)"
-                >
-                  <mat-icon aria-hidden="true">chevron_left</mat-icon>
-                </button>
-                <span>{{
-                    'ca-alerts.history.pages.current'
-                      | translate: { page: page(), count: pageCount() }
-                  }}</span>
-                <button
-                  mat-icon-button
-                  type="button"
-                  [disabled]="page() === pageCount()"
-                  [attr.aria-label]="'ca-alerts.history.pages.next' | translate"
-                  (click)="goToPage(page() + 1)"
-                >
-                  <mat-icon aria-hidden="true">chevron_right</mat-icon>
-                </button>
-              </div>
-            }
-          </nav>
         } @else if (isFiltered()) {
           <app-empty-state messageKey="ca-alerts.history.empty">
             <button mat-stroked-button type="button" (click)="clearFilters()">

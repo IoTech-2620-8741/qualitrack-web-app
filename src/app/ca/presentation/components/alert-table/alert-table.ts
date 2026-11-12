@@ -13,6 +13,7 @@ import { CaStore } from '../../../application/ca.store';
 import { DeviationAlert } from '../../../domain/model/deviation-alert.entity';
 import { ALERT_SEVERITY_CHIPS, ALERT_STATUS_CHIPS } from '../../alert-chips';
 import { alertVariableName } from '../../alert-variable';
+import { TablePaginator, paginate } from '../../../../shared/presentation/components/table-paginator/table-paginator';
 
 /**
  * Table of the alert history (TS74): when and where each alert started, how serious it was, where it is in its life
@@ -26,7 +27,7 @@ import { alertVariableName } from '../../alert-variable';
   selector: 'app-alert-table',
   standalone: true,
   imports: [
-    DateTimePipe,
+    TablePaginator, DateTimePipe,
     DecimalPipe,
     ElapsedTimePipe,
     RouterLink,
@@ -41,6 +42,9 @@ import { alertVariableName } from '../../alert-variable';
   styleUrl: './alert-table.css',
 })
 export class AlertTable {
+  /** Page of the table shown; ten rows unless the person chooses more. */
+  protected readonly alertPage = paginate(() => this.alerts());
+
   /** Alerts to show, one per row. */
   readonly alerts = input.required<DeviationAlert[]>();
 

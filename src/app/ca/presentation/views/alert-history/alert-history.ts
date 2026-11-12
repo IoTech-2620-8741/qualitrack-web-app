@@ -55,9 +55,6 @@ import { AlertsPageHeader } from '../../components/alerts-page-header/alerts-pag
 import { SetupNotice } from '../../../../shared/presentation/components/setup-notice/setup-notice';
 import { IamStore } from '../../../../iam/application/iam.store';
 
-/** Alerts shown on each page of the table. */
-export const ALERT_HISTORY_PAGE_SIZE = 25;
-
 /** Icon of each origin in its chip. */
 const ORIGIN_ICONS: Readonly<Record<AlertOrigin, string>> = {
   ENVIRONMENT: 'sensors',
@@ -177,34 +174,6 @@ export class AlertHistory implements OnInit {
     return countAlertsByWeek(this.shownAlerts(), range.since, range.until);
   });
 
-  /** How many pages the table has, at least one. */
-  protected readonly pageCount = computed(() =>
-    Math.max(1, Math.ceil(this.shownAlerts().length / ALERT_HISTORY_PAGE_SIZE)),
-  );
-
-  /** Page shown, from 1; a page of the address that does not exist counts as the last one. */
-  protected readonly page = computed(() => {
-    const page = Math.floor(Number(this.queryParams()?.get('page')));
-    return Math.min(Math.max(1, page || 1), this.pageCount());
-  });
-
-  /** Alerts of the page shown. */
-  protected readonly pageAlerts = computed(() => {
-    const start = (this.page() - 1) * ALERT_HISTORY_PAGE_SIZE;
-    return this.shownAlerts().slice(start, start + ALERT_HISTORY_PAGE_SIZE);
-  });
-
-  /** Positions of the first and last alert of the page, from 1, and the size of a page, for the text under the table. */
-  protected readonly pageRange = computed(() => {
-    const first = (this.page() - 1) * ALERT_HISTORY_PAGE_SIZE + 1;
-    return {
-      first,
-      last: first + this.pageAlerts().length - 1,
-      total: this.shownAlerts().length,
-      size: ALERT_HISTORY_PAGE_SIZE,
-    };
-  });
-
   /** Codes of the environments that could not be read, for the warning that says so. */
   protected readonly unavailableEnvironments = computed(() => {
     const unavailableIds = this.store.unavailableEnvironmentIds();
@@ -307,15 +276,6 @@ export class AlertHistory implements OnInit {
   /** Goes back to the filter the history opens with, keeping the environment. */
   protected clearFilters(): void {
     this.changeFilter(DEFAULT_ALERT_HISTORY_FILTER);
-  }
-
-  /**
-   * Shows another page of the table.
-   *
-   * @param page - The page, from 1
-   */
-  protected goToPage(page: number): void {
-    this.navigate({ page: page > 1 ? page : null });
   }
 
   /**

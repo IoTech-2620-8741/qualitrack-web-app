@@ -794,14 +794,7 @@
       "attention-after": "attended after {{time}}",
       "export": "Export report",
       "export-note": "\"Export report\" covers the whole period and environment: severity, status, origin and search only narrow this table.",
-      "view": "View the detail of the {{variable}} alert",
-      "pages": {
-        "label": "Pages of the history",
-        "showing": "Showing {{first}}–{{last}} of {{total}} · {{size}} per page",
-        "current": "Page {{page}} of {{count}}",
-        "previous": "Previous page",
-        "next": "Next page"
-      }
+      "view": "View the detail of the {{variable}} alert"
     },
     "detail": {
       "alert": "Alert",
