@@ -1285,6 +1285,7 @@
   },
   "lab-profile": {
     "title": "Laboratory Profile",
+    "tab": "Profile",
     "name": "Laboratory Name",
     "address": "Physical Address",
     "phone": "Contact Phone",
@@ -1305,6 +1306,8 @@
   "staff-list": {
     "title": "Personnel Management",
     "register": "Add Staff",
+    "search": "Search name, job title or email",
+    "empty-filtered": "No staff members match these filters.",
     "name": "Full Name",
     "role": "Job title",
     "email": "Corporate Email",
@@ -1838,6 +1841,7 @@
     "title": "Environments",
     "subtitle": "Physical areas of the laboratory or warehouse where materials, products and devices are located.",
     "register": "Register environment",
+    "search": "Search code or name",
     "code": "Code",
     "name": "Name",
     "description": "Description",

@@ -1,133 +1,140 @@
 <main class="operations-page">
-  <header class="page-heading">
-    <h1><mat-icon aria-hidden="true">science</mat-icon>{{ 'lab-profile.title' | translate }}</h1>
-  </header>
-
-  @if (store.isLoading()) {
-    <div class="loading">
-      <mat-spinner diameter="48" aria-label="Loading laboratory profile"></mat-spinner>
-    </div>
-  }
-
-  @if (store.error()) {
-    <p class="error" role="alert">{{ store.error() }}</p>
-  }
-
-  @if (store.successMsg()) {
-    <p class="success" role="status">{{ store.successMsg() }}</p>
-  }
-
-  @if (store.laboratory(); as laboratory) {
-    @if (!isEditing()) {
-      <section class="summary-strip">
-        <div>
-          <span>{{ 'lab-profile.name' | translate }}</span>
-          <strong>{{ laboratory.name }}</strong>
+  <app-page-header
+    icon="science"
+    titleKey="lab-profile.title"
+    [tabs]="tabs"
+    activeTab="/laboratories/profile"
+    [loading]="store.isLoading()"
+    (refresh)="reload()"
+  >
+    <div class="profile">
+      @if (store.isLoading()) {
+        <div class="loading">
+          <mat-spinner diameter="48" aria-label="Loading laboratory profile"></mat-spinner>
         </div>
-        <div>
-          <span>RUC</span>
-          <strong>{{ laboratory.ruc || 'N/A' }}</strong>
-        </div>
-      </section>
+      }
 
-      <section class="editor">
-        <div class="details">
-          <div class="detail-row">
-            <span class="detail-label">{{ 'lab-profile.address' | translate }}</span>
-            <span class="detail-value">{{ laboratory.address }}</span>
-          </div>
+      @if (store.error()) {
+        <p class="error" role="alert">{{ store.error() }}</p>
+      }
 
-          <div class="detail-row">
-            <span class="detail-label">{{ 'lab-profile.phone' | translate }}</span>
-            <span class="detail-value">{{ laboratory.phone }}</span>
-          </div>
+      @if (store.successMsg()) {
+        <p class="success" role="status">{{ store.successMsg() }}</p>
+      }
 
-          <div class="detail-row">
-            <span class="detail-label">{{ 'lab-profile.regulations' | translate }}</span>
-            <span class="regulations-tags">
-              @for (regulation of laboratory.applicableRegulations; track regulation) {
-                <span class="tag">
-                  <mat-icon aria-hidden="true">verified</mat-icon>{{ regulation }}
+      @if (store.laboratory(); as laboratory) {
+        @if (!isEditing()) {
+          <section class="summary-strip">
+            <div>
+              <span>{{ 'lab-profile.name' | translate }}</span>
+              <strong>{{ laboratory.name }}</strong>
+            </div>
+            <div>
+              <span>RUC</span>
+              <strong>{{ laboratory.ruc || 'N/A' }}</strong>
+            </div>
+          </section>
+
+          <section class="editor">
+            <div class="details">
+              <div class="detail-row">
+                <span class="detail-label">{{ 'lab-profile.address' | translate }}</span>
+                <span class="detail-value">{{ laboratory.address }}</span>
+              </div>
+
+              <div class="detail-row">
+                <span class="detail-label">{{ 'lab-profile.phone' | translate }}</span>
+                <span class="detail-value">{{ laboratory.phone }}</span>
+              </div>
+
+              <div class="detail-row">
+                <span class="detail-label">{{ 'lab-profile.regulations' | translate }}</span>
+                <span class="regulations-tags">
+                  @for (regulation of laboratory.applicableRegulations; track regulation) {
+                    <span class="tag">
+                      <mat-icon aria-hidden="true">verified</mat-icon>{{ regulation }}
+                    </span>
+                  }
                 </span>
-              }
-            </span>
-          </div>
-        </div>
+              </div>
+            </div>
 
-        @if (iamStore.canManageQuality()) {
-          <div class="actions">
-            <button
-              mat-flat-button
-              type="button"
-              [attr.aria-label]="'lab-profile.edit' | translate"
-              (click)="onEdit()"
-            >
-              <mat-icon>edit</mat-icon>
-              {{ 'lab-profile.edit' | translate }}
-            </button>
-          </div>
-        }
-      </section>
-    } @else {
-      <form class="editor form-grid" [formGroup]="form" (ngSubmit)="onSave()">
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>{{ 'lab-profile.name' | translate }}</mat-label>
-          <input matInput formControlName="name" maxlength="100" aria-label="Laboratory name">
-          @if (form.get('name')?.hasError('required')) {
-            <mat-error>{{ 'common.required' | translate }}</mat-error>
-          } @else if (form.get('name')?.hasError('notBlank')) {
-            <mat-error>{{ 'common.notBlank' | translate }}</mat-error>
-          }
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>{{ 'lab-profile.address' | translate }}</mat-label>
-          <input matInput formControlName="address" maxlength="250" aria-label="Laboratory address">
-          @if (form.get('address')?.hasError('required')) {
-            <mat-error>{{ 'common.required' | translate }}</mat-error>
-          } @else if (form.get('address')?.hasError('notBlank')) {
-            <mat-error>{{ 'common.notBlank' | translate }}</mat-error>
-          }
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
-          <mat-label>{{ 'lab-profile.phone' | translate }}</mat-label>
-          <input matInput phoneInput formControlName="phone" type="tel" inputmode="tel" maxlength="20"
-                 autocomplete="tel" aria-label="Laboratory phone number">
-          @if (form.get('phone')?.hasError('required')) {
-            <mat-error>{{ 'common.required' | translate }}</mat-error>
-          } @else if (form.get('phone')?.hasError('phoneChars')) {
-            <mat-error>{{ 'common.phoneChars' | translate }}</mat-error>
-          } @else if (form.get('phone')?.hasError('phoneFake')) {
-            <mat-error>{{ 'common.phoneFake' | translate }}</mat-error>
-          } @else if (form.get('phone')?.hasError('phone')) {
-            <mat-error>{{ 'common.invalidPhone' | translate }}</mat-error>
-          }
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
-          <mat-label>{{ 'lab-profile.regulations' | translate }}</mat-label>
-          <mat-select
-            formControlName="applicableRegulations"
-            multiple
-            aria-label="Applicable regulations"
-          >
-            @for (regulation of regulations; track regulation) {
-              <mat-option [value]="regulation">{{ regulation }}</mat-option>
+            @if (iamStore.canManageQuality()) {
+              <div class="actions">
+                <button
+                  mat-flat-button
+                  type="button"
+                  [attr.aria-label]="'lab-profile.edit' | translate"
+                  (click)="onEdit()"
+                >
+                  <mat-icon>edit</mat-icon>
+                  {{ 'lab-profile.edit' | translate }}
+                </button>
+              </div>
             }
-          </mat-select>
-        </mat-form-field>
+          </section>
+        } @else {
+          <form class="editor form-grid" [formGroup]="form" (ngSubmit)="onSave()">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>{{ 'lab-profile.name' | translate }}</mat-label>
+              <input matInput formControlName="name" maxlength="100" aria-label="Laboratory name">
+              @if (form.get('name')?.hasError('required')) {
+                <mat-error>{{ 'common.required' | translate }}</mat-error>
+              } @else if (form.get('name')?.hasError('notBlank')) {
+                <mat-error>{{ 'common.notBlank' | translate }}</mat-error>
+              }
+            </mat-form-field>
 
-        <div class="actions full-width">
-          <button mat-button type="button" (click)="onCancel()">
-            {{ 'common.cancel' | translate }}
-          </button>
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>{{ 'lab-profile.address' | translate }}</mat-label>
+              <input matInput formControlName="address" maxlength="250" aria-label="Laboratory address">
+              @if (form.get('address')?.hasError('required')) {
+                <mat-error>{{ 'common.required' | translate }}</mat-error>
+              } @else if (form.get('address')?.hasError('notBlank')) {
+                <mat-error>{{ 'common.notBlank' | translate }}</mat-error>
+              }
+            </mat-form-field>
 
-          <button mat-flat-button type="submit" [disabled]="form.invalid || store.isLoading()">
-            {{ 'common.save' | translate }}
-          </button>
-        </div>
-      </form>
-    }
-  }
+            <mat-form-field appearance="outline">
+              <mat-label>{{ 'lab-profile.phone' | translate }}</mat-label>
+              <input matInput phoneInput formControlName="phone" type="tel" inputmode="tel" maxlength="20"
+                     autocomplete="tel" aria-label="Laboratory phone number">
+              @if (form.get('phone')?.hasError('required')) {
+                <mat-error>{{ 'common.required' | translate }}</mat-error>
+              } @else if (form.get('phone')?.hasError('phoneChars')) {
+                <mat-error>{{ 'common.phoneChars' | translate }}</mat-error>
+              } @else if (form.get('phone')?.hasError('phoneFake')) {
+                <mat-error>{{ 'common.phoneFake' | translate }}</mat-error>
+              } @else if (form.get('phone')?.hasError('phone')) {
+                <mat-error>{{ 'common.invalidPhone' | translate }}</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>{{ 'lab-profile.regulations' | translate }}</mat-label>
+              <mat-select
+                formControlName="applicableRegulations"
+                multiple
+                aria-label="Applicable regulations"
+              >
+                @for (regulation of regulations; track regulation) {
+                  <mat-option [value]="regulation">{{ regulation }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+
+            <div class="actions full-width">
+              <button mat-button type="button" (click)="onCancel()">
+                {{ 'common.cancel' | translate }}
+              </button>
+
+              <button mat-flat-button type="submit" [disabled]="form.invalid || store.isLoading()">
+                {{ 'common.save' | translate }}
+              </button>
+            </div>
+          </form>
+        }
+      }
+    </div>
+  </app-page-header>
 </main>

@@ -12,92 +12,39 @@
   padding: 32px 24px 48px;
 }
 
-h1,
-p,
-a {
-  overflow-wrap: anywhere;
-  letter-spacing: 0;
-}
-
-.page-heading {
+/* The toolbar, the messages and the table, one under the other */
+.staff {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-bottom: 24px;
-}
-
-.heading-content {
+  flex-direction: column;
+  gap: 16px;
   min-width: 0;
 }
 
-h1 {
+.status-chips {
   display: flex;
-  align-items: center;
-  gap: 10px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.hint {
   margin: 0;
-  color: var(--qt-heading);
-  font-size: 28px;
-  font-weight: 700;
-}
-
-h1 mat-icon {
-  flex-shrink: 0;
-  color: var(--qt-primary);
-}
-
-.muted {
-  margin: 8px 0 0;
   color: var(--qt-text-muted);
   font-size: 14px;
   line-height: 1.6;
 }
 
-.actions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+.table-card {
+  position: relative;
 }
 
-.primary-btn {
-  height: auto;
-  /* The height of the actions of every heading; a phone keeps 48px to touch them */
-  min-height: 40px;
-  padding: 8px 20px;
-  border-radius: 999px;
-  font-weight: 600;
-  white-space: nowrap;
-  background: var(--qt-primary-strong);
-  color: var(--qt-surface);
-}
-
-.primary-btn:hover {
-  background: var(--qt-primary-hover);
-}
-
-.primary-btn:focus-visible {
-  outline: 3px solid var(--qt-primary);
-  outline-offset: 2px;
-}
-
-.refresh-btn {
-  flex-shrink: 0;
+.data-table td.empty-cell {
+  padding: 32px 16px;
   color: var(--qt-text-muted);
-}
-
-.refresh-btn:hover:not([disabled]) {
-  background: var(--qt-border);
-  color: var(--qt-primary-strong);
-}
-
-.refresh-btn:focus-visible {
-  outline: 3px solid var(--qt-primary);
-  outline-offset: 2px;
+  text-align: center;
 }
 
 .error {
-  margin: 0 0 20px;
+  margin: 0;
   padding: 16px;
   background: var(--qt-error-surface);
   border: 1px solid var(--qt-error);
@@ -212,43 +159,6 @@ h1 mat-icon {
 @media (max-width: 760px) {
   .operations-page {
     padding: 20px 16px 36px;
-  }
-
-  .page-heading {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) 40px;
-    grid-template-rows: auto auto;
-    column-gap: 8px;
-    row-gap: 12px;
-    align-items: start;
-  }
-
-  .heading-content {
-    grid-column: 1;
-    grid-row: 1;
-  }
-
-  h1 {
-    font-size: 24px;
-  }
-
-  .actions {
-    display: contents;
-  }
-
-  .refresh-btn {
-    grid-column: 2;
-    grid-row: 1;
-    justify-self: end;
-    align-self: start;
-  }
-
-  .primary-btn {
-    grid-column: 1 / -1;
-    grid-row: 2;
-    width: 100%;
-    min-height: 48px;
-    justify-content: center;
   }
 
   .data-table td.name-cell {

@@ -19,6 +19,8 @@ import {
   normalizePhone,
   phoneValidator,
 } from '../../../../shared/presentation/validators/phone.validator';
+import { PageHeader } from '../../../../shared/presentation/components/page-header/page-header';
+import { LABORATORY_TABS } from '../../laboratory-tabs';
 
 /**
  * Component responsible for displaying and editing the current laboratory profile.
@@ -38,6 +40,7 @@ import {
     MatInputModule,
     MatIconModule,
     MatButtonModule,
+    PageHeader,
     MatSelectModule,
     MatCardModule,
     MatProgressSpinnerModule,
@@ -96,6 +99,14 @@ export class LabProfile implements OnInit {
    * Lifecycle hook that loads the current laboratory profile.
    */
   ngOnInit(): void {
+    this.store.loadLaboratory(this.currentLaboratoryId);
+  }
+
+  /** Operations of the laboratory module. */
+  protected readonly tabs = LABORATORY_TABS;
+
+  /** Reads the laboratory profile again. */
+  protected reload(): void {
     this.store.loadLaboratory(this.currentLaboratoryId);
   }
 

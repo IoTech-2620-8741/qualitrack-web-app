@@ -1,138 +1,145 @@
 <main class="operations-page">
-  <header class="page-heading">
-    <div class="heading-content">
-      <h1>
-        <mat-icon aria-hidden="true">badge</mat-icon>
-        {{ 'staff-list.title' | translate }}
-      </h1>
+  <app-page-header
+    icon="badge"
+    titleKey="staff-list.title"
+    [tabs]="tabs"
+    activeTab="/laboratories/staff"
+    [loading]="store.isLoading()"
+    (refresh)="refresh()"
+  >
+    <div class="staff">
+      <!-- How to add someone at the right end; then active and inactive with their counts, and the search -->
+      <app-list-toolbar
+        searchKey="staff-list.search"
+        [search]="search()"
+        [activeFilters]="(status() === 'all' ? 0 : 1) + (search().trim() ? 1 : 0)"
+        (searchChange)="search.set($event)"
+      >
+        @if (iamStore.canManageQuality()) {
+          <button toolbarActions mat-flat-button type="button" (click)="onRegister()">
+            <mat-icon>person_add</mat-icon>
+            {{ 'staff-list.register' | translate }}
+          </button>
+        }
+        <div toolbarFilters class="status-chips" role="group" [attr.aria-label]="'staff-list.status' | translate">
+          @for (option of statusOptions; track option.value) {
+            <app-filter-chip
+              [labelKey]="option.labelKey"
+              [count]="counts()[option.value]"
+              [pressed]="status() === option.value"
+              (toggled)="status.set(status() === option.value ? 'all' : option.value)"
+            />
+          }
+        </div>
+      </app-list-toolbar>
 
       @if (canSeeActivity()) {
-        <p class="muted">{{ 'staff-list.activity-hint' | translate }}</p>
-      }
-    </div>
-
-    <div class="actions">
-      @if (iamStore.canManageQuality()) {
-        <button
-          mat-flat-button
-          class="primary-btn"
-          type="button"
-          (click)="onRegister()"
-        >
-          <mat-icon>person_add</mat-icon>
-          {{ 'staff-list.register' | translate }}
-        </button>
+        <p class="hint">{{ 'staff-list.activity-hint' | translate }}</p>
       }
 
-      <button
-        mat-icon-button
-        type="button"
-        class="refresh-btn"
-        (click)="refresh()"
-        [disabled]="store.isLoading()"
-        [attr.aria-label]="'common.refresh' | translate"
-        [matTooltip]="'common.refresh' | translate"
-      >
-        <mat-icon>refresh</mat-icon>
-      </button>
-    </div>
-  </header>
+      @if (error(); as message) {
+        <p class="error" role="alert">{{ message | translate }}</p>
+      }
 
-  @if (error(); as message) {
-    <p class="error" role="alert">{{ message | translate }}</p>
-  }
+      <div class="table-card" [attr.aria-busy]="store.isLoading()">
+        @if (store.isLoading()) {
+          <div class="loading-overlay">
+            <mat-spinner diameter="40"></mat-spinner>
+          </div>
+        }
 
-  <div class="table-card" [attr.aria-busy]="store.isLoading()">
-    @if (store.isLoading()) {
-      <div class="loading-overlay">
-        <mat-spinner diameter="40"></mat-spinner>
-      </div>
-    }
-
-    @if (store.staffList().length > 0) {
-      <table
-        class="data-table"
-        [attr.aria-label]="'staff-list.title' | translate"
-      >
-        <thead>
-        <tr>
-          <th>{{ 'staff-list.name' | translate }}</th>
-          <th>{{ 'staff-list.role' | translate }}</th>
-          <th>{{ 'staff-list.access-role' | translate }}</th>
-          <th>{{ 'staff-list.email' | translate }}</th>
-          <th>{{ 'staff-list.status' | translate }}</th>
-          @if (iamStore.canManageQuality()) {
-            <th>{{ 'common.actions.label' | translate }}</th>
-          }
-        </tr>
-        </thead>
-
-        <tbody>
-          @for (member of staffPage.rows(); track member.id) {
+        @if (store.staffList().length > 0) {
+          <table
+            class="data-table"
+            [attr.aria-label]="'staff-list.title' | translate"
+          >
+            <thead>
             <tr>
-              <td class="name-cell">
-                @if (canSeeActivity()) {
-                  <a [routerLink]="['/laboratories/staff', member.id]">
-                    {{ member.fullName }}
-                  </a>
-                } @else {
-                  {{ member.fullName }}
-                }
-              </td>
-
-              <td [attr.data-label]="'staff-list.role' | translate">
-                <span class="role-tag">{{ member.role }}</span>
-              </td>
-
-              <td [attr.data-label]="'staff-list.access-role' | translate">
-                @if (member.accessRole) {
-                  {{ 'staff.access-roles.' + member.accessRole.toLowerCase() | translate }}
-                } @else {
-                  <span class="muted-text">
-                    {{ 'staff.no-account' | translate }}
-                  </span>
-                }
-              </td>
-
-              <td [attr.data-label]="'staff-list.email' | translate">
-                {{ member.email }}
-              </td>
-
-              <td [attr.data-label]="'staff-list.status' | translate">
-                <span class="status" [class.inactive]="!member.active">
-                  {{ (member.active ? 'common.active' : 'common.inactive') | translate }}
-                </span>
-              </td>
-
+              <th>{{ 'staff-list.name' | translate }}</th>
+              <th>{{ 'staff-list.role' | translate }}</th>
+              <th>{{ 'staff-list.access-role' | translate }}</th>
+              <th>{{ 'staff-list.email' | translate }}</th>
+              <th>{{ 'staff-list.status' | translate }}</th>
               @if (iamStore.canManageQuality()) {
-                <td [attr.data-label]="'common.actions.label' | translate">
-                  <div class="row-actions">
-                    @if (member.active) {
-                      <button
-                        mat-icon-button
-                        class="danger-icon"
-                        type="button"
-                        [matTooltip]="'staff-list.deactivate' | translate"
-                        [attr.aria-label]="'staff-list.deactivate' | translate"
-                        [disabled]="store.isLoading()"
-                        (click)="onDeactivate(member)"
-                      >
-                        <mat-icon>person_off</mat-icon>
-                      </button>
-                    }
-                  </div>
-                </td>
+                <th>{{ 'common.actions.label' | translate }}</th>
               }
             </tr>
-          }
-        </tbody>
-      </table>
-      <app-table-paginator [page]="staffPage" />
-    } @else if (!store.isLoading()) {
-      <div class="empty-state">
-        <mat-icon aria-hidden="true">people_outline</mat-icon>
-        <p>{{ 'staff-list.empty' | translate }}</p>
+            </thead>
+
+            <tbody>
+              @for (member of staffPage.rows(); track member.id) {
+                <tr>
+                  <td class="name-cell">
+                    @if (canSeeActivity()) {
+                      <a [routerLink]="['/laboratories/staff', member.id]">
+                        {{ member.fullName }}
+                      </a>
+                    } @else {
+                      {{ member.fullName }}
+                    }
+                  </td>
+
+                  <td [attr.data-label]="'staff-list.role' | translate">
+                    <span class="role-tag">{{ member.role }}</span>
+                  </td>
+
+                  <td [attr.data-label]="'staff-list.access-role' | translate">
+                    @if (member.accessRole) {
+                      {{ 'staff.access-roles.' + member.accessRole.toLowerCase() | translate }}
+                    } @else {
+                      <span class="muted-text">
+                        {{ 'staff.no-account' | translate }}
+                      </span>
+                    }
+                  </td>
+
+                  <td [attr.data-label]="'staff-list.email' | translate">
+                    {{ member.email }}
+                  </td>
+
+                  <td [attr.data-label]="'staff-list.status' | translate">
+                    <span class="status" [class.inactive]="!member.active">
+                      {{ (member.active ? 'common.active' : 'common.inactive') | translate }}
+                    </span>
+                  </td>
+
+                  @if (iamStore.canManageQuality()) {
+                    <td [attr.data-label]="'common.actions.label' | translate">
+                      <div class="row-actions">
+                        @if (member.active) {
+                          <button
+                            mat-icon-button
+                            class="danger-icon"
+                            type="button"
+                            [matTooltip]="'staff-list.deactivate' | translate"
+                            [attr.aria-label]="'staff-list.deactivate' | translate"
+                            [disabled]="store.isLoading()"
+                            (click)="onDeactivate(member)"
+                          >
+                            <mat-icon>person_off</mat-icon>
+                          </button>
+                        }
+                      </div>
+                    </td>
+                  }
+                </tr>
+              } @empty {
+                <tr>
+                  <td [attr.colspan]="iamStore.canManageQuality() ? 6 : 5" class="empty-cell">
+                    {{ 'staff-list.empty-filtered' | translate }}
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+          <app-table-paginator [page]="staffPage" />
+        } @else if (!store.isLoading()) {
+          <div class="empty-state">
+            <mat-icon aria-hidden="true">people_outline</mat-icon>
+            <p>{{ 'staff-list.empty' | translate }}</p>
+          </div>
+        }
       </div>
-    }
-  </div>
+    </div>
+  </app-page-header>
 </main>

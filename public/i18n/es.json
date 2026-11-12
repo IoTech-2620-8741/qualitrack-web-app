@@ -1285,6 +1285,7 @@
   },
   "lab-profile": {
     "title": "Perfil del Laboratorio",
+    "tab": "Perfil",
     "name": "Nombre del Laboratorio",
     "address": "Dirección Física",
     "phone": "Teléfono de Contacto",
@@ -1305,6 +1306,8 @@
   "staff-list": {
     "title": "Gestión de Personal",
     "register": "Añadir Personal",
+    "search": "Buscar nombre, cargo o correo",
+    "empty-filtered": "Ningún miembro del personal coincide con estos filtros.",
     "name": "Nombre Completo",
     "role": "Cargo",
     "email": "Correo Corporativo",
@@ -1837,6 +1840,7 @@
     "title": "Ambientes",
     "subtitle": "Áreas físicas del laboratorio o almacén donde se ubican materiales, productos y dispositivos.",
     "register": "Registrar ambiente",
+    "search": "Buscar código o nombre",
     "code": "Código",
     "name": "Nombre",
     "description": "Descripción",
