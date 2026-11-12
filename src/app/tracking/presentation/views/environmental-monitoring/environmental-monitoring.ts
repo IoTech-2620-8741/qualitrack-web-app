@@ -13,6 +13,9 @@ import { Measurement } from '../../../domain/model/measurement.entity';
 import { DateTimePipe } from '../../../../shared/presentation/pipes/date-time.pipe';
 import { SetupNotice } from '../../../../shared/presentation/components/setup-notice/setup-notice';
 import { IamStore } from '../../../../iam/application/iam.store';
+import { PageHeader } from '../../../../shared/presentation/components/page-header/page-header';
+import { ListToolbar } from '../../../../shared/presentation/components/list-toolbar/list-toolbar';
+import { TRACKING_TABS } from '../../tracking-tabs';
 
 /**
  * Component responsible for displaying the current environmental monitoring status.
@@ -47,6 +50,8 @@ import { IamStore } from '../../../../iam/application/iam.store';
   selector: 'app-environmental-monitoring',
   standalone: true,
   imports: [
+    PageHeader,
+    ListToolbar,
     SetupNotice,
     DateTimePipe,
     DecimalPipe,
@@ -63,6 +68,9 @@ import { IamStore } from '../../../../iam/application/iam.store';
   styleUrl: './environmental-monitoring.css',
 })
 export class EnvironmentalMonitoring implements OnInit {
+  /** Operations of the tracking module. */
+  protected readonly tabs = TRACKING_TABS;
+
   /**
    * Central application store responsible for IoT telemetry state,
    * device snapshots and environmental monitoring information.

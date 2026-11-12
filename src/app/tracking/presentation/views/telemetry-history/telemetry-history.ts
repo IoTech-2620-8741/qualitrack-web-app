@@ -32,6 +32,9 @@ import { DateTimePipe } from '../../../../shared/presentation/pipes/date-time.pi
 import { SetupNotice } from '../../../../shared/presentation/components/setup-notice/setup-notice';
 import { IamStore } from '../../../../iam/application/iam.store';
 import { TablePaginator, paginate } from '../../../../shared/presentation/components/table-paginator/table-paginator';
+import { PageHeader } from '../../../../shared/presentation/components/page-header/page-header';
+import { ListToolbar } from '../../../../shared/presentation/components/list-toolbar/list-toolbar';
+import { TRACKING_TABS } from '../../tracking-tabs';
 
 /** Earliest moment the history can be asked for, as a datetime-local value. */
 export const MIN_HISTORY_START = '2020-01-01T00:00';
@@ -57,6 +60,8 @@ export const MIN_HISTORY_START = '2020-01-01T00:00';
   selector: 'app-telemetry-history',
   standalone: true,
   imports: [
+    PageHeader,
+    ListToolbar,
     TablePaginator, SetupNotice,
     DateTimePipe,
     DecimalPipe,
@@ -77,6 +82,16 @@ export const MIN_HISTORY_START = '2020-01-01T00:00';
   styleUrl: './telemetry-history.css',
 })
 export class TelemetryHistory implements OnInit {
+  /** Operations of the tracking module. */
+  protected readonly tabs = TRACKING_TABS;
+
+  /** Whether the environment has devices whose history can be asked for. */
+  protected readonly canQuery = computed(
+    () =>
+      !this.store.environmentsEmpty() &&
+      !(this.store.environmentId() !== null && !this.store.isLoading() && !this.store.devices().length),
+  );
+
   /** Page of the table shown; ten rows unless the person chooses more. */
   protected readonly eventPage = paginate(() => this.store.history()?.actuationEvents ?? []);
 

@@ -1686,6 +1686,11 @@
     }
   },
   "tracking": {
+    "tabs": {
+      "monitoring": "Monitoring",
+      "history": "History",
+      "profiles": "Profiles"
+    },
     "refresh": "Refresh",
     "no-environments": "Register an environment of the laboratory to monitor it.",
     "no-devices": "This environment has no IoT devices. Associate an environmental device or a container monitor with it to see its readings.",

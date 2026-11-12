@@ -18,6 +18,9 @@ import {
 import { DateTimePipe } from '../../../../shared/presentation/pipes/date-time.pipe';
 import { SetupNotice } from '../../../../shared/presentation/components/setup-notice/setup-notice';
 import { IamStore } from '../../../../iam/application/iam.store';
+import { PageHeader } from '../../../../shared/presentation/components/page-header/page-header';
+import { ListToolbar } from '../../../../shared/presentation/components/list-toolbar/list-toolbar';
+import { TRACKING_TABS } from '../../tracking-tabs';
 
 /**
  * Represents stable empty collections used as default values.
@@ -53,6 +56,8 @@ const NO_METRICS: MonitoredMetric[] = [];
   selector: 'app-environmental-profiles',
   standalone: true,
   imports: [
+    PageHeader,
+    ListToolbar,
     SetupNotice,
     DateTimePipe,
     RouterLink,
@@ -68,6 +73,14 @@ const NO_METRICS: MonitoredMetric[] = [];
   styleUrl: './environmental-profiles.css',
 })
 export class EnvironmentalProfiles implements OnInit {
+  /** Operations of the tracking module. */
+  protected readonly tabs = TRACKING_TABS;
+
+  /** Reads the profiles of the environment again. */
+  protected reload(): void {
+    void this.store.loadProfiles();
+  }
+
   /**
    * Application store responsible for environmental profiles,
    * thresholds and actuation rule state management.

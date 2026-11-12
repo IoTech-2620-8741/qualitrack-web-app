@@ -15,7 +15,18 @@
   box-sizing: border-box;
 }
 
-h1,
+/* The environment and the query, then what they show */
+app-list-toolbar {
+  margin-bottom: 16px;
+}
+
+.hint {
+  margin: 0 0 8px;
+  color: var(--qt-text-muted);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
 h2,
 p,
 a {
@@ -23,7 +34,6 @@ a {
   letter-spacing: 0;
 }
 
-.page-heading,
 .filters {
   display: flex;
   align-items: center;
@@ -31,42 +41,6 @@ a {
   gap: 12px;
 }
 
-.page-heading {
-  justify-content: space-between;
-  margin-bottom: 8px;
-}
-
-.heading-content {
-  min-width: 0;
-}
-
-h1 {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin: 0;
-  color: var(--qt-heading);
-  font-size: 28px;
-  font-weight: 700;
-}
-
-h1 mat-icon {
-  flex-shrink: 0;
-  color: var(--qt-primary);
-}
-
-/* The environment being shown, under the title */
-.heading-content app-environment-selector {
-  display: block;
-  max-width: 100%;
-  margin-top: 20px;
-}
-
-.heading-content p.muted {
-  margin: 6px 0 0;
-  font-size: 14px;
-  line-height: 1.6;
-}
 
 h2 {
   margin: 24px 0 12px;
@@ -83,10 +57,6 @@ p.muted {
   margin: 0 0 16px;
   font-size: 14px;
   line-height: 1.6;
-}
-
-.page-heading + p.muted {
-  margin-bottom: 24px;
 }
 
 .error,
@@ -270,25 +240,6 @@ mat-button-toggle-group ::ng-deep .mat-button-toggle:has(.mat-button-toggle-butt
 @media (max-width: 760px) {
   .operations-page {
     padding: 20px 16px 36px;
-  }
-
-  .page-heading {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    align-items: start;
-    gap: 8px;
-  }
-
-  .heading-content {
-    min-width: 0;
-  }
-
-  h1 {
-    font-size: 24px;
-  }
-
-  .heading-content p.muted {
-    margin-top: 6px;
   }
 
   .filters {
