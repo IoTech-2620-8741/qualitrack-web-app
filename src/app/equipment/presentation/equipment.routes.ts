@@ -62,6 +62,30 @@ const deviceForm = () =>
   import('./views/device-form/device-form').then((m) => m.DeviceForm);
 
 /**
+ * Lazy loads the Edge Gateway registration form view component.
+ *
+ * @remarks
+ * This function loads the form used to register an Edge Gateway only when the user
+ * navigates to the Edge Gateway registration route.
+ *
+ * @returns A Promise that resolves to the EdgeGatewayForm component.
+ */
+const edgeGatewayForm = () =>
+  import('./views/edge-gateway-form/edge-gateway-form').then((m) => m.EdgeGatewayForm);
+
+/**
+ * Lazy loads the view of what is located in an environment.
+ *
+ * @remarks
+ * This function loads the view that shows the Edge Gateways, IoT devices and equipment of an
+ * environment when the user accesses a route containing a specific environment identifier.
+ *
+ * @returns A Promise that resolves to the EnvironmentEquipment component.
+ */
+const environmentEquipment = () =>
+  import('./views/environment-equipment/environment-equipment').then((m) => m.EnvironmentEquipment);
+
+/**
  * Lazy loads the maintenance registration form view component.
  *
  * @remarks
@@ -81,20 +105,25 @@ const maintenanceForm = () =>
  * lazy loading through loadComponent, allowing the application to load each view only when needed.
  *
  * Child routes name the resource, not the view that renders it:
- * - empty path: list of the equipment and IoT devices.
+ * - empty path: list of the equipment, IoT devices and Edge Gateways; `?environmentId=` opens it filtered by environment.
  * - `new`: equipment registration form.
  * - `devices/new`: IoT device registration form.
+ * - `edge-gateways/new`: Edge Gateway registration form.
+ * - `environments/:environmentId`: what is located in an environment and how its Edge Gateways cover its IoT devices.
  * - `:equipmentId`: detail of an equipment; it also shows its maintenance history.
  * - `:equipmentId/bpm-configuration`: BPM parameter configuration; protected by `operatorGuard`.
  * - `:equipmentId/maintenances/new`: maintenance registration form; protected by `operatorGuard`.
  *
- * Static segments are declared before `:equipmentId` so that `new` and `devices` are not read as identifiers.
+ * Static segments are declared before `:equipmentId` so that `new`, `devices`, `edge-gateways` and
+ * `environments` are not read as identifiers.
  * The view-named paths used before semantic routes redirect to their new address, so bookmarks keep working.
  */
 const equipmentRoutes: Routes = [
   { path: '', loadComponent: equipmentList, pathMatch: 'full', title: 'page-titles.equipment-list' },
   { path: 'new', loadComponent: equipmentForm, title: 'page-titles.equipment-new' },
   { path: 'devices/new', loadComponent: deviceForm, title: 'page-titles.device-new' },
+  { path: 'edge-gateways/new', loadComponent: edgeGatewayForm, title: 'page-titles.edge-gateway-new' },
+  { path: 'environments/:environmentId', loadComponent: environmentEquipment, title: 'page-titles.environment-equipment' },
   // View-named paths used before semantic routes, declared before the identifier so they are not read as one.
   { path: 'equipment-list', redirectTo: '/equipments', pathMatch: 'full' },
   { path: 'register-equipment', redirectTo: '/equipments/new', pathMatch: 'full' },

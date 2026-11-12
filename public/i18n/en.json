@@ -386,6 +386,7 @@
     "equipment-list": "Equipment Catalog",
     "register-equipment": "Register Equipment",
     "register-device": "Register IoT Device",
+    "register-edge-gateway": "Register Edge Gateway",
     "alerts": "Compliance Alerts",
     "alert-dashboard": "Active Alerts",
     "alert-history": "Alert History",
@@ -1175,12 +1176,16 @@
       "label": "Show",
       "all": "All",
       "equipment": "Equipment",
-      "devices": "IoT devices"
+      "devices": "IoT devices",
+      "gateways": "Edge Gateways",
+      "environment": "Environment",
+      "all-environments": "All environments"
     },
     "search": "Search by name, model, serial or identifier",
     "summary": {
       "equipment": "Process equipment",
       "devices": "IoT devices",
+      "gateways": "Edge Gateways",
       "attention": "In maintenance or out of service"
     }
   },
@@ -2029,6 +2034,69 @@
     "saved": "The batch was stored in the container.",
     "no-containers": "There are no operational container monitors in product storage environments. Classify an environment as product storage and locate a container monitor there."
   },
+  "edge-gateway": {
+    "type": "Edge Gateway",
+    "add-button": "Register Edge Gateway",
+    "form": {
+      "title": "Register Edge Gateway",
+      "subtitle": "The Edge Gateway receives the readings of the IoT devices of its environment and sends them to QualiTrack.",
+      "save": "Register Edge Gateway",
+      "placeholders": {
+        "name": "E.g. Edge Gateway - Raw materials warehouse",
+        "identifier": "E.g. EDGE-001",
+        "serial": "E.g. RPI-0001"
+      },
+      "hints": {
+        "identifier": "Unique in QualiTrack; the Edge uses it with its API key to connect.",
+        "environment": "Optional; it can also be located later from its detail. An environment can have several Edge Gateways."
+      }
+    },
+    "api-key": {
+      "title": "API key",
+      "hint": "The Edge Gateway uses it to connect to QualiTrack. It is generated only once.",
+      "issued": "API key already generated",
+      "not-issued": "No API key yet",
+      "unknown": "The API key status could not be checked.",
+      "generate": "Generate API key",
+      "requires-location": "Locate the Edge Gateway in an environment to generate its API key.",
+      "requires-operational": "The Edge Gateway must be operational to generate its API key.",
+      "dialog": {
+        "title": "Edge Gateway API key",
+        "once": "Copy the API key now. It is shown only this time and cannot be recovered later.",
+        "device-id": "Identifier",
+        "key": "API key",
+        "copy": "Copy",
+        "copied": "Copied to the clipboard.",
+        "hint": "Set both values in the .env file of the Edge Gateway.",
+        "close": "I already copied it"
+      }
+    }
+  },
+  "environment-equipment": {
+    "title": "Environment equipment",
+    "subtitle": "Edge Gateways, IoT devices and equipment located in this environment.",
+    "open": "View the equipment and devices of this environment",
+    "view-in-list": "View in the equipment list",
+    "uncovered-warning": "{{count}} IoT device(s) have no Edge Gateway, so their readings do not reach QualiTrack. Each Edge Gateway covers up to {{max}} devices.",
+    "summary": {
+      "uncovered": "Devices without Edge Gateway"
+    },
+    "gateways": {
+      "title": "Edge Gateways",
+      "hint": "IoT devices are distributed automatically, up to {{max}} per Edge Gateway, in order of registration.",
+      "load": "Covered devices",
+      "capacity": "{{count}} of {{max}}",
+      "empty": "This environment has no Edge Gateway yet."
+    },
+    "devices": {
+      "title": "IoT devices",
+      "empty": "This environment has no IoT devices."
+    },
+    "equipment": {
+      "title": "Process equipment",
+      "empty": "This environment has no process equipment."
+    }
+  },
   "page-titles": {
     "home": "Home",
     "about": "About",
@@ -2050,6 +2118,8 @@
     "equipment-list": "Equipment",
     "equipment-new": "Register Equipment",
     "device-new": "Register IoT Device",
+    "edge-gateway-new": "Register Edge Gateway",
+    "environment-equipment": "Environment equipment",
     "equipment-detail": "Equipment Detail",
     "bpm-config": "BPM Configuration",
     "maintenance-new": "Technical Activity Record",

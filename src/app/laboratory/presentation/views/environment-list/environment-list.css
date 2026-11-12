@@ -176,8 +176,19 @@ p[role='status'] {
 }
 
 .environment-code {
-  color: var(--qt-heading);
+  color: var(--qt-primary-strong);
   font-weight: 600;
+  text-decoration: none;
+}
+
+.environment-code:hover {
+  text-decoration: underline;
+}
+
+.environment-code:focus-visible {
+  outline: 3px solid var(--qt-primary);
+  outline-offset: 2px;
+  border-radius: 4px;
 }
 
 .usage-tag {

@@ -161,6 +161,15 @@ mat-form-field {
   max-width: 440px;
 }
 
+.filters mat-form-field.environment-filter {
+  flex: 0 1 260px;
+  min-width: 200px;
+}
+
+.data-table a.environment-link {
+  font-weight: 500;
+}
+
 .filters input {
   caret-color: var(--qt-primary);
 }

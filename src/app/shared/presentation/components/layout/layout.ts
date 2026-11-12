@@ -142,6 +142,7 @@ export class Layout {
               qualityOnly: true,
             },
             { label: 'nav.register-device', link: '/equipments/devices/new', qualityOnly: true },
+            { label: 'nav.register-edge-gateway', link: '/equipments/edge-gateways/new', qualityOnly: true },
           ],
         },
         {

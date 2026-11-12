@@ -1,5 +1,5 @@
 import { Component, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 
 import { MatButtonModule } from '@angular/material/button';
@@ -16,12 +16,14 @@ import { ENVIRONMENT_USAGES, EnvironmentUsage } from '../../../domain/model/envi
  *
  * @remarks
  * Quality managers can register and edit environments and assign their usage (US30, US31, US33);
- * other members of the laboratory can only consult them.
+ * other members of the laboratory can only consult them. The code of each environment links to
+ * the equipment, IoT devices and Edge Gateways located in it.
  */
 @Component({
   selector: 'app-environment-list',
   standalone: true,
   imports: [
+    RouterLink,
     TranslatePipe,
     MatButtonModule,
     MatIconModule,
