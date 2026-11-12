@@ -20,13 +20,6 @@ app-list-toolbar {
   margin-bottom: 16px;
 }
 
-.hint {
-  margin: 0 0 8px;
-  color: var(--qt-text-muted);
-  font-size: 14px;
-  line-height: 1.6;
-}
-
 h2,
 p,
 a {

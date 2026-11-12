@@ -12,14 +12,6 @@
   padding: 32px 24px 48px;
 }
 
-.muted {
-  margin: 0 0 16px;
-  color: var(--qt-text-muted);
-  font-size: 14px;
-  line-height: 1.6;
-  overflow-wrap: anywhere;
-}
-
 .settings-card {
   max-width: 720px;
   padding: 24px;

@@ -12,14 +12,6 @@
   padding: 32px 24px 48px;
 }
 
-.page-desc {
-  margin: 0 0 16px;
-  color: var(--qt-text-muted);
-  font-size: 14px;
-  line-height: 1.6;
-  overflow-wrap: anywhere;
-}
-
 .layout-grid {
   display: grid;
   grid-template-columns: 320px minmax(0, 1fr);

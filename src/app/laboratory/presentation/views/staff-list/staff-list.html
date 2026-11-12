@@ -2,6 +2,7 @@
   <app-page-header
     icon="badge"
     titleKey="staff-list.title"
+    [subtitleKey]="canSeeActivity() ? 'staff-list.activity-hint' : null"
     [tabs]="tabs"
     activeTab="/laboratories/staff"
     [loading]="store.isLoading()"
@@ -32,10 +33,6 @@
           }
         </div>
       </app-list-toolbar>
-
-      @if (canSeeActivity()) {
-        <p class="hint">{{ 'staff-list.activity-hint' | translate }}</p>
-      }
 
       @if (error(); as message) {
         <p class="error" role="alert">{{ message | translate }}</p>

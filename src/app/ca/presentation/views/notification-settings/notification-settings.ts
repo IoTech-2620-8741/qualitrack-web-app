@@ -1,5 +1,4 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
-import { TranslatePipe } from '@ngx-translate/core';
 import { NotificationPreferencesForm } from '../../components/notification-preferences-form/notification-preferences-form';
 import { PageHeader } from '../../../../shared/presentation/components/page-header/page-header';
 import { alertTabs } from '../../alert-tabs';
@@ -8,7 +7,7 @@ import { alertTabs } from '../../alert-tabs';
 @Component({
   selector: 'app-notification-settings',
   standalone: true,
-  imports: [TranslatePipe, NotificationPreferencesForm, PageHeader],
+  imports: [NotificationPreferencesForm, PageHeader],
   templateUrl: './notification-settings.html',
   styleUrl: './notification-settings.css',
   changeDetection: ChangeDetectionStrategy.Eager,

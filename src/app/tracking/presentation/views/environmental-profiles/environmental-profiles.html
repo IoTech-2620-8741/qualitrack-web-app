@@ -2,6 +2,7 @@
   <app-page-header
     icon="tune"
     titleKey="tracking.profiles.title"
+    subtitleKey="tracking.profiles.subtitle"
     [tabs]="tabs"
     activeTab="/tracking/profiles"
     [loading]="store.isLoading()"
@@ -18,7 +19,6 @@
           (selectedChange)="changeEnvironment($event)"
         />
       </app-list-toolbar>
-      <p class="hint">{{ 'tracking.profiles.subtitle' | translate }}</p>
 
       @if (!store.canConfigure()) {
         <p class="notice">{{ 'tracking.profiles.read-only' | translate }}</p>

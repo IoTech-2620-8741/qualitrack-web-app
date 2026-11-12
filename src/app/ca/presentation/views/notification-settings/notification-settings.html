@@ -2,12 +2,12 @@
   <app-page-header
     icon="notifications_active"
     titleKey="ca-alerts.page.title"
+    subtitleKey="profile.notifications.subtitle"
     [tabs]="tabs"
     activeTab="/alerts/notification-settings"
     [refreshable]="false"
   >
     <section class="preferences">
-      <p class="muted">{{ 'profile.notifications.subtitle' | translate }}</p>
       <div class="settings-card"><app-notification-preferences-form /></div>
     </section>
   </app-page-header>

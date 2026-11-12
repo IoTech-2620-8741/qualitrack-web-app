@@ -100,6 +100,9 @@ export interface PageTab {
           }
         </div>
       </div>
+      @if (subtitleKey(); as subtitleKey) {
+        <p class="subtitle">{{ subtitleKey | translate }}</p>
+      }
 
       @if (tabs().length) {
         <nav
@@ -144,6 +147,9 @@ export class PageHeader {
 
   /** Title already written, such as the name of a laboratory; it takes the place of `titleKey`. */
   readonly title = input<string | null>(null);
+
+  /** Translation key of the sentence that says what the page is for, under the title. */
+  readonly subtitleKey = input<string | null>(null);
 
   /** Operations of the module; none means the page is a single operation. */
   readonly tabs = input<readonly PageTab[]>([]);

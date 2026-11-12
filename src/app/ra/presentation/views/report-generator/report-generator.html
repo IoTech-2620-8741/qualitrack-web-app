@@ -1,8 +1,6 @@
 <div class="generator-container">
-  <app-page-header icon="summarize" titleKey="report-generator.title" [tabs]="tabs" activeTab="/reports/new" [refreshable]="false">
+  <app-page-header icon="summarize" titleKey="report-generator.title" subtitleKey="report-generator.subtitle" [tabs]="tabs" activeTab="/reports/new" [refreshable]="false">
     <div class="reports">
-      <p class="page-desc">{{ 'report-generator.subtitle' | translate }}</p>
-
       @if (store.error()) {
         <app-error-banner [messageKey]="store.error()!" [dismissible]="true" (dismiss)="store.clearMessages()" />
       }
