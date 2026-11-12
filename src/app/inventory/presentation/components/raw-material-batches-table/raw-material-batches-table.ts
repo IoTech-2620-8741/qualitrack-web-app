@@ -6,6 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { TranslatePipe } from '@ngx-translate/core';
 import { RawMaterialBatch } from '../../../domain/model/raw-material-batch.entity';
 import { StorageContainer } from '../../../domain/model/storage-container.entity';
+import { TablePaginator, paginate } from '../../../../shared/presentation/components/table-paginator/table-paginator';
 
 /**
  * Receptions of a raw material, with their container, their state and the actions the user can take on them.
@@ -13,12 +14,15 @@ import { StorageContainer } from '../../../domain/model/storage-container.entity
 @Component({
   selector: 'app-raw-material-batches-table',
   standalone: true,
-  imports: [DecimalPipe, RouterLink, MatButtonModule, MatIconModule, TranslatePipe],
+  imports: [TablePaginator, DecimalPipe, RouterLink, MatButtonModule, MatIconModule, TranslatePipe],
   templateUrl: './raw-material-batches-table.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './raw-material-batches-table.css',
 })
 export class RawMaterialBatchesTable {
+  /** Page of the table shown; ten rows unless the person chooses more. */
+  protected readonly receiptPage = paginate(() => this.receipts());
+
   /** Receptions to show, one per row. */
   readonly receipts = input.required<readonly RawMaterialBatch[]>();
 
