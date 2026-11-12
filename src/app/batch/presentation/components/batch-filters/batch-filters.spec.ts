@@ -19,7 +19,6 @@ describe('BatchFilters', () => {
     TestBed.inject(TranslateService).use(lang);
     const fixture = TestBed.createComponent(BatchFilters);
     fixture.componentRef.setInput('filter', filter);
-    fixture.componentRef.setInput('environments', [{ id: 1, code: 'PRD-01', name: 'Production' }]);
     const emitted: BatchFilter[] = [];
     // Like the list: every emitted criteria comes back as the new input
     fixture.componentInstance.filterChange.subscribe((value) => {
@@ -38,11 +37,11 @@ describe('BatchFilters', () => {
     };
   }
 
-  it('offers the text, the environment and the period, but not the status or the product', () => {
+  it('offers the period of the batches; the toolbar of the list holds the text and the environment', () => {
     const { element } = create();
 
-    expect(element.querySelector('input[type=search]')).not.toBeNull();
-    expect(element.querySelectorAll('mat-select').length).toBe(1);
+    expect(element.querySelector('input[type=search]')).toBeNull();
+    expect(element.querySelectorAll('mat-select').length).toBe(0);
     expect(element.querySelector('mat-date-range-input')).not.toBeNull();
     expect(element.querySelector('input[type=date]')).toBeNull();
     expect(element.querySelector('button.clear')).toBeNull();

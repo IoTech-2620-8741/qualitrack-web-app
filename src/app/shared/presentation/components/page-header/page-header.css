@@ -8,9 +8,10 @@
   margin-bottom: 20px;
 }
 
+/* The title wraps before the time and the refresh button leave its line */
 .heading {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
@@ -19,6 +20,7 @@
 
 h1 {
   display: flex;
+  flex: 1 1 auto;
   align-items: center;
   gap: 10px;
   min-width: 0;
@@ -42,6 +44,7 @@ h1 mat-icon {
 /* Next to the title: how fresh the data is, and the button to read it again */
 .status {
   display: flex;
+  flex: none;
   align-items: center;
   gap: 8px;
   margin-left: auto;
@@ -85,6 +88,10 @@ h1 mat-icon {
 @media (max-width: 760px) {
   h1 {
     font-size: 24px;
+  }
+
+  .updated {
+    font-size: 12px;
   }
 
   h1 mat-icon {

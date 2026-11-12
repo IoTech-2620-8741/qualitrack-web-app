@@ -1346,6 +1346,7 @@
   "product-catalog": {
     "title": "Productos farmacéuticos",
     "add": "Nuevo Producto",
+    "search": "Buscar por código o nombre",
     "code": "SKU / Código",
     "name": "Nombre del Producto",
     "specifications": "Especificaciones BPM",

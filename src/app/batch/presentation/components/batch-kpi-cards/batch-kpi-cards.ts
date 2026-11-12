@@ -1,9 +1,9 @@
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
-import { StatFilterCard } from '../../../../shared/presentation/components/stat-filter-card/stat-filter-card';
+import { FilterChip } from '../../../../shared/presentation/components/filter-chip/filter-chip';
 import { Batch, BatchStatus } from '../../../domain/model/batch.entity';
 import { BATCH_STATUS_CHIPS, BATCH_STATUSES } from '../../batch-chips';
-import { countBatches, decisionRate } from '../../batch-filter';
+import { countBatches } from '../../batch-filter';
 
 /**
  * One indicator of the batch list.
@@ -13,8 +13,6 @@ interface BatchKpi {
   icon: string;
   labelKey: string;
   value: number;
-  hintKey: string | null;
-  hintParams: Record<string, unknown>;
 }
 
 /**
@@ -34,7 +32,7 @@ interface BatchKpi {
 @Component({
   selector: 'app-batch-kpi-cards',
   standalone: true,
-  imports: [StatFilterCard, TranslatePipe],
+  imports: [FilterChip, TranslatePipe],
   templateUrl: './batch-kpi-cards.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './batch-kpi-cards.css',
@@ -55,19 +53,11 @@ export class BatchKpiCards {
   /** One indicator per status, in the order of the life cycle. */
   protected readonly kpis = computed<BatchKpi[]>(() => {
     const counts = this.counts();
-    const hints: Record<BatchStatus, [string | null, Record<string, unknown>]> = {
-      PENDING: ['batches.kpi.pending-hint', {}],
-      IN_PROGRESS: ['batches.kpi.in-progress-hint', {}],
-      RELEASED: this.rateHint('batches.kpi.release-rate', decisionRate(counts, 'RELEASED')),
-      REJECTED: this.rateHint('batches.kpi.rejection-rate', decisionRate(counts, 'REJECTED')),
-    };
     return BATCH_STATUSES.map((status) => ({
       status,
       icon: BATCH_STATUS_CHIPS[status].icon,
       labelKey: `batches.kpi.status.${status}`,
       value: counts[status],
-      hintKey: hints[status][0],
-      hintParams: hints[status][1],
     }));
   });
 
@@ -78,9 +68,5 @@ export class BatchKpiCards {
    */
   protected choose(status: BatchStatus | ''): void {
     this.statusSelected.emit(status !== '' && this.selected() === status ? '' : status);
-  }
-
-  private rateHint(key: string, rate: number | null): [string | null, Record<string, unknown>] {
-    return rate === null ? [null, {}] : [key, { rate }];
   }
 }

@@ -61,7 +61,7 @@ let nextId = 0;
               @if (!expanded() && activeFilters()) {
                 <span class="count">{{ activeFilters() }}</span>
               }
-              <mat-icon class="chevron" aria-hidden="true">{{
+              <mat-icon class="chevron" iconPositionEnd aria-hidden="true">{{
                 expanded() ? 'expand_less' : 'expand_more'
               }}</mat-icon>
             </button>
