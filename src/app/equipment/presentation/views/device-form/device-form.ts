@@ -110,7 +110,11 @@ export class DeviceForm implements OnInit {
   }
 
   protected async onSave(): Promise<void> {
-    if (this.form.invalid) return;
+    // The button stays usable; pressing it with something missing points at what is missing
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
     const { environmentId, ...command } = this.form.getRawValue();
     const device = await this.store.registerDevice(command, environmentId);
     if (!device) return;

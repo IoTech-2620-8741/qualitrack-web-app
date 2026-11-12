@@ -107,7 +107,11 @@ export class EdgeGatewayForm implements OnInit {
    * explains why and lets it be located again.
    */
   protected async onSave(): Promise<void> {
-    if (this.form.invalid) return;
+    // The button stays usable; pressing it with something missing points at what is missing
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
     const { environmentId, ...command } = this.form.getRawValue();
     const gateway = await this.store.registerEdgeGateway(command, environmentId);
     if (!gateway) return;

@@ -1923,7 +1923,6 @@
     "add-button": "Register IoT device",
     "title": "New IoT Device",
     "subtitle": "ESP32 environmental device or container monitor and the identity Edge uses to recognise it",
-    "save": "Register device",
     "fields": {
       "device-type": "Device type",
       "identifier": "Device identifier",
@@ -2035,7 +2034,6 @@
     "form": {
       "title": "Register Edge Gateway",
       "subtitle": "The Edge Gateway receives the readings of the IoT devices of its environment and sends them to QualiTrack.",
-      "save": "Register Edge Gateway",
       "placeholders": {
         "name": "E.g. Edge Gateway - Raw materials warehouse",
         "identifier": "E.g. EDGE-001",

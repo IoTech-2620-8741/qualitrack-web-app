@@ -63,6 +63,10 @@ h1, h2, h3 { line-height: 1.25; }
   --mat-form-field-outlined-error-hover-outline-color: var(--qt-error-text);
   --mat-form-field-error-text-color: var(--qt-error-text);
   --mat-form-field-focus-select-arrow-color: var(--qt-primary-strong);
+
+  /* The main action of every page and form is the green of the brand, such as Register */
+  --mat-button-filled-container-color: var(--qt-primary-strong);
+  --mat-button-filled-label-text-color: var(--qt-surface);
 }
 
 /*
