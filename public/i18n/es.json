@@ -310,6 +310,15 @@
     }
   },
   "common": {
+    "paginator": {
+      "per-page": "Filas por página",
+      "first": "Primera página",
+      "previous": "Página anterior",
+      "next": "Página siguiente",
+      "last": "Última página",
+      "range": "{{start}} – {{end}} de {{length}}",
+      "empty": "0 de 0"
+    },
     "save": "Guardar Cambios",
     "cancel": "Cancelar",
     "back": "Volver",

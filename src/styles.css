@@ -65,6 +65,170 @@ h1, h2, h3 { line-height: 1.25; }
   --mat-form-field-focus-select-arrow-color: var(--qt-primary-strong);
 }
 
+/*
+ * Every table of the application has the format of the production batches: a card with muted uppercase
+ * headers and roomy rows, which on a phone become one card per row with the name of each field.
+ * A table goes inside `.table-card`, its cells carry `data-label`, and `app-table-paginator` goes after it.
+ */
+.table-card {
+  min-width: 0;
+  overflow: hidden;
+  background: var(--qt-surface);
+  border: 1px solid var(--qt-border);
+  border-radius: var(--qt-radius-medium);
+  box-shadow: 0 1px 3px rgb(15 23 42 / 8%);
+}
+
+table.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--qt-surface);
+  font-size: 14px;
+}
+
+table.data-table th {
+  height: auto;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--qt-border);
+  color: var(--qt-text-muted);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+table.data-table td {
+  height: auto;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--qt-border);
+  color: var(--qt-text);
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+  vertical-align: middle;
+}
+
+table.data-table tr:last-child td {
+  border-bottom: none;
+}
+
+table.data-table tbody tr:hover td {
+  background: var(--qt-background);
+}
+
+table.data-table tr.openable {
+  cursor: pointer;
+}
+
+table.data-table small {
+  display: block;
+  margin-top: 4px;
+  color: var(--qt-text-muted);
+  font-size: 12px;
+}
+
+table.data-table a:not([mat-button], [mat-flat-button], [mat-stroked-button], [mat-icon-button]) {
+  color: var(--qt-primary-strong);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+table.data-table a:not([mat-button], [mat-flat-button], [mat-stroked-button], [mat-icon-button]):hover {
+  text-decoration: underline;
+}
+
+table.data-table a:focus-visible {
+  outline: 3px solid var(--qt-primary);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Status chips are never split. */
+table.data-table td.chip-cell {
+  overflow-wrap: normal;
+  white-space: nowrap;
+}
+
+/* The row that says the table is empty. */
+table.data-table td[colspan] {
+  padding: 32px 20px;
+  color: var(--qt-text-muted);
+  text-align: center;
+}
+
+table.data-table tbody tr:has(> td[colspan]):hover td {
+  background: transparent;
+}
+
+@media (max-width: 1100px) {
+  table.data-table th,
+  table.data-table td {
+    padding-right: 12px;
+    padding-left: 12px;
+  }
+}
+
+@media (max-width: 760px) {
+  .table-card {
+    overflow: visible;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+  }
+
+  table.data-table {
+    background: transparent;
+  }
+
+  table.data-table thead {
+    display: none;
+  }
+
+  table.data-table,
+  table.data-table > tbody,
+  table.data-table tr,
+  table.data-table td {
+    display: block;
+    width: auto;
+  }
+
+  table.data-table tr {
+    position: relative;
+    height: auto;
+    margin-bottom: 12px;
+    padding: 8px 12px;
+    background: var(--qt-surface);
+    border: 1px solid var(--qt-border);
+    border-radius: var(--qt-radius-medium);
+    box-shadow: 0 1px 3px rgb(15 23 42 / 8%);
+  }
+
+  table.data-table tbody tr:hover td {
+    background: transparent;
+  }
+
+  table.data-table td,
+  table.data-table tr:last-child td {
+    padding: 8px 4px;
+    border: 0;
+  }
+
+  table.data-table td[data-label]::before {
+    content: attr(data-label);
+    display: block;
+    margin-bottom: 4px;
+    color: var(--qt-text-muted);
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+  }
+
+  table.data-table td[colspan] {
+    padding: 24px 12px;
+  }
+}
+
 /* Applies the palette of the style guide to the Angular Material components of a page that already adopted it. */
 .qt-theme {
   --mat-sys-primary: var(--qt-primary-strong);

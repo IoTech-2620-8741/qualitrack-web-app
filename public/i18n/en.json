@@ -310,6 +310,15 @@
     }
   },
   "common": {
+    "paginator": {
+      "per-page": "Rows per page",
+      "first": "First page",
+      "previous": "Previous page",
+      "next": "Next page",
+      "last": "Last page",
+      "range": "{{start}} – {{end}} of {{length}}",
+      "empty": "0 of 0"
+    },
     "save": "Save Changes",
     "cancel": "Cancel",
     "back": "Back",
