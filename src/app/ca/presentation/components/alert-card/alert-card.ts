@@ -19,6 +19,7 @@ import { DateTimePipe } from '../../../../shared/presentation/pipes/date-time.pi
 import { RelativeTimePipe } from '../../../../shared/presentation/pipes/relative-time.pipe';
 import { DeviationAlert } from '../../../domain/model/deviation-alert.entity';
 import { ALERT_SEVERITY_CHIPS } from '../../alert-chips';
+import { alertGauge } from '../../alert-gauge';
 import { alertVariableName } from '../../alert-variable';
 
 /**
@@ -95,18 +96,8 @@ export class AlertCard {
     return `${variable} · ${this.deviceName() ?? '#' + alert.equipmentId}`;
   });
 
-  /**
-   * The reading and its limit on one scale, in percent of the bar, so the row shows how far the
-   * reading went past the limit; the scale leaves some room after the larger of the two.
-   */
-  protected readonly gauge = computed(() => {
-    const alert = this.alert();
-    const value = Math.abs(alert.recordedValue);
-    const limit = Math.abs(alert.thresholdValue);
-    const scale = Math.max(value, limit) * 1.15 || 1;
-    const percent = (amount: number) => Math.min(100, Math.round((amount / scale) * 1000) / 10);
-    return { value: percent(value), limit: percent(limit) };
-  });
+  /** The reading against its limit, so the row shows how far the reading went past it. */
+  protected readonly gauge = computed(() => alertGauge(this.alert()));
 
   /** Moves the focus to the card, to go through the list with the keyboard. */
   focus(): void {

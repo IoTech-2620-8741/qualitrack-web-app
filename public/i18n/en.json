@@ -793,6 +793,11 @@
       "view": "View the detail of the {{variable}} alert"
     },
     "detail": {
+      "next": {
+        "label": "Next step",
+        "attend-title": "Register attention",
+        "attend-text": "Nobody is attending it yet. Registering attention makes you responsible for it, and then you record the corrective action."
+      },
       "alert": "Alert",
       "no-environment": "No environment",
       "normalized": "The condition returned to normal on {{date}}; the alert stays open until someone resolves it.",

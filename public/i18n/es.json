@@ -793,6 +793,11 @@
       "view": "Ver el detalle de la alerta de {{variable}}"
     },
     "detail": {
+      "next": {
+        "label": "Siguiente paso",
+        "attend-title": "Registrar la atención",
+        "attend-text": "Nadie la atiende todavía. Al registrar la atención quedas como responsable y luego registras la acción correctiva."
+      },
       "alert": "Alerta",
       "no-environment": "Sin ambiente",
       "normalized": "La condición volvió a la normalidad el {{date}}; la alerta sigue abierta hasta que alguien la resuelva.",
