@@ -107,55 +107,58 @@
 
   <!-- Consumptions already recorded, taken from the traceability -->
   <h2>{{ 'batch-usage.history-title' | translate }}</h2>
-  <table class="data-table">
-    <thead>
-      <tr>
-        <th>{{ 'batch-usage.fields.raw-material' | translate }}</th>
-        <th>{{ 'batch-usage.fields.quantity-used' | translate }}</th>
-        <th>{{ 'batch-usage.fields.stock' | translate }}</th>
-        <th>{{ 'batch-usage.fields.usage-date' | translate }}</th>
-      </tr>
-    </thead>
-    <tbody>
-      @for (usage of store.traceability()?.rawMaterials ?? []; track usage.id) {
+  <div class="table-card">
+    <table class="data-table">
+      <thead>
         <tr>
-          <td>
-            <!-- Link to the raw material, when it can be opened -->
-            @if (materialLink(usage); as link) {
-              <a [routerLink]="link">{{ usage.rawMaterialName }}</a>
-            } @else {
-              {{ usage.rawMaterialName }}
-            }
-            <!-- Lot consumed, or a legacy mark for usages recorded before Inventory Management -->
-            <small>
-              @if (usage.inventoryReceiptId !== null) {
-                {{ 'batch-usage.fields.lot' | translate }} #{{ usage.inventoryReceiptId }}
+          <th>{{ 'batch-usage.fields.raw-material' | translate }}</th>
+          <th>{{ 'batch-usage.fields.quantity-used' | translate }}</th>
+          <th>{{ 'batch-usage.fields.stock' | translate }}</th>
+          <th>{{ 'batch-usage.fields.usage-date' | translate }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (usage of usagePage.rows(); track usage.id) {
+          <tr>
+            <td>
+              <!-- Link to the raw material, when it can be opened -->
+              @if (materialLink(usage); as link) {
+                <a [routerLink]="link">{{ usage.rawMaterialName }}</a>
               } @else {
-                {{ 'batch-usage.legacy' | translate }}
+                {{ usage.rawMaterialName }}
               }
-            </small>
-          </td>
-          <td [attr.data-label]="'batch-usage.fields.quantity-used' | translate">
-            {{ usage.quantityUsed | number: '1.0-3' }} {{ usage.unit }}
-          </td>
-          <!-- Stock before and after the consumption, when recorded -->
-          <td [attr.data-label]="'batch-usage.fields.stock' | translate">
-            @if (usage.stockBefore !== null && usage.stockAfter !== null) {
-              {{ usage.stockBefore | number: '1.0-3' }} → {{ usage.stockAfter | number: '1.0-3' }}
-              {{ usage.unit }}
-            } @else {
-              —
-            }
-          </td>
-          <td [attr.data-label]="'batch-usage.fields.usage-date' | translate">
-            {{ usage.usageDate | dateTime }}
-          </td>
-        </tr>
-      } @empty {
-        <tr>
-          <td colspan="4">{{ 'batch-usage.empty' | translate }}</td>
-        </tr>
-      }
-    </tbody>
-  </table>
+              <!-- Lot consumed, or a legacy mark for usages recorded before Inventory Management -->
+              <small>
+                @if (usage.inventoryReceiptId !== null) {
+                  {{ 'batch-usage.fields.lot' | translate }} #{{ usage.inventoryReceiptId }}
+                } @else {
+                  {{ 'batch-usage.legacy' | translate }}
+                }
+              </small>
+            </td>
+            <td [attr.data-label]="'batch-usage.fields.quantity-used' | translate">
+              {{ usage.quantityUsed | number: '1.0-3' }} {{ usage.unit }}
+            </td>
+            <!-- Stock before and after the consumption, when recorded -->
+            <td [attr.data-label]="'batch-usage.fields.stock' | translate">
+              @if (usage.stockBefore !== null && usage.stockAfter !== null) {
+                {{ usage.stockBefore | number: '1.0-3' }} → {{ usage.stockAfter | number: '1.0-3' }}
+                {{ usage.unit }}
+              } @else {
+                —
+              }
+            </td>
+            <td [attr.data-label]="'batch-usage.fields.usage-date' | translate">
+              {{ usage.usageDate | dateTime }}
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="4">{{ 'batch-usage.empty' | translate }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+    <app-table-paginator [page]="usagePage" />
+  </div>
 </section>

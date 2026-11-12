@@ -14,6 +14,7 @@ import { TracedRawMaterialUsage } from '../../../domain/model/batch-traceability
 import { EnvironmentSelector } from '../../../../shared/presentation/components/environment-selector/environment-selector';
 import { stockQuantityValidator } from '../../../../shared/presentation/validators/stock-quantity.validator';
 import { DateTimePipe } from '../../../../shared/presentation/pipes/date-time.pipe';
+import { TablePaginator, paginate } from '../../../../shared/presentation/components/table-paginator/table-paginator';
 
 /**
  * Raw material lots consumed by a batch, with the consumption form while the batch is open.
@@ -29,7 +30,7 @@ import { DateTimePipe } from '../../../../shared/presentation/pipes/date-time.pi
   selector: 'app-raw-material-usage',
   standalone: true,
   imports: [
-    DateTimePipe,
+    TablePaginator, DateTimePipe,
     DecimalPipe,
     ReactiveFormsModule,
     RouterLink,
@@ -45,6 +46,9 @@ import { DateTimePipe } from '../../../../shared/presentation/pipes/date-time.pi
   styleUrl: './raw-material-usage.css',
 })
 export class RawMaterialUsageComponent implements OnInit {
+  /** Page of the table shown; ten rows unless the person chooses more. */
+  protected readonly usagePage = paginate(() => this.store.traceability()?.rawMaterials ?? []);
+
   /** Laboratory, environment and product of the batch. */
   readonly path = input.required<BatchPath>();
   /** Identifier of the batch. */

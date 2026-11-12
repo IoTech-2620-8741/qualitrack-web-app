@@ -17,6 +17,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { BatchStore } from '../../../application/batch.store';
 import { EnvironmentSelector } from '../../../../shared/presentation/components/environment-selector/environment-selector';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { TablePaginator, paginate } from '../../../../shared/presentation/components/table-paginator/table-paginator';
 
 /**
  * Pharmaceutical products of an environment, with registration for quality roles.
@@ -31,7 +32,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
   selector: 'app-product-catalog',
   standalone: true,
   imports: [
-    FormsModule,
+    TablePaginator, FormsModule,
     RouterLink,
     MatButtonModule,
     MatIconModule,
@@ -45,6 +46,9 @@ import { MatTooltipModule } from '@angular/material/tooltip';
   styleUrl: './product-catalog.css',
 })
 export class ProductCatalog implements OnInit {
+  /** Page of the table shown; ten rows unless the person chooses more. */
+  protected readonly productPage = paginate(() => this.filtered());
+
   protected readonly store = inject(BatchStore);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
