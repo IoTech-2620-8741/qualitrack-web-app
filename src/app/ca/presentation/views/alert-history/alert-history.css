@@ -82,7 +82,11 @@ app-empty-state button:focus-visible {
   outline-offset: 2px;
 }
 
-/* Filtros (tarjeta) */
+/* The chip groups fill the row, so the search comes under them on the left, where they start */
+app-list-toolbar ::ng-deep .find {
+  justify-content: flex-start;
+}
+
 /* The groups of chips of the toolbar: period, severity, status and origin */
 .chip-groups {
   display: flex;
