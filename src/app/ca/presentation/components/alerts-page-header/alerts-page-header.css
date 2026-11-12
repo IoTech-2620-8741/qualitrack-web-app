@@ -58,23 +58,6 @@ h1 mat-icon {
   font-weight: 500;
 }
 
-.tab-count {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 20px;
-  height: 20px;
-  margin-left: 8px;
-  padding: 0 6px;
-  background: var(--qt-error-surface);
-  border-radius: var(--qt-radius-pill);
-  color: var(--qt-error-text);
-  font-size: 12px;
-  font-weight: 600;
-  line-height: 1;
-  font-variant-numeric: tabular-nums;
-}
-
 @media (max-width: 760px) {
   h1 {
     font-size: 24px;

@@ -23,9 +23,6 @@
       [active]="section() === 'active'"
     >
       {{ 'ca-alerts.tabs.active' | translate }}
-      @if (activeCount(); as activeCount) {
-        <span class="tab-count">{{ activeCount }}</span>
-      }
     </a>
     <a
       mat-tab-link

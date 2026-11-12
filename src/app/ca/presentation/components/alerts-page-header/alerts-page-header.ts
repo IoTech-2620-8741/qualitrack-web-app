@@ -27,9 +27,6 @@ export class AlertsPageHeader {
   /** Section shown by the page. */
   readonly section = input.required<AlertsSection>();
 
-  /** Open alerts to show on the tab of the active alerts; nothing is shown while it is unknown or zero. */
-  readonly activeCount = input<number | null>(null);
-
   /** Environment chosen in the section, kept when moving to the other one; `null` means every environment. */
   readonly environmentId = input<number | null>(null);
 

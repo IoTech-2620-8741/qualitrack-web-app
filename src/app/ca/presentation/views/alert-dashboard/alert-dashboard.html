@@ -1,7 +1,6 @@
 <main class="operations-page qt-theme">
   <app-alerts-page-header
     section="active"
-    [activeCount]="stats().open"
     [environmentId]="environmentId()"
   >
     @if (store.alertsUpdatedAt(); as updatedAt) {
@@ -72,8 +71,8 @@
               </mat-form-field>
               <mat-form-field appearance="outline" subscriptSizing="dynamic" class="sort">
                 <mat-label>{{ 'ca-alerts.active.sort.label' | translate }}</mat-label>
-                <mat-select [value]="sortOrder()" (selectionChange)="sortOrder.set($event.value)">
-                  @for (option of sortOrders; track option.order) {
+                <mat-select [value]="appliedSortOrder()" (selectionChange)="sortOrder.set($event.value)">
+                  @for (option of sortOrders(); track option.order) {
                     <mat-option [value]="option.order">{{ option.labelKey | translate }}</mat-option>
                   }
                 </mat-select>

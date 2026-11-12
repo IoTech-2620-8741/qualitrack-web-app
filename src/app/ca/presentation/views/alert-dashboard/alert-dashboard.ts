@@ -144,14 +144,27 @@ export class AlertDashboard implements OnInit {
     initialValue: new Date(),
   });
 
-  /** Orders offered by the inbox, with the key of their name. */
-  protected readonly sortOrders: readonly { order: AlertSortOrder; labelKey: string }[] = [
+  /** Orders of the inbox, with the key of their name. */
+  private readonly allSortOrders: readonly { order: AlertSortOrder; labelKey: string }[] = [
     { order: 'priority', labelKey: 'ca-alerts.active.sort.priority' },
     { order: 'newest', labelKey: 'ca-alerts.active.sort.newest' },
     { order: 'environment', labelKey: 'ca-alerts.active.sort.environment' },
   ];
 
+  /** Orders offered: by environment only while the inbox shows every environment. */
+  protected readonly sortOrders = computed(() =>
+    this.environmentId() === null
+      ? this.allSortOrders
+      : this.allSortOrders.filter((option) => option.order !== 'environment'),
+  );
+
+  /** Order the person chose, kept while it cannot be used so it comes back with every environment. */
   protected readonly sortOrder = signal<AlertSortOrder>('priority');
+
+  /** Order in use: by priority instead of by environment while one environment is shown. */
+  protected readonly appliedSortOrder = computed<AlertSortOrder>(() =>
+    this.sortOrder() === 'environment' && this.environmentId() !== null ? 'priority' : this.sortOrder(),
+  );
   protected readonly criticalOnly = signal(false);
   protected readonly attentionFilter = signal<AttentionFilter | null>(null);
   protected readonly searchTerm = signal('');
@@ -440,7 +453,7 @@ export class AlertDashboard implements OnInit {
 
   /** How the chosen order compares two alerts. */
   private comparator(): (first: DeviationAlert, second: DeviationAlert) => number {
-    switch (this.sortOrder()) {
+    switch (this.appliedSortOrder()) {
       case 'newest':
         return compareAlertsByNewest;
       case 'environment':

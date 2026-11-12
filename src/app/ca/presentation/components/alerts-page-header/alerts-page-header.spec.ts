@@ -9,7 +9,6 @@ import { AlertsPageHeader, AlertsSection } from './alerts-page-header';
   template: `
     <app-alerts-page-header
       [section]="section()"
-      [activeCount]="activeCount()"
       [environmentId]="environmentId()"
     >
       <button type="button" class="page-action">Action</button>
@@ -19,7 +18,6 @@ import { AlertsPageHeader, AlertsSection } from './alerts-page-header';
 })
 class HostPage {
   readonly section = signal<AlertsSection>('active');
-  readonly activeCount = signal<number | null>(null);
   readonly environmentId = signal<number | null>(null);
 }
 
@@ -55,18 +53,6 @@ describe('AlertsPageHeader', () => {
     expect(tabs()[2].classList).toContain('mdc-tab--active');
   });
 
-  it('shows the count of open alerts only when there are some', () => {
-    const { fixture, element } = create();
-    expect(element.querySelector('.tab-count')).toBeNull();
-
-    fixture.componentInstance.activeCount.set(0);
-    fixture.detectChanges();
-    expect(element.querySelector('.tab-count')).toBeNull();
-
-    fixture.componentInstance.activeCount.set(4);
-    fixture.detectChanges();
-    expect(element.querySelector('.tab-count')?.textContent).toBe('4');
-  });
 
   it('keeps the chosen environment in the links of the tabs', () => {
     const { fixture, tabs } = create();

@@ -315,6 +315,47 @@ describe('AlertDashboard', () => {
 
       expect(cardIds()).toEqual(['Device 1', 'Cámara fría', 'Device 3', 'Device 4']);
     });
+
+    describe('order by environment', () => {
+      const sortOptions = () =>
+        Array.from(document.querySelectorAll('mat-option')).map((option) => option.textContent?.trim());
+      const openSort = async (harness: RouterTestingHarness, element: HTMLElement) => {
+        element.querySelector<HTMLElement>('.sort .mat-mdc-select-trigger')!.click();
+        harness.detectChanges();
+        await harness.fixture.whenStable();
+      };
+      const shownSort = (element: HTMLElement) =>
+        element.querySelector('.sort .mat-mdc-select-value')?.textContent?.trim();
+      afterEach(() => document.querySelectorAll('.cdk-overlay-container').forEach((item) => item.remove()));
+
+      it('is only offered while every environment is shown', async () => {
+        const { harness, element } = await open('/alerts?environmentId=1');
+
+        await openSort(harness, element);
+
+        expect(sortOptions()).toEqual([
+          'ca-alerts.active.sort.priority',
+          'ca-alerts.active.sort.newest',
+        ]);
+      });
+
+      it('gives way to the priority with one environment, and comes back with every environment', async () => {
+        const { harness, element, press } = await open();
+        await openSort(harness, element);
+        press(document.querySelectorAll<HTMLElement>('mat-option')[2]);
+        expect(shownSort(element)).toBe('ca-alerts.active.sort.environment');
+
+        await TestBed.inject(Router).navigateByUrl('/alerts?environmentId=1');
+        await harness.fixture.whenStable();
+        harness.detectChanges();
+        expect(shownSort(element)).toBe('ca-alerts.active.sort.priority');
+
+        await TestBed.inject(Router).navigateByUrl('/alerts');
+        await harness.fixture.whenStable();
+        harness.detectChanges();
+        expect(shownSort(element)).toBe('ca-alerts.active.sort.environment');
+      });
+    });
   });
 
   describe('urgent chip', () => {
