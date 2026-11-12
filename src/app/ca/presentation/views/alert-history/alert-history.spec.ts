@@ -177,7 +177,13 @@ describe('AlertHistory', () => {
   it('writes the chip pressed in the address', async () => {
     store.alerts.set([alertOf(1, 'CRITICAL'), alertOf(2)]);
     const page = await open('/alerts/history?environmentId=1');
+    expect(chipNamed(page, 'ca-alerts.status.resolved')).toBeUndefined();
 
+    // The filters of severity, status and origin wait behind their button
+    const more = page.querySelector<HTMLButtonElement>('.more-filters')!;
+    more.click();
+    harness.detectChanges();
+    expect(more.getAttribute('aria-expanded')).toBe('true');
     chipNamed(page, 'ca-alerts.status.resolved').click();
     await harness.fixture.whenStable();
 

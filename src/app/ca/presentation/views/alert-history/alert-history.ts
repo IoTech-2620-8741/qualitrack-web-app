@@ -5,6 +5,7 @@ import {
   computed,
   effect,
   inject,
+  linkedSignal,
   signal,
   untracked,
 } from '@angular/core';
@@ -157,6 +158,24 @@ export class AlertHistory implements OnInit {
   protected readonly isFiltered = computed(
     () => this.filter().period !== DEFAULT_ALERT_HISTORY_FILTER.period || this.narrowsTable(),
   );
+
+  /** How many chips of severity, status and origin are pressed, which the button of the other filters shows. */
+  protected readonly chipFilterCount = computed(() => {
+    const filter = this.filter();
+    return filter.severities.length + filter.statuses.length + filter.origins.length;
+  });
+
+  /**
+   * Whether the filters of severity, status and origin are shown.
+   *
+   * @remarks
+   * They open by themselves when one of them starts to narrow the history, such as in an address that brings
+   * them, so a filter in use is never hidden; otherwise they stay as the person left them.
+   */
+  protected readonly moreFilters = linkedSignal<boolean, boolean>({
+    source: () => this.chipFilterCount() > 0,
+    computation: (inUse, previous) => inUse || (previous?.value ?? false),
+  });
 
   /** Alerts that pass the filter, the latest first. */
   protected readonly shownAlerts = computed(() =>

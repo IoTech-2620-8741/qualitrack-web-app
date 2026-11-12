@@ -88,13 +88,15 @@ small {
   }
 }
 
+/* Two by two even on a phone, so the four figures fit in one glance */
 @media (max-width: 480px) {
-  .cards {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
   .card {
     min-height: auto;
-    gap: 12px;
+    gap: 8px;
+    padding: 12px;
+  }
+
+  strong {
+    font-size: 20px;
   }
 }

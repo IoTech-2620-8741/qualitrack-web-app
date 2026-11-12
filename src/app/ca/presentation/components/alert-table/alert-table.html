@@ -4,15 +4,10 @@
     <thead>
     <tr>
       <th scope="col" class="col-detected">{{ 'ca-alerts.fields.detected' | translate }}</th>
-      <th scope="col">{{ 'ca-alerts.fields.origin' | translate }}</th>
-      <th scope="col">{{ 'ca-alerts.fields.parameter' | translate }}</th>
-      <th scope="col">{{ 'ca-alerts.fields.severity' | translate }}</th>
-      <th scope="col">{{ 'common.status' | translate }}</th>
-      <th scope="col">{{ 'ca-alerts.history.columns.duration' | translate }}</th>
-      <th scope="col" class="col-resolved">{{ 'ca-alerts.history.columns.resolved-by' | translate }}</th>
-      <th scope="col" class="col-notes">
-        {{ 'ca-alerts.history.columns.corrective-action' | translate }}
-      </th>
+      <th scope="col">{{ 'ca-alerts.history.columns.alert' | translate }}</th>
+      <th scope="col" class="col-severity">{{ 'ca-alerts.fields.severity' | translate }}</th>
+      <th scope="col" class="col-status">{{ 'common.status' | translate }}</th>
+      <th scope="col" class="col-resolution">{{ 'ca-alerts.history.columns.resolution' | translate }}</th>
       <th scope="col" class="col-view">
         <span class="visually-hidden">{{ 'ca-alerts.actions.view-details' | translate }}</span>
       </th>
@@ -29,17 +24,14 @@
                 }}</small>
             }
           </td>
-          <td [attr.data-label]="'ca-alerts.fields.origin' | translate">
-            <strong>{{ store.deviceName(alert.equipmentId) ?? '#' + alert.equipmentId }}</strong>
+          <!-- What deviated, where, and how far from its limit -->
+          <td [attr.data-label]="'ca-alerts.history.columns.alert' | translate">
+            <strong>{{ variableOf(alert) }} · {{ store.deviceName(alert.equipmentId) ?? '#' + alert.equipmentId }}</strong>
             <small>{{
                 (alert.origin ? 'ca-alerts.origin.' + alert.origin : 'ca-alerts.origin.EQUIPMENT')
                   | translate
-              }}</small>
-          </td>
-          <td [attr.data-label]="'ca-alerts.fields.parameter' | translate">
-            <strong>{{ variableOf(alert) }}</strong>
-            <small
-            >{{ alert.recordedValue | number: '1.0-2' }} {{ alert.unit }} ·
+              }}
+              · {{ alert.recordedValue | number: '1.0-2' }} {{ alert.unit }} ·
               {{ 'ca-alerts.fields.threshold' | translate }}
               {{ alert.thresholdValue | number: '1.0-2' }} {{ alert.unit }}</small
             >
@@ -51,21 +43,20 @@
               [labelKey]="severityChips[alert.severity].labelKey"
             />
           </td>
-          <td class="chip-cell" [attr.data-label]="'common.status' | translate">
+          <!-- The step of the alert and how long it took, or how long it has been open -->
+          <td [attr.data-label]="'common.status' | translate">
             <app-status-chip
               [tone]="statusChips[alert.status].tone"
               [icon]="statusChips[alert.status].icon"
               [labelKey]="statusChips[alert.status].labelKey"
             />
-          </td>
-          <td [attr.data-label]="'ca-alerts.history.columns.duration' | translate">
             @if (alert.resolvedAt) {
-              <strong>{{ alert.timestamp | elapsedTime: alert.resolvedAt }}</strong>
+              <small>{{ alert.timestamp | elapsedTime: alert.resolvedAt }}</small>
             } @else {
-              <strong class="still-open">{{
+              <small class="still-open">{{
                   'ca-alerts.history.open-for'
                     | translate: { time: (alert.timestamp | elapsedTime: now()) }
-                }}</strong>
+                }}</small>
             }
             @if (alert.acknowledgedAt) {
               <small>{{
@@ -74,21 +65,18 @@
                 }}</small>
             }
           </td>
-          <td [attr.data-label]="'ca-alerts.history.columns.resolved-by' | translate">
+          <!-- Who resolved it and what they did -->
+          <td [attr.data-label]="'ca-alerts.history.columns.resolution' | translate">
             @if (resolvedByOf(alert); as name) {
               <span class="person">
                 <span class="avatar" aria-hidden="true">{{ initialsOf(name) }}</span>
                 {{ name }}
               </span>
+              @if (alert.resolutionNotes) {
+                <small class="notes" [attr.title]="alert.resolutionNotes">{{ alert.resolutionNotes }}</small>
+              }
             } @else {
-              <span aria-hidden="true">—</span>
-            }
-          </td>
-          <td [attr.data-label]="'ca-alerts.history.columns.corrective-action' | translate">
-            @if (alert.resolutionNotes) {
-              <span class="notes">{{ alert.resolutionNotes }}</span>
-            } @else {
-              <span aria-hidden="true">—</span>
+              <span class="muted">{{ 'ca-alerts.history.not-resolved' | translate }}</span>
             }
           </td>
           <td>

@@ -746,13 +746,14 @@
       "email": "Avisar por correo"
     },
     "history": {
+      "not-resolved": "Sin resolver todavía",
       "title": "Historial de alertas",
-      "subtitle": "Todas las alertas del periodo, incluidas las resueltas, con sus tiempos de atención.",
       "empty": "No hay alertas con estos filtros.",
       "none-all": "Ningún ambiente registró alertas en los últimos 90 días.",
       "none-one": "Este ambiente no registró alertas en los últimos 90 días.",
       "unavailable": "No se pudieron leer las alertas de: {{environments}}. El historial no las incluye.",
       "filters": {
+        "more": "Más filtros",
         "label": "Filtros del historial",
         "period": "Periodo",
         "search": "Buscar dispositivo, variable o nota",
@@ -767,9 +768,8 @@
         "custom": "Personalizado"
       },
       "columns": {
-        "duration": "Duración",
-        "resolved-by": "Resuelta por",
-        "corrective-action": "Acción correctiva"
+        "alert": "Alerta",
+        "resolution": "Resolución"
       },
       "metrics": {
         "alerts": "Alertas",
@@ -856,7 +856,6 @@
     },
     "active": {
       "title": "Alertas activas",
-      "subtitle": "Desviaciones abiertas de los ambientes y contenedores monitoreados, de la más urgente a la menos urgente.",
       "live": "En vivo · actualizado {{time}}",
       "live-partial": "Datos parciales · actualizado {{time}}",
       "unavailable": "No se pudieron leer las alertas de: {{environments}}. Lo que ves de esos ambientes puede no estar al día.",
@@ -915,7 +914,6 @@
     },
     "page": {
       "title": "Alertas de cumplimiento",
-      "preferences": "Preferencias de aviso",
       "sections": "Secciones de alertas"
     },
     "tabs": {

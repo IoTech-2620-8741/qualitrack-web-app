@@ -94,7 +94,7 @@ app-empty-state button:focus-visible {
   flex-direction: column;
   gap: 16px;
   min-width: 0;
-  padding: 24px;
+  padding: 16px 20px;
   background: var(--qt-surface);
   border: 1px solid var(--qt-border);
   border-radius: var(--qt-radius-medium);
@@ -130,6 +130,33 @@ app-empty-state button:focus-visible {
   flex: 1 1 240px;
   min-width: 200px;
   max-width: 360px;
+}
+
+/* The button of the other filters, and how many of them are in use */
+.more-filters,
+.operations-page > app-alerts-page-header a[mat-stroked-button] {
+  min-height: 40px;
+  border-color: var(--qt-border);
+  border-radius: var(--qt-radius-pill);
+  color: var(--qt-text);
+  font-weight: 600;
+}
+
+.more-filters[aria-expanded='true'] {
+  background: var(--qt-primary-surface);
+  border-color: var(--qt-primary);
+  color: var(--qt-primary-strong);
+}
+
+.more-count {
+  min-width: 20px;
+  margin-left: 6px;
+  padding: 1px 7px;
+  background: var(--qt-primary-strong);
+  border-radius: var(--qt-radius-pill);
+  color: var(--qt-surface);
+  font-size: 12px;
+  text-align: center;
 }
 
 mat-form-field {
@@ -242,7 +269,9 @@ mat-icon[matPrefix] {
     align-items: stretch;
   }
 
+  /* In a column the flex basis would become a height */
   .custom-period mat-form-field {
+    flex: none;
     max-width: none;
   }
 

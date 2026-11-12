@@ -70,6 +70,26 @@
                 (input)="search($any($event.target).value)"
               />
             </mat-form-field>
+            <!-- Severity, status and origin wait behind this button, with how many of them are in use -->
+            <button
+              mat-stroked-button
+              type="button"
+              class="more-filters"
+              aria-controls="history-more-filters"
+              [attr.aria-expanded]="moreFilters()"
+              (click)="moreFilters.set(!moreFilters())"
+            >
+              <mat-icon aria-hidden="true">tune</mat-icon>
+              {{ 'ca-alerts.history.filters.more' | translate }}
+              @if (chipFilterCount()) {
+                <span class="more-count">{{ chipFilterCount() }}</span>
+              }
+            </button>
+            @if (isFiltered()) {
+              <button mat-button type="button" (click)="clearFilters()">
+                {{ 'ca-alerts.history.filters.clear' | translate }}
+              </button>
+            }
           </div>
 
           @if (filter().period === null) {
@@ -97,7 +117,8 @@
             </div>
           }
 
-          <div class="filter-row">
+          @if (moreFilters()) {
+          <div class="filter-row" id="history-more-filters">
             <div class="chip-group" role="group" aria-labelledby="history-severity">
               <span id="history-severity" class="group-label">{{
                   'ca-alerts.fields.severity' | translate
@@ -138,12 +159,8 @@
                 />
               }
             </div>
-            @if (isFiltered()) {
-              <button mat-button type="button" (click)="clearFilters()">
-                {{ 'ca-alerts.history.filters.clear' | translate }}
-              </button>
-            }
           </div>
+          }
 
           @if (narrowsTable()) {
             <p class="export-note">{{ 'ca-alerts.history.export-note' | translate }}</p>

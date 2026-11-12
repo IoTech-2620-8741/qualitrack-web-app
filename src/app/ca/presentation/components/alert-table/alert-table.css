@@ -28,10 +28,20 @@
   font-weight: 600;
 }
 
-.col-detected { width: 120px; }
-.col-resolved { width: 150px; }
-.col-notes    { width: 120px; }
-.col-view     { width: 80px; }
+.col-detected   { width: 130px; }
+.col-severity   { width: 130px; }
+.col-status     { width: 170px; }
+.col-resolution { width: 26%; }
+.col-view       { width: 64px; }
+
+/* The duration and the attention time sit under the status */
+.data-table td app-status-chip + small {
+  margin-top: 6px;
+}
+
+.muted {
+  color: var(--qt-text-muted);
+}
 
 .chip-cell {
   white-space: nowrap;
@@ -62,11 +72,12 @@
 }
 
 .notes {
+  margin-top: 6px;
   display: -webkit-box;
   overflow: hidden;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3;
-  line-clamp: 3;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
 }
 
 .data-table a[mat-icon-button]:focus-visible {

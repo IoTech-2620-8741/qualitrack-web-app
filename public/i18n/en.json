@@ -746,13 +746,14 @@
       "email": "E-mail the alert"
     },
     "history": {
+      "not-resolved": "Not resolved yet",
       "title": "Alert History",
-      "subtitle": "Every alert of the period, including resolved ones, with their attention times.",
       "empty": "There are no alerts with these filters.",
       "none-all": "No environment recorded alerts in the last 90 days.",
       "none-one": "This environment recorded no alerts in the last 90 days.",
       "unavailable": "The alerts of {{environments}} could not be read. The history does not include them.",
       "filters": {
+        "more": "More filters",
         "label": "Filters of the history",
         "period": "Period",
         "search": "Search device, variable or note",
@@ -767,9 +768,8 @@
         "custom": "Custom"
       },
       "columns": {
-        "duration": "Duration",
-        "resolved-by": "Resolved by",
-        "corrective-action": "Corrective action"
+        "alert": "Alert",
+        "resolution": "Resolution"
       },
       "metrics": {
         "alerts": "Alerts",
@@ -856,7 +856,6 @@
     },
     "active": {
       "title": "Active Alerts",
-      "subtitle": "Open deviations of the monitored environments and containers, from the most to the least urgent.",
       "live": "Live · updated {{time}}",
       "live-partial": "Partial data · updated {{time}}",
       "unavailable": "The alerts of {{environments}} could not be read. What you see of those environments may be out of date.",
@@ -915,7 +914,6 @@
     },
     "page": {
       "title": "Compliance alerts",
-      "preferences": "Notification preferences",
       "sections": "Alert sections"
     },
     "tabs": {
