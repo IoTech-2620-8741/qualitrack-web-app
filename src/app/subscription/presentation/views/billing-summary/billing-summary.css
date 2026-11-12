@@ -160,40 +160,6 @@
   font-weight: 700;
 }
 
-.table-card {
-  overflow-x: auto;
-  border-radius: 12px;
-  border: 1px solid var(--qt-border);
-  background: var(--qt-surface);
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
-}
-
-.full-width-table {
-  width: 100%;
-  background: transparent;
-}
-
-.full-width-table th {
-  padding: 0 24px;
-  background: var(--qt-surface);
-  border-bottom: 1px solid var(--qt-border);
-  color: var(--qt-text-muted);
-  font-size: 12px;
-  font-weight: 500;
-  text-transform: uppercase;
-}
-
-.full-width-table td {
-  padding: 0 24px;
-  border-bottom: 1px solid var(--qt-border);
-  color: var(--qt-text);
-  font-size: 14px;
-}
-
-.full-width-table tr:last-child td {
-  border-bottom: none;
-}
-
 .amount-cell {
   font-weight: 600;
   font-variant-numeric: tabular-nums;
