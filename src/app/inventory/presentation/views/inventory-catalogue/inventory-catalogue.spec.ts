@@ -93,9 +93,11 @@ describe('InventoryCatalogue', () => {
   const status = (element: HTMLElement) =>
     [...element.querySelectorAll('[role=status]')].map((item) => item.textContent?.trim());
   const lowOnly = (element: HTMLElement) =>
-    element.querySelector<HTMLInputElement>('app-inventory-filters input[type=checkbox]')!;
+    [...element.querySelectorAll<HTMLButtonElement>('app-filter-chip button')].find((chip) =>
+      chip.textContent?.includes('inventory.lowStock'),
+    )!;
   /**
-   * Returns the Angular Material tab for near-expiry batches.
+   * Returns the tab of the heading for near-expiry batches.
    */
   const nearExpiryTab = (element: HTMLElement): HTMLElement => {
     const tab = [...element.querySelectorAll<HTMLElement>('[role="tab"]')].find((item) =>
@@ -116,7 +118,7 @@ describe('InventoryCatalogue', () => {
     lowOnly(element).click();
     harness.detectChanges();
 
-    expect(lowOnly(element).checked).toBe(true);
+    expect(lowOnly(element).getAttribute('aria-pressed')).toBe('true');
     expect(element.querySelector('app-inventory-material-table')).toBeNull();
     expect(status(element)).toContain('inventory.loading');
     answer.next([material(1, 'LOW')]);
@@ -147,7 +149,7 @@ describe('InventoryCatalogue', () => {
     harness.detectChanges();
     // Verify that the loading message is displayed
     // while the response is pending.
-    const activeTab = element.querySelector('.mat-mdc-tab-body-active');
+    const activeTab = element.querySelector('mat-tab-nav-panel');
     expect(activeTab).not.toBeNull();
     expect(activeTab?.querySelector('app-near-expiry-table')).toBeNull();
     expect(activeTab?.querySelector('[role="status"]')?.textContent?.trim()).toContain(
