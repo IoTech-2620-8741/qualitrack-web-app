@@ -6,6 +6,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import {AUDIT_LOG_COLUMNS, AuditLogRow} from '../../utils/audit-log-viewer.utils';
 import {NgClass} from '@angular/common';
 import {EmptyState} from '../../../../shared/presentation/components/empty-state/empty-state';
+import { TablePaginator, paginate } from '../../../../shared/presentation/components/table-paginator/table-paginator';
 
 /**
  * Pure presentation table for the Audit Log Viewer.
@@ -18,12 +19,15 @@ import {EmptyState} from '../../../../shared/presentation/components/empty-state
 @Component({
   selector: 'app-audit-log-table',
   standalone: true,
-  imports: [TranslatePipe, MatTableModule, MatIconModule, MatProgressSpinnerModule, NgClass, EmptyState],
+  imports: [TablePaginator, TranslatePipe, MatTableModule, MatIconModule, MatProgressSpinnerModule, NgClass, EmptyState],
   templateUrl: './audit-log-table.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './audit-log-table.css',
 })
 export class AuditLogTable {
+  /** Page of the table shown; ten rows unless the person chooses more. */
+  protected readonly rowPage = paginate(() => this.rows());
+
   /** Formatted rows provided by the parent component. */
   readonly rows = input.required<readonly AuditLogRow[]>();
 

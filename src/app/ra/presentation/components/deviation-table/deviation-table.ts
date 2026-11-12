@@ -5,6 +5,7 @@ import { MatIcon } from '@angular/material/icon';
 import { TranslatePipe } from '@ngx-translate/core';
 import { DecimalPipe } from '@angular/common';
 import { DeviationTrend, TrendDirection } from '../../../domain/model/deviation-trend.entity';
+import { TablePaginator, paginate } from '../../../../shared/presentation/components/table-paginator/table-paginator';
 
 /**
  * Presentational component that renders a table of deviation trends.
@@ -16,7 +17,7 @@ import { DeviationTrend, TrendDirection } from '../../../domain/model/deviation-
  */
 @Component({
   imports: [
-    MatTable,
+    TablePaginator, MatTable,
     MatColumnDef,
     MatHeaderCell,
     MatCell,
@@ -35,6 +36,9 @@ import { DeviationTrend, TrendDirection } from '../../../domain/model/deviation-
   templateUrl: './deviation-table.html',
 })
 export class DeviationTable {
+  /** Page of the table shown; ten rows unless the person chooses more. */
+  protected readonly trendPage = paginate(() => this.trends());
+
   /** The list of deviation trends to display in the table. */
   readonly trends = input.required<DeviationTrend[]>();
 
