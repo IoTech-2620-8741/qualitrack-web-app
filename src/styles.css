@@ -5,6 +5,8 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 img, video { max-width: 100%; }
 mat-card, mat-card-content, mat-form-field { min-width: 0; }
 mat-card-title, mat-card-subtitle, h1, h2, h3, p { overflow-wrap: anywhere; }
+/* A title that wraps on a phone keeps its lines apart. */
+h1, h2, h3 { line-height: 1.25; }
 
 /* Design tokens of the QualiTrack style guide. */
 :root {
@@ -39,6 +41,28 @@ mat-card-title, mat-card-subtitle, h1, h2, h3, p { overflow-wrap: anywhere; }
   --qt-radius-small: 8px;
   --qt-radius-medium: 12px;
   --qt-radius-pill: 999px;
+}
+
+/*
+ * Every outlined field of the application looks the same: the corners of the cards, an outline that reaches
+ * the 3:1 contrast WCAG asks of a control, and the focus in the color of the brand.
+ */
+:root {
+  --mat-form-field-outlined-container-shape: var(--qt-radius-small);
+  --mat-form-field-outlined-outline-color: var(--qt-text-muted);
+  --mat-form-field-outlined-hover-outline-color: var(--qt-text);
+  --mat-form-field-outlined-focus-outline-color: var(--qt-primary-strong);
+  --mat-form-field-outlined-label-text-color: var(--qt-text-muted);
+  --mat-form-field-outlined-focus-label-text-color: var(--qt-primary-strong);
+  --mat-form-field-outlined-caret-color: var(--qt-primary-strong);
+  --mat-form-field-outlined-input-text-placeholder-color: var(--qt-text-subtle);
+  --mat-form-field-outlined-error-outline-color: var(--qt-error-text);
+  --mat-form-field-outlined-error-label-text-color: var(--qt-error-text);
+  --mat-form-field-outlined-error-focus-outline-color: var(--qt-error-text);
+  --mat-form-field-outlined-error-focus-label-text-color: var(--qt-error-text);
+  --mat-form-field-outlined-error-hover-outline-color: var(--qt-error-text);
+  --mat-form-field-error-text-color: var(--qt-error-text);
+  --mat-form-field-focus-select-arrow-color: var(--qt-primary-strong);
 }
 
 /* Applies the palette of the style guide to the Angular Material components of a page that already adopted it. */

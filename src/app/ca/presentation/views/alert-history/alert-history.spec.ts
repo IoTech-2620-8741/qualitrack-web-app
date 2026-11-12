@@ -11,6 +11,7 @@ import {
   DeviationAlert,
 } from '../../../domain/model/deviation-alert.entity';
 import { AlertHistory } from './alert-history';
+import { IamStore } from '../../../../iam/application/iam.store';
 
 const daysAgo = (days: number) => new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
 
@@ -61,6 +62,7 @@ describe('AlertHistory', () => {
   async function open(url: string): Promise<HTMLElement> {
     TestBed.configureTestingModule({
       providers: [
+        { provide: IamStore, useValue: { canManageQuality: () => true } },
         { provide: CaStore, useValue: store },
         provideTranslateService(),
         provideRouter([{ path: 'alerts/history', component: AlertHistory }]),

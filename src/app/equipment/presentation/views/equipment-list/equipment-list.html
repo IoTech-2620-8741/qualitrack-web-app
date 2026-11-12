@@ -135,7 +135,23 @@
           </tr>
         } @empty {
           <tr>
-            <td colspan="4">{{ 'equipment-list.empty' | translate }}</td>
+            <td colspan="4" class="empty-cell">
+              @if (store.equipmentList().length && hasActiveFilters()) {
+                <p>{{ 'equipment-list.empty-filtered' | translate }}</p>
+                <button mat-stroked-button type="button" (click)="clearFilters()">
+                  <mat-icon aria-hidden="true">filter_alt_off</mat-icon>
+                  {{ 'equipment-list.clear-filters' | translate }}
+                </button>
+              } @else {
+                <p>{{ 'equipment-list.empty' | translate }}</p>
+                @if (!store.equipmentList().length && store.canManage()) {
+                  <a mat-flat-button routerLink="/equipments/new">
+                    <mat-icon aria-hidden="true">add</mat-icon>
+                    {{ 'equipment-list.add-button' | translate }}
+                  </a>
+                }
+              }
+            </td>
           </tr>
         }
       </tbody>

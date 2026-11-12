@@ -1160,6 +1160,8 @@
     "title": "Equipment",
     "add-button": "Register Equipment",
     "empty": "No equipment found in this laboratory",
+    "empty-filtered": "No equipment matches these filters.",
+    "clear-filters": "Clear filters",
     "fields": {
       "name": "Name",
       "type": "Type",

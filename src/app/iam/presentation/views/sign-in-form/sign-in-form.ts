@@ -5,6 +5,9 @@ import { Router, RouterLink } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatIconModule } from '@angular/material/icon';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
 
 import { SignInCommand } from '../../../domain/model/sign-in.command';
 import { IamStore } from '../../../application/iam.store';
@@ -25,7 +28,7 @@ import { IamStore } from '../../../application/iam.store';
     ReactiveFormsModule,
     TranslatePipe,
     MatProgressSpinnerModule,
-    MatIconModule,
+    MatIconModule, MatFormFieldModule, MatInputModule, MatButtonModule,
     RouterLink,
   ],
   templateUrl: './sign-in-form.html',

@@ -52,6 +52,8 @@ import { AlertHistoryCards } from '../../components/alert-history-cards/alert-hi
 import { AlertTable } from '../../components/alert-table/alert-table';
 import { AlertWeekChart } from '../../components/alert-week-chart/alert-week-chart';
 import { AlertsPageHeader } from '../../components/alerts-page-header/alerts-page-header';
+import { SetupNotice } from '../../../../shared/presentation/components/setup-notice/setup-notice';
+import { IamStore } from '../../../../iam/application/iam.store';
 
 /** Alerts shown on each page of the table. */
 export const ALERT_HISTORY_PAGE_SIZE = 25;
@@ -75,6 +77,7 @@ const ORIGIN_ICONS: Readonly<Record<AlertOrigin, string>> = {
   selector: 'app-alert-history',
   standalone: true,
   imports: [
+    SetupNotice,
     RouterLink,
     RouterOutlet,
     TranslatePipe,
@@ -99,6 +102,7 @@ const ORIGIN_ICONS: Readonly<Record<AlertOrigin, string>> = {
 export class AlertHistory implements OnInit {
   /** Store that holds the alerts of the history. */
   protected readonly store = inject(CaStore);
+  protected readonly iam = inject(IamStore);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly translate = inject(TranslateService);

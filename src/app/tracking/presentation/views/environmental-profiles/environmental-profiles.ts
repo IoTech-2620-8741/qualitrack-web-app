@@ -16,6 +16,8 @@ import {
   ThresholdInput,
 } from '../../../domain/model/environmental-profile.entity';
 import { DateTimePipe } from '../../../../shared/presentation/pipes/date-time.pipe';
+import { SetupNotice } from '../../../../shared/presentation/components/setup-notice/setup-notice';
+import { IamStore } from '../../../../iam/application/iam.store';
 
 /**
  * Represents stable empty collections used as default values.
@@ -51,6 +53,7 @@ const NO_METRICS: MonitoredMetric[] = [];
   selector: 'app-environmental-profiles',
   standalone: true,
   imports: [
+    SetupNotice,
     DateTimePipe,
     RouterLink,
     TranslatePipe,
@@ -70,6 +73,7 @@ export class EnvironmentalProfiles implements OnInit {
    * thresholds and actuation rule state management.
    */
   protected readonly store = inject(TrackingStore);
+  protected readonly iam = inject(IamStore);
 
   /**
    * Metrics configurable for environmental devices.

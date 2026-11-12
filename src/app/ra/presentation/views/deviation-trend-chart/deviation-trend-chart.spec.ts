@@ -8,6 +8,7 @@ import { RaStore } from '../../../application/ra.store';
 import { DeviationTrend } from '../../../domain/model/deviation-trend.entity';
 import { DeviationChart } from '../../components/deviation-chart/deviation-chart';
 import { DeviationTrendChartComponent } from './deviation-trend-chart';
+import { IamStore } from '../../../../iam/application/iam.store';
 
 /** The canvas of the real chart needs a browser. */
 @Component({ selector: 'app-deviation-chart', template: '' })
@@ -50,6 +51,7 @@ describe('DeviationTrendChartComponent', () => {
     });
     TestBed.configureTestingModule({
       providers: [
+        { provide: IamStore, useValue: { canManageQuality: () => true } },
         { provide: RaStore, useValue: store },
         provideTranslateService(),
         provideRouter([{ path: 'reports/deviation-trends', component: DeviationTrendChartComponent }]),

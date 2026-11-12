@@ -11,6 +11,8 @@ import { EnvironmentSelector } from '../../../../shared/presentation/components/
 import { MonitoredMetric } from '../../../domain/model/monitored-metric';
 import { Measurement } from '../../../domain/model/measurement.entity';
 import { DateTimePipe } from '../../../../shared/presentation/pipes/date-time.pipe';
+import { SetupNotice } from '../../../../shared/presentation/components/setup-notice/setup-notice';
+import { IamStore } from '../../../../iam/application/iam.store';
 
 /**
  * Component responsible for displaying the current environmental monitoring status.
@@ -45,6 +47,7 @@ import { DateTimePipe } from '../../../../shared/presentation/pipes/date-time.pi
   selector: 'app-environmental-monitoring',
   standalone: true,
   imports: [
+    SetupNotice,
     DateTimePipe,
     DecimalPipe,
     RouterLink,
@@ -65,6 +68,7 @@ export class EnvironmentalMonitoring implements OnInit {
    * device snapshots and environmental monitoring information.
    */
   protected readonly store = inject(TrackingStore);
+  protected readonly iam = inject(IamStore);
 
   /**
    * Metrics displayed for container monitoring devices.

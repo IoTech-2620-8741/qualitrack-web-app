@@ -38,6 +38,8 @@ import { AlertAttentionFlow } from '../../alert-attention-flow';
 import { alertVariableName } from '../../alert-variable';
 import { AlertCard } from '../../components/alert-card/alert-card';
 import { AlertsPageHeader } from '../../components/alerts-page-header/alerts-page-header';
+import { SetupNotice } from '../../../../shared/presentation/components/setup-notice/setup-notice';
+import { IamStore } from '../../../../iam/application/iam.store';
 
 /** How often the open alerts are read again, the same as the bell. */
 const REFRESH_INTERVAL_MS = 30_000;
@@ -74,6 +76,7 @@ function searchable(text: string): string {
   selector: 'app-alert-dashboard',
   standalone: true,
   imports: [
+    SetupNotice,
     DecimalPipe,
     RouterLink,
     RouterOutlet,
@@ -98,6 +101,7 @@ function searchable(text: string): string {
 export class AlertDashboard implements OnInit {
   /** Store that holds the alerts shown by the inbox. */
   protected readonly store = inject(CaStore);
+  protected readonly iam = inject(IamStore);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly translate = inject(TranslateService);

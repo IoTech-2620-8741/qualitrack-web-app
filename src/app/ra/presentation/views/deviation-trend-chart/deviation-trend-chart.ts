@@ -23,6 +23,8 @@ import { DeviationTable } from '../../components/deviation-table/deviation-table
 import { DeviationKpiCards } from '../../components/deviation-kpi-cards/deviation-kpi-cards';
 import { DeviationChart } from '../../components/deviation-chart/deviation-chart';
 import { DeviationChartFactory } from '../../components/deviation-chart/deviation-chart.factory';
+import { SetupNotice } from '../../../../shared/presentation/components/setup-notice/setup-notice';
+import { IamStore } from '../../../../iam/application/iam.store';
 
 const PERIOD_DAYS = [1, 7, 31] as const;
 const DEFAULT_PERIOD_DAYS = 7;
@@ -40,6 +42,7 @@ const DEFAULT_PERIOD_DAYS = 7;
   selector: 'app-deviation-trend-chart',
   standalone: true,
   imports: [
+    SetupNotice,
     TranslatePipe,
     MatButtonToggleModule,
     MatIconModule,
@@ -58,6 +61,7 @@ export class DeviationTrendChartComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);
   protected readonly store = inject(RaStore);
+  protected readonly iam = inject(IamStore);
   private readonly translate = inject(TranslateService);
 
   /** Signal used to trigger recalculations when the language changes. */

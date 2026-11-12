@@ -166,6 +166,29 @@ mat-form-field {
   min-width: 200px;
 }
 
+.data-table td.empty-cell {
+  padding: 32px 16px;
+  text-align: center;
+}
+
+.empty-cell p {
+  margin: 0 0 12px;
+  color: var(--qt-text-muted);
+}
+
+.empty-cell a,
+.empty-cell button {
+  border-radius: var(--qt-radius-pill);
+  font-weight: 600;
+}
+
+/* The links of the table are teal text, which would vanish on the filled button. */
+.data-table .empty-cell a[mat-flat-button] {
+  background: var(--qt-primary-strong);
+  color: var(--qt-surface);
+  text-decoration: none;
+}
+
 .data-table a.environment-link {
   font-weight: 500;
 }
@@ -417,18 +440,24 @@ p[role='status'] {
     flex-direction: column;
   }
 
-  .filters mat-form-field {
+  /* In a column the flex basis becomes a height, so the fields return to their natural height. */
+  .filters mat-form-field,
+  .filters mat-form-field.environment-filter {
+    flex: none;
     min-width: 0;
     max-width: none;
   }
 
+  /* The four types do not fit in a phone, so the group scrolls instead of cutting the last one. */
   mat-button-toggle-group {
     display: flex;
     width: 100%;
+    overflow-x: auto;
+    scrollbar-width: none;
   }
 
   mat-button-toggle-group ::ng-deep .mat-button-toggle {
-    flex: 1;
+    flex: 1 0 auto;
   }
 
   mat-button-toggle-group ::ng-deep .mat-button-toggle-label-content {

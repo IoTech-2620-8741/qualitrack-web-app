@@ -29,6 +29,8 @@ import {
   metricsOf,
 } from '../../../domain/model/monitored-metric';
 import { DateTimePipe } from '../../../../shared/presentation/pipes/date-time.pipe';
+import { SetupNotice } from '../../../../shared/presentation/components/setup-notice/setup-notice';
+import { IamStore } from '../../../../iam/application/iam.store';
 
 /** Earliest moment the history can be asked for, as a datetime-local value. */
 export const MIN_HISTORY_START = '2020-01-01T00:00';
@@ -54,6 +56,7 @@ export const MIN_HISTORY_START = '2020-01-01T00:00';
   selector: 'app-telemetry-history',
   standalone: true,
   imports: [
+    SetupNotice,
     DateTimePipe,
     DecimalPipe,
     FormsModule,
@@ -74,6 +77,7 @@ export const MIN_HISTORY_START = '2020-01-01T00:00';
 })
 export class TelemetryHistory implements OnInit {
   protected readonly store = inject(TrackingStore);
+  protected readonly iam = inject(IamStore);
   private readonly translate = inject(TranslateService);
   private readonly route = inject(ActivatedRoute);
   private readonly language = toSignal(this.translate.onLangChange, { initialValue: null });

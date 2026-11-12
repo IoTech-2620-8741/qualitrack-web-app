@@ -1160,6 +1160,8 @@
     "title": "Equipos",
     "add-button": "Registrar Equipo",
     "empty": "No se encontraron equipos en este laboratorio",
+    "empty-filtered": "Ningún equipo coincide con estos filtros.",
+    "clear-filters": "Limpiar filtros",
     "fields": {
       "name": "Nombre",
       "type": "Tipo",

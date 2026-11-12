@@ -11,6 +11,10 @@ import {
 import { Router, RouterLink } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 import { MatIconModule } from '@angular/material/icon';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { groupErrorMatcher } from '../../../../shared/presentation/utils/group-error-matcher';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { IamStore, errorStatus } from '../../../application/iam.store';
@@ -33,7 +37,7 @@ type PasswordField = 'newPassword' | 'confirmPassword';
   imports: [
     ReactiveFormsModule,
     TranslatePipe,
-    MatIconModule,
+    MatIconModule, MatFormFieldModule, MatInputModule, MatButtonModule,
     MatProgressSpinnerModule,
     RouterLink,
   ],
@@ -42,6 +46,9 @@ type PasswordField = 'newPassword' | 'confirmPassword';
   styleUrl: './password-recovery.css',
 })
 export class PasswordRecovery {
+  /** Shows the error of the form that compares this field with another one. */
+  protected readonly confirmMatcher = groupErrorMatcher('passwordMismatch');
+
   /** Session store that sends the code and resets the password. */
   private readonly store = inject(IamStore);
   private readonly router = inject(Router);

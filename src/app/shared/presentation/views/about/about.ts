@@ -25,7 +25,7 @@ export class About {
       description: 'about.value.traceability.description',
     },
     {
-      icon: 'monitoring',
+      icon: 'insights',
       title: 'about.value.monitoring.title',
       description: 'about.value.monitoring.description',
     },

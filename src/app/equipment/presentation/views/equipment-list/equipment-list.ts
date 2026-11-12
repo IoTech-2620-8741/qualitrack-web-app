@@ -83,6 +83,23 @@ export class EquipmentList implements OnInit {
     };
   });
 
+  /** Whether any filter narrows the list, so an empty list may be the filters' doing. */
+  protected readonly hasActiveFilters = computed(
+    () =>
+      this.filter() !== 'all' ||
+      this.search().trim() !== '' ||
+      this.attentionOnly() ||
+      this.environmentId() !== null,
+  );
+
+  /** Shows all the equipment of the laboratory again. */
+  protected clearFilters(): void {
+    this.filter.set('all');
+    this.search.set('');
+    this.attentionOnly.set(false);
+    this.environmentId.set(null);
+  }
+
   protected readonly visibleEquipment = computed(() => {
     const kind = this.filter();
     const text = this.search().trim().toLowerCase();

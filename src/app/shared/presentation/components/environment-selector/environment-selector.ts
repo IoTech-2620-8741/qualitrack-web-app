@@ -50,7 +50,9 @@ export type EnvironmentSelectorAppearance = 'field' | 'inline';
   standalone: true,
   imports: [TranslatePipe, MatFormFieldModule, MatSelectModule, MatIconModule],
   template: `
-    @if (appearance() === 'inline') {
+    <!-- A line of context with nothing to choose only reads as a stray word; the view tells what is missing. -->
+    @if (appearance() === 'inline' && !environments().length) {
+    } @else if (appearance() === 'inline') {
       <mat-select
         #inline
         class="environment-inline"

@@ -59,9 +59,9 @@
 .user-session {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   min-width: 0;
-  padding: 4px 6px 4px 4px;
+  padding: 3px 4px 3px 3px;
   background: var(--qt-surface);
   border: 1px solid var(--qt-border);
   border-radius: 999px;
@@ -307,8 +307,13 @@ mat-sidenav-content {
 }
 
 @media (max-width: 720px) {
-  .brand {
+  /* With a session the toolbar keeps only the logo; without one there is room for the name too. */
+  .toolbar:has(.user-session) .toolbar-title {
     display: none;
+  }
+
+  .toolbar:has(.user-session) img {
+    margin-right: 0;
   }
 
   .user-session {
@@ -324,6 +329,11 @@ mat-sidenav-content {
 
   .toolbar-actions {
     gap: 4px;
+  }
+
+  /* A phone has no room for the logo beside the menu, the session, the bell and the language. */
+  .toolbar:has(> button):has(.user-session) .brand {
+    display: none;
   }
 
   mat-sidenav {

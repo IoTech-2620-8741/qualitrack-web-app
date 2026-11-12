@@ -16,7 +16,7 @@
   </header>
 
   @if (store.environmentsEmpty()) {
-    <p class="notice">{{ 'tracking.no-environments' | translate }}</p>
+    <app-setup-notice messageKey="tracking.no-environments" [actionLink]="iam.canManageQuality() ? '/laboratories/environments/new' : null" />
   } @else if (store.environmentId() !== null && !store.isLoading() && !store.devices().length) {
     <p class="notice">{{ 'tracking.no-devices' | translate }}</p>
   } @else {

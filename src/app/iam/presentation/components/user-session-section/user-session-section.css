@@ -3,10 +3,10 @@
 }
 
 .sign-out-button {
-  --mdc-icon-button-state-layer-size: 40px;
-  width: 40px;
-  height: 40px;
-  padding: 8px;
+  --mat-icon-button-state-layer-size: 32px;
+  width: 32px;
+  height: 32px;
+  padding: 6px;
   border-radius: 999px;
   color: var(--qt-text-muted);
   transition: background-color 0.2s ease, color 0.2s ease;
@@ -23,9 +23,9 @@
 }
 
 .sign-out-button mat-icon {
-  width: 24px;
-  height: 24px;
-  font-size: 24px;
+  width: 20px;
+  height: 20px;
+  font-size: 20px;
 }
 
 @media (prefers-reduced-motion: reduce) {
