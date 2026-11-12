@@ -75,10 +75,10 @@ export interface PageTab {
               @if (live()) {
                 <span class="live-dot" aria-hidden="true"></span>
               }
-              {{
+              <span class="updated-text">{{
                 (live() ? 'common.live' : 'common.updated')
                   | translate: { time: (lastUpdate | relativeTime: now()) }
-              }}
+              }}</span>
             </span>
           }
           @if (refreshable()) {
@@ -88,7 +88,11 @@ export interface PageTab {
               class="refresh"
               [disabled]="loading()"
               [attr.aria-label]="'common.refresh' | translate"
-              [matTooltip]="'common.refresh' | translate"
+              [matTooltip]="
+                lastUpdate()
+                  ? ('common.refresh' | translate) + ' · ' + ('common.updated' | translate: { time: (lastUpdate()! | relativeTime: now()) })
+                  : ('common.refresh' | translate)
+              "
               (click)="refresh.emit()"
             >
               <mat-icon aria-hidden="true">refresh</mat-icon>
