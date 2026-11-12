@@ -131,7 +131,11 @@ export class LabProfile implements OnInit {
    * Submits the current form value as an update laboratory command.
    */
   protected onSave(): void {
-    if (this.form.invalid) return;
+    if (this.form.invalid) {
+      // Saving with something wrong points at the fields to fix, like every form of the app
+      this.form.markAllAsTouched();
+      return;
+    }
 
     const value = this.form.getRawValue();
     const command: UpdateLaboratoryCommand = {

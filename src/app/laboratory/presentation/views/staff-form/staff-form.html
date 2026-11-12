@@ -116,14 +116,13 @@
         </button>
 
         <button mat-flat-button type="submit" [disabled]="store.isLoading()">
+          <!-- One element per branch, so Material places the icon in its slot, aligned with the text -->
           @if (store.isLoading()) {
             <mat-spinner diameter="20"></mat-spinner>
           } @else {
-            <ng-container>
-              <mat-icon>save</mat-icon>
-              {{ 'common.register' | translate }}
-            </ng-container>
+            <mat-icon>save</mat-icon>
           }
+          {{ 'common.register' | translate }}
         </button>
       </div>
     </form>

@@ -128,8 +128,8 @@
                 {{ 'common.cancel' | translate }}
               </button>
 
-              <button mat-flat-button type="submit" [disabled]="form.invalid || store.isLoading()">
-                {{ 'common.save' | translate }}
+              <button mat-flat-button type="submit" [disabled]="store.isLoading()">
+                <mat-icon>save</mat-icon>{{ 'common.save' | translate }}
               </button>
             </div>
           </form>
