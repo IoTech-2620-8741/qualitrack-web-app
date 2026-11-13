@@ -10,7 +10,6 @@ import { RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatTooltip } from '@angular/material/tooltip';
 import { TranslatePipe } from '@ngx-translate/core';
 import { BatchStore } from '../../../application/batch.store';
 import { BatchStatus } from '../../../domain/model/batch.entity';
@@ -25,6 +24,10 @@ import {
 import { BatchFilters } from '../../components/batch-filters/batch-filters';
 import { BatchKpiCards } from '../../components/batch-kpi-cards/batch-kpi-cards';
 import { BatchTable } from '../../components/batch-table/batch-table';
+import { BATCH_TABS } from '../../batch-tabs';
+import { PageHeader } from '../../../../shared/presentation/components/page-header/page-header';
+import { ListToolbar } from '../../../../shared/presentation/components/list-toolbar/list-toolbar';
+import { EnvironmentSelector } from '../../../../shared/presentation/components/environment-selector/environment-selector';
 
 /**
  * Batches of every product of the laboratory, newest first.
@@ -40,6 +43,9 @@ import { BatchTable } from '../../components/batch-table/batch-table';
   selector: 'app-batch-list',
   standalone: true,
   imports: [
+    PageHeader,
+    ListToolbar,
+    EnvironmentSelector,
     BatchFilters,
     BatchKpiCards,
     BatchTable,
@@ -48,7 +54,6 @@ import { BatchTable } from '../../components/batch-table/batch-table';
     MatButtonModule,
     MatIconModule,
     MatProgressSpinnerModule,
-    MatTooltip,
     TranslatePipe,
   ],
   templateUrl: './batch-list.html',
@@ -81,6 +86,15 @@ export class BatchList implements OnInit {
    */
   protected readonly filterApplied = computed(() => isBatchFilterApplied(this.filter()));
 
+  /** Operations of the module. */
+  protected readonly tabs = BATCH_TABS;
+
+  /** How many filters of the folding row narrow the list: the status, the text and the period. */
+  protected readonly activeFilters = computed(() => {
+    const filter = this.filter();
+    return (filter.status ? 1 : 0) + (filter.search.trim() ? 1 : 0) + (filter.from || filter.to ? 1 : 0);
+  });
+
   /**
    * Environments that have batches, offered by the environment filter.
    */
@@ -109,6 +123,15 @@ export class BatchList implements OnInit {
    *
    * @param status - The status, or empty for every status
    */
+  /**
+   * Changes part of the filter of the list.
+   *
+   * @param changes - The criteria that change
+   */
+  protected patchFilter(changes: Partial<BatchFilter>): void {
+    this.filter.update((filter) => ({ ...filter, ...changes }));
+  }
+
   protected chooseStatus(status: BatchStatus | ''): void {
     this.filter.update((filter) => ({ ...filter, status }));
   }

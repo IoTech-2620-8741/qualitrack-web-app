@@ -86,6 +86,39 @@
   white-space: nowrap;
 }
 
+/* On a phone the line takes the whole width, like the buttons and fields under it, with the chevron at the end. */
+@media (max-width: 760px) {
+  /* Its width never comes from the name, so a long name is cut instead of widening the heading. */
+  :host:has(.environment-inline) {
+    display: block;
+    width: 100%;
+    contain: inline-size;
+  }
+
+  .environment-inline {
+    display: block;
+    width: 100%;
+  }
+
+  .environment-inline ::ng-deep .mat-mdc-select-value,
+  .environment-inline ::ng-deep .mat-mdc-select-value-text,
+  .environment-inline ::ng-deep .mat-mdc-select-min-line {
+    display: block;
+    width: 100%;
+  }
+
+  .inline-trigger {
+    display: flex;
+    width: 100%;
+    min-height: 44px;
+    padding: 10px 12px;
+  }
+
+  .inline-trigger .chevron {
+    margin-left: auto;
+  }
+}
+
 /* Options of the inline list: code and usage, then the name */
 .option-top {
   display: flex;

@@ -64,7 +64,7 @@ describe('BatchList', () => {
       batch(3, 'RELEASED'),
     ]);
     const cards = () =>
-      [...element.querySelectorAll('button.stat-filter-card')] as HTMLButtonElement[];
+      [...element.querySelectorAll('app-batch-kpi-cards button.filter-chip')] as HTMLButtonElement[];
 
     expect(element.querySelectorAll('tr[mat-row]').length).toBe(3);
 

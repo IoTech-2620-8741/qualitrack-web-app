@@ -19,6 +19,8 @@ import {
   normalizePhone,
   phoneValidator,
 } from '../../../../shared/presentation/validators/phone.validator';
+import { PageHeader } from '../../../../shared/presentation/components/page-header/page-header';
+import { LABORATORY_TABS } from '../../laboratory-tabs';
 
 /**
  * Component responsible for displaying and editing the current laboratory profile.
@@ -38,6 +40,7 @@ import {
     MatInputModule,
     MatIconModule,
     MatButtonModule,
+    PageHeader,
     MatSelectModule,
     MatCardModule,
     MatProgressSpinnerModule,
@@ -99,6 +102,14 @@ export class LabProfile implements OnInit {
     this.store.loadLaboratory(this.currentLaboratoryId);
   }
 
+  /** Operations of the laboratory module. */
+  protected readonly tabs = LABORATORY_TABS;
+
+  /** Reads the laboratory profile again. */
+  protected reload(): void {
+    this.store.loadLaboratory(this.currentLaboratoryId);
+  }
+
   /**
    * Enables edit mode and hydrates the form with the current laboratory profile.
    */
@@ -120,7 +131,11 @@ export class LabProfile implements OnInit {
    * Submits the current form value as an update laboratory command.
    */
   protected onSave(): void {
-    if (this.form.invalid) return;
+    if (this.form.invalid) {
+      // Saving with something wrong points at the fields to fix, like every form of the app
+      this.form.markAllAsTouched();
+      return;
+    }
 
     const value = this.form.getRawValue();
     const command: UpdateLaboratoryCommand = {

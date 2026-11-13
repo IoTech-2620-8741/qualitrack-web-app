@@ -110,7 +110,13 @@ const titles = (page) => page.locator('app-alert-card h2').allInnerTexts();
 const cardsShown = (page, count) =>
   page.waitForFunction((expected) => document.querySelectorAll('app-alert-card').length === expected, count);
 const statusShown = (page, device, status) =>
-  page.locator('app-alert-card', { hasText: device }).locator('app-status-chip', { hasText: status }).waitFor();
+  page.locator('app-alert-card', { hasText: device })
+    .locator(status === 'Abierta' ? '.owner.unowned' : '.owner:not(.unowned)', status === 'Abierta' ? {} : { hasText: status })
+    .waitFor();
+/** Link of the title of a row, which opens its detail. */
+const titleLink = (page, device) => page.locator('app-alert-card', { hasText: device }).first().locator('h2 a');
+/** Chip of the inbox whose name starts with the given words. */
+const inboxChip = (page, name) => page.locator('app-filter-chip button', { hasText: name });
 const attendButton = (page, device) =>
   page.locator('app-alert-card', { hasText: device }).getByRole('button', { name: /Registrar atención/ });
 /** Elements of the inbox past the right edge of the page, which the scrolling container hides; the tabs scroll by themselves. */
@@ -159,12 +165,17 @@ try {
     assert.match(order[0], /Refrigerador CF-01/);
     assert.match(order[1], /PROD-SOL/);
     assert.match(order[2], /ALM-MP/);
-    assert.match(await page.locator('app-action-banner').innerText(), /2 alertas críticas sin atender/);
-    await page.getByRole('button', { name: 'Ver críticas sin atender' }).click();
+    // The critical alerts nobody attends are counted in a red chip, which leaves only them.
+    const urgent = inboxChip(page, 'Críticas sin atender');
+    assert.match(await urgent.innerText(), /2/);
+    await urgent.click();
     await cardsShown(page, 2);
-    assert.equal(await page.getByRole('button', { name: /^Críticas/ }).getAttribute('aria-pressed'), 'true');
-    await page.getByRole('button', { name: /^Alertas abiertas/ }).click();
+    assert.equal(await urgent.getAttribute('aria-pressed'), 'true');
+    await inboxChip(page, 'Todas').click();
     await cardsShown(page, 4);
+    // The alerts are grouped by severity, the most serious first; each group says how many it holds.
+    const groups = await page.locator('.group-title').allInnerTexts();
+    assert.deepEqual(groups.map((name) => name.replace(/\s*\d+\s*$/, '').trim()), ['CRÍTICAS', 'ADVERTENCIAS']);
     await page.getByRole('searchbox').fill('refrigerador');
     await cardsShown(page, 1);
     await page.getByRole('searchbox').fill('');
@@ -246,7 +257,7 @@ try {
   {
     const { context, page, state } = await openInbox(browser);
     await attendButton(page, 'Refrigerador').click();
-    await page.locator('app-alert-card', { hasText: 'Refrigerador' }).getByRole('link', { name: /Ver detalle/ }).click();
+    await titleLink(page, 'Refrigerador').click();
     await page.waitForURL('**/alerts/102');
     await page.getByRole('dialog').waitFor();
     assert.deepEqual(state.acknowledgements, [102]);
@@ -316,15 +327,11 @@ try {
     await page.getByRole('option', { name: /CAD-FRIO-01/ }).click();
     await page.waitForURL('**/alerts?environmentId=2');
     await cardsShown(page, 1);
-    const selected = page.locator('app-environment-selector .mat-mdc-select-min-line');
-    assert.equal(await selected.evaluate((text) => getComputedStyle(text).whiteSpace), 'normal');
+    const selected = page.locator('app-environment-selector .inline-trigger');
+    assert.match(await selected.innerText(), /CAD-FRIO-01/);
     assert.ok(
-      await selected.evaluate((text) => {
-        const shown = text.closest('mat-form-field').getBoundingClientRect();
-        const name = text.getBoundingClientRect();
-        return name.bottom <= shown.bottom && name.right <= shown.right;
-      }),
-      'The environment selector must show the whole name',
+      await selected.evaluate((trigger) => trigger.getBoundingClientRect().right <= document.documentElement.clientWidth),
+      'The environment selector stays inside the page',
     );
     await page.waitForTimeout(300);
     await page.screenshot({ path: `${directory}/one-environment.png` });
@@ -335,7 +342,7 @@ try {
   {
     const { context, page, errors } = await openInbox(browser, { height: 500 });
     await page.getByRole('searchbox').fill('alm-mp');
-    const details = page.locator('app-alert-card', { hasText: 'ALM-MP' }).first().getByRole('link', { name: /Ver detalle/ });
+    const details = titleLink(page, 'ALM-MP');
     await details.focus();
     await details.click();
     await page.waitForURL('**/alerts/103');
@@ -362,7 +369,7 @@ try {
     await page.keyboard.press('Escape');
     await page.waitForURL('**/alerts');
     await dialog.waitFor({ state: 'detached' });
-    await page.waitForFunction(() => /Ver detalle/.test(document.activeElement?.textContent ?? ''));
+    await page.waitForFunction(() => /ALM-MP/.test(document.activeElement?.textContent ?? ''), null, { timeout: 5000 });
     assert.deepEqual(errors, []);
     await context.close();
   }
@@ -401,7 +408,7 @@ try {
   // Attention registered in the panel can be undone there too, and the toast can be reached.
   {
     const { context, page, state } = await openInbox(browser, { width: 375, height: 700 });
-    await page.locator('app-alert-card', { hasText: 'Refrigerador' }).getByRole('link', { name: /Ver detalle/ }).click();
+    await titleLink(page, 'Refrigerador').click();
     const dialog = page.getByRole('dialog');
     await dialog.getByText(/Pendiente: nadie/).waitFor();
     await page.waitForTimeout(300); // The panel finishes sliding in.
@@ -483,7 +490,7 @@ try {
     const { context, page, state } = await openInbox(browser);
     await page.goto(origin + '/alerts?environmentId=2');
     await cardsShown(page, 1);
-    await page.locator('app-alert-card .actions a').first().click();
+    await page.locator('app-alert-card h2 a').first().click();
     await page.waitForURL('**/alerts/102?environmentId=2');
     await page.keyboard.press('Escape');
     await page.waitForURL('**/alerts?environmentId=2');
@@ -498,7 +505,7 @@ try {
     const focusedCard = () => page.evaluate(() => document.activeElement.closest('app-alert-card')?.querySelector('h2').textContent);
     await page.keyboard.press('j');
     assert.equal(await focusedCard(), undefined, 'Nothing happens away from the list');
-    await page.locator('app-alert-card').first().getByRole('link', { name: /Ver detalle/ }).focus();
+    await page.locator('app-alert-card h2 a').first().focus();
     assert.match(await focusedCard(), /Refrigerador/);
     await page.keyboard.press('j');
     assert.match(await focusedCard(), /PROD-SOL/);
@@ -519,7 +526,7 @@ try {
     const { context, page, errors } = await openInbox(browser);
     await page.goto(origin + '/alerts/history?period=custom');
     await page.locator('app-alert-table tbody tr').first().waitFor();
-    assert.match(await page.locator('.pager [role=status]').innerText(), /25 per page/);
+    assert.ok((await page.locator('app-alert-table tbody tr').count()) <= 10, 'The history shows ten rows at a time');
     const entries = await page.evaluate(() => history.length);
     await page.locator('input[type=date]').first().click({ position: { x: 8, y: 8 } });
     await page.keyboard.type('0110202', { delay: 30 });
@@ -536,6 +543,9 @@ try {
 
     // The report does not follow the chips, and the page says so only when one is pressed.
     assert.equal(await page.locator('.export-note').count(), 0);
+    // The chips live in the foldable row of the toolbar, folded on a phone.
+    const toggle = page.locator('app-list-toolbar .toggle');
+    if ((await toggle.getAttribute('aria-expanded')) === 'false') await toggle.click();
     await page.locator('app-filter-chip button').filter({ hasText: 'Critical' }).click();
     await page.locator('.export-note').waitFor();
     assert.deepEqual(errors, []);

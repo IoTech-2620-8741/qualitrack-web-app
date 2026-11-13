@@ -55,105 +55,15 @@
 }
 
 /* Campos */
-.form-group {
+/* The fields are the outlined Material fields of the rest of the application. */
+mat-form-field {
+  display: block;
+  width: 100%;
   margin-bottom: 20px;
 }
 
-.form-group label {
-  display: block;
-  margin-bottom: 6px;
-  color: var(--qt-text-muted);
-  font-size: 12px;
-  font-weight: 500;
-  text-transform: uppercase;
-}
-
-.form-group input {
-  width: 100%;
-  min-height: 48px;
-  padding: 0 14px;
-  box-sizing: border-box;
-  background: var(--qt-surface);
-  border: 1px solid var(--qt-border);
-  border-radius: 8px;
-  caret-color: var(--qt-primary);
-  color: var(--qt-text);
-  font: inherit;
-  font-size: 14px;
-  transition: border-color 0.2s ease;
-}
-
-.form-group input::placeholder {
-  color: var(--qt-text-subtle);
-}
-
-.form-group input:focus {
-  border-color: var(--qt-primary);
-  outline: 3px solid var(--qt-primary);
-  outline-offset: 2px;
-}
-
-.form-group input.error {
-  border-color: var(--qt-error);
-}
-
-.password-input-wrapper {
-  position: relative;
-}
-
-.password-input-wrapper input {
-  padding-right: 52px;
-}
-
-.toggle-password {
-  position: absolute;
-  top: 50%;
-  right: 6px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  padding: 0;
-  transform: translateY(-50%);
-  background: transparent;
-  border: 0;
-  border-radius: 999px;
-  color: var(--qt-text-muted);
-  cursor: pointer;
-  transition: background-color 0.2s ease, color 0.2s ease;
-}
-
-.toggle-password mat-icon {
-  width: 20px;
-  height: 20px;
-  font-size: 20px;
-}
-
-.toggle-password:hover {
-  background: var(--qt-background);
-  color: var(--qt-primary-strong);
-}
-
-.toggle-password:focus-visible {
-  outline: 3px solid var(--qt-primary);
-  outline-offset: 2px;
-}
-
-.error-message {
-  display: block;
-  margin-top: 6px;
-  color: var(--qt-error-text);
-  font-size: 12px;
-  line-height: 1.5;
-}
-
-.field-hint {
-  display: block;
-  margin-top: 6px;
-  color: var(--qt-text-muted);
-  font-size: 12px;
-  line-height: 1.5;
+mat-form-field:has(+ .forgot-password) {
+  margin-bottom: 4px;
 }
 
 .alert-error,

@@ -310,6 +310,19 @@
     }
   },
   "common": {
+    "filters": "Filters",
+    "clear-search": "Clear the search",
+    "updated": "Updated {{time}}",
+    "live": "Live · updated {{time}}",
+    "paginator": {
+      "per-page": "Rows per page",
+      "first": "First page",
+      "previous": "Previous page",
+      "next": "Next page",
+      "last": "Last page",
+      "range": "{{start}} – {{end}} of {{length}}",
+      "empty": "0 of 0"
+    },
     "save": "Save Changes",
     "cancel": "Cancel",
     "back": "Back",
@@ -390,6 +403,7 @@
     "alerts": "Compliance Alerts",
     "alert-dashboard": "Active Alerts",
     "alert-history": "Alert History",
+    "alert-preferences": "Notification Preferences",
     "reports": "Reports & KPIs",
     "kpi-dashboard": "Environmental Summary",
     "deviation-trends": "Deviation Indicators",
@@ -698,11 +712,6 @@
   "ca-alerts": {
     "empty": "No compliance alerts found. Everything is within BPM parameters.",
     "not-found": "Alert not found.",
-    "kpi": {
-      "critical": "Critical",
-      "open": "Open alerts",
-      "attending": "In progress"
-    },
     "fields": {
       "parameter": "Variable",
       "severity": "Severity",
@@ -741,8 +750,8 @@
       "email": "E-mail the alert"
     },
     "history": {
+      "not-resolved": "Not resolved yet",
       "title": "Alert History",
-      "subtitle": "Every alert of the period, including resolved ones, with their attention times.",
       "empty": "There are no alerts with these filters.",
       "none-all": "No environment recorded alerts in the last 90 days.",
       "none-one": "This environment recorded no alerts in the last 90 days.",
@@ -762,9 +771,8 @@
         "custom": "Custom"
       },
       "columns": {
-        "duration": "Duration",
-        "resolved-by": "Resolved by",
-        "corrective-action": "Corrective action"
+        "alert": "Alert",
+        "resolution": "Resolution"
       },
       "metrics": {
         "alerts": "Alerts",
@@ -785,16 +793,14 @@
       "attention-after": "attended after {{time}}",
       "export": "Export report",
       "export-note": "\"Export report\" covers the whole period and environment: severity, status, origin and search only narrow this table.",
-      "view": "View the detail of the {{variable}} alert",
-      "pages": {
-        "label": "Pages of the history",
-        "showing": "Showing {{first}}–{{last}} of {{total}} · {{size}} per page",
-        "current": "Page {{page}} of {{count}}",
-        "previous": "Previous page",
-        "next": "Next page"
-      }
+      "view": "View the detail of the {{variable}} alert"
     },
     "detail": {
+      "next": {
+        "label": "Next step",
+        "attend-title": "Register attention",
+        "attend-text": "Nobody is attending it yet. Registering attention makes you responsible for it, and then you record the corrective action."
+      },
       "alert": "Alert",
       "no-environment": "No environment",
       "normalized": "The condition returned to normal on {{date}}; the alert stays open until someone resolves it.",
@@ -853,9 +859,6 @@
     },
     "active": {
       "title": "Active Alerts",
-      "subtitle": "Open deviations of the monitored environments and containers, from the most to the least urgent.",
-      "live": "Live · updated {{time}}",
-      "live-partial": "Partial data · updated {{time}}",
       "unavailable": "The alerts of {{environments}} could not be read. What you see of those environments may be out of date.",
       "retry": "Try again",
       "new-alerts": "New alerts: {{count}}.",
@@ -864,22 +867,17 @@
       "search": "Search device or variable",
       "results": "Showing {{shown}} of {{total}} alerts.",
       "no-results": "There are no alerts with these filters.",
-      "critical-banner": {
-        "title-one": "1 critical alert not attended.",
-        "title-many": "{{count}} critical alerts not attended.",
-        "oldest": "The oldest: {{device}} · {{variable}} {{value}} {{unit}}.",
-        "detail": "Opened {{time}} · nobody has registered attention",
-        "action": "View unattended critical"
-      },
-      "stats": {
+      "filters": {
+        "label": "Filter the alerts",
+        "all": "All",
+        "critical-unattended": "Critical not attended",
         "unattended": "Not attended",
-        "environments-one": "in 1 environment",
-        "environments-many": "in {{count}} environments",
-        "warnings-one": "1 warning",
-        "warnings-many": "{{count}} warnings",
-        "oldest": "oldest: {{time}}",
-        "normalized-one": "1 already normalized",
-        "normalized-many": "{{count}} already normalized"
+        "attending": "In progress"
+      },
+      "groups": {
+        "CRITICAL": "Critical",
+        "WARNING": "Warnings",
+        "LOW": "Low"
       },
       "sort": {
         "label": "Sort by",
@@ -887,16 +885,13 @@
         "newest": "Newest",
         "environment": "Environment"
       },
-      "shortcuts": {
-        "label": "Shortcuts with the focus on the list:",
-        "move": "move"
-      },
       "card": {
         "limit": "limit {{value}} {{unit}}",
         "opened": "Opened {{time}}",
         "no-owner": "No one assigned",
         "attending": "In progress {{time}}",
         "attending-by": "In progress by {{name}} · {{time}}",
+        "more": "More actions",
         "notify": "Notify",
         "resolve": "Resolve"
       },
@@ -919,13 +914,12 @@
       "failed": "The e-mail could not be sent. Check that e-mail is configured on the platform."
     },
     "page": {
-      "title": "Compliance alerts",
-      "preferences": "Notification preferences",
-      "sections": "Alert sections"
+      "title": "Compliance alerts"
     },
     "tabs": {
       "active": "Active",
-      "history": "History"
+      "history": "History",
+      "preferences": "Preferences"
     }
   },
   "notifications": {
@@ -1160,6 +1154,8 @@
     "title": "Equipment",
     "add-button": "Register Equipment",
     "empty": "No equipment found in this laboratory",
+    "empty-filtered": "No equipment matches these filters.",
+    "clear-filters": "Clear filters",
     "fields": {
       "name": "Name",
       "type": "Type",
@@ -1289,6 +1285,7 @@
   },
   "lab-profile": {
     "title": "Laboratory Profile",
+    "tab": "Profile",
     "name": "Laboratory Name",
     "address": "Physical Address",
     "phone": "Contact Phone",
@@ -1309,6 +1306,8 @@
   "staff-list": {
     "title": "Personnel Management",
     "register": "Add Staff",
+    "search": "Search name, job title or email",
+    "empty-filtered": "No staff members match these filters.",
     "name": "Full Name",
     "role": "Job title",
     "email": "Corporate Email",
@@ -1350,6 +1349,7 @@
   "product-catalog": {
     "title": "Pharmaceutical products",
     "add": "New Product",
+    "search": "Search by code or name",
     "code": "SKU / Code",
     "name": "Product Name",
     "specifications": "BPM Specifications",
@@ -1410,7 +1410,12 @@
     }
   },
   "reporting": {
-    "all-environments": "All environments",
+    "tabs": {
+      "summary": "Summary",
+      "deviations": "Deviations",
+      "generator": "New report",
+      "audit-log": "Audit log"
+    },
     "no-environments": "Register an environment of the laboratory to calculate its indicators.",
     "errors": {
       "load": "The indicators could not be loaded. Please try again."
@@ -1687,6 +1692,11 @@
     }
   },
   "tracking": {
+    "tabs": {
+      "monitoring": "Monitoring",
+      "history": "History",
+      "profiles": "Profiles"
+    },
     "refresh": "Refresh",
     "no-environments": "Register an environment of the laboratory to monitor it.",
     "no-devices": "This environment has no IoT devices. Associate an environmental device or a container monitor with it to see its readings.",
@@ -1842,6 +1852,7 @@
     "title": "Environments",
     "subtitle": "Physical areas of the laboratory or warehouse where materials, products and devices are located.",
     "register": "Register environment",
+    "search": "Search code or name",
     "code": "Code",
     "name": "Name",
     "description": "Description",
@@ -1928,7 +1939,6 @@
     "add-button": "Register IoT device",
     "title": "New IoT Device",
     "subtitle": "ESP32 environmental device or container monitor and the identity Edge uses to recognise it",
-    "save": "Register device",
     "fields": {
       "device-type": "Device type",
       "identifier": "Device identifier",
@@ -2040,7 +2050,6 @@
     "form": {
       "title": "Register Edge Gateway",
       "subtitle": "The Edge Gateway receives the readings of the IoT devices of its environment and sends them to QualiTrack.",
-      "save": "Register Edge Gateway",
       "placeholders": {
         "name": "E.g. Edge Gateway - Raw materials warehouse",
         "identifier": "E.g. EDGE-001",

@@ -155,15 +155,16 @@ describe('AlertDashboard', () => {
       Array.from(element.querySelectorAll('app-alert-card h2')).map(
         (title) => title.textContent?.split(' · ')[1],
       );
-    const statCard = (label: string) =>
-      Array.from(element.querySelectorAll<HTMLButtonElement>('.stat-filter-card')).find((card) =>
-        card.textContent?.includes(label),
+    const chip = (label: string) =>
+      Array.from(element.querySelectorAll<HTMLButtonElement>('app-filter-chip button')).find(
+        (button) => button.textContent?.includes(label),
       )!;
+    const countOf = (label: string) => chip(label)?.querySelector('.count')?.textContent;
     const press = (target: HTMLElement) => {
       target.click();
       harness.detectChanges();
     };
-    return { harness, element, cardIds, statCard, press };
+    return { harness, element, cardIds, chip, countOf, press };
   }
 
   describe('scope', () => {
@@ -226,54 +227,61 @@ describe('AlertDashboard', () => {
   });
 
   describe('summary and filters', () => {
-    it('counts the open alerts of the scope', async () => {
-      const { statCard } = await open();
+    it('counts the open alerts of the scope in its chips', async () => {
+      const { countOf } = await open();
 
-      expect(statCard('ca-alerts.kpi.open').querySelector('.value')?.textContent).toBe('4');
-      expect(statCard('ca-alerts.kpi.critical').querySelector('.value')?.textContent).toBe('3');
-      expect(
-        statCard('ca-alerts.active.stats.unattended').querySelector('.value')?.textContent,
-      ).toBe('3');
-      expect(statCard('ca-alerts.kpi.attending').querySelector('.value')?.textContent).toBe('1');
+      expect(countOf('ca-alerts.active.filters.all')).toBe('4');
+      expect(countOf('ca-alerts.active.filters.critical-unattended')).toBe('2');
+      expect(countOf('ca-alerts.active.filters.unattended')).toBe('3');
+      expect(countOf('ca-alerts.active.filters.attending')).toBe('1');
     });
 
-    it('filters when a card is pressed and stops when it is pressed again', async () => {
-      const { statCard, press, cardIds } = await open();
-      const critical = statCard('ca-alerts.kpi.critical');
+    it('groups the alerts by severity, the most serious first', async () => {
+      const { element } = await open();
 
-      press(critical);
-      expect(cardIds()).toEqual(['Cámara fría', 'Device 1', 'Device 3']);
-      expect(critical.getAttribute('aria-pressed')).toBe('true');
-      expect(statCard('ca-alerts.kpi.open').getAttribute('aria-pressed')).toBe('false');
+      expect(
+        Array.from(element.querySelectorAll('.group-title')).map((title) =>
+          title.textContent?.replace(/\s+\d+\s*$/, '').trim(),
+        ),
+      ).toEqual(['ca-alerts.active.groups.CRITICAL', 'ca-alerts.active.groups.WARNING']);
+    });
 
-      press(critical);
+    it('filters when a chip is pressed and stops when it is pressed again', async () => {
+      const { chip, press, cardIds } = await open();
+      const attending = chip('ca-alerts.active.filters.attending');
+
+      press(attending);
+      expect(cardIds()).toEqual(['Device 3']);
+      expect(attending.getAttribute('aria-pressed')).toBe('true');
+      expect(chip('ca-alerts.active.filters.all').getAttribute('aria-pressed')).toBe('false');
+
+      press(attending);
       expect(cardIds()).toHaveLength(4);
-      expect(statCard('ca-alerts.kpi.open').getAttribute('aria-pressed')).toBe('true');
+      expect(chip('ca-alerts.active.filters.all').getAttribute('aria-pressed')).toBe('true');
     });
 
     it('keeps the counts while filtering', async () => {
-      const { statCard, press } = await open();
+      const { chip, countOf, press } = await open();
 
-      press(statCard('ca-alerts.kpi.attending'));
+      press(chip('ca-alerts.active.filters.attending'));
 
-      expect(statCard('ca-alerts.kpi.open').querySelector('.value')?.textContent).toBe('4');
+      expect(countOf('ca-alerts.active.filters.all')).toBe('4');
     });
 
-    it('shows what the banner warns about', async () => {
-      const { element, press, cardIds, statCard } = await open();
+    it('shows in red the critical alerts nobody attends, and leaves only them when pressed', async () => {
+      const { chip, press, cardIds } = await open();
+      const urgent = chip('ca-alerts.active.filters.critical-unattended');
 
-      press(element.querySelector<HTMLButtonElement>('app-action-banner button')!);
+      expect(urgent.classList).toContain('danger');
+      press(urgent);
 
       expect(cardIds()).toEqual(['Cámara fría', 'Device 1']);
-      expect(statCard('ca-alerts.kpi.critical').getAttribute('aria-pressed')).toBe('true');
-      expect(statCard('ca-alerts.active.stats.unattended').getAttribute('aria-pressed')).toBe(
-        'true',
-      );
+      expect(urgent.getAttribute('aria-pressed')).toBe('true');
     });
 
     it('searches by device without minding accents or capitals', async () => {
       const { harness, element, cardIds } = await open();
-      const search = element.querySelector<HTMLInputElement>('input[type="search"]')!;
+      const search = element.querySelector<HTMLInputElement>('.search input')!;
 
       search.value = 'CAMARA';
       search.dispatchEvent(new Event('input'));
@@ -287,7 +295,7 @@ describe('AlertDashboard', () => {
 
     it('offers to clear the filters when nothing matches', async () => {
       const { harness, element, press, cardIds } = await open();
-      const search = element.querySelector<HTMLInputElement>('input[type="search"]')!;
+      const search = element.querySelector<HTMLInputElement>('.search input')!;
       search.value = 'nothing like this';
       search.dispatchEvent(new Event('input'));
       harness.detectChanges();
@@ -298,29 +306,64 @@ describe('AlertDashboard', () => {
       expect(cardIds()).toHaveLength(4);
     });
 
-    it('orders by the latest incident when asked to', async () => {
-      const { element, press, cardIds } = await open();
+    it('orders each group by the latest incident when asked to', async () => {
+      const { harness, element, press, cardIds } = await open();
 
-      press(element.querySelectorAll<HTMLButtonElement>('.sort-pill')[1]);
+      press(element.querySelector<HTMLElement>('.sort .mat-mdc-select-trigger')!);
+      await harness.fixture.whenStable();
+      press(document.querySelectorAll<HTMLElement>('mat-option')[1]);
 
       expect(cardIds()).toEqual(['Device 1', 'Cámara fría', 'Device 3', 'Device 4']);
     });
+
+    describe('order by environment', () => {
+      const sortOptions = () =>
+        Array.from(document.querySelectorAll('mat-option')).map((option) => option.textContent?.trim());
+      const openSort = async (harness: RouterTestingHarness, element: HTMLElement) => {
+        element.querySelector<HTMLElement>('.sort .mat-mdc-select-trigger')!.click();
+        harness.detectChanges();
+        await harness.fixture.whenStable();
+      };
+      const shownSort = (element: HTMLElement) =>
+        element.querySelector('.sort .mat-mdc-select-value')?.textContent?.trim();
+      afterEach(() => document.querySelectorAll('.cdk-overlay-container').forEach((item) => item.remove()));
+
+      it('is only offered while every environment is shown', async () => {
+        const { harness, element } = await open('/alerts?environmentId=1');
+
+        await openSort(harness, element);
+
+        expect(sortOptions()).toEqual([
+          'ca-alerts.active.sort.priority',
+          'ca-alerts.active.sort.newest',
+        ]);
+      });
+
+      it('gives way to the priority with one environment, and comes back with every environment', async () => {
+        const { harness, element, press } = await open();
+        await openSort(harness, element);
+        press(document.querySelectorAll<HTMLElement>('mat-option')[2]);
+        expect(shownSort(element)).toBe('ca-alerts.active.sort.environment');
+
+        await TestBed.inject(Router).navigateByUrl('/alerts?environmentId=1');
+        await harness.fixture.whenStable();
+        harness.detectChanges();
+        expect(shownSort(element)).toBe('ca-alerts.active.sort.priority');
+
+        await TestBed.inject(Router).navigateByUrl('/alerts');
+        await harness.fixture.whenStable();
+        harness.detectChanges();
+        expect(shownSort(element)).toBe('ca-alerts.active.sort.environment');
+      });
+    });
   });
 
-  describe('banner', () => {
-    it('names the oldest critical alert nobody attends', async () => {
-      const { element } = await open();
-      const banner = element.querySelector('app-action-banner');
-
-      expect(banner?.textContent).toContain('ca-alerts.active.critical-banner.title-many');
-      expect(banner?.querySelector('[role="alert"]')).not.toBeNull();
-    });
-
+  describe('urgent chip', () => {
     it('does not appear when every critical alert is attended', async () => {
       answer({ 1: [attendedCritical], 2: [warning] });
-      const { element } = await open();
+      const { chip } = await open();
 
-      expect(element.querySelector('app-action-banner')).toBeNull();
+      expect(chip('ca-alerts.active.filters.critical-unattended')).toBeUndefined();
     });
   });
 
@@ -353,11 +396,11 @@ describe('AlertDashboard', () => {
       element.querySelector<HTMLButtonElement>('app-alert-card button[mat-flat-button]')!;
 
     it('shows the alert as attended at once and gives time to undo it', async () => {
-      const { element, press, statCard } = await open();
+      const { element, press, countOf } = await open();
 
       press(primaryActionOf(element));
 
-      expect(statCard('ca-alerts.kpi.attending').querySelector('.value')?.textContent).toBe('2');
+      expect(countOf('ca-alerts.active.filters.attending')).toBe('2');
       expect(undoToast.open).toHaveBeenCalledWith(
         expect.objectContaining({ messageKey: 'ca-alerts.active.attention-registered' }),
       );
@@ -365,13 +408,13 @@ describe('AlertDashboard', () => {
     });
 
     it('sends nothing when it is undone', async () => {
-      const { harness, element, press, statCard } = await open();
+      const { harness, element, press, countOf } = await open();
       press(primaryActionOf(element));
 
       toastOutcome.next('undone');
       harness.detectChanges();
 
-      expect(statCard('ca-alerts.kpi.attending').querySelector('.value')?.textContent).toBe('1');
+      expect(countOf('ca-alerts.active.filters.attending')).toBe('1');
       expect(api.acknowledgeAlert).not.toHaveBeenCalled();
     });
 
@@ -407,7 +450,7 @@ describe('AlertDashboard', () => {
         item.textContent?.includes('Cámara fría'),
       )!;
 
-      card.querySelector<HTMLAnchorElement>('.actions a')!.click();
+      card.querySelector<HTMLAnchorElement>('h2 a')!.click();
       await harness.fixture.whenStable();
 
       expect(undoToast.confirmNow).toHaveBeenCalledTimes(1);
@@ -420,7 +463,7 @@ describe('AlertDashboard', () => {
         item.textContent?.includes('Device 4'),
       )!;
 
-      anotherCard.querySelector<HTMLAnchorElement>('.actions a')!.click();
+      anotherCard.querySelector<HTMLAnchorElement>('h2 a')!.click();
       await harness.fixture.whenStable();
 
       expect(undoToast.confirmNow).not.toHaveBeenCalled();
@@ -484,7 +527,7 @@ describe('AlertDashboard', () => {
         2: [olderCritical, warning],
       });
 
-      press(Array.from(element.querySelectorAll<HTMLButtonElement>('.live-status button'))[0]);
+      press(element.querySelector<HTMLButtonElement>('button.refresh')!);
       await harness.fixture.whenStable();
       harness.detectChanges();
 
@@ -499,7 +542,7 @@ describe('AlertDashboard', () => {
       api.getEnvironmentAlerts.mockClear();
       const card = element.querySelector('app-alert-card')!;
 
-      card.querySelector<HTMLAnchorElement>('.actions a')!.click();
+      card.querySelector<HTMLAnchorElement>('h2 a')!.click();
       await harness.fixture.whenStable();
       harness.detectChanges();
 
@@ -577,12 +620,12 @@ describe('AlertDashboard', () => {
     });
 
     it('attends the alert that has the focus with A, which can be undone', async () => {
-      const { articles, pressKey, statCard } = await openAttached();
+      const { articles, pressKey, countOf } = await openAttached();
 
       pressKey(articles()[0], 'a');
 
       expect(undoToast.open).toHaveBeenCalledTimes(1);
-      expect(statCard('ca-alerts.kpi.attending').querySelector('.value')?.textContent).toBe('2');
+      expect(countOf('ca-alerts.active.filters.attending')).toBe('2');
       expect(api.acknowledgeAlert).not.toHaveBeenCalled();
     });
 

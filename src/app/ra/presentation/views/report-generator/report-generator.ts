@@ -12,6 +12,8 @@ import { RaStore } from '../../../application/ra.store';
 import { ErrorBanner } from '../../../../shared/presentation/components/error-banner/error-banner';
 import { ReportTypeSelector } from '../../components/report-type-selector/report-type-selector';
 import { ReportParamsForm } from '../../components/report-params-form/report-params-form';
+import { PageHeader } from '../../../../shared/presentation/components/page-header/page-header';
+import { REPORTS_TABS } from '../../reports-tabs';
 
 /**
  * Orchestrator component for the Report Generator view.
@@ -27,6 +29,7 @@ import { ReportParamsForm } from '../../components/report-params-form/report-par
   selector: 'app-report-generator',
   standalone: true,
   imports: [
+    PageHeader,
     CommonModule,
     TranslatePipe,
     MatProgressSpinnerModule,
@@ -41,6 +44,9 @@ import { ReportParamsForm } from '../../components/report-params-form/report-par
   styleUrl: './report-generator.css'
 })
 export class ReportGeneratorComponent implements OnInit, OnDestroy {
+  /** Operations of the reports module. */
+  protected readonly tabs = REPORTS_TABS;
+
   /** The application store managing the Reporting and Analysis state. */
   protected store = inject(RaStore);
 

@@ -8,66 +8,6 @@ a {
   letter-spacing: 0;
 }
 
-.data-table {
-  width: 100%;
-  table-layout: fixed;
-  border-collapse: separate;
-  border-spacing: 0;
-  overflow: hidden;
-  background: var(--qt-surface);
-  border: 1px solid var(--qt-border);
-  border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
-  font-size: 14px;
-}
-
-.data-table th {
-  padding: 16px 20px;
-  background: var(--qt-surface);
-  border-bottom: 1px solid var(--qt-border);
-  color: var(--qt-text-muted);
-  font-size: 12px;
-  font-weight: 500;
-  text-align: left;
-  text-transform: uppercase;
-  overflow-wrap: anywhere;
-  vertical-align: top;
-}
-
-.data-table td {
-  padding: 16px 20px;
-  border-bottom: 1px solid var(--qt-border);
-  color: var(--qt-text);
-  font-variant-numeric: tabular-nums;
-  overflow-wrap: anywhere;
-  vertical-align: top;
-}
-
-.data-table tbody tr:last-child td {
-  border-bottom: none;
-}
-
-.data-table tbody tr {
-  transition: background-color 0.2s ease;
-}
-
-.data-table tbody tr:hover {
-  background: var(--qt-background);
-}
-
-.data-table small {
-  display: block;
-  margin-top: 4px;
-  color: var(--qt-text-muted);
-  font-size: 12px;
-}
-
-.data-table td[colspan] {
-  padding: 32px 20px;
-  color: var(--qt-text-muted);
-  text-align: center;
-}
-
 .warning {
   color: var(--qt-warning-text);
   font-weight: 600;
@@ -87,55 +27,6 @@ td a:focus-visible {
   outline: 3px solid var(--qt-primary);
   outline-offset: 2px;
   border-radius: 4px;
-}
-
-@media (max-width: 760px) {
-  .data-table {
-    overflow: visible;
-    background: transparent;
-    border: 0;
-    box-shadow: none;
-  }
-
-  .data-table thead {
-    display: none;
-  }
-
-  .data-table,
-  .data-table tbody,
-  .data-table tr,
-  .data-table td {
-    display: block;
-    width: auto;
-  }
-
-  .data-table tr {
-    margin-bottom: 12px;
-    padding: 8px 12px;
-    background: var(--qt-surface);
-    border: 1px solid var(--qt-border);
-    border-radius: 12px;
-    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
-  }
-
-  .data-table td {
-    padding: 8px 0;
-    border: 0;
-  }
-
-  .data-table td[data-label]::before {
-    content: attr(data-label);
-    display: block;
-    margin-bottom: 4px;
-    color: var(--qt-text-muted);
-    font-size: 12px;
-    font-weight: 500;
-    text-transform: uppercase;
-  }
-
-  .data-table td[colspan] {
-    padding: 24px 0;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {

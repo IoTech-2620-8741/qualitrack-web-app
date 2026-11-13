@@ -103,13 +103,13 @@
     <div class="actions full-width">
       <a mat-button routerLink="/equipments">{{ 'common.cancel' | translate }}</a>
 
-      <button mat-flat-button type="submit" [disabled]="form.invalid || store.saving() || !store.canManage()">
+      <button mat-flat-button type="submit" [disabled]="store.saving() || !store.canManage()">
         @if (store.saving()) {
           <mat-spinner diameter="18"></mat-spinner>
         } @else {
-          <mat-icon>sensors</mat-icon>
+          <mat-icon>save</mat-icon>
         }
-        {{ 'device-form.save' | translate }}
+        {{ 'common.register' | translate }}
       </button>
     </div>
   </form>

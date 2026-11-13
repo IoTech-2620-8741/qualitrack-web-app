@@ -75,109 +75,118 @@
     <section>
       <h2><mat-icon aria-hidden="true">router</mat-icon>{{ 'environment-equipment.gateways.title' | translate }}</h2>
       <p class="muted">{{ 'environment-equipment.gateways.hint' | translate: { max: current.maxDevicesPerGateway } }}</p>
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>{{ 'equipment-list.fields.name' | translate }}</th>
-            <th>{{ 'environment-equipment.gateways.load' | translate }}</th>
-            <th>{{ 'equipment-list.fields.status' | translate }}</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (gateway of current.gateways; track gateway.equipmentId) {
+      <div class="table-card">
+        <table class="data-table">
+          <thead>
             <tr>
-              <td>
-                <a [routerLink]="['/equipments', gateway.equipmentId]">{{ gateway.name }}</a>
-                <small>{{ gateway.sensorExternalId }}</small>
-              </td>
-              <td [attr.data-label]="'environment-equipment.gateways.load' | translate">
-                <span class="load" [class.full]="gateway.deviceCount >= current.maxDevicesPerGateway">
-                  {{ 'environment-equipment.gateways.capacity' | translate: { count: gateway.deviceCount, max: current.maxDevicesPerGateway } }}
-                </span>
-              </td>
-              <td [attr.data-label]="'equipment-list.fields.status' | translate">
-                @if (gatewayStatus(gateway.equipmentId); as status) {
-                  <span class="status" [ngClass]="status.toLowerCase()">
-                    {{ 'equipment-status.' + status.toLowerCase() | translate }}
+              <th>{{ 'equipment-list.fields.name' | translate }}</th>
+              <th>{{ 'environment-equipment.gateways.load' | translate }}</th>
+              <th>{{ 'equipment-list.fields.status' | translate }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (gateway of gatewayPage.rows(); track gateway.equipmentId) {
+              <tr>
+                <td>
+                  <a [routerLink]="['/equipments', gateway.equipmentId]">{{ gateway.name }}</a>
+                  <small>{{ gateway.sensorExternalId }}</small>
+                </td>
+                <td [attr.data-label]="'environment-equipment.gateways.load' | translate">
+                  <span class="load" [class.full]="gateway.deviceCount >= current.maxDevicesPerGateway">
+                    {{ 'environment-equipment.gateways.capacity' | translate: { count: gateway.deviceCount, max: current.maxDevicesPerGateway } }}
                   </span>
-                }
-              </td>
-            </tr>
-          } @empty {
-            <tr>
-              <td colspan="3">{{ 'environment-equipment.gateways.empty' | translate }}</td>
-            </tr>
-          }
-        </tbody>
-      </table>
+                </td>
+                <td [attr.data-label]="'equipment-list.fields.status' | translate">
+                  @if (gatewayStatus(gateway.equipmentId); as status) {
+                    <span class="status" [ngClass]="status.toLowerCase()">
+                      {{ 'equipment-status.' + status.toLowerCase() | translate }}
+                    </span>
+                  }
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="3">{{ 'environment-equipment.gateways.empty' | translate }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+        <app-table-paginator [page]="gatewayPage" />
+      </div>
     </section>
 
     <section>
       <h2><mat-icon aria-hidden="true">sensors</mat-icon>{{ 'environment-equipment.devices.title' | translate }}</h2>
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>{{ 'equipment-list.fields.name' | translate }}</th>
-            <th>{{ 'equipment-list.fields.type' | translate }}</th>
-            <th>{{ 'equipment-list.fields.status' | translate }}</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (device of devices(); track device.id) {
+      <div class="table-card">
+        <table class="data-table">
+          <thead>
             <tr>
-              <td>
-                <a [routerLink]="['/equipments', device.id]">{{ device.name }}</a>
-                <small>{{ device.sensorExternalId }}</small>
-              </td>
-              <td [attr.data-label]="'equipment-list.fields.type' | translate">
-                {{ 'device-types.' + device.deviceType | translate }}
-              </td>
-              <td [attr.data-label]="'equipment-list.fields.status' | translate">
-                <span class="status" [ngClass]="device.status.toLowerCase()">
-                  {{ 'equipment-status.' + device.status.toLowerCase() | translate }}
-                </span>
-              </td>
+              <th>{{ 'equipment-list.fields.name' | translate }}</th>
+              <th>{{ 'equipment-list.fields.type' | translate }}</th>
+              <th>{{ 'equipment-list.fields.status' | translate }}</th>
             </tr>
-          } @empty {
-            <tr>
-              <td colspan="3">{{ 'environment-equipment.devices.empty' | translate }}</td>
-            </tr>
-          }
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            @for (device of devicePage.rows(); track device.id) {
+              <tr>
+                <td>
+                  <a [routerLink]="['/equipments', device.id]">{{ device.name }}</a>
+                  <small>{{ device.sensorExternalId }}</small>
+                </td>
+                <td [attr.data-label]="'equipment-list.fields.type' | translate">
+                  {{ 'device-types.' + device.deviceType | translate }}
+                </td>
+                <td [attr.data-label]="'equipment-list.fields.status' | translate">
+                  <span class="status" [ngClass]="device.status.toLowerCase()">
+                    {{ 'equipment-status.' + device.status.toLowerCase() | translate }}
+                  </span>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="3">{{ 'environment-equipment.devices.empty' | translate }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+        <app-table-paginator [page]="devicePage" />
+      </div>
     </section>
 
     <section>
       <h2><mat-icon aria-hidden="true">precision_manufacturing</mat-icon>{{ 'environment-equipment.equipment.title' | translate }}</h2>
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>{{ 'equipment-list.fields.name' | translate }}</th>
-            <th>{{ 'equipment-list.fields.type' | translate }}</th>
-            <th>{{ 'equipment-list.fields.status' | translate }}</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (equipment of processEquipment(); track equipment.id) {
+      <div class="table-card">
+        <table class="data-table">
+          <thead>
             <tr>
-              <td>
-                <a [routerLink]="['/equipments', equipment.id]">{{ equipment.name }}</a>
-                <small>{{ equipment.model }} · {{ equipment.serialNumber }}</small>
-              </td>
-              <td [attr.data-label]="'equipment-list.fields.type' | translate">{{ equipment.type }}</td>
-              <td [attr.data-label]="'equipment-list.fields.status' | translate">
-                <span class="status" [ngClass]="equipment.status.toLowerCase()">
-                  {{ 'equipment-status.' + equipment.status.toLowerCase() | translate }}
-                </span>
-              </td>
+              <th>{{ 'equipment-list.fields.name' | translate }}</th>
+              <th>{{ 'equipment-list.fields.type' | translate }}</th>
+              <th>{{ 'equipment-list.fields.status' | translate }}</th>
             </tr>
-          } @empty {
-            <tr>
-              <td colspan="3">{{ 'environment-equipment.equipment.empty' | translate }}</td>
-            </tr>
-          }
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            @for (equipment of equipmentPage.rows(); track equipment.id) {
+              <tr>
+                <td>
+                  <a [routerLink]="['/equipments', equipment.id]">{{ equipment.name }}</a>
+                  <small>{{ equipment.model }} · {{ equipment.serialNumber }}</small>
+                </td>
+                <td [attr.data-label]="'equipment-list.fields.type' | translate">{{ equipment.type }}</td>
+                <td [attr.data-label]="'equipment-list.fields.status' | translate">
+                  <span class="status" [ngClass]="equipment.status.toLowerCase()">
+                    {{ 'equipment-status.' + equipment.status.toLowerCase() | translate }}
+                  </span>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="3">{{ 'environment-equipment.equipment.empty' | translate }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+        <app-table-paginator [page]="equipmentPage" />
+      </div>
     </section>
   }
 </main>

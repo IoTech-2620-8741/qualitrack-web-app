@@ -14,6 +14,7 @@ import { SubscriptionStore } from '../../../application/subscription.store';
 import { IamStore } from '../../../../iam/application/iam.store';
 import { DateOnlyPipe } from '../../../../shared/presentation/pipes/date-only.pipe';
 import { formatDate } from '../../../../shared/presentation/utils/date-time-format';
+import { TablePaginator, paginate } from '../../../../shared/presentation/components/table-paginator/table-paginator';
 
 /**
  * Component responsible for displaying subscription and payment information.
@@ -26,7 +27,7 @@ import { formatDate } from '../../../../shared/presentation/utils/date-time-form
   selector: 'app-billing-summary',
   standalone: true,
   imports: [
-    CommonModule,
+    TablePaginator, CommonModule,
     DateOnlyPipe,
     RouterLink,
     TranslatePipe,
@@ -42,6 +43,9 @@ import { formatDate } from '../../../../shared/presentation/utils/date-time-form
   styleUrl: './billing-summary.css',
 })
 export class BillingSummary implements OnInit {
+  /** Page of the table shown; ten rows unless the person chooses more. */
+  protected readonly paymentPage = paginate(() => this.store.payments());
+
   /**
    * Store responsible for subscription and payment state.
    */

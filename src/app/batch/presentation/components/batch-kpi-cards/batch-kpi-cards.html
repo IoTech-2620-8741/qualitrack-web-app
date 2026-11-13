@@ -1,22 +1,18 @@
-<section class="kpi-grid" [attr.aria-label]="'batches.kpi.label' | translate">
-  <app-stat-filter-card
+<div class="kpi-chips" role="group" [attr.aria-label]="'batches.kpi.label' | translate">
+  <app-filter-chip
     icon="inventory_2"
     labelKey="batches.kpi.total"
-    [value]="counts().total"
-    [hintKey]="counts().products === 1 ? 'batches.kpi.products-one' : 'batches.kpi.products-many'"
-    [hintParams]="{ count: counts().products }"
+    [count]="counts().total"
     [pressed]="selected() === ''"
     (toggled)="choose('')"
   />
   @for (kpi of kpis(); track kpi.status) {
-    <app-stat-filter-card
+    <app-filter-chip
       [icon]="kpi.icon"
       [labelKey]="kpi.labelKey"
-      [value]="kpi.value"
-      [hintKey]="kpi.hintKey"
-      [hintParams]="kpi.hintParams"
+      [count]="kpi.value"
       [pressed]="selected() === kpi.status"
       (toggled)="choose(kpi.status)"
     />
   }
-</section>
+</div>

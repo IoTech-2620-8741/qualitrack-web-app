@@ -162,6 +162,7 @@ export class Layout {
           children: [
             { label: 'nav.alert-dashboard', link: '/alerts' },
             { label: 'nav.alert-history', link: '/alerts/history' },
+            { label: 'nav.alert-preferences', link: '/alerts/notification-settings' },
           ],
         },
         {

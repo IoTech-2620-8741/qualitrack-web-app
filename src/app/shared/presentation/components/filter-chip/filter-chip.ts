@@ -19,6 +19,7 @@ import { TranslatePipe } from '@ngx-translate/core';
       type="button"
       class="filter-chip"
       [class.pressed]="pressed()"
+      [class.danger]="tone() === 'danger'"
       [attr.aria-pressed]="pressed()"
       (click)="toggled.emit()"
     >
@@ -48,6 +49,9 @@ export class FilterChip {
 
   /** Whether the filter is applied. */
   readonly pressed = input(false);
+
+  /** Color of the chip: `danger` for what needs attention right away. */
+  readonly tone = input<'neutral' | 'danger'>('neutral');
 
   /** Emits when the person presses the chip. */
   readonly toggled = output<void>();

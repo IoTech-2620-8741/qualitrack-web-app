@@ -9,6 +9,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { EquipmentStore, equipmentError } from '../../../application/equipment.store';
 import { EdgeGatewayCoverage } from '../../../domain/model/edge-gateway-coverage.entity';
 import { Equipment } from '../../../domain/model/equipment.entity';
+import { TablePaginator, paginate } from '../../../../shared/presentation/components/table-paginator/table-paginator';
 
 /**
  * What is located in an environment: its Edge Gateways, IoT devices and equipment (US46, US52, US54).
@@ -21,12 +22,21 @@ import { Equipment } from '../../../domain/model/equipment.entity';
 @Component({
   selector: 'app-environment-equipment',
   standalone: true,
-  imports: [CommonModule, RouterLink, MatButtonModule, MatIconModule, MatTooltipModule, TranslatePipe],
+  imports: [TablePaginator, CommonModule, RouterLink, MatButtonModule, MatIconModule, MatTooltipModule, TranslatePipe],
   templateUrl: './environment-equipment.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './environment-equipment.css',
 })
 export class EnvironmentEquipment implements OnInit {
+  /** Page of the table shown; ten rows unless the person chooses more. */
+  protected readonly equipmentPage = paginate(() => this.processEquipment());
+
+  /** Page of the table shown; ten rows unless the person chooses more. */
+  protected readonly devicePage = paginate(() => this.devices());
+
+  /** Page of the table shown; ten rows unless the person chooses more. */
+  protected readonly gatewayPage = paginate(() => this.coverage()?.gateways ?? []);
+
   /** Route from which the identifier of the environment is read. */
   private readonly route = inject(ActivatedRoute);
 

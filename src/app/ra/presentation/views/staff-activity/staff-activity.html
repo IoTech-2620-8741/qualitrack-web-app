@@ -36,33 +36,36 @@
         </mat-form-field>
       </div>
 
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th scope="col">{{ 'audit-log.table.timestamp' | translate }}</th>
-            <th scope="col">{{ 'audit-log.table.action' | translate }}</th>
-            <th scope="col">{{ 'audit-log.table.entity' | translate }}</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (entry of visibleActivity(); track entry.id) {
+      <div class="table-card">
+        <table class="data-table">
+          <thead>
             <tr>
-              <td [attr.data-label]="'audit-log.table.timestamp' | translate">{{ entry.timestamp | dateTime }}</td>
-              <td [attr.data-label]="'audit-log.table.action' | translate">
-                @if (actionKey(entry.action); as key) { {{ key | translate }} } @else { {{ entry.action }} }
-              </td>
-              <td [attr.data-label]="'audit-log.table.entity' | translate">
-                @if (entityKey(entry.entityType); as key) { {{ key | translate }} } @else { {{ entry.entityType }} }
-                @if (entry.entityType === 'EQUIPMENT') {
-                  <a [routerLink]="['/equipments', entry.entityId]">#{{ entry.entityId }}</a>
-                } @else {
-                  <span class="muted">#{{ entry.entityId }}</span>
-                }
-              </td>
+              <th scope="col">{{ 'audit-log.table.timestamp' | translate }}</th>
+              <th scope="col">{{ 'audit-log.table.action' | translate }}</th>
+              <th scope="col">{{ 'audit-log.table.entity' | translate }}</th>
             </tr>
-          }
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            @for (entry of activityPage.rows(); track entry.id) {
+              <tr>
+                <td [attr.data-label]="'audit-log.table.timestamp' | translate">{{ entry.timestamp | dateTime }}</td>
+                <td [attr.data-label]="'audit-log.table.action' | translate">
+                  @if (actionKey(entry.action); as key) { {{ key | translate }} } @else { {{ entry.action }} }
+                </td>
+                <td [attr.data-label]="'audit-log.table.entity' | translate">
+                  @if (entityKey(entry.entityType); as key) { {{ key | translate }} } @else { {{ entry.entityType }} }
+                  @if (entry.entityType === 'EQUIPMENT') {
+                    <a [routerLink]="['/equipments', entry.entityId]">#{{ entry.entityId }}</a>
+                  } @else {
+                    <span class="muted">#{{ entry.entityId }}</span>
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+        <app-table-paginator [page]="activityPage" />
+      </div>
     } @else {
       <p class="muted">{{ 'staff.detail.no-activity' | translate }}</p>
     }

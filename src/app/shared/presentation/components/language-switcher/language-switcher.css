@@ -4,8 +4,8 @@
 
 mat-button-toggle-group {
   display: inline-flex;
-  gap: 4px;
-  padding: 4px;
+  gap: 2px;
+  padding: 3px;
   border: 1px solid var(--qt-border);
   border-radius: 999px;
   background: var(--qt-surface);
@@ -26,10 +26,12 @@ mat-button-toggle-group ::ng-deep .mat-button-toggle + .mat-button-toggle {
 }
 
 mat-button-toggle-group ::ng-deep .mat-button-toggle-label-content {
-  padding: 0 24px;
-  font-size: 14px;
+  /* 32px inside 3px of padding and the border: the 40px of every control of the toolbar. */
+  min-width: 36px;
+  padding: 0 10px;
+  font-size: 13px;
   font-weight: 500;
-  line-height: 44px;
+  line-height: 32px;
 }
 
 mat-button-toggle-group ::ng-deep .mat-button-toggle:hover:not(.mat-button-toggle-checked) {
@@ -56,7 +58,8 @@ mat-button-toggle-group ::ng-deep .mat-button-toggle:has(.mat-button-toggle-butt
 
 @media (max-width: 480px) {
   mat-button-toggle-group ::ng-deep .mat-button-toggle-label-content {
-    padding: 0 10px;
+    min-width: 32px;
+    padding: 0 5px;
   }
 }
 

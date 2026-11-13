@@ -12,6 +12,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { DecimalPipe } from '@angular/common';
 import { MeasurementSummary } from '../../../domain/model/kpi-dashboard.entity';
 import { DateTimePipe } from '../../../../shared/presentation/pipes/date-time.pipe';
+import { TablePaginator, paginate } from '../../../../shared/presentation/components/table-paginator/table-paginator';
 
 /**
  * Component that displays the environmental KPI summaries in a tabular format.
@@ -24,7 +25,7 @@ import { DateTimePipe } from '../../../../shared/presentation/pipes/date-time.pi
  */
 @Component({
   imports: [
-    MatTable,
+    TablePaginator, MatTable,
     MatColumnDef,
     MatHeaderCell,
     MatCell,
@@ -43,6 +44,9 @@ import { DateTimePipe } from '../../../../shared/presentation/pipes/date-time.pi
   templateUrl: './kpi-table.html',
 })
 export class KpiTable {
+  /** Page of the table shown; ten rows unless the person chooses more. */
+  protected readonly summaryPage = paginate(() => this.summaries());
+
   /** The raw measurement summaries returned by the API. */
   readonly summaries = input.required<MeasurementSummary[]>();
 

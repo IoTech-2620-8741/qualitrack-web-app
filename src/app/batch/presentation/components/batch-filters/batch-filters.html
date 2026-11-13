@@ -1,26 +1,4 @@
 <section class="filters" [attr.aria-label]="'batches.filters.label' | translate">
-  <mat-form-field appearance="outline" subscriptSizing="dynamic" class="search">
-    <mat-label>{{ 'batches.filters.search' | translate }}</mat-label>
-    <mat-icon matPrefix aria-hidden="true">search</mat-icon>
-    <input
-      matInput
-      type="search"
-      [value]="filter().search"
-      (input)="patch({ search: $any($event.target).value })"
-    />
-  </mat-form-field>
-
-  <div class="environment">
-    <app-environment-selector
-      class="full-width"
-      allOptionKey="environments.all"
-      [environments]="environments()"
-      [selectedId]="filter().environmentId"
-      (selectedChange)="patch({ environmentId: $event })"
-      (allSelected)="patch({ environmentId: null })"
-    />
-  </div>
-
   <!-- Start period, chosen in the calendar; a click anywhere on the field opens it, also on the label of an empty field -->
   <mat-form-field
     appearance="outline"

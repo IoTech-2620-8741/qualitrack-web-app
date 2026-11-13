@@ -1,134 +1,144 @@
 <main class="operations-page">
-  <header class="page-heading">
-    <div class="heading-content">
-      <h1>
-        <mat-icon aria-hidden="true">meeting_room</mat-icon>
-        {{ 'environments.title' | translate }}
-      </h1>
-      <p class="muted">{{ 'environments.subtitle' | translate }}</p>
-    </div>
+  <app-page-header
+    icon="meeting_room"
+    titleKey="environments.title"
+    subtitleKey="environments.subtitle"
+    [tabs]="tabs"
+    activeTab="/laboratories/environments"
+    [loading]="store.environmentsLoading()"
+    (refresh)="refresh()"
+  >
+    <div class="environments">
+      <!-- How to register at the right end; then the usages with their counts, and the search -->
+      <app-list-toolbar
+        searchKey="environments.search"
+        [search]="search()"
+        [activeFilters]="(usage() === 'all' ? 0 : 1) + (search().trim() ? 1 : 0)"
+        (searchChange)="search.set($event)"
+      >
+        @if (store.canManageEnvironments()) {
+          <button toolbarActions mat-flat-button type="button" (click)="onRegister()">
+            <mat-icon>add_location_alt</mat-icon>
+            {{ 'environments.register' | translate }}
+          </button>
+        }
+        <div toolbarFilters class="usage-chips" role="group" [attr.aria-label]="'environments.usage' | translate">
+          @for (option of usageOptions(); track option.value) {
+            <app-filter-chip
+              [labelKey]="option.labelKey"
+              [count]="option.count"
+              [pressed]="usage() === option.value"
+              (toggled)="usage.set(usage() === option.value ? 'all' : option.value)"
+            />
+          }
+        </div>
+      </app-list-toolbar>
 
-    <div class="actions">
-      @if (store.canManageEnvironments()) {
-        <button mat-flat-button class="primary-btn" type="button" (click)="onRegister()">
-          <mat-icon>add_location_alt</mat-icon>
-          {{ 'environments.register' | translate }}
-        </button>
+      @if (store.environmentError()) {
+        <div class="error" role="alert">
+          <span>{{ store.environmentError() }}</span>
+          <button
+            mat-icon-button
+            type="button"
+            (click)="store.clearEnvironmentError()"
+            [attr.aria-label]="'common.actions.cancel' | translate"
+          >
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
       }
 
-      <button
-        mat-icon-button
-        type="button"
-        (click)="refresh()"
-        [disabled]="store.environmentsLoading()"
-        [matTooltip]="'common.refresh' | translate"
-        [attr.aria-label]="'common.refresh' | translate"
-      >
-        <mat-icon>refresh</mat-icon>
-      </button>
+      @if (store.environmentsLoading()) {
+        <p role="status">{{ 'common.status-loading' | translate }}</p>
+      } @else {
+        <div class="table-card">
+          <table class="data-table">
+            <thead>
+            <tr>
+              <th>{{ 'environments.code' | translate }}</th>
+              <th>{{ 'environments.name' | translate }}</th>
+              <th>{{ 'environments.usage' | translate }}</th>
+              <th>{{ 'environments.description' | translate }}</th>
+              @if (store.canManageEnvironments()) {
+                <th>{{ 'common.actions.label' | translate }}</th>
+              }
+            </tr>
+            </thead>
+
+            <tbody>
+              @for (environment of environmentPage.rows(); track environment.id) {
+                <tr>
+                  <td>
+                    <a
+                      class="environment-code"
+                      [routerLink]="['/equipments/environments', environment.id]"
+                      [matTooltip]="'environment-equipment.open' | translate"
+                    >{{ environment.code }}</a>
+                  </td>
+
+                  <td [attr.data-label]="'environments.name' | translate">
+                    {{ environment.name }}
+                  </td>
+
+                  <td [attr.data-label]="'environments.usage' | translate">
+                    <span class="usage-tag" [class.usage-missing]="!environment.usage">
+                      {{ usageKey(environment.usage) | translate }}
+                    </span>
+                  </td>
+
+                  <td [attr.data-label]="'environments.description' | translate">
+                    {{ environment.description ?? '—' }}
+                  </td>
+
+                  @if (store.canManageEnvironments()) {
+                    <td [attr.data-label]="'common.actions.label' | translate">
+                      <div class="row-actions">
+                        <button
+                          mat-icon-button
+                          type="button"
+                          (click)="onEdit(environment)"
+                          [matTooltip]="'common.actions.edit' | translate"
+                          [attr.aria-label]="('common.actions.edit' | translate) + ' ' + environment.code"
+                        >
+                          <mat-icon>edit</mat-icon>
+                        </button>
+
+                        <button
+                          mat-icon-button
+                          type="button"
+                          [matMenuTriggerFor]="usageMenu"
+                          [matTooltip]="'environments.assign-usage' | translate"
+                          [attr.aria-label]="('environments.assign-usage' | translate) + ' ' + environment.code"
+                        >
+                          <mat-icon>category</mat-icon>
+                        </button>
+
+                        <mat-menu #usageMenu="matMenu">
+                          @for (usage of usages; track usage) {
+                            <button
+                              mat-menu-item
+                              type="button"
+                              [disabled]="usage === environment.usage"
+                              (click)="onAssignUsage(environment, usage)"
+                            >
+                              {{ 'environment-usage.' + usage | translate }}
+                            </button>
+                          }
+                        </mat-menu>
+                      </div>
+                    </td>
+                  }
+                </tr>
+              } @empty {
+                <tr>
+                  <td [attr.colspan]="store.canManageEnvironments() ? 5 : 4">{{ 'environments.empty' | translate }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+          <app-table-paginator [page]="environmentPage" />
+        </div>
+      }
     </div>
-  </header>
-
-  @if (store.environmentError()) {
-    <div class="error" role="alert">
-      <span>{{ store.environmentError() }}</span>
-      <button
-        mat-icon-button
-        type="button"
-        (click)="store.clearEnvironmentError()"
-        [attr.aria-label]="'common.actions.cancel' | translate"
-      >
-        <mat-icon>close</mat-icon>
-      </button>
-    </div>
-  }
-
-  @if (store.environmentsLoading()) {
-    <p role="status">{{ 'common.status-loading' | translate }}</p>
-  } @else {
-    <table class="data-table">
-      <thead>
-      <tr>
-        <th>{{ 'environments.code' | translate }}</th>
-        <th>{{ 'environments.name' | translate }}</th>
-        <th>{{ 'environments.usage' | translate }}</th>
-        <th>{{ 'environments.description' | translate }}</th>
-        @if (store.canManageEnvironments()) {
-          <th>{{ 'common.actions.label' | translate }}</th>
-        }
-      </tr>
-      </thead>
-
-      <tbody>
-        @for (environment of store.environments(); track environment.id) {
-          <tr>
-            <td>
-              <a
-                class="environment-code"
-                [routerLink]="['/equipments/environments', environment.id]"
-                [matTooltip]="'environment-equipment.open' | translate"
-              >{{ environment.code }}</a>
-            </td>
-
-            <td [attr.data-label]="'environments.name' | translate">
-              {{ environment.name }}
-            </td>
-
-            <td [attr.data-label]="'environments.usage' | translate">
-              <span class="usage-tag" [class.usage-missing]="!environment.usage">
-                {{ usageKey(environment.usage) | translate }}
-              </span>
-            </td>
-
-            <td [attr.data-label]="'environments.description' | translate">
-              {{ environment.description ?? '—' }}
-            </td>
-
-            @if (store.canManageEnvironments()) {
-              <td [attr.data-label]="'common.actions.label' | translate">
-                <div class="row-actions">
-                  <button
-                    mat-icon-button
-                    type="button"
-                    (click)="onEdit(environment)"
-                    [matTooltip]="'common.actions.edit' | translate"
-                    [attr.aria-label]="('common.actions.edit' | translate) + ' ' + environment.code"
-                  >
-                    <mat-icon>edit</mat-icon>
-                  </button>
-
-                  <button
-                    mat-icon-button
-                    type="button"
-                    [matMenuTriggerFor]="usageMenu"
-                    [matTooltip]="'environments.assign-usage' | translate"
-                    [attr.aria-label]="('environments.assign-usage' | translate) + ' ' + environment.code"
-                  >
-                    <mat-icon>category</mat-icon>
-                  </button>
-
-                  <mat-menu #usageMenu="matMenu">
-                    @for (usage of usages; track usage) {
-                      <button
-                        mat-menu-item
-                        type="button"
-                        [disabled]="usage === environment.usage"
-                        (click)="onAssignUsage(environment, usage)"
-                      >
-                        {{ 'environment-usage.' + usage | translate }}
-                      </button>
-                    }
-                  </mat-menu>
-                </div>
-              </td>
-            }
-          </tr>
-        } @empty {
-          <tr>
-            <td [attr.colspan]="store.canManageEnvironments() ? 5 : 4">{{ 'environments.empty' | translate }}</td>
-          </tr>
-        }
-      </tbody>
-    </table>
-  }
+  </app-page-header>
 </main>

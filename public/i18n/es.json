@@ -310,6 +310,19 @@
     }
   },
   "common": {
+    "filters": "Filtros",
+    "clear-search": "Limpiar la búsqueda",
+    "updated": "Actualizado {{time}}",
+    "live": "En vivo · actualizado {{time}}",
+    "paginator": {
+      "per-page": "Filas por página",
+      "first": "Primera página",
+      "previous": "Página anterior",
+      "next": "Página siguiente",
+      "last": "Última página",
+      "range": "{{start}} – {{end}} de {{length}}",
+      "empty": "0 de 0"
+    },
     "save": "Guardar Cambios",
     "cancel": "Cancelar",
     "back": "Volver",
@@ -390,6 +403,7 @@
     "alerts": "Alertas de cumplimiento",
     "alert-dashboard": "Alertas activas",
     "alert-history": "Historial de alertas",
+    "alert-preferences": "Preferencias de notificación",
     "reports": "Reportes y KPIs",
     "kpi-dashboard": "Resumen ambiental",
     "deviation-trends": "Indicadores de desviación",
@@ -698,11 +712,6 @@
   "ca-alerts": {
     "empty": "No se encontraron alertas de cumplimiento. Todo está dentro de los parámetros BPM.",
     "not-found": "Alerta no encontrada.",
-    "kpi": {
-      "critical": "Críticas",
-      "open": "Alertas abiertas",
-      "attending": "En atención"
-    },
     "fields": {
       "parameter": "Variable",
       "severity": "Severidad",
@@ -741,8 +750,8 @@
       "email": "Avisar por correo"
     },
     "history": {
+      "not-resolved": "Sin resolver todavía",
       "title": "Historial de alertas",
-      "subtitle": "Todas las alertas del periodo, incluidas las resueltas, con sus tiempos de atención.",
       "empty": "No hay alertas con estos filtros.",
       "none-all": "Ningún ambiente registró alertas en los últimos 90 días.",
       "none-one": "Este ambiente no registró alertas en los últimos 90 días.",
@@ -762,9 +771,8 @@
         "custom": "Personalizado"
       },
       "columns": {
-        "duration": "Duración",
-        "resolved-by": "Resuelta por",
-        "corrective-action": "Acción correctiva"
+        "alert": "Alerta",
+        "resolution": "Resolución"
       },
       "metrics": {
         "alerts": "Alertas",
@@ -785,16 +793,14 @@
       "attention-after": "atención {{time}}",
       "export": "Exportar reporte",
       "export-note": "«Exportar reporte» cubre todo el periodo y el ambiente: la severidad, el estado, el origen y la búsqueda solo afectan esta tabla.",
-      "view": "Ver el detalle de la alerta de {{variable}}",
-      "pages": {
-        "label": "Páginas del historial",
-        "showing": "Mostrando {{first}}–{{last}} de {{total}} · {{size}} por página",
-        "current": "Página {{page}} de {{count}}",
-        "previous": "Página anterior",
-        "next": "Página siguiente"
-      }
+      "view": "Ver el detalle de la alerta de {{variable}}"
     },
     "detail": {
+      "next": {
+        "label": "Siguiente paso",
+        "attend-title": "Registrar la atención",
+        "attend-text": "Nadie la atiende todavía. Al registrar la atención quedas como responsable y luego registras la acción correctiva."
+      },
       "alert": "Alerta",
       "no-environment": "Sin ambiente",
       "normalized": "La condición volvió a la normalidad el {{date}}; la alerta sigue abierta hasta que alguien la resuelva.",
@@ -853,9 +859,6 @@
     },
     "active": {
       "title": "Alertas activas",
-      "subtitle": "Desviaciones abiertas de los ambientes y contenedores monitoreados, de la más urgente a la menos urgente.",
-      "live": "En vivo · actualizado {{time}}",
-      "live-partial": "Datos parciales · actualizado {{time}}",
       "unavailable": "No se pudieron leer las alertas de: {{environments}}. Lo que ves de esos ambientes puede no estar al día.",
       "retry": "Reintentar",
       "new-alerts": "Alertas nuevas: {{count}}.",
@@ -864,22 +867,17 @@
       "search": "Buscar dispositivo o variable",
       "results": "Se muestran {{shown}} de {{total}} alertas.",
       "no-results": "No hay alertas con estos filtros.",
-      "critical-banner": {
-        "title-one": "1 alerta crítica sin atender.",
-        "title-many": "{{count}} alertas críticas sin atender.",
-        "oldest": "La más antigua: {{device}} · {{variable}} {{value}} {{unit}}.",
-        "detail": "Abierta {{time}} · nadie la ha registrado en atención",
-        "action": "Ver críticas sin atender"
-      },
-      "stats": {
+      "filters": {
+        "label": "Filtrar las alertas",
+        "all": "Todas",
+        "critical-unattended": "Críticas sin atender",
         "unattended": "Sin atender",
-        "environments-one": "en 1 ambiente",
-        "environments-many": "en {{count}} ambientes",
-        "warnings-one": "1 advertencia",
-        "warnings-many": "{{count}} advertencias",
-        "oldest": "más antigua: {{time}}",
-        "normalized-one": "1 ya normalizada",
-        "normalized-many": "{{count}} ya normalizadas"
+        "attending": "En atención"
+      },
+      "groups": {
+        "CRITICAL": "Críticas",
+        "WARNING": "Advertencias",
+        "LOW": "Bajas"
       },
       "sort": {
         "label": "Ordenar por",
@@ -887,16 +885,13 @@
         "newest": "Más recientes",
         "environment": "Ambiente"
       },
-      "shortcuts": {
-        "label": "Atajos con el foco en la lista:",
-        "move": "moverse"
-      },
       "card": {
         "limit": "límite {{value}} {{unit}}",
         "opened": "Abierta {{time}}",
         "no-owner": "Sin responsable",
         "attending": "En atención {{time}}",
         "attending-by": "En atención por {{name}} · {{time}}",
+        "more": "Más acciones",
         "notify": "Avisar",
         "resolve": "Resolver"
       },
@@ -919,13 +914,12 @@
       "failed": "No se pudo enviar el correo. Revisa que el envío de correos esté configurado en la plataforma."
     },
     "page": {
-      "title": "Alertas de cumplimiento",
-      "preferences": "Preferencias de aviso",
-      "sections": "Secciones de alertas"
+      "title": "Alertas de cumplimiento"
     },
     "tabs": {
       "active": "Activas",
-      "history": "Historial"
+      "history": "Historial",
+      "preferences": "Preferencias"
     }
   },
   "notifications": {
@@ -1160,6 +1154,8 @@
     "title": "Equipos",
     "add-button": "Registrar Equipo",
     "empty": "No se encontraron equipos en este laboratorio",
+    "empty-filtered": "Ningún equipo coincide con estos filtros.",
+    "clear-filters": "Limpiar filtros",
     "fields": {
       "name": "Nombre",
       "type": "Tipo",
@@ -1289,6 +1285,7 @@
   },
   "lab-profile": {
     "title": "Perfil del Laboratorio",
+    "tab": "Perfil",
     "name": "Nombre del Laboratorio",
     "address": "Dirección Física",
     "phone": "Teléfono de Contacto",
@@ -1309,6 +1306,8 @@
   "staff-list": {
     "title": "Gestión de Personal",
     "register": "Añadir Personal",
+    "search": "Buscar nombre, cargo o correo",
+    "empty-filtered": "Ningún miembro del personal coincide con estos filtros.",
     "name": "Nombre Completo",
     "role": "Cargo",
     "email": "Correo Corporativo",
@@ -1350,6 +1349,7 @@
   "product-catalog": {
     "title": "Productos farmacéuticos",
     "add": "Nuevo Producto",
+    "search": "Buscar por código o nombre",
     "code": "SKU / Código",
     "name": "Nombre del Producto",
     "specifications": "Especificaciones BPM",
@@ -1410,7 +1410,12 @@
     }
   },
   "reporting": {
-    "all-environments": "Todos los ambientes",
+    "tabs": {
+      "summary": "Resumen",
+      "deviations": "Desviaciones",
+      "generator": "Nuevo reporte",
+      "audit-log": "Auditoría"
+    },
     "no-environments": "Registra un ambiente del laboratorio para calcular sus indicadores.",
     "errors": {
       "load": "No se pudieron cargar los indicadores. Vuelve a intentarlo."
@@ -1686,6 +1691,11 @@
     }
   },
   "tracking": {
+    "tabs": {
+      "monitoring": "Monitoreo",
+      "history": "Historial",
+      "profiles": "Perfiles"
+    },
     "refresh": "Actualizar",
     "no-environments": "Registra un ambiente del laboratorio para monitorearlo.",
     "no-devices": "Este ambiente no tiene dispositivos IoT. Asóciale un dispositivo ambiental o un monitor de contenedor para ver sus lecturas.",
@@ -1841,6 +1851,7 @@
     "title": "Ambientes",
     "subtitle": "Áreas físicas del laboratorio o almacén donde se ubican materiales, productos y dispositivos.",
     "register": "Registrar ambiente",
+    "search": "Buscar código o nombre",
     "code": "Código",
     "name": "Nombre",
     "description": "Descripción",
@@ -1927,7 +1938,6 @@
     "add-button": "Registrar dispositivo IoT",
     "title": "Nuevo Dispositivo IoT",
     "subtitle": "Dispositivo ambiental o monitor de contenedor ESP32 y la identidad con la que Edge lo reconoce",
-    "save": "Registrar dispositivo",
     "fields": {
       "device-type": "Tipo de dispositivo",
       "identifier": "Identificador del dispositivo",
@@ -2039,7 +2049,6 @@
     "form": {
       "title": "Registrar Edge Gateway",
       "subtitle": "El Edge Gateway recibe las lecturas de los dispositivos IoT de su ambiente y las envía a QualiTrack.",
-      "save": "Registrar Edge Gateway",
       "placeholders": {
         "name": "Ej. Edge Gateway - Almacén de materias primas",
         "identifier": "Ej. EDGE-001",

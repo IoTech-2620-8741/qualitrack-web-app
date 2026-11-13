@@ -82,15 +82,13 @@
         {{ 'onboarding.sign-out' | translate }}
       </button>
 
-      <button mat-flat-button type="submit" [disabled]="form.invalid || store.isLoading()">
+      <button mat-flat-button type="submit" [disabled]="store.isLoading()">
         @if (store.isLoading()) {
           <mat-spinner diameter="20"></mat-spinner>
         } @else {
-          <ng-container>
-            <mat-icon>save</mat-icon>
-            {{ 'common.register' | translate }}
-          </ng-container>
+          <mat-icon>save</mat-icon>
         }
+        {{ 'common.register' | translate }}
       </button>
     </div>
   </form>

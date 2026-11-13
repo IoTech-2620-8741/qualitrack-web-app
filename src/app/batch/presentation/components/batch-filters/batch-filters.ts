@@ -14,10 +14,6 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import {
-  EnvironmentOption,
-  EnvironmentSelector,
-} from '../../../../shared/presentation/components/environment-selector/environment-selector';
 import { toIsoDate } from '../../../../shared/presentation/validators/date.validators';
 import { BatchFilter, isBatchFilterApplied } from '../../batch-filter';
 
@@ -58,7 +54,6 @@ function calendarDay(day: string | null): Date | null {
   selector: 'app-batch-filters',
   standalone: true,
   imports: [
-    EnvironmentSelector,
     MatButtonModule,
     MatDatepickerModule,
     MatIconModule,
@@ -73,9 +68,6 @@ function calendarDay(day: string | null): Date | null {
 export class BatchFilters {
   /** Current criteria. */
   readonly filter = input.required<BatchFilter>();
-
-  /** Environments offered by the environment filter. */
-  readonly environments = input<readonly EnvironmentOption[]>([]);
 
   /** Emits the new criteria after any change. */
   readonly filterChange = output<BatchFilter>();

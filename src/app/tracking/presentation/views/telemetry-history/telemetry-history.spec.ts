@@ -5,6 +5,7 @@ import { ActivatedRoute, provideRouter } from '@angular/router';
 import { provideTranslateService } from '@ngx-translate/core';
 import { TrackingStore } from '../../../application/tracking.store';
 import { TelemetryHistory } from './telemetry-history';
+import { IamStore } from '../../../../iam/application/iam.store';
 
 describe('TelemetryHistory', () => {
   const loadHistory = vi.fn().mockResolvedValue(undefined);
@@ -13,6 +14,7 @@ describe('TelemetryHistory', () => {
     TestBed.configureTestingModule({
       imports: [TelemetryHistory],
       providers: [
+        { provide: IamStore, useValue: { canManageQuality: () => true } },
         provideTranslateService(),
         provideHttpClient(),
         provideHttpClientTesting(),

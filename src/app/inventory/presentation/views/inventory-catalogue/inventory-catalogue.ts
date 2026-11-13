@@ -16,10 +16,10 @@ import { InventoryStore } from '../../../application/inventory.store';
 import { EnvironmentSelector } from '../../../../shared/presentation/components/environment-selector/environment-selector';
 import { InventoryMaterialTable } from '../../components/inventory-material-table/inventory-material-table';
 import { NearExpiryTable } from '../../components/near-expiry-table/near-expiry-table';
-import { InventoryFilters } from '../../components/inventory-filters/inventory-filters';
 import { LegacyImportPanel } from '../../components/legacy-import-panel/legacy-import-panel';
-import { InventoryCatalogueStats } from '../../components/inventory-catalogue-stats/inventory-catalogue-stats';
-import { MatTabsModule } from '@angular/material/tabs';
+import { PageHeader, PageTab } from '../../../../shared/presentation/components/page-header/page-header';
+import { ListToolbar } from '../../../../shared/presentation/components/list-toolbar/list-toolbar';
+import { FilterChip } from '../../../../shared/presentation/components/filter-chip/filter-chip';
 
 /**
  * Raw material catalogue of an environment (US36), with low stock (US41) and near expiry (US42) views.
@@ -35,10 +35,10 @@ import { MatTabsModule } from '@angular/material/tabs';
     EnvironmentSelector,
     InventoryMaterialTable,
     NearExpiryTable,
-    InventoryFilters,
     LegacyImportPanel,
-    InventoryCatalogueStats,
-    MatTabsModule,
+    PageHeader,
+    ListToolbar,
+    FilterChip,
   ],
   templateUrl: './inventory-catalogue.html',
   changeDetection: ChangeDetectionStrategy.Eager,
@@ -53,6 +53,12 @@ export class InventoryCatalogue implements OnInit {
   readonly lowOnly = signal(false);
   readonly importing = signal(false);
   readonly selectedTabIndex = signal(0);
+
+  /** Views of the inventory of an environment: its catalogue and the lots close to expiring. */
+  protected readonly tabs: readonly PageTab[] = [
+    { labelKey: 'inventory.catalogue', id: 'catalogue' },
+    { labelKey: 'inventory.nearExpiry', id: 'near-expiry' },
+  ];
 
   /**
    * Returns raw materials matching the current search
