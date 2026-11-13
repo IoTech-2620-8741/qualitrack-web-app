@@ -20,7 +20,11 @@ package "shared" {
   class ErrorBanner <<component>>
   class FilterChip <<component>>
   class SidePanel <<component>>
-  class StatFilterCard <<component>>
+  class PageHeader <<component>>
+  interface PageTab
+  class ListToolbar <<component>>
+  class TablePaginator <<component>>
+  class SetupNotice <<component>>
   class StatusChip <<component>>
   class UndoToastOpener <<service>>
   class "dateTime / relativeTime / elapsedTime" as TimePipes <<pipes>>
@@ -378,12 +382,15 @@ package "ca.presentation" {
 
   class AlertDashboard {
     #environmentId: Signal<number | null>
+    #tabs: Signal<PageTab[]>
     #sortOrder / criticalOnly / attentionFilter / searchTerm
-    #visibleAlerts
+    #visibleAlerts / groups / chip
     #stats
     #chooseEnvironment(environmentId): void
     #chooseAllEnvironments(): void
     #refresh(): void
+    #selectChip(chip): void
+    #clearFilters(): void
     #attend(alert): void
     #notify(alert): void
     #handleListShortcut(event): void
@@ -398,9 +405,13 @@ package "ca.presentation" {
     +focusPrimaryAction(): void
   }
 
-  class AlertsPageHeader <<component>> {
-    +section: input<"active | history">
-    +subtitleKey / activeCount / environmentId
+  class "alertTabs()" as AlertTabs <<function>>
+
+  class "alertGauge()" as AlertGaugeFunction <<function>>
+
+  interface AlertGauge {
+    +value: number
+    +limit: number
   }
 
   class AlertAttentionFlow <<service>> {
@@ -410,8 +421,9 @@ package "ca.presentation" {
 
   class AlertHistory {
     #environmentId: Signal<number | null>
+    #tabs: Signal<PageTab[]>
     #filter: Signal<AlertHistoryFilter>
-    #shownAlerts / pageAlerts / page / pageCount
+    #shownAlerts / activeFilterCount
     #weeks / reportQuery / narrowsTable / isFiltered
     #detailOpen
     #load(): void
@@ -424,7 +436,6 @@ package "ca.presentation" {
     #toggleOrigin(origin): void
     #search(search): void
     #clearFilters(): void
-    #goToPage(page): void
     #countWith(changes): number
   }
 
@@ -562,9 +573,12 @@ AlertDashboard ..> EnvironmentSelector
 AlertDashboard ..> ActionBanner
 AlertDashboard ..> EmptyState
 AlertDashboard ..> ErrorBanner
-AlertDashboard ..> StatFilterCard
+AlertDashboard ..> FilterChip
+AlertDashboard ..> SetupNotice
 AlertDashboard *-- AlertCard
-AlertDashboard *-- AlertsPageHeader
+AlertDashboard ..> PageHeader
+AlertDashboard ..> ListToolbar
+AlertDashboard ..> AlertTabs
 AlertDashboard --> AlertAttentionFlow
 AlertDashboard ..> AlertOrder
 AlertDashboard *-- AlertDetailPanel : child route
@@ -577,7 +591,10 @@ AlertPersonApiEndpoint --> AlertPersonAssembler
 AlertPersonAssembler ..> AlertPerson
 AlertPerson ..|> BaseEntity
 CaStore --> IamStore : beforeSignOut
-AlertHistory *-- AlertsPageHeader
+AlertHistory ..> PageHeader
+AlertHistory ..> ListToolbar
+AlertHistory ..> SetupNotice
+AlertHistory ..> AlertTabs
 AlertHistory --> CaStore
 AlertHistory ..> EnvironmentSelector
 AlertHistory *-- AlertTable
@@ -663,6 +680,25 @@ NotificationBell ..> NotificationSettings : navigation link
 note left of CaRoutes
   Source: ca/presentation/ca.routes.ts
   Public paths and guards remain unchanged.
+end note
+
+AlertTabs ..> PageTab
+NotificationSettings ..> PageHeader
+NotificationSettings ..> AlertTabs
+AlertTable ..> TablePaginator
+AlertCard ..> AlertGaugeFunction
+AlertDetailPanel ..> AlertGaugeFunction
+AlertGaugeFunction ..> AlertGauge
+AlertGaugeFunction ..> DeviationAlert
+note bottom of AlertTabs
+  Active, History and Preferences are the tabs of the page header of every
+  alerts page; the first two keep the environment chosen.
+end note
+note bottom of AlertGaugeFunction
+  Places the reading and its limit on one bar, from zero or from the lowest
+  value when readings go below zero: the fill ends after the mark when the
+  reading is above its limit and before it when it is below, also with
+  negative temperatures.
 end note
 
 @enduml

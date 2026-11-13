@@ -75,6 +75,7 @@ package "shared" {
       +environments: InputSignal<EnvironmentOption[]>
       +selectedId: InputSignal<number | null>
       +allOptionKey: InputSignal<string | null>
+      +appearance: InputSignal<'field' | 'inline'>
       +selectedChange: OutputEmitterRef<number>
       +allSelected: OutputEmitterRef<void>
     }
@@ -120,12 +121,39 @@ package "shared" {
     }
     class FilterChip {
       +labelKey / icon / count / pressed
+      +tone: InputSignal<'neutral' | 'danger'>
       +toggled: OutputEmitterRef<void>
     }
-    class StatFilterCard {
-      +icon / labelKey / value
-      +hintKey / hintParams / pressed
-      +toggled: OutputEmitterRef<void>
+    class PageHeader {
+      +icon / titleKey / title / subtitleKey
+      +tabs: InputSignal<readonly PageTab[]>
+      +activeTab / loading / updatedAt / refreshable
+      +refresh: OutputEmitterRef<void>
+      +tabChosen: OutputEmitterRef<string>
+    }
+    interface PageTab {
+      +labelKey: string
+      +link?: string
+      +queryParams?: Params
+      +id?: string
+    }
+    class ListToolbar {
+      +searchKey / search
+      +filterable / activeFilters
+      +searchChange: OutputEmitterRef<string>
+    }
+    class TablePaginator {
+      +page: InputSignal<TablePage<unknown>>
+    }
+    interface TablePage<T> {
+      +rows: Signal<readonly T[]>
+      +length: Signal<number>
+      +pageIndex / pageSize: WritableSignal<number>
+    }
+    class "paginate() / tablePaginatorIntl()" as Paginate <<functions>>
+    class SetupNotice {
+      +messageKey / icon
+      +actionLink / actionKey / actionIcon
     }
     class ActionBanner {
       +icon / tone / actionKey
@@ -201,6 +229,7 @@ package "shared" {
     class TranslatedTitleStrategy {
       +updateTitle(snapshot: RouterStateSnapshot): void
     }
+    class "groupErrorMatcher()" as GroupErrorMatcher <<function>>
   }
 }
 
@@ -287,6 +316,35 @@ EnvironmentSelector ..> EnvironmentOption
 note bottom of EnvironmentSelector
   Visual component without store: the views of inventory, products, alerts,
   telemetry and reports pass the environments of their own context.
+end note
+
+PageHeader ..> PageTab
+TablePaginator ..> TablePage
+Paginate ..> TablePage
+note bottom of PageHeader
+  The heading of every page of a module: its icon and title, the time of the
+  last update with a refresh button and, when the module has several
+  operations, its tabs (links, or choices the page handles with tabChosen).
+end note
+note bottom of ListToolbar
+  Above a list: what it shows on the left (the environment), the buttons to
+  create at the right end, then the filter chips, the search with its x and
+  the order. On a phone the filters fold behind a toggle that counts them.
+end note
+note bottom of TablePaginator
+  Pages a table in the browser: 10, 25 or 50 rows, back to the first page
+  when the rows or the page size change. Tables use the global .table-card /
+  table.data-table style of styles.css: a column is never narrower than its
+  longest word, a wider table scrolls inside its card, and on a phone each
+  row becomes a card with the name of each field.
+end note
+note bottom of SetupNotice
+  Says what a page needs before it can work, such as an environment, and
+  links to where to add it for those who may.
+end note
+note bottom of GroupErrorMatcher
+  Marks a field as wrong when its form has an error that compares two
+  fields, such as a password and its confirmation.
 end note
 
 @enduml
