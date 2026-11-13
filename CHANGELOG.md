@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.5.0] - 2026-11-13
+
 ### Added
 
 - Equipment (equipment): a quality manager registers an Edge Gateway, with its identifier and an optional environment, from the equipment list or the side menu (#103).
@@ -24,6 +26,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Compliance and Alerts (ca): the active alerts are compact rows grouped by severity, each with a bar of the reading against its limit, and the detail of an alert guides the person through its next step (register attention, then resolve) (#105).
 
 ### Changed
+
+- Release: package and lockfile versions are now 2.5.0.
 
 - Shared (shared): the environment selector can show inline, right under the title of the page, in inventory, products, tracking, reports and alerts (#101).
 
