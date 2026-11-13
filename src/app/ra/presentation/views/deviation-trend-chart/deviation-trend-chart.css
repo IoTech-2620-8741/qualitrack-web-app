@@ -115,8 +115,10 @@ mat-button-toggle-group ::ng-deep .mat-button-toggle-button:focus-visible {
 /* Carga y vacío */
 .loading {
   display: flex;
+  align-items: center;
   justify-content: center;
-  padding: 360px 0;
+  width: 100%;
+  min-height: 400px;
 }
 
 .empty-state {
@@ -126,7 +128,7 @@ mat-button-toggle-group ::ng-deep .mat-button-toggle-button:focus-visible {
   justify-content: center;
   gap: 8px;
   margin-top: 24px;
-  padding: 300px 24px;
+  padding: 64px 24px;
   background: var(--qt-surface);
   border: 1px dashed var(--qt-border);
   border-radius: 12px;
