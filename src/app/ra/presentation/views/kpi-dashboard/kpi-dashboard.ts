@@ -18,7 +18,6 @@ import { RaStore } from '../../../application/ra.store';
 import { ALL_ENVIRONMENTS, lastDays } from '../../../domain/model/indicator-period';
 import { KpiSummaryCards } from '../../components/kpi-summary-cards/kpi-summary-cards';
 import { KpiTable } from '../../components/kpi-table/kpi-table';
-import { KpiRecords } from '../../components/kpi-records/kpi-records';
 import { EnvironmentSelector } from '../../../../shared/presentation/components/environment-selector/environment-selector';
 import { PageHeader } from '../../../../shared/presentation/components/page-header/page-header';
 import { ListToolbar } from '../../../../shared/presentation/components/list-toolbar/list-toolbar';
@@ -53,8 +52,7 @@ const PERIOD_DAYS = [1, 7, 31] as const;
     EnvironmentSelector,
     MatProgressSpinnerModule,
     KpiSummaryCards,
-    KpiTable,
-    KpiRecords
+    KpiTable
   ],
   templateUrl: './kpi-dashboard.html',
   changeDetection: ChangeDetectionStrategy.Default,

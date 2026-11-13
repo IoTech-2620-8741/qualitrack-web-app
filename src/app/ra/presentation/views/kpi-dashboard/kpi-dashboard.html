@@ -75,10 +75,6 @@
           </div>
         }
         <p class="muted formula">{{ 'reporting.summary.formula' | translate }}</p>
-        <div class="section-header">
-          <h2>{{ 'reporting.summary.records-title' | translate }} <span class="badge">{{ 'reporting.summary.records-hint' | translate }}</span></h2>
-        </div>
-        <app-kpi-records [metrics]="store.dashboard()!.metrics" />
       }
     </div>
   </app-page-header>
