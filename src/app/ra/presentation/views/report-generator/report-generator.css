@@ -25,11 +25,10 @@
 
 .main-panel {
   min-width: 0;
-  padding: 24px;
-  background: var(--qt-surface);
-  border: 1px solid var(--qt-border);
-  border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+  padding: 0;
+  background: transparent;
+  border: none;
+  box-shadow: none;
 }
 
 .success-message {
@@ -106,7 +105,7 @@
   }
 
   .main-panel {
-    padding: 16px;
+    padding: 0;
   }
 }
 
