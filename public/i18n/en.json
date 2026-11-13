@@ -2085,6 +2085,7 @@
     "subtitle": "Edge Gateways, IoT devices and equipment located in this environment.",
     "open": "View the equipment and devices of this environment",
     "view-in-list": "View in the equipment list",
+    "coverage-error": "The Edge Gateway coverage of this environment could not be read. Its devices and equipment are listed below.",
     "uncovered-warning": "{{count}} IoT device(s) have no Edge Gateway, so their readings do not reach QualiTrack. Each Edge Gateway covers up to {{max}} devices.",
     "summary": {
       "uncovered": "Devices without Edge Gateway"
