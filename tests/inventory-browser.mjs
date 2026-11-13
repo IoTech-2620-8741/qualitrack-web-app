@@ -6,6 +6,8 @@ const origin = process.env.WEB_URL ?? 'http://localhost:4200';
 const directory = process.env.OUTPUT_DIR ?? 'test-results/inventory';
 const english = JSON.parse(await readFile('public/i18n/en.json', 'utf8'));
 const texts = english.inventory;
+/** The button that registers a material, named like every register button of the application. */
+const register = english.common.register;
 await mkdir(directory, { recursive: true });
 
 const environment = { id: 1, code: 'ALM-01', name: 'Raw material warehouse', usage: 'RAW_MATERIAL_STORAGE' };
@@ -100,16 +102,16 @@ try {
     assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth + 1), false);
 
     // The required fields are asked for, and a refusal of the platform keeps what was written.
-    await registration.getByRole('button', { name: texts.save, exact: true }).click();
+    await registration.getByRole('button', { name: register, exact: true }).click();
     await registration.getByText(texts.required, { exact: true }).first().waitFor();
     assert.equal(material, null);
     await registration.getByLabel(texts.code).fill('RM-001');
     await registration.getByLabel(texts.name).fill('Sodium chloride');
     await registration.getByLabel(texts.minimum).fill('20');
-    await registration.getByRole('button', { name: texts.save, exact: true }).click();
+    await registration.getByRole('button', { name: register, exact: true }).click();
     await page.getByRole('alert').filter({ hasText: 'Material code already exists' }).waitFor();
     assert.equal(await registration.getByLabel(texts.code).inputValue(), 'RM-001');
-    await registration.getByRole('button', { name: texts.save, exact: true }).click();
+    await registration.getByRole('button', { name: register, exact: true }).click();
     await page.waitForURL('**/inventory/environments/1/raw-materials');
 
     // Its detail opens from the catalogue.

@@ -3,6 +3,8 @@ import assert from 'node:assert/strict';
 import { mkdir } from 'node:fs/promises';
 import { createServer } from 'node:http';
 
+// Runs against `ng serve` or a development build: the scenarios about leaving the page answer the API themselves
+// on localhost:8080, where the development configuration sends it. A production build would call the real platform.
 const origin = process.env.WEB_URL ?? 'http://localhost:4200';
 const directory = process.env.OUTPUT_DIR ?? 'test-results/alerts';
 await mkdir(directory, { recursive: true });
