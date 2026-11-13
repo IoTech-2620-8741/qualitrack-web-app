@@ -94,12 +94,6 @@
     "containerUsageNotice": "Only raw material storage environments keep lots in monitored containers. Classify the environment as raw material storage to use containers."
   },
   "onboarding.no-plans": "No subscription plans are available yet. Please contact the service administrator.",
-  "operational-metrics": {
-    "equipment-count": "Registered equipment",
-    "batch-count": "Recorded batches",
-    "released-batch-count": "Released batches",
-    "unresolved-alert-count": "Open alerts"
-  },
   "onboarding": {
     "loading": "Checking your account…",
     "unavailable-title": "Account status unavailable",
@@ -1452,10 +1446,6 @@
       "view-table": "Table",
       "no-readings-hint": "Devices in this environment sent no data. Extend the period to search further back.",
       "view-31-days": "View last 31 days",
-      "records-hint": "Current totals · do not depend on the filter",
-      "link-equipment": "View equipment",
-      "link-alerts": "View alerts",
-      "link-batches": "View batches",
       "recent": "Recent",
       "readings": "readings",
       "average": "average",
@@ -1463,10 +1453,7 @@
       "subtitle": "Average, minimum and maximum of the readings of each device in the period, calculated from the recorded readings.",
       "readings-title": "Readings of the period",
       "no-readings": "There are no readings in the period, so no values are calculated.",
-      "formula": "Only numeric readings are summarized; the average is rounded to two decimals. The state of each card is the worst one the readings reached in the period.",
-      "records-title": "Laboratory records",
-      "records-note": "Current counts of the records of the laboratory; they do not depend on the period or the environment.",
-      "no-records": "The laboratory has no equipment or batches recorded yet."
+      "formula": "Only numeric readings are summarized; the average is rounded to two decimals. The state of each card is the worst one the readings reached in the period."
     },
     "deviations": {
       "detail-title": "Deviation Detail",

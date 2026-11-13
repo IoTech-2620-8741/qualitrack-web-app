@@ -94,12 +94,6 @@
     "containerUsageNotice": "Solo los ambientes de almacenamiento de materia prima guardan lotes en contenedores monitoreados. Clasifica el ambiente como almacenamiento de materia prima para usar contenedores."
   },
   "onboarding.no-plans": "Todavía no hay planes de suscripción disponibles. Contacta al administrador del servicio.",
-  "operational-metrics": {
-    "equipment-count": "Equipos registrados",
-    "batch-count": "Lotes registrados",
-    "released-batch-count": "Lotes liberados",
-    "unresolved-alert-count": "Alertas abiertas"
-  },
   "onboarding": {
     "loading": "Consultando el estado de tu cuenta…",
     "unavailable-title": "Estado de cuenta no disponible",
@@ -1452,10 +1446,6 @@
       "view-table": "Tabla",
       "no-readings-hint": "Los dispositivos de este ambiente no enviaron datos. Amplía el periodo para buscar más atrás.",
       "view-31-days": "Ver últimos 31 días",
-      "records-hint": "Totales actuales · no dependen del filtro",
-      "link-equipment": "Ver equipos",
-      "link-alerts": "Ver alertas",
-      "link-batches": "Ver lotes",
       "recent": "Reciente",
       "readings": "lecturas",
       "average": "promedio",
@@ -1463,10 +1453,7 @@
       "subtitle": "Promedio, mínimo y máximo de las lecturas de cada dispositivo en el periodo, calculados a partir de las lecturas registradas.",
       "readings-title": "Lecturas del periodo",
       "no-readings": "No hay lecturas en el periodo, por lo que no se calcula ningún valor.",
-      "formula": "Solo se resumen las lecturas numéricas; el promedio se redondea a dos decimales. El estado de cada tarjeta es el peor que alcanzaron las lecturas en el periodo.",
-      "records-title": "Registros del laboratorio",
-      "records-note": "Conteos actuales de los registros del laboratorio; no dependen del periodo ni del ambiente.",
-      "no-records": "El laboratorio aún no tiene equipos ni lotes registrados."
+      "formula": "Solo se resumen las lecturas numéricas; el promedio se redondea a dos decimales. El estado de cada tarjeta es el peor que alcanzaron las lecturas en el periodo."
     },
     "deviations": {
       "detail-title": "Detalle de Desviación",
