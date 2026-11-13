@@ -863,7 +863,7 @@
       "new-alerts": "New alerts: {{count}}.",
       "attention-registered": "{{alert}} in progress",
       "attended-by-another": "Another person already attended this alert.",
-      "search": "Search device or variable",
+      "search": "Device or variable",
       "results": "Showing {{shown}} of {{total}} alerts.",
       "no-results": "There are no alerts with these filters.",
       "filters": {
@@ -1176,7 +1176,7 @@
       "environment": "Environment",
       "all-environments": "All environments"
     },
-    "search": "Search by name, model, serial or identifier",
+    "search": "Search name, model, serial or ID",
     "summary": {
       "equipment": "Process equipment",
       "devices": "IoT devices",

@@ -863,7 +863,7 @@
       "new-alerts": "Alertas nuevas: {{count}}.",
       "attention-registered": "{{alert}} en atención",
       "attended-by-another": "Otra persona ya atendió esta alerta.",
-      "search": "Buscar dispositivo o variable",
+      "search": "Dispositivo o variable",
       "results": "Se muestran {{shown}} de {{total}} alertas.",
       "no-results": "No hay alertas con estos filtros.",
       "filters": {
@@ -1176,7 +1176,7 @@
       "environment": "Ambiente",
       "all-environments": "Todos los ambientes"
     },
-    "search": "Buscar por nombre, modelo, serie o identificador",
+    "search": "Buscar nombre, modelo, serie o ID",
     "summary": {
       "equipment": "Equipos de proceso",
       "devices": "Dispositivos IoT",
