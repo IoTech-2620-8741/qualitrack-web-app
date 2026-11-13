@@ -94,12 +94,6 @@
     "containerUsageNotice": "Only raw material storage environments keep lots in monitored containers. Classify the environment as raw material storage to use containers."
   },
   "onboarding.no-plans": "No subscription plans are available yet. Please contact the service administrator.",
-  "operational-metrics": {
-    "equipment-count": "Registered equipment",
-    "batch-count": "Recorded batches",
-    "released-batch-count": "Released batches",
-    "unresolved-alert-count": "Open alerts"
-  },
   "onboarding": {
     "loading": "Checking your account…",
     "unavailable-title": "Account status unavailable",
@@ -310,6 +304,18 @@
     }
   },
   "common": {
+    "filters": "Filters",
+    "clear-search": "Clear the search",
+    "updated": "Updated {{time}}",
+    "paginator": {
+      "per-page": "Rows per page",
+      "first": "First page",
+      "previous": "Previous page",
+      "next": "Next page",
+      "last": "Last page",
+      "range": "{{start}} – {{end}} of {{length}}",
+      "empty": "0 of 0"
+    },
     "save": "Save Changes",
     "cancel": "Cancel",
     "back": "Back",
@@ -386,9 +392,11 @@
     "equipment-list": "Equipment Catalog",
     "register-equipment": "Register Equipment",
     "register-device": "Register IoT Device",
+    "register-edge-gateway": "Register Edge Gateway",
     "alerts": "Compliance Alerts",
     "alert-dashboard": "Active Alerts",
     "alert-history": "Alert History",
+    "alert-preferences": "Notification Preferences",
     "reports": "Reports & KPIs",
     "kpi-dashboard": "Environmental Summary",
     "deviation-trends": "Deviation Indicators",
@@ -697,11 +705,6 @@
   "ca-alerts": {
     "empty": "No compliance alerts found. Everything is within BPM parameters.",
     "not-found": "Alert not found.",
-    "kpi": {
-      "critical": "Critical",
-      "open": "Open alerts",
-      "attending": "In progress"
-    },
     "fields": {
       "parameter": "Variable",
       "severity": "Severity",
@@ -740,8 +743,8 @@
       "email": "E-mail the alert"
     },
     "history": {
+      "not-resolved": "Not resolved yet",
       "title": "Alert History",
-      "subtitle": "Every alert of the period, including resolved ones, with their attention times.",
       "empty": "There are no alerts with these filters.",
       "none-all": "No environment recorded alerts in the last 90 days.",
       "none-one": "This environment recorded no alerts in the last 90 days.",
@@ -761,9 +764,8 @@
         "custom": "Custom"
       },
       "columns": {
-        "duration": "Duration",
-        "resolved-by": "Resolved by",
-        "corrective-action": "Corrective action"
+        "alert": "Alert",
+        "resolution": "Resolution"
       },
       "metrics": {
         "alerts": "Alerts",
@@ -784,16 +786,14 @@
       "attention-after": "attended after {{time}}",
       "export": "Export report",
       "export-note": "\"Export report\" covers the whole period and environment: severity, status, origin and search only narrow this table.",
-      "view": "View the detail of the {{variable}} alert",
-      "pages": {
-        "label": "Pages of the history",
-        "showing": "Showing {{first}}–{{last}} of {{total}} · {{size}} per page",
-        "current": "Page {{page}} of {{count}}",
-        "previous": "Previous page",
-        "next": "Next page"
-      }
+      "view": "View the detail of the {{variable}} alert"
     },
     "detail": {
+      "next": {
+        "label": "Next step",
+        "attend-title": "Register attention",
+        "attend-text": "Nobody is attending it yet. Registering attention makes you responsible for it, and then you record the corrective action."
+      },
       "alert": "Alert",
       "no-environment": "No environment",
       "normalized": "The condition returned to normal on {{date}}; the alert stays open until someone resolves it.",
@@ -852,33 +852,25 @@
     },
     "active": {
       "title": "Active Alerts",
-      "subtitle": "Open deviations of the monitored environments and containers, from the most to the least urgent.",
-      "live": "Live · updated {{time}}",
-      "live-partial": "Partial data · updated {{time}}",
       "unavailable": "The alerts of {{environments}} could not be read. What you see of those environments may be out of date.",
       "retry": "Try again",
       "new-alerts": "New alerts: {{count}}.",
       "attention-registered": "{{alert}} in progress",
       "attended-by-another": "Another person already attended this alert.",
-      "search": "Search device or variable",
+      "search": "Device or variable",
       "results": "Showing {{shown}} of {{total}} alerts.",
       "no-results": "There are no alerts with these filters.",
-      "critical-banner": {
-        "title-one": "1 critical alert not attended.",
-        "title-many": "{{count}} critical alerts not attended.",
-        "oldest": "The oldest: {{device}} · {{variable}} {{value}} {{unit}}.",
-        "detail": "Opened {{time}} · nobody has registered attention",
-        "action": "View unattended critical"
-      },
-      "stats": {
+      "filters": {
+        "label": "Filter the alerts",
+        "all": "All",
+        "critical-unattended": "Critical not attended",
         "unattended": "Not attended",
-        "environments-one": "in 1 environment",
-        "environments-many": "in {{count}} environments",
-        "warnings-one": "1 warning",
-        "warnings-many": "{{count}} warnings",
-        "oldest": "oldest: {{time}}",
-        "normalized-one": "1 already normalized",
-        "normalized-many": "{{count}} already normalized"
+        "attending": "In progress"
+      },
+      "groups": {
+        "CRITICAL": "Critical",
+        "WARNING": "Warnings",
+        "LOW": "Low"
       },
       "sort": {
         "label": "Sort by",
@@ -886,16 +878,13 @@
         "newest": "Newest",
         "environment": "Environment"
       },
-      "shortcuts": {
-        "label": "Shortcuts with the focus on the list:",
-        "move": "move"
-      },
       "card": {
         "limit": "limit {{value}} {{unit}}",
         "opened": "Opened {{time}}",
         "no-owner": "No one assigned",
         "attending": "In progress {{time}}",
         "attending-by": "In progress by {{name}} · {{time}}",
+        "more": "More actions",
         "notify": "Notify",
         "resolve": "Resolve"
       },
@@ -918,13 +907,12 @@
       "failed": "The e-mail could not be sent. Check that e-mail is configured on the platform."
     },
     "page": {
-      "title": "Compliance alerts",
-      "preferences": "Notification preferences",
-      "sections": "Alert sections"
+      "title": "Compliance alerts"
     },
     "tabs": {
       "active": "Active",
-      "history": "History"
+      "history": "History",
+      "preferences": "Preferences"
     }
   },
   "notifications": {
@@ -1159,6 +1147,8 @@
     "title": "Equipment",
     "add-button": "Register Equipment",
     "empty": "No equipment found in this laboratory",
+    "empty-filtered": "No equipment matches these filters.",
+    "clear-filters": "Clear filters",
     "fields": {
       "name": "Name",
       "type": "Type",
@@ -1175,12 +1165,16 @@
       "label": "Show",
       "all": "All",
       "equipment": "Equipment",
-      "devices": "IoT devices"
+      "devices": "IoT devices",
+      "gateways": "Edge Gateways",
+      "environment": "Environment",
+      "all-environments": "All environments"
     },
-    "search": "Search by name, model, serial or identifier",
+    "search": "Search name, model, serial or ID",
     "summary": {
       "equipment": "Process equipment",
       "devices": "IoT devices",
+      "gateways": "Edge Gateways",
       "attention": "In maintenance or out of service"
     }
   },
@@ -1284,6 +1278,7 @@
   },
   "lab-profile": {
     "title": "Laboratory Profile",
+    "tab": "Profile",
     "name": "Laboratory Name",
     "address": "Physical Address",
     "phone": "Contact Phone",
@@ -1304,6 +1299,8 @@
   "staff-list": {
     "title": "Personnel Management",
     "register": "Add Staff",
+    "search": "Search name, job title or email",
+    "empty-filtered": "No staff members match these filters.",
     "name": "Full Name",
     "role": "Job title",
     "email": "Corporate Email",
@@ -1345,6 +1342,7 @@
   "product-catalog": {
     "title": "Pharmaceutical products",
     "add": "New Product",
+    "search": "Search by code or name",
     "code": "SKU / Code",
     "name": "Product Name",
     "specifications": "BPM Specifications",
@@ -1405,7 +1403,12 @@
     }
   },
   "reporting": {
-    "all-environments": "All environments",
+    "tabs": {
+      "summary": "Summary",
+      "deviations": "Deviations",
+      "generator": "New report",
+      "audit-log": "Audit log"
+    },
     "no-environments": "Register an environment of the laboratory to calculate its indicators.",
     "errors": {
       "load": "The indicators could not be loaded. Please try again."
@@ -1443,10 +1446,6 @@
       "view-table": "Table",
       "no-readings-hint": "Devices in this environment sent no data. Extend the period to search further back.",
       "view-31-days": "View last 31 days",
-      "records-hint": "Current totals · do not depend on the filter",
-      "link-equipment": "View equipment",
-      "link-alerts": "View alerts",
-      "link-batches": "View batches",
       "recent": "Recent",
       "readings": "readings",
       "average": "average",
@@ -1454,10 +1453,7 @@
       "subtitle": "Average, minimum and maximum of the readings of each device in the period, calculated from the recorded readings.",
       "readings-title": "Readings of the period",
       "no-readings": "There are no readings in the period, so no values are calculated.",
-      "formula": "Only numeric readings are summarized; the average is rounded to two decimals. The state of each card is the worst one the readings reached in the period.",
-      "records-title": "Laboratory records",
-      "records-note": "Current counts of the records of the laboratory; they do not depend on the period or the environment.",
-      "no-records": "The laboratory has no equipment or batches recorded yet."
+      "formula": "Only numeric readings are summarized; the average is rounded to two decimals. The state of each card is the worst one the readings reached in the period."
     },
     "deviations": {
       "detail-title": "Deviation Detail",
@@ -1682,6 +1678,11 @@
     }
   },
   "tracking": {
+    "tabs": {
+      "monitoring": "Monitoring",
+      "history": "History",
+      "profiles": "Profiles"
+    },
     "refresh": "Refresh",
     "no-environments": "Register an environment of the laboratory to monitor it.",
     "no-devices": "This environment has no IoT devices. Associate an environmental device or a container monitor with it to see its readings.",
@@ -1837,6 +1838,7 @@
     "title": "Environments",
     "subtitle": "Physical areas of the laboratory or warehouse where materials, products and devices are located.",
     "register": "Register environment",
+    "search": "Search code or name",
     "code": "Code",
     "name": "Name",
     "description": "Description",
@@ -1923,7 +1925,6 @@
     "add-button": "Register IoT device",
     "title": "New IoT Device",
     "subtitle": "ESP32 environmental device or container monitor and the identity Edge uses to recognise it",
-    "save": "Register device",
     "fields": {
       "device-type": "Device type",
       "identifier": "Device identifier",
@@ -2029,6 +2030,69 @@
     "saved": "The batch was stored in the container.",
     "no-containers": "There are no operational container monitors in product storage environments. Classify an environment as product storage and locate a container monitor there."
   },
+  "edge-gateway": {
+    "type": "Edge Gateway",
+    "add-button": "Register Edge Gateway",
+    "form": {
+      "title": "Register Edge Gateway",
+      "subtitle": "The Edge Gateway receives the readings of the IoT devices of its environment and sends them to QualiTrack.",
+      "placeholders": {
+        "name": "E.g. Edge Gateway - Raw materials warehouse",
+        "identifier": "E.g. EDGE-001",
+        "serial": "E.g. RPI-0001"
+      },
+      "hints": {
+        "identifier": "Unique in QualiTrack; the Edge uses it with its API key to connect.",
+        "environment": "Optional; it can also be located later from its detail. An environment can have several Edge Gateways."
+      }
+    },
+    "api-key": {
+      "title": "API key",
+      "hint": "The Edge Gateway uses it to connect to QualiTrack. It is generated only once.",
+      "issued": "API key already generated",
+      "not-issued": "No API key yet",
+      "unknown": "The API key status could not be checked.",
+      "generate": "Generate API key",
+      "requires-location": "Locate the Edge Gateway in an environment to generate its API key.",
+      "requires-operational": "The Edge Gateway must be operational to generate its API key.",
+      "dialog": {
+        "title": "Edge Gateway API key",
+        "once": "Copy the API key now. It is shown only this time and cannot be recovered later.",
+        "device-id": "Identifier",
+        "key": "API key",
+        "copy": "Copy",
+        "copied": "Copied to the clipboard.",
+        "hint": "Set both values in the .env file of the Edge Gateway.",
+        "close": "I already copied it"
+      }
+    }
+  },
+  "environment-equipment": {
+    "title": "Environment equipment",
+    "subtitle": "Edge Gateways, IoT devices and equipment located in this environment.",
+    "open": "View the equipment and devices of this environment",
+    "view-in-list": "View in the equipment list",
+    "coverage-error": "The Edge Gateway coverage of this environment could not be read. Its devices and equipment are listed below.",
+    "uncovered-warning": "{{count}} IoT device(s) have no Edge Gateway, so their readings do not reach QualiTrack. Each Edge Gateway covers up to {{max}} devices.",
+    "summary": {
+      "uncovered": "Devices without Edge Gateway"
+    },
+    "gateways": {
+      "title": "Edge Gateways",
+      "hint": "IoT devices are distributed automatically, up to {{max}} per Edge Gateway, in order of registration.",
+      "load": "Covered devices",
+      "capacity": "{{count}} of {{max}}",
+      "empty": "This environment has no Edge Gateway yet."
+    },
+    "devices": {
+      "title": "IoT devices",
+      "empty": "This environment has no IoT devices."
+    },
+    "equipment": {
+      "title": "Process equipment",
+      "empty": "This environment has no process equipment."
+    }
+  },
   "page-titles": {
     "home": "Home",
     "about": "About",
@@ -2050,6 +2114,8 @@
     "equipment-list": "Equipment",
     "equipment-new": "Register Equipment",
     "device-new": "Register IoT Device",
+    "edge-gateway-new": "Register Edge Gateway",
+    "environment-equipment": "Environment equipment",
     "equipment-detail": "Equipment Detail",
     "bpm-config": "BPM Configuration",
     "maintenance-new": "Technical Activity Record",

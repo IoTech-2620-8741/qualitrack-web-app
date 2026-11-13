@@ -101,7 +101,7 @@ describe('AlertDetailPanel', () => {
     harness.detectChanges();
     const element = document.body;
     const buttonWith = (text: string) =>
-      Array.from(element.querySelectorAll<HTMLButtonElement>('.panel-actions button')).find(
+      Array.from(element.querySelectorAll<HTMLButtonElement>('.next-actions button, .panel-actions button')).find(
         (item) => item.textContent?.includes(text),
       );
     const write = (notes: string) => {
@@ -167,6 +167,22 @@ describe('AlertDetailPanel', () => {
     expect(element.querySelector('form')).toBeNull();
     expect(buttonWith('ca-alerts.actions.acknowledge')).toBeUndefined();
     expect(buttonWith('ca-alerts.active.card.notify')).toBeUndefined();
+  });
+
+  it('asks to attend an alert nobody attends before its corrective action', async () => {
+    api.getAlertById.mockReturnValue(of(alertOf('UNRESOLVED')));
+    const { element, buttonWith } = await open();
+
+    expect(element.querySelector('.next-step h3')?.textContent).toBe('ca-alerts.detail.next.attend-title');
+    expect(buttonWith('ca-alerts.actions.acknowledge')).toBeDefined();
+    expect(element.querySelector('form')).toBeNull();
+  });
+
+  it('asks for the corrective action once someone attends the alert', async () => {
+    const { element, buttonWith } = await open();
+
+    expect(element.querySelector('.next-step form')).not.toBeNull();
+    expect(buttonWith('ca-alerts.actions.acknowledge')).toBeUndefined();
   });
 
   it('only lets read to who cannot attend alerts', async () => {
@@ -252,8 +268,10 @@ describe('AlertDetailPanel', () => {
 
     it('sends first an attention that can still be undone', async () => {
       api.getAlertById.mockReturnValue(of(alertOf('UNRESOLVED')));
-      const { buttonWith, write, submit } = await open();
+      const { harness, buttonWith, write, submit } = await open();
       buttonWith('ca-alerts.actions.acknowledge')!.click();
+      // Attending moves the alert to its next step, the corrective action
+      harness.detectChanges();
       write('The filter was replaced.');
       api.resolveAlert.mockReturnValue(of(alertOf('RESOLVED')));
       api.acknowledgeAlert.mockReturnValue(of(alertOf('ACKNOWLEDGED')));
@@ -266,6 +284,7 @@ describe('AlertDetailPanel', () => {
     });
 
     it('starts on the corrective action when opened to resolve', async () => {
+      api.getAlertById.mockReturnValue(of(alertOf('ACKNOWLEDGED')));
       const harness = await RouterTestingHarness.create();
       document.body.appendChild(harness.fixture.nativeElement);
       await harness.navigateByUrl('/alerts/7?panel=resolve');

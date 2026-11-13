@@ -11,6 +11,7 @@ import {
   DeviationAlert,
 } from '../../../domain/model/deviation-alert.entity';
 import { AlertHistory } from './alert-history';
+import { IamStore } from '../../../../iam/application/iam.store';
 
 const daysAgo = (days: number) => new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
 
@@ -61,6 +62,7 @@ describe('AlertHistory', () => {
   async function open(url: string): Promise<HTMLElement> {
     TestBed.configureTestingModule({
       providers: [
+        { provide: IamStore, useValue: { canManageQuality: () => true } },
         { provide: CaStore, useValue: store },
         provideTranslateService(),
         provideRouter([{ path: 'alerts/history', component: AlertHistory }]),
@@ -175,7 +177,6 @@ describe('AlertHistory', () => {
   it('writes the chip pressed in the address', async () => {
     store.alerts.set([alertOf(1, 'CRITICAL'), alertOf(2)]);
     const page = await open('/alerts/history?environmentId=1');
-
     chipNamed(page, 'ca-alerts.status.resolved').click();
     await harness.fixture.whenStable();
 
@@ -193,15 +194,12 @@ describe('AlertHistory', () => {
     expect(currentUrl()).toBe('/alerts/history?environmentId=1');
   });
 
-  it('shows 25 alerts per page', async () => {
+  it('shows 10 alerts per page, with the paginator for the rest', async () => {
     store.alerts.set(Array.from({ length: 26 }, (_, index) => alertOf(index + 1)));
 
-    expect(rowsOf(await open('/alerts/history'))).toBe(25);
-  });
+    const page = await open('/alerts/history');
 
-  it('shows the page of the address', async () => {
-    store.alerts.set(Array.from({ length: 26 }, (_, index) => alertOf(index + 1)));
-
-    expect(rowsOf(await open('/alerts/history?page=2'))).toBe(1);
+    expect(rowsOf(page)).toBe(10);
+    expect(page.querySelector('app-table-paginator mat-paginator')).not.toBeNull();
   });
 });

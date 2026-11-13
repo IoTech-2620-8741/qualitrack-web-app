@@ -12,13 +12,14 @@ import { DecimalPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
-import { StatusChip } from '../../../../shared/presentation/components/status-chip/status-chip';
 import { DateTimePipe } from '../../../../shared/presentation/pipes/date-time.pipe';
 import { RelativeTimePipe } from '../../../../shared/presentation/pipes/relative-time.pipe';
 import { DeviationAlert } from '../../../domain/model/deviation-alert.entity';
-import { ALERT_NORMALIZED_CHIP, ALERT_SEVERITY_CHIPS, ALERT_STATUS_CHIPS } from '../../alert-chips';
+import { ALERT_SEVERITY_CHIPS } from '../../alert-chips';
+import { alertGauge } from '../../alert-gauge';
 import { alertVariableName } from '../../alert-variable';
 
 /**
@@ -38,7 +39,7 @@ import { alertVariableName } from '../../alert-variable';
     MatButtonModule,
     MatIconModule,
     TranslatePipe,
-    StatusChip,
+    MatMenuModule,
     DateTimePipe,
     RelativeTimePipe,
   ],
@@ -85,9 +86,8 @@ export class AlertCard {
   private readonly card = viewChild.required<ElementRef<HTMLElement>>('card');
   private readonly primaryAction = viewChild('primaryAction', { read: ElementRef });
 
-  protected readonly normalizedChip = ALERT_NORMALIZED_CHIP;
+  /** Name of the severity, written out so the row does not rely on its color alone. */
   protected readonly severityChip = computed(() => ALERT_SEVERITY_CHIPS[this.alert().severity]);
-  protected readonly statusChip = computed(() => ALERT_STATUS_CHIPS[this.alert().status]);
 
   /** What deviated and where, which also tells apart the actions of each card. */
   protected readonly title = computed(() => {
@@ -96,10 +96,8 @@ export class AlertCard {
     return `${variable} · ${this.deviceName() ?? '#' + alert.equipmentId}`;
   });
 
-  /** Icon of where the alert came from. */
-  protected readonly originIcon = computed(() =>
-    this.alert().origin === 'CONTAINER' ? 'inventory_2' : 'sensors',
-  );
+  /** The reading against its limit, so the row shows how far the reading went past it. */
+  protected readonly gauge = computed(() => alertGauge(this.alert()));
 
   /** Moves the focus to the card, to go through the list with the keyboard. */
   focus(): void {

@@ -12,33 +12,9 @@
   padding: 32px 24px 48px;
 }
 
-h1,
 p {
   overflow-wrap: anywhere;
   letter-spacing: 0;
-}
-
-.page-heading {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-bottom: 24px;
-}
-
-h1 {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin: 0;
-  color: var(--qt-heading);
-  font-size: 28px;
-  font-weight: 700;
-}
-
-h1 mat-icon {
-  flex-shrink: 0;
-  color: var(--qt-primary);
 }
 
 .loading {
@@ -234,10 +210,6 @@ mat-form-field {
 @media (max-width: 760px) {
   .operations-page {
     padding: 20px 16px 36px;
-  }
-
-  h1 {
-    font-size: 24px;
   }
 
   .summary-strip {

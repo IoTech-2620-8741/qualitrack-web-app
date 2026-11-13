@@ -22,7 +22,8 @@ import { SidePanel } from '../../../../shared/presentation/components/side-panel
 import { StatusChip } from '../../../../shared/presentation/components/status-chip/status-chip';
 import { DateTimePipe } from '../../../../shared/presentation/pipes/date-time.pipe';
 import { CaStore } from '../../../application/ca.store';
-import { ALERT_NORMALIZED_CHIP, ALERT_SEVERITY_CHIPS, ALERT_STATUS_CHIPS } from '../../alert-chips';
+import { ALERT_SEVERITY_CHIPS, ALERT_STATUS_CHIPS } from '../../alert-chips';
+import { alertGauge } from '../../alert-gauge';
 import { AlertAttentionFlow } from '../../alert-attention-flow';
 import { alertVariableName } from '../../alert-variable';
 import { AlertResolutionForm } from '../../components/alert-resolution-form/alert-resolution-form';
@@ -82,7 +83,12 @@ export class AlertDetailPanel implements OnDestroy {
   /** Whether the corrective action was sent, to close the panel once it is saved. */
   private readonly resolving = signal(false);
 
-  protected readonly normalizedChip = ALERT_NORMALIZED_CHIP;
+  /** The reading against its limit, for the bar under the numbers. */
+  protected readonly gauge = computed(() => {
+    const alert = this.alert();
+    return alert ? alertGauge(alert) : null;
+  });
+
   protected readonly severityChip = computed(() => {
     const alert = this.alert();
     return alert ? ALERT_SEVERITY_CHIPS[alert.severity] : null;

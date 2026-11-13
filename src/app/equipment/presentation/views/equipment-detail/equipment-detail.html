@@ -6,7 +6,7 @@
   }
 
   <header class="page-heading">
-    <h1><mat-icon aria-hidden="true">precision_manufacturing</mat-icon>{{ equipment()?.name || ('common.status-loading' | translate) }}</h1>
+    <h1><mat-icon aria-hidden="true">{{ equipment()?.isEdgeGateway ? 'router' : 'precision_manufacturing' }}</mat-icon>{{ equipment()?.name || ('common.status-loading' | translate) }}</h1>
   </header>
 
   @if (locationNotice()) {
@@ -31,6 +31,10 @@
           @if (current.deviceType) {
             <span class="device-type">
               <mat-icon aria-hidden="true">sensors</mat-icon>{{ 'device-types.' + current.deviceType | translate }}
+            </span>
+          } @else if (current.isEdgeGateway) {
+            <span class="device-type">
+              <mat-icon aria-hidden="true">router</mat-icon>{{ 'edge-gateway.type' | translate }}
             </span>
           } @else {
             {{ current.type }}
@@ -73,8 +77,61 @@
                   <p>{{ current.firmwareVersion || '-' }}</p>
                 </div>
               }
+
+              @if (current.isEdgeGateway) {
+                <div class="info-item">
+                  <label>{{ 'device-form.fields.identifier' | translate }}</label>
+                  <p>{{ current.sensorExternalId || '-' }}</p>
+                </div>
+              }
             </mat-card-content>
           </mat-card>
+
+          @if (current.isEdgeGateway && store.canManage()) {
+            <mat-card appearance="outlined">
+              <mat-card-header>
+                <mat-card-title>{{ 'edge-gateway.api-key.title' | translate }}</mat-card-title>
+                <mat-card-subtitle>{{ 'edge-gateway.api-key.hint' | translate }}</mat-card-subtitle>
+              </mat-card-header>
+              <mat-card-content>
+                <div class="api-key">
+                  @if (apiKeyIssued() === true) {
+                    <p class="api-key-status issued">
+                      <mat-icon aria-hidden="true">verified_user</mat-icon>
+                      {{ 'edge-gateway.api-key.issued' | translate }}
+                    </p>
+                  } @else if (apiKeyIssued() === false) {
+                    <p class="api-key-status">
+                      <mat-icon aria-hidden="true">key_off</mat-icon>
+                      {{ 'edge-gateway.api-key.not-issued' | translate }}
+                    </p>
+                  } @else {
+                    <p class="api-key-status">{{ 'edge-gateway.api-key.unknown' | translate }}</p>
+                  }
+
+                  @if (apiKeyIssued() === false) {
+                    <button
+                      mat-flat-button
+                      class="primary-btn"
+                      type="button"
+                      (click)="onIssueApiKey(current)"
+                      [disabled]="!canIssueApiKey(current) || store.saving()">
+                      <mat-icon>key</mat-icon>
+                      {{ 'edge-gateway.api-key.generate' | translate }}
+                    </button>
+                  }
+                </div>
+
+                @if (apiKeyIssued() === false) {
+                  @if (!current.isLocated) {
+                    <p class="empty-msg">{{ 'edge-gateway.api-key.requires-location' | translate }}</p>
+                  } @else if (current.status !== 'OPERATIONAL') {
+                    <p class="empty-msg">{{ 'edge-gateway.api-key.requires-operational' | translate }}</p>
+                  }
+                }
+              </mat-card-content>
+            </mat-card>
+          }
 
           @if (store.canManage()) {
             <mat-card appearance="outlined">
@@ -146,38 +203,40 @@
         </div>
       </mat-tab>
 
-      <mat-tab>
-        <ng-template mat-tab-label>
-          <mat-icon class="tab-icon">settings_input_component</mat-icon>
-          {{ 'equipment-detail.tabs.bpm' | translate }}
-        </ng-template>
+      @if (!current.isEdgeGateway) {
+        <mat-tab>
+          <ng-template mat-tab-label>
+            <mat-icon class="tab-icon">settings_input_component</mat-icon>
+            {{ 'equipment-detail.tabs.bpm' | translate }}
+          </ng-template>
 
-        <div class="tab-content">
-          <div class="tab-header">
-            <h3>{{ 'bpm-config.title' | translate }}</h3>
+          <div class="tab-content">
+            <div class="tab-header">
+              <h3>{{ 'bpm-config.title' | translate }}</h3>
 
-            @if (store.canOperate()) {
-              <a mat-flat-button class="primary-btn" [routerLink]="['/equipments', current.id, 'bpm-configuration']">
-                <mat-icon>add</mat-icon>
-                {{ 'bpm-config.fields.parameter' | translate }}
-              </a>
+              @if (store.canOperate()) {
+                <a mat-flat-button class="primary-btn" [routerLink]="['/equipments', current.id, 'bpm-configuration']">
+                  <mat-icon>add</mat-icon>
+                  {{ 'bpm-config.fields.parameter' | translate }}
+                </a>
+              }
+            </div>
+
+            @for (config of store.bpmConfigs(); track config.id) {
+              <mat-card class="config-card" appearance="outlined">
+                <mat-card-content>
+                  <div class="config-content">
+                    <strong>{{ config.parameterName }}</strong>
+                    <span>{{ config.minValue }} - {{ config.maxValue }} {{ config.unit }}</span>
+                  </div>
+                </mat-card-content>
+              </mat-card>
+            } @empty {
+              <p class="empty-msg">{{ 'bpm-config.empty' | translate }}</p>
             }
           </div>
-
-          @for (config of store.bpmConfigs(); track config.id) {
-            <mat-card class="config-card" appearance="outlined">
-              <mat-card-content>
-                <div class="config-content">
-                  <strong>{{ config.parameterName }}</strong>
-                  <span>{{ config.minValue }} - {{ config.maxValue }} {{ config.unit }}</span>
-                </div>
-              </mat-card-content>
-            </mat-card>
-          } @empty {
-            <p class="empty-msg">{{ 'bpm-config.empty' | translate }}</p>
-          }
-        </div>
-      </mat-tab>
+        </mat-tab>
+      }
 
       <mat-tab>
         <ng-template mat-tab-label>

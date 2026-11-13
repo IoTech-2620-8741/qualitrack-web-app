@@ -72,7 +72,11 @@ export class EquipmentForm {
   }
 
   protected async onSave(): Promise<void> {
-    if (this.form.invalid) return;
+    // The button stays usable; pressing it with something missing points at what is missing
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
     const equipment = await this.store.registerEquipment(this.form.getRawValue());
     if (equipment) await this.router.navigate(['/equipments', equipment.id]);
   }

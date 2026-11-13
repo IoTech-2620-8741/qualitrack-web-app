@@ -8,6 +8,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { BatchStore } from '../../../application/batch.store';
 import { IamStore } from '../../../../iam/application/iam.store';
 import { DateOnlyPipe } from '../../../../shared/presentation/pipes/date-only.pipe';
+import { TablePaginator, paginate } from '../../../../shared/presentation/components/table-paginator/table-paginator';
 
 /**
  * A pharmaceutical product and its manufacturing batches.
@@ -21,12 +22,15 @@ import { DateOnlyPipe } from '../../../../shared/presentation/pipes/date-only.pi
 @Component({
   selector: 'app-product-detail',
   standalone: true,
-  imports: [DateOnlyPipe, DecimalPipe, RouterLink, MatButtonModule, MatIconModule, TranslatePipe],
+  imports: [TablePaginator, DateOnlyPipe, DecimalPipe, RouterLink, MatButtonModule, MatIconModule, TranslatePipe],
   templateUrl: './product-detail.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './product-detail.css',
 })
 export class ProductDetail implements OnInit {
+  /** Page of the table shown; ten rows unless the person chooses more. */
+  protected readonly batchPage = paginate(() => this.batches.productBatches());
+
   protected readonly batches = inject(BatchStore);
   private readonly iam = inject(IamStore);
   private readonly route = inject(ActivatedRoute);

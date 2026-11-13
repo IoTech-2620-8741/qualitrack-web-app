@@ -142,6 +142,7 @@ export class Layout {
               qualityOnly: true,
             },
             { label: 'nav.register-device', link: '/equipments/devices/new', qualityOnly: true },
+            { label: 'nav.register-edge-gateway', link: '/equipments/edge-gateways/new', qualityOnly: true },
           ],
         },
         {
@@ -161,6 +162,7 @@ export class Layout {
           children: [
             { label: 'nav.alert-dashboard', link: '/alerts' },
             { label: 'nav.alert-history', link: '/alerts/history' },
+            { label: 'nav.alert-preferences', link: '/alerts/notification-settings' },
           ],
         },
         {

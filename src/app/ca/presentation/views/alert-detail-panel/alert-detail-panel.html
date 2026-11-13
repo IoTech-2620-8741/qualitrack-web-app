@@ -17,13 +17,6 @@
         [icon]="statusChip()!.icon"
         [labelKey]="statusChip()!.labelKey"
       />
-      @if (alert.isNormalized) {
-        <app-status-chip
-          [tone]="normalizedChip.tone"
-          [icon]="normalizedChip.icon"
-          [labelKey]="normalizedChip.labelKey"
-        />
-      }
     </div>
   }
 
@@ -49,11 +42,35 @@
         <dd>{{ alert.deviationCount }}</dd>
       </div>
     </dl>
+    <!-- The reading against its limit, like in the row of the inbox -->
+    <div class="gauge" [class]="'gauge severity-' + alert.severity.toLowerCase()" aria-hidden="true">
+      <span class="fill" [style.width.%]="gauge()!.value"></span>
+      <span class="limit-mark" [style.left.%]="gauge()!.limit"></span>
+    </div>
 
     @if (alert.isOpen && alert.isNormalized) {
       <p class="message normalized" role="status">
         {{ 'ca-alerts.detail.normalized' | translate: { date: (alert.normalizedAt | dateTime) } }}
       </p>
+    }
+
+    <!-- Only the step the alert is in: first someone attends it, then that person records the corrective action -->
+    @if (alert.isOpen && store.canAttend()) {
+      <section class="next-step" [attr.aria-label]="'ca-alerts.detail.next.label' | translate">
+        <span class="next-label">{{ 'ca-alerts.detail.next.label' | translate }}</span>
+        @if (alert.status === 'UNRESOLVED') {
+          <h3>{{ 'ca-alerts.detail.next.attend-title' | translate }}</h3>
+          <p>{{ 'ca-alerts.detail.next.attend-text' | translate }}</p>
+          <div class="next-actions">
+            <button mat-flat-button type="button" [disabled]="store.saving()" (click)="attend()">
+              <mat-icon aria-hidden="true">pan_tool</mat-icon>
+              {{ 'ca-alerts.actions.acknowledge' | translate }}
+            </button>
+          </div>
+        } @else {
+          <app-alert-resolution-form [saving]="store.saving()" (resolve)="resolve($event)" />
+        }
+      </section>
     }
 
     <section>
@@ -99,41 +116,33 @@
       }
     </section>
 
-    @if (alert.isOpen && store.canAttend()) {
-      <section>
-        <app-alert-resolution-form [saving]="store.saving()" (resolve)="resolve($event)" />
-      </section>
-    }
   } @else if (store.selectedAlertLoading()) {
     <p class="muted" role="status">{{ 'common.status-loading' | translate }}</p>
   }
 
+  <!-- What else can be done with the alert; the step it is in keeps the main action -->
   @if (alert(); as alert) {
-    <div sidePanelActions class="panel-actions">
-      @if (alert.environmentId !== null && alert.origin) {
-        <a
-          mat-button
-          [routerLink]="['/tracking/history']"
-          [queryParams]="{ environmentId: alert.environmentId, deviceId: alert.equipmentId }"
-        >
-          <mat-icon aria-hidden="true">open_in_new</mat-icon>
-          {{ 'ca-alerts.actions.view-conditions' | translate }}
-        </a>
-      }
-      @if (store.canAttend()) {
-        @if (alert.isOpen && alert.severity === 'CRITICAL') {
+    @let canNotify = store.canAttend() && alert.isOpen && alert.severity === 'CRITICAL';
+    @let hasConditions = alert.environmentId !== null && !!alert.origin;
+    @if (canNotify || hasConditions) {
+      <div sidePanelActions class="panel-actions">
+        @if (hasConditions) {
+          <a
+            mat-button
+            [routerLink]="['/tracking/history']"
+            [queryParams]="{ environmentId: alert.environmentId, deviceId: alert.equipmentId }"
+          >
+            <mat-icon aria-hidden="true">open_in_new</mat-icon>
+            {{ 'ca-alerts.actions.view-conditions' | translate }}
+          </a>
+        }
+        @if (canNotify) {
           <button mat-stroked-button type="button" [disabled]="store.saving()" (click)="notify()">
             <mat-icon aria-hidden="true">forward_to_inbox</mat-icon>
             {{ 'ca-alerts.active.card.notify' | translate }}
           </button>
         }
-        @if (alert.status === 'UNRESOLVED') {
-          <button mat-flat-button type="button" [disabled]="store.saving()" (click)="attend()">
-            <mat-icon aria-hidden="true">pan_tool</mat-icon>
-            {{ 'ca-alerts.actions.acknowledge' | translate }}
-          </button>
-        }
-      }
-    </div>
+      </div>
+    }
   }
 </app-side-panel>

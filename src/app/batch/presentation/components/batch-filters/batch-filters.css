@@ -17,17 +17,8 @@ mat-form-field {
   --mat-form-field-focus-select-arrow-color: var(--qt-primary);
 }
 
-.search {
-  flex: 2 1 260px;
-}
-
-.environment {
-  flex: 1.5 1 260px;
-  min-width: 0;
-}
-
 .period {
-  flex: 1.2 1 240px;
+  flex: 0 1 300px;
   cursor: pointer;
 }
 
@@ -40,13 +31,9 @@ input {
   caret-color: var(--qt-primary);
 }
 
-mat-icon[matPrefix] {
-  color: var(--qt-text-muted);
-}
-
 .clear {
   height: auto;
-  min-height: 48px;
+  min-height: 40px;
   padding: 8px 20px;
   border-radius: var(--qt-radius-pill);
   border-color: var(--qt-border);
@@ -64,8 +51,6 @@ mat-icon[matPrefix] {
     gap: 10px;
   }
 
-  .search,
-  .environment,
   .period,
   .clear {
     flex: 1 1 100%;

@@ -52,8 +52,18 @@ describe('AlertCard', () => {
       Array.from(element.querySelectorAll('.actions a, .actions button')).map((action) =>
         action.textContent?.replace(/[a-z_]+\s+(?=ca-alerts)/, '').trim(),
       );
-    return { fixture, element, actions };
+    /** Actions of the menu of the row, which opens over the page. */
+    const menuItems = () => {
+      element.querySelector<HTMLButtonElement>('.actions .more')!.click();
+      fixture.detectChanges();
+      return Array.from(document.querySelectorAll('.mat-mdc-menu-item')).map((item) =>
+        item.textContent?.replace(/[a-z_]+\s+(?=ca-alerts)/, '').trim(),
+      );
+    };
+    return { fixture, element, actions, menuItems };
   }
+
+  afterEach(() => document.querySelectorAll('.cdk-overlay-container').forEach((item) => item.remove()));
 
   it('tells what deviated, where and how far from the limit', () => {
     const { element } = create(alertOf());
@@ -66,14 +76,25 @@ describe('AlertCard', () => {
     expect(element.querySelector('article')?.classList).toContain('severity-critical');
   });
 
-  it('tells how serious the alert is and in which step of its life cycle it is', () => {
-    const { element } = create(alertOf({ status: 'ACKNOWLEDGED' }));
-    const chips = Array.from(element.querySelectorAll('app-status-chip')).map((chip) =>
-      chip.textContent?.trim(),
-    );
+  it('writes out how serious the alert is and whether someone has it', () => {
+    const { element, fixture } = create(alertOf());
 
-    expect(chips.some((chip) => chip?.includes('ca-alerts.severity.critical'))).toBe(true);
-    expect(chips.some((chip) => chip?.includes('ca-alerts.status.acknowledged'))).toBe(true);
+    expect(element.querySelector('.origin .severity')?.textContent).toBe('ca-alerts.severity.critical');
+    expect(element.querySelector('.owner.unowned')?.textContent).toContain('ca-alerts.active.card.no-owner');
+
+    fixture.componentRef.setInput('alert', alertOf({ status: 'ACKNOWLEDGED' }));
+    fixture.detectChanges();
+    expect(element.querySelector('.owner.unowned')).toBeNull();
+    expect(element.querySelector('.owner')?.textContent).toContain('ca-alerts.active.card.attending');
+  });
+
+  it('draws the reading against its limit on one scale', () => {
+    const { element } = create(alertOf());
+    const fill = element.querySelector<HTMLElement>('.gauge .fill')!;
+    const mark = element.querySelector<HTMLElement>('.gauge .limit-mark')!;
+
+    expect(parseFloat(fill.style.width)).toBeGreaterThan(parseFloat(mark.style.left));
+    expect(parseFloat(fill.style.width)).toBeLessThan(100);
   });
 
   it('names the device by its id while its name is unknown', () => {
@@ -92,16 +113,13 @@ describe('AlertCard', () => {
     expect(element.querySelector('.excess mat-icon')?.textContent).toBe('arrow_downward');
   });
 
-  it('offers to attend an alert nobody attends', () => {
-    const { fixture, element, actions } = create(alertOf());
+  it('offers to attend an alert nobody attends, and the rest in its menu', () => {
+    const { fixture, element, actions, menuItems } = create(alertOf());
     const attend = vi.fn();
     fixture.componentInstance.attend.subscribe(attend);
 
-    expect(actions()).toEqual([
-      'ca-alerts.actions.view-details',
-      'ca-alerts.active.card.notify',
-      'ca-alerts.actions.acknowledge',
-    ]);
+    expect(actions()[0]).toBe('ca-alerts.actions.acknowledge');
+    expect(menuItems()).toEqual(['ca-alerts.actions.view-details', 'ca-alerts.active.card.notify']);
     element.querySelector<HTMLButtonElement>('button[mat-flat-button]')!.click();
     expect(attend).toHaveBeenCalledTimes(1);
   });
@@ -111,15 +129,15 @@ describe('AlertCard', () => {
 
     expect(actions()).toContain('ca-alerts.active.card.resolve');
     expect(actions()).not.toContain('ca-alerts.actions.acknowledge');
-    expect(element.querySelector('[mat-flat-button]')?.getAttribute('href')).toBe(
+    expect(element.querySelector('.primary-btn')?.getAttribute('href')).toBe(
       '/alerts/7?panel=resolve',
     );
   });
 
   it('only offers the e-mail for critical alerts', () => {
-    const { actions } = create(alertOf({ severity: 'WARNING' }));
+    const { menuItems } = create(alertOf({ severity: 'WARNING' }));
 
-    expect(actions()).not.toContain('ca-alerts.active.card.notify');
+    expect(menuItems()).toEqual(['ca-alerts.actions.view-details']);
   });
 
   it('only offers the detail to who cannot attend alerts', () => {
@@ -131,7 +149,7 @@ describe('AlertCard', () => {
   it('shows the condition went back to normal', () => {
     const { element } = create(alertOf({ normalizedAt: '2026-10-06T00:00:00Z' }));
 
-    expect(element.querySelector('.chips')?.textContent).toContain('ca-alerts.normalized');
+    expect(element.querySelector('.normalized')?.textContent).toContain('ca-alerts.normalized');
   });
 
   it('warns the view before leaving the inbox', async () => {
@@ -139,7 +157,7 @@ describe('AlertCard', () => {
     const opening = vi.fn();
     fixture.componentInstance.opening.subscribe(opening);
 
-    element.querySelector<HTMLAnchorElement>('.actions a')!.click();
+    element.querySelector<HTMLAnchorElement>('h2 a')!.click();
     await fixture.whenStable();
 
     expect(opening).toHaveBeenCalledTimes(1);

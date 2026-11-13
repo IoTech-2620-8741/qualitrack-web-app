@@ -51,10 +51,11 @@ import { alertVariableName } from '../../alert-variable';
 import { AlertHistoryCards } from '../../components/alert-history-cards/alert-history-cards';
 import { AlertTable } from '../../components/alert-table/alert-table';
 import { AlertWeekChart } from '../../components/alert-week-chart/alert-week-chart';
-import { AlertsPageHeader } from '../../components/alerts-page-header/alerts-page-header';
-
-/** Alerts shown on each page of the table. */
-export const ALERT_HISTORY_PAGE_SIZE = 25;
+import { PageHeader } from '../../../../shared/presentation/components/page-header/page-header';
+import { ListToolbar } from '../../../../shared/presentation/components/list-toolbar/list-toolbar';
+import { alertTabs } from '../../alert-tabs';
+import { SetupNotice } from '../../../../shared/presentation/components/setup-notice/setup-notice';
+import { IamStore } from '../../../../iam/application/iam.store';
 
 /** Icon of each origin in its chip. */
 const ORIGIN_ICONS: Readonly<Record<AlertOrigin, string>> = {
@@ -75,6 +76,7 @@ const ORIGIN_ICONS: Readonly<Record<AlertOrigin, string>> = {
   selector: 'app-alert-history',
   standalone: true,
   imports: [
+    SetupNotice,
     RouterLink,
     RouterOutlet,
     TranslatePipe,
@@ -86,7 +88,8 @@ const ORIGIN_ICONS: Readonly<Record<AlertOrigin, string>> = {
     AlertHistoryCards,
     AlertTable,
     AlertWeekChart,
-    AlertsPageHeader,
+    PageHeader,
+    ListToolbar,
     EmptyState,
     EnvironmentSelector,
     ErrorBanner,
@@ -99,6 +102,7 @@ const ORIGIN_ICONS: Readonly<Record<AlertOrigin, string>> = {
 export class AlertHistory implements OnInit {
   /** Store that holds the alerts of the history. */
   protected readonly store = inject(CaStore);
+  protected readonly iam = inject(IamStore);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly translate = inject(TranslateService);
@@ -126,6 +130,9 @@ export class AlertHistory implements OnInit {
       ? environmentId
       : null;
   });
+
+  /** Operations of the module, keeping the environment chosen. */
+  protected readonly tabs = computed(() => alertTabs(this.environmentId()));
 
   /** What the history reads: the environment chosen or, without one, every environment that exists. */
   private readonly scope = computed(() => {
@@ -157,6 +164,20 @@ export class AlertHistory implements OnInit {
     () => this.filter().period !== DEFAULT_ALERT_HISTORY_FILTER.period || this.narrowsTable(),
   );
 
+  /** How many chips of severity, status and origin are pressed, which the button of the other filters shows. */
+  protected readonly chipFilterCount = computed(() => {
+    const filter = this.filter();
+    return filter.severities.length + filter.statuses.length + filter.origins.length;
+  });
+
+  /** How many filters narrow the history, which the folded row of filters tells. */
+  protected readonly activeFilterCount = computed(
+    () =>
+      this.chipFilterCount() +
+      (this.filter().period !== DEFAULT_ALERT_HISTORY_FILTER.period ? 1 : 0) +
+      (this.filter().search.trim() ? 1 : 0),
+  );
+
   /** Alerts that pass the filter, the latest first. */
   protected readonly shownAlerts = computed(() =>
     this.filtered(this.filter()).sort(compareAlertsByNewest),
@@ -171,34 +192,6 @@ export class AlertHistory implements OnInit {
   protected readonly weeks = computed(() => {
     const range = periodRangeOf(this.filter(), this.now());
     return countAlertsByWeek(this.shownAlerts(), range.since, range.until);
-  });
-
-  /** How many pages the table has, at least one. */
-  protected readonly pageCount = computed(() =>
-    Math.max(1, Math.ceil(this.shownAlerts().length / ALERT_HISTORY_PAGE_SIZE)),
-  );
-
-  /** Page shown, from 1; a page of the address that does not exist counts as the last one. */
-  protected readonly page = computed(() => {
-    const page = Math.floor(Number(this.queryParams()?.get('page')));
-    return Math.min(Math.max(1, page || 1), this.pageCount());
-  });
-
-  /** Alerts of the page shown. */
-  protected readonly pageAlerts = computed(() => {
-    const start = (this.page() - 1) * ALERT_HISTORY_PAGE_SIZE;
-    return this.shownAlerts().slice(start, start + ALERT_HISTORY_PAGE_SIZE);
-  });
-
-  /** Positions of the first and last alert of the page, from 1, and the size of a page, for the text under the table. */
-  protected readonly pageRange = computed(() => {
-    const first = (this.page() - 1) * ALERT_HISTORY_PAGE_SIZE + 1;
-    return {
-      first,
-      last: first + this.pageAlerts().length - 1,
-      total: this.shownAlerts().length,
-      size: ALERT_HISTORY_PAGE_SIZE,
-    };
   });
 
   /** Codes of the environments that could not be read, for the warning that says so. */
@@ -303,15 +296,6 @@ export class AlertHistory implements OnInit {
   /** Goes back to the filter the history opens with, keeping the environment. */
   protected clearFilters(): void {
     this.changeFilter(DEFAULT_ALERT_HISTORY_FILTER);
-  }
-
-  /**
-   * Shows another page of the table.
-   *
-   * @param page - The page, from 1
-   */
-  protected goToPage(page: number): void {
-    this.navigate({ page: page > 1 ? page : null });
   }
 
   /**

@@ -8,6 +8,11 @@ hide empty members
 
 package "shared" {
   class EnvironmentSelector <<component>>
+  class PageHeader <<component>>
+  interface PageTab
+  class ListToolbar <<component>>
+  class TablePaginator <<component>>
+  class SetupNotice <<component>>
   interface BaseEntity
   class BaseApi
   class BaseApiEndpoint
@@ -442,6 +447,8 @@ package "ra.application" {
 }
 
 package "ra.presentation" {
+  class "REPORTS_TABS" as ReportsTabs <<const>>
+  class AuditLogTable <<component>>
   class StaffActivity {
     #entityFilter
     #entityTypes
@@ -478,10 +485,6 @@ package "ra.presentation" {
 
   class KpiTable <<component>> {
     +summaries / deviceNameFn
-  }
-
-  class KpiRecords <<component>> {
-    +metrics
   }
 
   note bottom of KpiDashboardComponent
@@ -687,7 +690,6 @@ KpiDashboardComponent --> RaStore
 KpiDashboardComponent ..> LastDays
 KpiDashboardComponent *-- KpiSummaryCards
 KpiDashboardComponent *-- KpiTable
-KpiDashboardComponent *-- KpiRecords
 KpiSummaryCards ..> OverviewEnvironmentalProfile
 OverviewEnvironmentalProfile *-- OverviewEnvironmentalThreshold
 OverviewEnvironmentalProfile ..|> BaseEntity
@@ -755,5 +757,29 @@ note left of RaRoutes
 end note
 
 ReportApiEndpoint --|> ErrorHandlingEnabledBaseType
+
+ReportsTabs ..> PageTab
+KpiDashboardComponent ..> PageHeader
+KpiDashboardComponent ..> ListToolbar
+KpiDashboardComponent ..> ReportsTabs
+DeviationTrendChartComponent ..> PageHeader
+DeviationTrendChartComponent ..> ListToolbar
+DeviationTrendChartComponent ..> SetupNotice
+DeviationTrendChartComponent ..> ReportsTabs
+ReportGeneratorComponent ..> PageHeader
+ReportGeneratorComponent ..> ReportsTabs
+AuditLogViewerComponent ..> PageHeader
+AuditLogViewerComponent ..> ListToolbar
+AuditLogViewerComponent ..> ReportsTabs
+AuditLogViewerComponent *-- AuditLogTable
+AuditLogTable ..> AuditLogEntry
+AuditLogTable ..> TablePaginator
+DeviationTable ..> TablePaginator
+KpiTable ..> TablePaginator
+StaffActivity ..> TablePaginator
+note bottom of ReportsTabs
+  Summary, Deviations, New report and Audit log are the tabs of the page
+  header of the reports module.
+end note
 
 @enduml

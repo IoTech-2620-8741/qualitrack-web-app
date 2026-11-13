@@ -8,7 +8,11 @@ hide empty members
 
 package "shared" {
   class EnvironmentSelector <<component>>
-  class StatFilterCard <<component>>
+  class FilterChip <<component>>
+  class PageHeader <<component>>
+  interface PageTab
+  class ListToolbar <<component>>
+  class TablePaginator <<component>>
   class StatusChip <<component>>
   class EmptyState <<component>>
   class DateOnlyPipe <<pipe>>
@@ -274,6 +278,7 @@ note bottom of BatchStore
 end note
 
 package "batch.presentation" {
+  class "BATCH_TABS" as BatchTabs <<const>>
   class BatchHome
   class ProductCatalog
   class ProductForm
@@ -355,7 +360,7 @@ BatchList *-- BatchFilters
 BatchList *-- BatchTable
 BatchList --> EmptyState
 BatchList ..> BatchFilterFunctions
-BatchKpiCards --> StatFilterCard
+BatchKpiCards --> FilterChip
 BatchKpiCards ..> BatchChips
 BatchKpiCards ..> BatchFilterFunctions
 BatchFilters --> EnvironmentSelector
@@ -466,6 +471,23 @@ end note
 note left of BatchRoutes
   Source: batch/presentation/batch.routes.ts
   Public paths and guards remain unchanged.
+end note
+
+BatchTabs ..> PageTab
+BatchList ..> PageHeader
+BatchList ..> ListToolbar
+BatchList ..> BatchTabs
+ProductCatalog ..> PageHeader
+ProductCatalog ..> ListToolbar
+ProductCatalog ..> TablePaginator
+ProductCatalog ..> BatchTabs
+ProductDetail ..> TablePaginator
+BatchParticipants ..> TablePaginator
+BatchTraceabilityView ..> TablePaginator
+RawMaterialUsageComponent ..> TablePaginator
+note bottom of BatchTabs
+  Products and production batches are the two tabs of the page header
+  of the module.
 end note
 
 @enduml

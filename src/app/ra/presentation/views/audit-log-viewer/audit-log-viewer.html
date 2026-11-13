@@ -1,16 +1,23 @@
 <main class="operations-page">
-  <header class="page-heading">
-    <h1>
-      <mat-icon aria-hidden="true">policy</mat-icon>
-      {{ 'audit-log.title' | translate }}
-    </h1>
-  </header>
+  <app-page-header
+    icon="policy"
+    titleKey="audit-log.title"
+    [tabs]="tabs"
+    activeTab="/reports/audit-log"
+    [loading]="store.isLoading()"
+    (refresh)="onSearch(lastQuery())"
+  >
+    <div class="reports">
+      <!-- The equipment, the batch and the dates the log is narrowed to -->
+      <app-list-toolbar [searchKey]="null" [activeFilters]="activeFilters()">
+        <app-audit-log-filters toolbarMore [loading]="store.isLoading()" (search)="onSearch($event)" (clear)="onClear()" />
+      </app-list-toolbar>
 
-  <app-audit-log-filters [loading]="store.isLoading()" (search)="onSearch($event)" (clear)="onClear()" />
+      @if (store.error()) {
+        <app-error-banner [messageKey]="store.error()!" />
+      }
 
-  @if (store.error()) {
-    <app-error-banner [messageKey]="store.error()!" />
-  }
-
-  <app-audit-log-table [rows]="rows()" [loading]="store.isLoading()" />
+      <app-audit-log-table [rows]="rows()" [loading]="store.isLoading()" />
+    </div>
+  </app-page-header>
 </main>

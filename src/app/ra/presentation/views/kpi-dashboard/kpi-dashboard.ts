@@ -10,9 +10,7 @@ import {
 import { TranslatePipe } from '@ngx-translate/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
-import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
-import { MatSelectModule } from '@angular/material/select';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { DateTimePipe } from '../../../../shared/presentation/pipes/date-time.pipe';
@@ -20,7 +18,11 @@ import { RaStore } from '../../../application/ra.store';
 import { ALL_ENVIRONMENTS, lastDays } from '../../../domain/model/indicator-period';
 import { KpiSummaryCards } from '../../components/kpi-summary-cards/kpi-summary-cards';
 import { KpiTable } from '../../components/kpi-table/kpi-table';
-import { KpiRecords } from '../../components/kpi-records/kpi-records';
+import { EnvironmentSelector } from '../../../../shared/presentation/components/environment-selector/environment-selector';
+import { PageHeader } from '../../../../shared/presentation/components/page-header/page-header';
+import { ListToolbar } from '../../../../shared/presentation/components/list-toolbar/list-toolbar';
+import { FilterChip } from '../../../../shared/presentation/components/filter-chip/filter-chip';
+import { REPORTS_TABS } from '../../reports-tabs';
 
 /** Lengths of the period offered, in days; the platform accepts up to 31. */
 const PERIOD_DAYS = [1, 7, 31] as const;
@@ -39,23 +41,27 @@ const PERIOD_DAYS = [1, 7, 31] as const;
   selector: 'app-kpi-dashboard',
   standalone: true,
   imports: [
+    PageHeader,
+    ListToolbar,
+    FilterChip,
     DateTimePipe,
     TranslatePipe,
     MatButtonModule,
     MatButtonToggleModule,
-    MatFormFieldModule,
     MatIconModule,
-    MatSelectModule,
+    EnvironmentSelector,
     MatProgressSpinnerModule,
     KpiSummaryCards,
-    KpiTable,
-    KpiRecords
+    KpiTable
   ],
   templateUrl: './kpi-dashboard.html',
   changeDetection: ChangeDetectionStrategy.Default,
   styleUrl: './kpi-dashboard.css',
 })
 export class KpiDashboardComponent implements OnInit {
+  /** Operations of the reports module. */
+  protected readonly tabs = REPORTS_TABS;
+
   /** The application store managing the Reporting and Analysis state. */
   protected readonly store = inject(RaStore);
 

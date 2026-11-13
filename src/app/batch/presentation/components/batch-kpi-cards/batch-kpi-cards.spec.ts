@@ -35,17 +35,17 @@ describe('BatchKpiCards', () => {
     fixture.componentRef.setInput('selected', selected);
     fixture.detectChanges();
     const cards = [
-      ...fixture.nativeElement.querySelectorAll('button.stat-filter-card'),
+      ...fixture.nativeElement.querySelectorAll('button.filter-chip'),
     ] as HTMLButtonElement[];
     const chosen = vi.fn();
     fixture.componentInstance.statusSelected.subscribe(chosen);
     return { cards, chosen };
   }
 
-  it('shows every batch and each status, with the share of each decision', () => {
+  it('counts every batch and each status in its chip', () => {
     const { cards } = create();
 
-    expect(cards.map((card) => card.querySelector('.value')?.textContent)).toEqual([
+    expect(cards.map((card) => card.querySelector('.count')?.textContent)).toEqual([
       '5',
       '1',
       '0',
@@ -53,8 +53,6 @@ describe('BatchKpiCards', () => {
       '1',
     ]);
     expect(cards[0].getAttribute('aria-pressed')).toBe('true');
-    expect(cards[3].querySelector('.hint')?.textContent).toContain('batches.kpi.release-rate');
-    expect(cards[2].querySelector('.hint')?.textContent).toContain('batches.kpi.in-progress-hint');
   });
 
   it('filters by a status and shows every status when the active one is chosen again', () => {

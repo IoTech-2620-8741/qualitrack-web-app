@@ -7,6 +7,10 @@ skinparam classAttributeIconSize 0
 hide empty members
 
 package "shared" {
+  class PageHeader <<component>>
+  interface PageTab
+  class ListToolbar <<component>>
+  class TablePaginator <<component>>
   interface BaseEntity
   class BaseApi
   class BaseApiEndpoint
@@ -154,6 +158,7 @@ note right of LaboratoryStore
 end note
 
 package "laboratory.presentation" {
+  class "LABORATORY_TABS" as LaboratoryTabs <<const>>
   class LabForm
   class LabProfile
   class EnvironmentList
@@ -196,6 +201,23 @@ end note
 note left of LaboratoryRoutes
   Source: laboratory/presentation/laboratory.routes.ts
   Public paths and guards remain unchanged.
+end note
+
+LaboratoryTabs ..> PageTab
+LabProfile ..> PageHeader
+LabProfile ..> LaboratoryTabs
+EnvironmentList ..> PageHeader
+EnvironmentList ..> ListToolbar
+EnvironmentList ..> TablePaginator
+EnvironmentList ..> LaboratoryTabs
+StaffList ..> PageHeader
+StaffList ..> ListToolbar
+StaffList ..> TablePaginator
+StaffList ..> LaboratoryTabs
+note bottom of LaboratoryTabs
+  Profile, Environments and Staff are the tabs of the page header of the
+  laboratory. The code of an environment opens its equipment
+  (/equipments/environments/:environmentId).
 end note
 
 @enduml

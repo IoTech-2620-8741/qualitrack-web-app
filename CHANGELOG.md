@@ -7,6 +7,70 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.5.0] - 2026-11-13
+
+### Added
+
+- Equipment (equipment): a quality manager registers an Edge Gateway, with its identifier and an optional environment, from the equipment list or the side menu (#103).
+
+- Equipment (equipment): the detail of an Edge Gateway shows a quality manager whether it has an API key and lets them generate it once it is located and operational; the key is shown only once, in a dialog with copy buttons, and is not kept in the app (#103).
+
+- Equipment (equipment): each environment has a view with its Edge Gateways, how many IoT devices each one covers (up to 15), its devices and process equipment, and a warning when some devices have no Edge Gateway, with a button that registers one already located there (#103).
+
+- Equipment (equipment): the equipment list filters by environment (also with `?environmentId=`) and by Edge Gateways, and its summary counts the equipment, devices and Edge Gateways of the chosen environment (#103).
+
+- Shared (shared): every page of a module opens with the same header (icon, title, subtitle, time of the last update with a refresh button, and the operations of the module as tabs) and every list with the same toolbar (environment, register buttons, filter chips with their counts, search and order, folded behind Filters on phones) (#105).
+
+- Shared (shared): every table has the format of the production batches, with 10, 25 or 50 rows per page, and becomes one card per row on phones (#105).
+
+- Compliance and Alerts (ca): the active alerts are compact rows grouped by severity, each with a bar of the reading against its limit, and the detail of an alert guides the person through its next step (register attention, then resolve) (#105).
+
+### Changed
+
+- Release: package and lockfile versions are now 2.5.0.
+
+- Shared (shared): the environment selector can show inline, right under the title of the page, in inventory, products, tracking, reports and alerts (#101).
+
+- Inventory (inventory): the catalogue and the lots near expiry are two tabs of the inventory page (#102).
+
+- Products, batches, equipment, inventory, laboratory, tracking and reports: their pages use the shared header and toolbar; the inventory stats and filters components are replaced by the toolbar (#105).
+
+- Compliance and Alerts (ca): the alert history has lighter filters, its search under them on the left, and the shared table and paginator (#105).
+
+- Shared (shared): the application uses Rubik, the typeface of the style guide, instead of Roboto; the home image floats like the one of the website; the logo keeps its space from the name on phones (#106).
+
+- Compliance and Alerts (ca): the active alerts no longer say Live with a green dot; the header says when they were updated, like every other page (#106).
+
+- Equipment (equipment): an Edge Gateway is no longer counted or shown as process equipment, its type is translated instead of showing `EDGE_GATEWAY`, and its detail hides the BPM limits (#103).
+
+- Laboratory (laboratory): the code of each environment in the environment list opens the equipment of that environment (#103).
+
+- Compliance and Alerts, Equipment (ca, equipment): the searches of the active alerts and of the equipment read "Device or variable" and "Search name, model, serial or ID", so they are no longer cut at 1366 px (#107).
+
+- Reports (ra): the parameters of a new report are a card under the title of their step, like the report types (#108).
+
+### Removed
+
+- Shared (shared): the stat filter card, which no view uses since the redesign (#107).
+
+- Reports (ra): the environmental summary no longer shows the laboratory records (equipment, batches and open alerts), which did not depend on its period or environment (#108); their texts are removed (#109).
+
+### Fixed
+
+- Shared (shared): table cells break only between words, so a status such as "Operational" or a role such as "Operator" is no longer split in two; a table wider than its card scrolls inside it, and the staff e-mails and job titles wrap so the staff table fits beside the side menu (#107).
+
+- Equipment (equipment): operators and auditors no longer ask for the API key status of an Edge Gateway, which the platform refuses them, nor see the API key card (#107).
+
+- Compliance and Alerts (ca): the bar of an alert is right with negative temperatures; a freezer warmer than its maximum shows its reading past the limit (#107).
+
+- Equipment (equipment): the view of an environment still lists its devices and equipment when its Edge Gateway coverage cannot be read, with a notice instead of only an error (#107).
+
+- Reports (ra): the empty summary no longer offers View last 31 days when those are the days shown (#105).
+
+- Reports (ra): the loading and empty states of the environmental summary and of the deviation indicators fit on the screen again; at 1366 px and on phones their message was left below a blank box (#109).
+
+- Shared (shared): long page titles stay whole on phones, and the toolbar search is announced as a search box (#105).
+
 ## [2.4.0] - 2026-11-09
 
 ### Changed

@@ -1,4 +1,4 @@
-import {Component, OnInit, inject, ChangeDetectionStrategy, computed} from '@angular/core';
+import {Component, OnInit, inject, ChangeDetectionStrategy, computed, signal} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {TranslatePipe, TranslateService} from '@ngx-translate/core';
@@ -27,6 +27,9 @@ import {AuditLogQuery, toAuditLogRows} from '../../utils/audit-log-viewer.utils'
 import {toSignal} from '@angular/core/rxjs-interop';
 import {ErrorBanner} from '../../../../shared/presentation/components/error-banner/error-banner';
 import {AuditLogFilters} from '../../components/audit-log-filters/audit-log-filters';
+import { PageHeader } from '../../../../shared/presentation/components/page-header/page-header';
+import { ListToolbar } from '../../../../shared/presentation/components/list-toolbar/list-toolbar';
+import { REPORTS_TABS } from '../../reports-tabs';
 
 /**
  * Orchestrator component for the Audit Log Viewer.
@@ -40,9 +43,10 @@ import {AuditLogFilters} from '../../components/audit-log-filters/audit-log-filt
   selector: 'app-audit-log-viewer',
   standalone: true,
   imports: [
+    PageHeader,
+    ListToolbar,
     CommonModule,
     FormsModule,
-    TranslatePipe,
     MatTableModule,
     MatCardModule,
     MatIconModule,
@@ -60,6 +64,15 @@ import {AuditLogFilters} from '../../components/audit-log-filters/audit-log-filt
   styleUrl: './audit-log-viewer.css',
 })
 export class AuditLogViewerComponent implements OnInit {
+  /** Operations of the reports module. */
+  protected readonly tabs = REPORTS_TABS;
+
+  /** Query of the last search, read again by the refresh. */
+  protected readonly lastQuery = signal<AuditLogQuery | undefined>(undefined);
+
+  /** How many filters narrow the log. */
+  protected readonly activeFilters = computed(() => Object.keys(this.lastQuery() ?? {}).length);
+
   /**
    * The application store managing the state for the Reporting and Analysis bounded context.
    */
@@ -253,11 +266,13 @@ export class AuditLogViewerComponent implements OnInit {
    * @param query - The built query payload, or undefined for no filters
    */
   protected onSearch(query: AuditLogQuery | undefined): void {
+    this.lastQuery.set(query);
     this.store.loadAuditLog(query);
   }
 
   /** Handles the clear event emitted by the filter component. */
   protected onClear(): void {
+    this.lastQuery.set(undefined);
     this.store.loadAuditLog(undefined);
   }
 }

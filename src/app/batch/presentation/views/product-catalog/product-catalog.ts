@@ -7,16 +7,21 @@ import {
   signal,
   ChangeDetectionStrategy,
 } from '@angular/core';
-import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
 import { TranslatePipe } from '@ngx-translate/core';
 import { BatchStore } from '../../../application/batch.store';
 import { EnvironmentSelector } from '../../../../shared/presentation/components/environment-selector/environment-selector';
-import { MatTooltipModule } from '@angular/material/tooltip';
+import { TablePaginator, paginate } from '../../../../shared/presentation/components/table-paginator/table-paginator';
+import { PageHeader } from '../../../../shared/presentation/components/page-header/page-header';
+import { ListToolbar } from '../../../../shared/presentation/components/list-toolbar/list-toolbar';
+import { FilterChip } from '../../../../shared/presentation/components/filter-chip/filter-chip';
+import { BATCH_TABS } from '../../batch-tabs';
+
+/** Status of the products the list leaves. */
+type ProductStatusFilter = 'all' | 'active' | 'inactive';
 
 /**
  * Pharmaceutical products of an environment, with registration for quality roles.
@@ -31,20 +36,24 @@ import { MatTooltipModule } from '@angular/material/tooltip';
   selector: 'app-product-catalog',
   standalone: true,
   imports: [
-    FormsModule,
+    TablePaginator,
+    PageHeader,
+    ListToolbar,
+    FilterChip,
     RouterLink,
     MatButtonModule,
     MatIconModule,
-    MatInputModule,
     TranslatePipe,
     EnvironmentSelector,
-    MatTooltipModule,
   ],
   templateUrl: './product-catalog.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './product-catalog.css',
 })
 export class ProductCatalog implements OnInit {
+  /** Page of the table shown; ten rows unless the person chooses more. */
+  protected readonly productPage = paginate(() => this.filtered());
+
   protected readonly store = inject(BatchStore);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
@@ -60,9 +69,31 @@ export class ProductCatalog implements OnInit {
    */
   protected readonly filtered = computed(() => {
     const term = this.search().trim().toLowerCase();
+    const status = this.status();
     return this.store
       .products()
+      .filter((product) => status === 'all' || product.active === (status === 'active'))
       .filter((product) => `${product.code} ${product.name}`.toLowerCase().includes(term));
+  });
+
+  /** Operations of the module. */
+  protected readonly tabs = BATCH_TABS;
+
+  /** Status of the products shown. */
+  protected readonly status = signal<ProductStatusFilter>('all');
+
+  /** Chips of the status, with the key of their name. */
+  protected readonly statusOptions: readonly { value: ProductStatusFilter; labelKey: string }[] = [
+    { value: 'all', labelKey: 'common.all' },
+    { value: 'active', labelKey: 'common.active' },
+    { value: 'inactive', labelKey: 'common.inactive' },
+  ];
+
+  /** How many products of the environment each chip leaves. */
+  protected readonly counts = computed(() => {
+    const products = this.store.products();
+    const active = products.filter((product) => product.active).length;
+    return { all: products.length, active, inactive: products.length - active };
   });
 
   /**

@@ -110,7 +110,7 @@ h1 mat-icon {
   box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
 }
 
-.summary-strip span {
+.summary-strip div > span {
   display: block;
   color: var(--qt-text-muted);
   font-size: 12px;
@@ -163,6 +163,27 @@ h1 mat-icon {
   width: 18px;
   height: 18px;
   font-size: 18px;
+}
+
+.api-key {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+}
+
+.api-key-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  color: var(--qt-text);
+  font-weight: 500;
+}
+
+.api-key-status.issued {
+  color: var(--qt-success-text);
 }
 
 mat-tab-group {

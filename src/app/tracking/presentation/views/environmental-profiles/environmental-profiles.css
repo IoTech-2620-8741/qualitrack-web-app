@@ -12,7 +12,11 @@
   padding: 32px 24px 48px;
 }
 
-h1,
+/* The environment and the query, then what they show */
+app-list-toolbar {
+  margin-bottom: 16px;
+}
+
 h2,
 h3,
 h4,
@@ -22,52 +26,6 @@ a {
   letter-spacing: 0;
 }
 
-.heading-content {
-  flex: 1;
-  min-width: 0;
-  max-width: 800px;
-}
-
-.heading-content p.muted {
-  margin: 6px 0 0;
-  font-size: 14px;
-  line-height: 1.6;
-}
-
-.heading-content p.muted {
-  margin: 6px 0 0;
-  font-size: 14px;
-  line-height: 1.6;
-  overflow-wrap: anywhere;
-}
-
-.page-heading .actions {
-  flex-shrink: 0;
-  margin-left: auto;
-}
-
-.page-heading {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 32px;
-  margin-bottom: 24px;
-}
-
-h1 {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin: 0;
-  color: var(--qt-heading);
-  font-size: 28px;
-  font-weight: 700;
-}
-
-h1 mat-icon {
-  flex-shrink: 0;
-  color: var(--qt-primary);
-}
 
 h2 {
   margin: 24px 0 12px;
@@ -91,10 +49,6 @@ p.muted {
   margin: 0 0 16px;
   font-size: 14px;
   line-height: 1.6;
-}
-
-.page-heading + p.muted {
-  margin-bottom: 24px;
 }
 
 .error,
@@ -184,45 +138,12 @@ p.muted {
 }
 
 @media (max-width: 760px) {
-  .actions app-environment-selector {
-    grid-column: 1 / -1;
-    grid-row: 3;
-    width: 100%;
-    min-width: 0;
-  }
-
   .operations-page {
     padding: 20px 16px 36px;
-  }
-
-  h1 {
-    font-size: 24px;
-  }
-
-  .page-heading .actions {
-    width: 100%;
   }
 
   .device-card {
     padding: 16px;
   }
 
-  .page-heading {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    align-items: start;
-    gap: 8px;
-  }
-
-  .heading-content {
-    min-width: 0;
-  }
-
-  .heading-content p.muted {
-    margin-top: 6px;
-  }
-
-  .page-heading .actions {
-    width: 100%;
-  }
 }

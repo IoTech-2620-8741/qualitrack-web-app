@@ -8,6 +8,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { RaStore } from '../../../application/ra.store';
 import { DateTimePipe } from '../../../../shared/presentation/pipes/date-time.pipe';
+import { TablePaginator, paginate } from '../../../../shared/presentation/components/table-paginator/table-paginator';
 
 /**
  * Records whose type has a translated name; any other type is shown as the platform sends it.
@@ -54,12 +55,15 @@ const KNOWN_ACTIONS = new Set([
 @Component({
   selector: 'app-staff-activity',
   standalone: true,
-  imports: [DateTimePipe, RouterLink, TranslatePipe, MatIconModule, MatFormFieldModule, MatSelectModule, MatProgressSpinnerModule],
+  imports: [TablePaginator, DateTimePipe, RouterLink, TranslatePipe, MatIconModule, MatFormFieldModule, MatSelectModule, MatProgressSpinnerModule],
   templateUrl: './staff-activity.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './staff-activity.css',
 })
 export class StaffActivity {
+  /** Page of the table shown; ten rows unless the person chooses more. */
+  protected readonly activityPage = paginate(() => this.visibleActivity());
+
   protected readonly store = inject(RaStore);
   private readonly route = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);

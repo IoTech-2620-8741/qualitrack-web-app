@@ -5,6 +5,11 @@ skinparam packageStyle rectangle
 skinparam classAttributeIconSize 0
 
 package "shared" <<External>> {
+  class PageHeader <<component>>
+  interface PageTab
+  class ListToolbar <<component>>
+  class TablePaginator <<component>>
+  class SetupNotice <<component>>
   class ErrorHandlingEnabledBaseType
   class EnvironmentSelector <<component>>
   class EnvironmentPreference
@@ -23,6 +28,7 @@ package "iam" <<External>> {
 }
 
 package "tracking" {
+  class "TRACKING_TABS" as TrackingTabs <<const>>
 
   package "domain.model" {
     enum MonitoredDeviceType {
@@ -444,6 +450,25 @@ note bottom of TelemetryRequest
   measurement-api-endpoint.ts / measurement-assembler.ts
   actuation-event-api-endpoint.ts / actuation-event-assembler.ts
   environmental-profile-api-endpoint.ts / environmental-profile-assembler.ts
+end note
+
+TrackingTabs ..> PageTab
+EnvironmentalMonitoring ..> PageHeader
+EnvironmentalMonitoring ..> ListToolbar
+EnvironmentalMonitoring ..> SetupNotice
+EnvironmentalMonitoring ..> TrackingTabs
+EnvironmentalProfiles ..> PageHeader
+EnvironmentalProfiles ..> ListToolbar
+EnvironmentalProfiles ..> SetupNotice
+EnvironmentalProfiles ..> TrackingTabs
+TelemetryHistory ..> PageHeader
+TelemetryHistory ..> ListToolbar
+TelemetryHistory ..> SetupNotice
+TelemetryHistory ..> TablePaginator
+TelemetryHistory ..> TrackingTabs
+note bottom of TrackingTabs
+  Monitoring, History and Profiles are the tabs of the page header of the
+  tracking module.
 end note
 
 @enduml

@@ -11,6 +11,11 @@ import { EnvironmentSelector } from '../../../../shared/presentation/components/
 import { MonitoredMetric } from '../../../domain/model/monitored-metric';
 import { Measurement } from '../../../domain/model/measurement.entity';
 import { DateTimePipe } from '../../../../shared/presentation/pipes/date-time.pipe';
+import { SetupNotice } from '../../../../shared/presentation/components/setup-notice/setup-notice';
+import { IamStore } from '../../../../iam/application/iam.store';
+import { PageHeader } from '../../../../shared/presentation/components/page-header/page-header';
+import { ListToolbar } from '../../../../shared/presentation/components/list-toolbar/list-toolbar';
+import { TRACKING_TABS } from '../../tracking-tabs';
 
 /**
  * Component responsible for displaying the current environmental monitoring status.
@@ -45,6 +50,9 @@ import { DateTimePipe } from '../../../../shared/presentation/pipes/date-time.pi
   selector: 'app-environmental-monitoring',
   standalone: true,
   imports: [
+    PageHeader,
+    ListToolbar,
+    SetupNotice,
     DateTimePipe,
     DecimalPipe,
     RouterLink,
@@ -60,11 +68,15 @@ import { DateTimePipe } from '../../../../shared/presentation/pipes/date-time.pi
   styleUrl: './environmental-monitoring.css',
 })
 export class EnvironmentalMonitoring implements OnInit {
+  /** Operations of the tracking module. */
+  protected readonly tabs = TRACKING_TABS;
+
   /**
    * Central application store responsible for IoT telemetry state,
    * device snapshots and environmental monitoring information.
    */
   protected readonly store = inject(TrackingStore);
+  protected readonly iam = inject(IamStore);
 
   /**
    * Metrics displayed for container monitoring devices.

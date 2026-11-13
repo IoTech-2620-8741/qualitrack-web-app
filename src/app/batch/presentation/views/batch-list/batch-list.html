@@ -1,88 +1,83 @@
 <main class="operations-page">
-  <!-- Heading with the refresh button and the link to the products -->
-  <header class="page-heading">
-    <div class="heading-content">
-      <h1>
-        <mat-icon aria-hidden="true">list_alt</mat-icon>
-        {{ 'batches.title' | translate }}
-      </h1>
+  <app-page-header
+    icon="list_alt"
+    titleKey="batches.title"
+    subtitleKey="batches.subtitle"
+    [tabs]="tabs"
+    activeTab="/batches"
+    [loading]="store.isLoading()"
+    (refresh)="refresh()"
+  >
+    <div class="batches">
+      @if (store.error()) {
+        <p class="error" role="alert">{{ store.error()! | translate }}</p>
+      }
 
-      <p class="muted">{{ 'batches.subtitle' | translate }}</p>
-    </div>
-
-    <div class="actions">
-      <a mat-flat-button routerLink="/batches/environments">
-        <mat-icon>factory</mat-icon>
-        {{ 'product-catalog.title' | translate }}
-      </a>
-
-      <button
-        mat-icon-button
-        type="button"
-        (click)="refresh()"
-        [disabled]="store.isLoading()"
-        [matTooltip]="'inventory.refresh' | translate"
-        [attr.aria-label]="'inventory.refresh' | translate"
-      >
-        <mat-icon>refresh</mat-icon>
-      </button>
-    </div>
-  </header>
-
-  @if (store.error()) {
-    <p class="error" role="alert">{{ store.error()! | translate }}</p>
-  }
-
-  @if (store.batches().length) {
-    <!-- Indicators: every batch and each status; they also filter the list -->
-    <app-batch-kpi-cards
-      class="kpis"
-      [batches]="inContext()"
-      [selected]="filter().status"
-      (statusSelected)="chooseStatus($event)"
-    />
-
-    <!-- Criteria: text, environment and start period; the indicators above filter by status -->
-    <app-batch-filters
-      class="list-filters"
-      [filter]="filter()"
-      [environments]="environments()"
-      (filterChange)="filter.set($event)"
-      (cleared)="clearFilters()"
-    />
-
-    @if (filtered().length) {
-      <!-- Table of batches with sorting and pagination -->
-      <app-batch-table [batches]="filtered()" [environments]="store.environments()" />
-    } @else {
-      <div class="empty-card">
-        <app-empty-state
-          icon="filter_alt_off"
-          titleKey="batches.empty-state.no-match-title"
-          messageKey="batches.empty-state.no-match-message"
+      @if (store.batches().length) {
+        <!-- The environment, then the batches of each status with their counts, the search and the period -->
+        <app-list-toolbar
+          searchKey="batches.filters.search"
+          [search]="filter().search"
+          [activeFilters]="activeFilters()"
+          (searchChange)="patchFilter({ search: $event })"
         >
-          <button mat-stroked-button type="button" (click)="clearFilters()">
-            {{ 'batches.filters.clear' | translate }}
-          </button>
-        </app-empty-state>
-      </div>
-    }
-  } @else if (store.isLoading()) {
-    <div class="loading" role="status">
-      <mat-spinner diameter="40" [attr.aria-label]="'common.status-loading' | translate" />
+          <app-environment-selector
+            toolbarContext
+            appearance="inline"
+            allOptionKey="environments.all"
+            [environments]="environments()"
+            [selectedId]="filter().environmentId"
+            (selectedChange)="patchFilter({ environmentId: $event })"
+            (allSelected)="patchFilter({ environmentId: null })"
+          />
+          <app-batch-kpi-cards
+            toolbarFilters
+            [batches]="inContext()"
+            [selected]="filter().status"
+            (statusSelected)="chooseStatus($event)"
+          />
+          <app-batch-filters
+            toolbarMore
+            [filter]="filter()"
+            (filterChange)="filter.set($event)"
+            (cleared)="clearFilters()"
+          />
+        </app-list-toolbar>
+
+        @if (filtered().length) {
+          <!-- Table of batches with sorting and pagination -->
+          <app-batch-table [batches]="filtered()" [environments]="store.environments()" />
+        } @else {
+          <div class="empty-card">
+            <app-empty-state
+              icon="filter_alt_off"
+              titleKey="batches.empty-state.no-match-title"
+              messageKey="batches.empty-state.no-match-message"
+            >
+              <button mat-stroked-button type="button" (click)="clearFilters()">
+                {{ 'batches.filters.clear' | translate }}
+              </button>
+            </app-empty-state>
+          </div>
+        }
+      } @else if (store.isLoading()) {
+        <div class="loading" role="status">
+          <mat-spinner diameter="40" [attr.aria-label]="'common.status-loading' | translate" />
+        </div>
+      } @else if (!store.error()) {
+        <div class="empty-card">
+          <app-empty-state
+            icon="inventory_2"
+            titleKey="batches.empty-state.none-title"
+            messageKey="batches.empty-state.none-message"
+          >
+            <a mat-stroked-button routerLink="/batches/environments">
+              <mat-icon aria-hidden="true">factory</mat-icon>
+              {{ 'product-catalog.title' | translate }}
+            </a>
+          </app-empty-state>
+        </div>
+      }
     </div>
-  } @else if (!store.error()) {
-    <div class="empty-card">
-      <app-empty-state
-        icon="inventory_2"
-        titleKey="batches.empty-state.none-title"
-        messageKey="batches.empty-state.none-message"
-      >
-        <a mat-stroked-button routerLink="/batches/environments">
-          <mat-icon aria-hidden="true">factory</mat-icon>
-          {{ 'product-catalog.title' | translate }}
-        </a>
-      </app-empty-state>
-    </div>
-  }
+  </app-page-header>
 </main>

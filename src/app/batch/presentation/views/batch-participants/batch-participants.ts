@@ -18,6 +18,7 @@ import { ProductionEquipment } from '../../../domain/model/production-equipment.
 import { ProductionStaffMember } from '../../../domain/model/production-staff-member.entity';
 import { IamStore } from '../../../../iam/application/iam.store';
 import { DateTimePipe } from '../../../../shared/presentation/pipes/date-time.pipe';
+import { TablePaginator, paginate } from '../../../../shared/presentation/components/table-paginator/table-paginator';
 
 /**
  * Equipment and staff that took part in a batch, with the association forms while it is open.
@@ -33,7 +34,7 @@ import { DateTimePipe } from '../../../../shared/presentation/pipes/date-time.pi
   selector: 'app-batch-participants',
   standalone: true,
   imports: [
-    DateTimePipe,
+    TablePaginator, DateTimePipe,
     FormsModule,
     MatButtonModule,
     MatIconModule,
@@ -45,6 +46,12 @@ import { DateTimePipe } from '../../../../shared/presentation/pipes/date-time.pi
   styleUrl: './batch-participants.css',
 })
 export class BatchParticipants implements OnInit {
+  /** Page of the table shown; ten rows unless the person chooses more. */
+  protected readonly staffPage = paginate(() => this.store.traceability()?.staff ?? []);
+
+  /** Page of the table shown; ten rows unless the person chooses more. */
+  protected readonly equipmentPage = paginate(() => this.store.traceability()?.equipment ?? []);
+
   /** Laboratory, environment and product of the batch. */
   readonly path = input.required<BatchPath>();
   /** Identifier of the batch. */

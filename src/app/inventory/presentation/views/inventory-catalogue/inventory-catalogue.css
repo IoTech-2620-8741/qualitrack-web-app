@@ -7,110 +7,29 @@
 }
 
 .operations-page {
-  max-width: 1280px;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 24px;
+  padding: 32px 24px 48px;
 }
 
-.page-heading {
+/* The toolbar, the messages and the lists, one under the other */
+.inventory {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+.stock-chips {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 24px;
-}
-
-.actions {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 12px;
-}
-
-h1 {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin: 0;
-  color: var(--qt-heading);
-  font-size: 28px;
-  font-weight: 700;
-  letter-spacing: 0;
-}
-
-h1 mat-icon {
-  flex-shrink: 0;
-  width: 28px;
-  height: 28px;
-  color: var(--qt-primary);
-  font-size: 28px;
-}
-
-h2 {
-  margin: 0 0 16px;
-  color: var(--qt-text);
-  font-size: 20px;
-  font-weight: 700;
-}
-
-h1,
-h2,
-h3,
-p,
-a {
-  overflow-wrap: anywhere;
-  letter-spacing: 0;
-}
-
-.actions button,
-.actions a[mat-flat-button] {
-  min-height: 40px;
-  height: auto;
-  padding: 8px 16px;
-  border-radius: 999px;
-  font-size: 14px;
-  font-weight: 600;
-  text-decoration: none;
-  white-space: nowrap;
-  transition: background-color 0.2s ease, border-color 0.2s ease;
-}
-
-button[mat-stroked-button] {
-  border-color: var(--qt-border);
-  color: var(--qt-text);
-}
-
-button[mat-stroked-button][aria-pressed='true'] {
-  background: var(--qt-primary-surface);
-  border-color: var(--qt-primary);
-  color: var(--qt-primary-strong);
-}
-
-.primary-btn {
-  background: var(--qt-primary-strong);
-  color: var(--qt-surface);
-}
-
-.primary-btn:hover:not(:disabled) {
-  background: var(--qt-primary-hover);
-}
-
-.primary-btn:disabled {
-  background: var(--qt-border);
-  color: var(--qt-neutral-text);
-}
-
-button:focus-visible,
-a[mat-flat-button]:focus-visible {
-  outline: 3px solid var(--qt-primary);
-  outline-offset: 2px;
+  gap: 8px;
 }
 
 .error,
 .success,
 .notice {
-  margin: 0 0 24px;
+  margin: 0;
   padding: 16px;
   border: 1px solid;
   border-radius: 12px;
@@ -145,7 +64,7 @@ p[role='status'] {
 }
 
 .editor {
-  margin: 0 0 24px;
+  margin: 0;
   padding: 24px;
   background: var(--qt-surface);
   border: 1px solid var(--qt-border);
@@ -159,27 +78,12 @@ p[role='status'] {
 
 @media (max-width: 760px) {
   .operations-page {
-    padding: 16px;
-  }
-
-  h1 {
-    font-size: 24px;
-  }
-
-  h1 mat-icon {
-    width: 24px;
-    height: 24px;
-    font-size: 24px;
-  }
-
-  .page-heading .actions {
-    width: 100%;
+    padding: 20px 16px 36px;
   }
 
   .editor {
     padding: 16px;
   }
-
 }
 
 @media (prefers-reduced-motion: reduce) {

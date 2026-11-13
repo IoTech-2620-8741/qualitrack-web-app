@@ -1,24 +1,13 @@
 <main class="operations-page">
-  <div class="context-bar">
-    <app-environment-selector
-      allOptionKey="environments.all"
-      [environments]="store.environments()"
-      [selectedId]="environmentId()"
-      (selectedChange)="chooseEnvironment($event)"
-      (allSelected)="chooseAllEnvironments()"
-    />
-  </div>
-
-  <app-alerts-page-header
-    section="history"
-    subtitleKey="ca-alerts.history.subtitle"
-    [environmentId]="environmentId()"
+  <app-page-header
+    icon="notifications_active"
+    titleKey="ca-alerts.page.title"
+    [tabs]="tabs()"
+    activeTab="/alerts/history"
+    [loading]="store.loading()"
+    (refresh)="load()"
   >
-    <a mat-stroked-button routerLink="/reports/new" [queryParams]="reportQuery()">
-      <mat-icon aria-hidden="true">description</mat-icon>
-      {{ 'ca-alerts.history.export' | translate }}
-    </a>
-    <div alertsSection class="history">
+    <div class="history">
       @if (!detailOpen() && store.error(); as error) {
         <app-error-banner
           [messageKey]="error"
@@ -28,21 +17,29 @@
       }
 
       @if (store.environmentsEmpty()) {
-        <p class="notice">{{ 'ca-alerts.no-environments' | translate }}</p>
+        <app-setup-notice messageKey="ca-alerts.no-environments" [actionLink]="iam.canManageQuality() ? '/laboratories/environments/new' : null" />
       } @else if (store.environmentsLoaded()) {
-        @if (unavailableEnvironments(); as environments) {
-          <app-action-banner
-            icon="cloud_off"
-            tone="warning"
-            actionKey="ca-alerts.active.retry"
-            (action)="load()"
-          >
-            {{ 'ca-alerts.history.unavailable' | translate: { environments } }}
-          </app-action-banner>
-        }
-
-        <section class="filters" [attr.aria-label]="'ca-alerts.history.filters.label' | translate">
-          <div class="filter-row">
+        <!-- The environment and the report; then the period, the chips with their counts and the search -->
+        <app-list-toolbar
+          searchKey="ca-alerts.history.filters.search"
+          [search]="filter().search"
+          [activeFilters]="activeFilterCount()"
+          (searchChange)="search($event)"
+        >
+          <app-environment-selector
+            toolbarContext
+            appearance="inline"
+            allOptionKey="environments.all"
+            [environments]="store.environments()"
+            [selectedId]="environmentId()"
+            (selectedChange)="chooseEnvironment($event)"
+            (allSelected)="chooseAllEnvironments()"
+          />
+          <a toolbarActions mat-stroked-button routerLink="/reports/new" [queryParams]="reportQuery()">
+            <mat-icon aria-hidden="true">description</mat-icon>
+            {{ 'ca-alerts.history.export' | translate }}
+          </a>
+          <div toolbarFilters class="chip-groups" [attr.aria-label]="'ca-alerts.history.filters.label' | translate" role="group">
             <div class="chip-group" role="group" aria-labelledby="history-period">
               <span id="history-period" class="group-label">{{
                   'ca-alerts.history.filters.period' | translate
@@ -60,45 +57,6 @@
                 />
               }
             </div>
-            <mat-form-field appearance="outline" subscriptSizing="dynamic" class="search">
-              <mat-icon matPrefix aria-hidden="true">search</mat-icon>
-              <input
-                matInput
-                type="search"
-                [value]="filter().search"
-                [placeholder]="'ca-alerts.history.filters.search' | translate"
-                [attr.aria-label]="'ca-alerts.history.filters.search' | translate"
-                (input)="search($any($event.target).value)"
-              />
-            </mat-form-field>
-          </div>
-
-          @if (filter().period === null) {
-            <div class="custom-period">
-              <mat-form-field appearance="outline" subscriptSizing="dynamic">
-                <mat-label>{{ 'ca-alerts.history.filters.from' | translate }}</mat-label>
-                <input
-                  matInput
-                  type="date"
-                  [value]="filter().from ?? ''"
-                  [max]="filter().to ?? ''"
-                  (change)="chooseDay('from', $any($event.target).value)"
-                />
-              </mat-form-field>
-              <mat-form-field appearance="outline" subscriptSizing="dynamic">
-                <mat-label>{{ 'ca-alerts.history.filters.to' | translate }}</mat-label>
-                <input
-                  matInput
-                  type="date"
-                  [value]="filter().to ?? ''"
-                  [min]="filter().from ?? ''"
-                  (change)="chooseDay('to', $any($event.target).value)"
-                />
-              </mat-form-field>
-            </div>
-          }
-
-          <div class="filter-row">
             <div class="chip-group" role="group" aria-labelledby="history-severity">
               <span id="history-severity" class="group-label">{{
                   'ca-alerts.fields.severity' | translate
@@ -139,17 +97,54 @@
                 />
               }
             </div>
+          </div>
+          <div toolbarMore class="more">
+            @if (filter().period === null) {
+              <div class="custom-period">
+                <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                  <mat-label>{{ 'ca-alerts.history.filters.from' | translate }}</mat-label>
+                  <input
+                    matInput
+                    type="date"
+                    [value]="filter().from ?? ''"
+                    [max]="filter().to ?? ''"
+                    (change)="chooseDay('from', $any($event.target).value)"
+                  />
+                </mat-form-field>
+                <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                  <mat-label>{{ 'ca-alerts.history.filters.to' | translate }}</mat-label>
+                  <input
+                    matInput
+                    type="date"
+                    [value]="filter().to ?? ''"
+                    [min]="filter().from ?? ''"
+                    (change)="chooseDay('to', $any($event.target).value)"
+                  />
+                </mat-form-field>
+              </div>
+            }
             @if (isFiltered()) {
-              <button mat-button type="button" (click)="clearFilters()">
+              <button mat-button type="button" class="clear-filters" (click)="clearFilters()">
                 {{ 'ca-alerts.history.filters.clear' | translate }}
               </button>
             }
+            @if (narrowsTable()) {
+              <p class="export-note">{{ 'ca-alerts.history.export-note' | translate }}</p>
+            }
           </div>
+        </app-list-toolbar>
 
-          @if (narrowsTable()) {
-            <p class="export-note">{{ 'ca-alerts.history.export-note' | translate }}</p>
-          }
-        </section>
+        @if (unavailableEnvironments(); as environments) {
+          <app-action-banner
+            icon="cloud_off"
+            tone="warning"
+            actionKey="ca-alerts.active.retry"
+            (action)="load()"
+          >
+            {{ 'ca-alerts.history.unavailable' | translate: { environments } }}
+          </app-action-banner>
+        }
+
 
         @if (store.loading()) {
           <p role="status">{{ 'common.status-loading' | translate }}</p>
@@ -159,39 +154,8 @@
             <app-alert-week-chart [weeks]="weeks()" />
           </div>
 
-          <app-alert-table [alerts]="pageAlerts()" [now]="now()" />
+          <app-alert-table [alerts]="shownAlerts()" [now]="now()" />
 
-          <nav class="pager" [attr.aria-label]="'ca-alerts.history.pages.label' | translate">
-            <p role="status">
-              {{ 'ca-alerts.history.pages.showing' | translate: pageRange() }}
-            </p>
-            @if (pageCount() > 1) {
-              <div class="pager-buttons">
-                <button
-                  mat-icon-button
-                  type="button"
-                  [disabled]="page() === 1"
-                  [attr.aria-label]="'ca-alerts.history.pages.previous' | translate"
-                  (click)="goToPage(page() - 1)"
-                >
-                  <mat-icon aria-hidden="true">chevron_left</mat-icon>
-                </button>
-                <span>{{
-                    'ca-alerts.history.pages.current'
-                      | translate: { page: page(), count: pageCount() }
-                  }}</span>
-                <button
-                  mat-icon-button
-                  type="button"
-                  [disabled]="page() === pageCount()"
-                  [attr.aria-label]="'ca-alerts.history.pages.next' | translate"
-                  (click)="goToPage(page() + 1)"
-                >
-                  <mat-icon aria-hidden="true">chevron_right</mat-icon>
-                </button>
-              </div>
-            }
-          </nav>
         } @else if (isFiltered()) {
           <app-empty-state messageKey="ca-alerts.history.empty">
             <button mat-stroked-button type="button" (click)="clearFilters()">
@@ -211,7 +175,7 @@
         <p role="status">{{ 'common.status-loading' | translate }}</p>
       }
     </div>
-  </app-alerts-page-header>
+  </app-page-header>
 
   <router-outlet (activate)="detailOpen.set(true)" (deactivate)="detailOpen.set(false)" />
 </main>

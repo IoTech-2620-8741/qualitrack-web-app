@@ -19,6 +19,14 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { LaboratoryStore } from '../../../application/laboratory.store';
 import { IamStore } from '../../../../iam/application/iam.store';
 import { StaffMember } from '../../../domain/model/staff-member.entity';
+import { TablePaginator, paginate } from '../../../../shared/presentation/components/table-paginator/table-paginator';
+import { PageHeader } from '../../../../shared/presentation/components/page-header/page-header';
+import { ListToolbar } from '../../../../shared/presentation/components/list-toolbar/list-toolbar';
+import { FilterChip } from '../../../../shared/presentation/components/filter-chip/filter-chip';
+import { LABORATORY_TABS } from '../../laboratory-tabs';
+
+/** Which staff members the list shows. */
+type StatusFilter = 'all' | 'active' | 'inactive';
 
 /**
  * Component responsible for displaying and managing laboratory staff members.
@@ -31,18 +39,61 @@ import { StaffMember } from '../../../domain/model/staff-member.entity';
   selector: 'app-staff-list',
   standalone: true,
   imports: [
-    RouterLink,
+    TablePaginator, RouterLink,
     TranslatePipe,
     MatButtonModule,
     MatIconModule,
     MatTooltipModule,
     MatProgressSpinnerModule,
+    PageHeader,
+    ListToolbar,
+    FilterChip,
   ],
   templateUrl: './staff-list.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './staff-list.css',
 })
 export class StaffList implements OnInit {
+  /** Page of the table shown; ten rows unless the person chooses more. */
+  protected readonly staffPage = paginate(() => this.visibleStaff());
+
+  /** Operations of the laboratory module. */
+  protected readonly tabs = LABORATORY_TABS;
+
+  /** Whether the list shows everyone, only the active members or only the inactive ones. */
+  protected readonly status = signal<StatusFilter>('all');
+
+  /** Text searched in the name, the job title and the email of the members. */
+  protected readonly search = signal('');
+
+  /** Chips of the status, with the key of their name. */
+  protected readonly statusOptions: readonly { value: StatusFilter; labelKey: string }[] = [
+    { value: 'all', labelKey: 'common.all' },
+    { value: 'active', labelKey: 'common.active' },
+    { value: 'inactive', labelKey: 'common.inactive' },
+  ];
+
+  /** How many members each status chip holds. */
+  protected readonly counts = computed(() => {
+    const staff = this.store.staffList();
+    const active = staff.filter((member) => member.active).length;
+    return { all: staff.length, active, inactive: staff.length - active };
+  });
+
+  /** Members of the chosen status whose name, job title or email contains the searched text. */
+  protected readonly visibleStaff = computed(() => {
+    const status = this.status();
+    const text = this.search().trim().toLowerCase();
+    return this.store
+      .staffList()
+      .filter((member) => status === 'all' || member.active === (status === 'active'))
+      .filter(
+        (member) =>
+          !text ||
+          [member.fullName, member.role, member.email].some((value) => (value ?? '').toLowerCase().includes(text)),
+      );
+  });
+
   /**
    * Store that manages Laboratory bounded context state.
    */

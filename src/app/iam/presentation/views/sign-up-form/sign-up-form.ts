@@ -12,6 +12,10 @@ import { Router, RouterLink } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatIconModule } from '@angular/material/icon';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { groupErrorMatcher } from '../../../../shared/presentation/utils/group-error-matcher';
 
 import { IamStore } from '../../../application/iam.store';
 import { SignUpCommand } from '../../../domain/model/sign-up.command';
@@ -35,7 +39,7 @@ import { notBlankValidator } from '../../../../shared/presentation/validators/no
     ReactiveFormsModule,
     TranslatePipe,
     MatProgressSpinnerModule,
-    MatIconModule,
+    MatIconModule, MatFormFieldModule, MatInputModule, MatButtonModule,
     RouterLink,
   ],
   templateUrl: './sign-up-form.html',
@@ -43,6 +47,9 @@ import { notBlankValidator } from '../../../../shared/presentation/validators/no
   styleUrls: ['./sign-up-form.css'],
 })
 export class SignUpForm {
+  /** Shows the error of the form that compares this field with another one. */
+  protected readonly confirmMatcher = groupErrorMatcher('passwordMismatch');
+
   /**
    * Store responsible for authentication state and registration operations.
    */
