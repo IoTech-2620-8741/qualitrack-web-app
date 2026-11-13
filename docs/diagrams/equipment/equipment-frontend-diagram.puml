@@ -7,6 +7,9 @@ skinparam classAttributeIconSize 0
 hide empty members
 
 package "shared" {
+  class PageHeader <<component>>
+  class ListToolbar <<component>>
+  class TablePaginator <<component>>
   interface BaseEntity
   class BaseApi
   class BaseApiEndpoint
@@ -272,6 +275,20 @@ end note
 note left of EquipmentRoutes
   Source: equipment/presentation/equipment.routes.ts
   Public paths and guards remain unchanged.
+end note
+
+EquipmentList ..> PageHeader
+EquipmentList ..> ListToolbar
+EquipmentList ..> TablePaginator
+EnvironmentEquipment ..> TablePaginator
+note bottom of EnvironmentEquipment
+  Reads what is located in the environment and the Edge Gateway coverage
+  apart: when only the coverage fails, the devices and the equipment are
+  still listed under a notice.
+end note
+note bottom of EquipmentDetail
+  The API key of an Edge Gateway is read and generated only by a quality
+  manager; the platform refuses its status to anyone else.
 end note
 
 @enduml

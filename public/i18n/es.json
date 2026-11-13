@@ -863,7 +863,7 @@
       "new-alerts": "Alertas nuevas: {{count}}.",
       "attention-registered": "{{alert}} en atención",
       "attended-by-another": "Otra persona ya atendió esta alerta.",
-      "search": "Buscar dispositivo o variable",
+      "search": "Dispositivo o variable",
       "results": "Se muestran {{shown}} de {{total}} alertas.",
       "no-results": "No hay alertas con estos filtros.",
       "filters": {
@@ -1176,7 +1176,7 @@
       "environment": "Ambiente",
       "all-environments": "Todos los ambientes"
     },
-    "search": "Buscar por nombre, modelo, serie o identificador",
+    "search": "Buscar nombre, modelo, serie o ID",
     "summary": {
       "equipment": "Equipos de proceso",
       "devices": "Dispositivos IoT",
@@ -2084,6 +2084,7 @@
     "subtitle": "Edge Gateways, dispositivos IoT y equipos ubicados en este ambiente.",
     "open": "Ver los equipos y dispositivos de este ambiente",
     "view-in-list": "Ver en la lista de equipos",
+    "coverage-error": "No se pudo leer la cobertura de Edge Gateways de este ambiente. Sus dispositivos y equipos se listan abajo.",
     "uncovered-warning": "{{count}} dispositivo(s) IoT no tienen Edge Gateway, así que sus lecturas no llegan a QualiTrack. Cada Edge Gateway cubre hasta {{max}} dispositivos.",
     "summary": {
       "uncovered": "Dispositivos sin Edge Gateway"

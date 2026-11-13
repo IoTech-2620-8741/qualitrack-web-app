@@ -55,8 +55,14 @@ export class EnvironmentEquipment implements OnInit {
   /** Whether the content of the environment is being loaded. */
   protected readonly loading = signal(false);
 
+  /** Whether what is located in the environment was read, so its tables can be shown. */
+  protected readonly loaded = signal(false);
+
   /** Translation key or server message of the last load error, or `null` if there is none. */
   protected readonly error = signal<string | null>(null);
+
+  /** Translation key shown when the coverage could not be read; the rest of the view is still shown. */
+  protected readonly coverageError = signal<string | null>(null);
 
   /** The environment shown by the view, once the environments of the laboratory are known. */
   protected readonly environment = computed(
@@ -80,23 +86,33 @@ export class EnvironmentEquipment implements OnInit {
   /**
    * Loads what is located in the environment and the coverage of its Edge Gateways.
    *
-   * @returns A promise that resolves when both have been loaded or the load has failed.
+   * @remarks
+   * Both are read at the same time but apart: when only the coverage fails, the devices and the
+   * equipment are still shown, with a notice in place of the coverage.
+   *
+   * @returns A promise that resolves when both requests have answered.
    */
   protected async load(): Promise<void> {
     this.loading.set(true);
     this.error.set(null);
-    try {
-      const [located, coverage] = await Promise.all([
-        this.store.loadEnvironmentEquipment(this.environmentId()),
-        this.store.loadEdgeGatewayCoverage(this.environmentId()),
-      ]);
-      this.located.set(located);
-      this.coverage.set(coverage);
-    } catch (error) {
-      this.error.set(equipmentError(error));
-    } finally {
-      this.loading.set(false);
+    this.coverageError.set(null);
+    const [located, coverage] = await Promise.allSettled([
+      this.store.loadEnvironmentEquipment(this.environmentId()),
+      this.store.loadEdgeGatewayCoverage(this.environmentId()),
+    ]);
+    if (located.status === 'fulfilled') {
+      this.located.set(located.value);
+      this.loaded.set(true);
+    } else {
+      this.error.set(equipmentError(located.reason));
     }
+    if (coverage.status === 'fulfilled') {
+      this.coverage.set(coverage.value);
+    } else {
+      this.coverage.set(null);
+      this.coverageError.set('environment-equipment.coverage-error');
+    }
+    this.loading.set(false);
   }
 
   /**

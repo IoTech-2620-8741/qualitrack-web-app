@@ -78,15 +78,16 @@
   border-radius: 4px;
 }
 
+/* A long job title goes on two lines, between its words, so the table fits beside the side menu. */
 .role-tag {
   display: inline-block;
   padding: 4px 10px;
   background: var(--qt-neutral-surface);
-  border-radius: 999px;
+  border-radius: var(--qt-radius-medium);
   color: var(--qt-neutral-text);
   font-size: 12px;
   font-weight: 500;
-  white-space: nowrap;
+  line-height: 1.4;
 }
 
 .muted-text {

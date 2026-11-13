@@ -188,7 +188,8 @@ export class EquipmentDetail implements OnInit {
   private async load(id: number): Promise<void> {
     const equipment = await this.store.loadEquipmentById(id);
     if (!equipment) return;
-    if (equipment.isEdgeGateway) {
+    // Only a quality manager may read the key status; the platform refuses it to anyone else.
+    if (equipment.isEdgeGateway && this.store.canManage()) {
       this.apiKeyIssued.set(await this.store.loadEdgeGatewayApiKeyStatus(id));
     }
     await this.store.loadMaintenanceHistory(equipment);
