@@ -139,7 +139,7 @@ mat-button-toggle-group ::ng-deep .mat-button-toggle-button:focus-visible {
 .loading {
   display: flex;
   justify-content: center;
-  padding: 360px 0;
+  padding: 48px 0;
 }
 
 .error {
@@ -161,7 +161,7 @@ mat-button-toggle-group ::ng-deep .mat-button-toggle-button:focus-visible {
   align-items: center;
   justify-content: center;
   margin-bottom: 24px;
-  padding: 250px 24px;
+  padding: 64px 24px;
   background: var(--qt-surface);
   border: 1px dashed var(--qt-border);
   border-radius: 12px;
