@@ -487,10 +487,6 @@ package "ra.presentation" {
     +summaries / deviceNameFn
   }
 
-  class KpiRecords <<component>> {
-    +metrics
-  }
-
   note bottom of KpiDashboardComponent
     Environmental summary (US93): average, minimum and maximum
     per environment, device and variable of the last 24 hours,
@@ -694,7 +690,6 @@ KpiDashboardComponent --> RaStore
 KpiDashboardComponent ..> LastDays
 KpiDashboardComponent *-- KpiSummaryCards
 KpiDashboardComponent *-- KpiTable
-KpiDashboardComponent *-- KpiRecords
 KpiSummaryCards ..> OverviewEnvironmentalProfile
 OverviewEnvironmentalProfile *-- OverviewEnvironmentalThreshold
 OverviewEnvironmentalProfile ..|> BaseEntity
