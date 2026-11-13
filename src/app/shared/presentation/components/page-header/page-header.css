@@ -58,18 +58,6 @@ h1 mat-icon {
   font-size: 13px;
 }
 
-.live-dot {
-  flex: none;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--qt-success);
-}
-
-.partial .live-dot {
-  background: var(--qt-warning);
-}
-
 .refresh {
   color: var(--qt-text);
 }

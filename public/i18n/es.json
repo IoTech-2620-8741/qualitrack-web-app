@@ -313,7 +313,6 @@
     "filters": "Filtros",
     "clear-search": "Limpiar la búsqueda",
     "updated": "Actualizado {{time}}",
-    "live": "En vivo · actualizado {{time}}",
     "paginator": {
       "per-page": "Filas por página",
       "first": "Primera página",

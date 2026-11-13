@@ -292,9 +292,9 @@ mat-sidenav-content {
     font-size: 18px;
   }
 
+  /* The logo keeps the 12px of the desktop before the name, so they do not look stuck together */
   .toolbar img {
     height: 34px;
-    margin-right: 8px;
   }
 
   mat-sidenav {
