@@ -3,6 +3,11 @@
   container-type: inline-size;
 }
 
+.form-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
 .section-title {
   display: flex;
   align-items: center;
@@ -26,6 +31,14 @@
   color: var(--qt-surface);
   font-size: 14px;
   font-weight: 600;
+}
+
+.card-body {
+  padding: 24px;
+  background: var(--qt-surface);
+  border: 1px solid var(--qt-border);
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
 }
 
 .form-and-info {
@@ -172,7 +185,6 @@ mat-button-toggle-group ::ng-deep .mat-button-toggle-button:focus-visible {
   border-radius: 999px;
 }
 
-/* Panel de contenido (tarjeta dentro de tarjeta) */
 .info-column {
   padding-top: 4px;
   height: 100%;
@@ -301,6 +313,10 @@ mat-button-toggle-group ::ng-deep .mat-button-toggle-button:focus-visible {
 }
 
 @media (max-width: 760px) {
+  .card-body {
+    padding: 16px;
+  }
+
   .actions {
     width: 100%;
   }
