@@ -43,9 +43,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Compliance and Alerts, Equipment (ca, equipment): the searches of the active alerts and of the equipment read "Device or variable" and "Search name, model, serial or ID", so they are no longer cut at 1366 px (#107).
 
+- Reports (ra): the parameters of a new report are a card under the title of their step, like the report types (#108).
+
 ### Removed
 
 - Shared (shared): the stat filter card, which no view uses since the redesign (#107).
+
+- Reports (ra): the environmental summary no longer shows the laboratory records (equipment, batches and open alerts), which did not depend on its period or environment (#108); their texts are removed (#109).
 
 ### Fixed
 
@@ -58,6 +62,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Equipment (equipment): the view of an environment still lists its devices and equipment when its Edge Gateway coverage cannot be read, with a notice instead of only an error (#107).
 
 - Reports (ra): the empty summary no longer offers View last 31 days when those are the days shown (#105).
+
+- Reports (ra): the loading and empty states of the environmental summary and of the deviation indicators fit on the screen again; at 1366 px and on phones their message was left below a blank box (#109).
 
 - Shared (shared): long page titles stay whole on phones, and the toolbar search is announced as a search box (#105).
 
