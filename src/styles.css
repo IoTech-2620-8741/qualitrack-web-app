@@ -76,7 +76,8 @@ h1, h2, h3 { line-height: 1.25; }
  */
 .table-card {
   min-width: 0;
-  overflow: hidden;
+  /* A table wider than its card scrolls inside it instead of being cut. */
+  overflow-x: auto;
   background: var(--qt-surface);
   border: 1px solid var(--qt-border);
   border-radius: var(--qt-radius-medium);
@@ -109,8 +110,17 @@ table.data-table td {
   color: var(--qt-text);
   font-size: 14px;
   font-variant-numeric: tabular-nums;
-  overflow-wrap: anywhere;
+  /*
+   * A column is never narrower than its longest word, so a status such as "Operational" or a role such as
+   * "Operator" is not split in two; `anywhere` let the table shrink a column below its words.
+   */
+  overflow-wrap: break-word;
   vertical-align: middle;
+}
+
+/* Long values without spaces, such as e-mail addresses, may break anywhere so the table still fits. */
+table.data-table td.long-value {
+  overflow-wrap: anywhere;
 }
 
 table.data-table tr:last-child td {
