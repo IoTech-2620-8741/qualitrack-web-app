@@ -4,8 +4,6 @@
     titleKey="ca-alerts.page.title"
     [tabs]="tabs()"
     activeTab="/alerts"
-    [live]="true"
-    [partial]="store.unavailableEnvironmentIds().length > 0"
     [updatedAt]="store.alertsUpdatedAt()"
     [loading]="store.loading() || store.refreshing()"
     (refresh)="refresh()"

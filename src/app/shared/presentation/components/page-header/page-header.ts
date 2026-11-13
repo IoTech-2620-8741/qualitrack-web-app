@@ -38,8 +38,8 @@ export interface PageTab {
  *
  * @remarks
  * Next to the title there is only the time of the last update and the button to refresh: the actions of a page
- * go in its list toolbar. The time comes from `updatedAt`, or else from the moment `loading` last ended. Pages that
- * read their data again by themselves say so with `live`. The page projects its content after the tabs.
+ * go in its list toolbar. The time comes from `updatedAt`, or else from the moment `loading` last ended. The page
+ * projects its content after the tabs.
  *
  * @example
  * ```html
@@ -71,14 +71,8 @@ export interface PageTab {
         </h1>
         <div class="status">
           @if (refreshable() && lastUpdate(); as lastUpdate) {
-            <span class="updated" [class.live]="live()" [class.partial]="partial()" role="status">
-              @if (live()) {
-                <span class="live-dot" aria-hidden="true"></span>
-              }
-              <span class="updated-text">{{
-                (live() ? 'common.live' : 'common.updated')
-                  | translate: { time: (lastUpdate | relativeTime: now()) }
-              }}</span>
+            <span class="updated" role="status">
+              <span class="updated-text">{{ 'common.updated' | translate: { time: (lastUpdate | relativeTime: now()) } }}</span>
             </span>
           }
           @if (refreshable()) {
@@ -156,12 +150,6 @@ export class PageHeader {
 
   /** Link or id of the tab of the page. */
   readonly activeTab = input<string | null>(null);
-
-  /** Whether the page reads its data again by itself, which the time says. */
-  readonly live = input(false);
-
-  /** Whether part of the data could not be read, which the dot of the live status shows. */
-  readonly partial = input(false);
 
   /** Whether the data is being read; the button waits and the time is taken when it ends. */
   readonly loading = input(false);

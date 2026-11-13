@@ -12,7 +12,6 @@ import { PageHeader, PageTab } from './page-header';
       titleKey="page.title"
       [tabs]="tabs()"
       [activeTab]="activeTab()"
-      [live]="live()"
       [loading]="loading()"
       [refreshable]="refreshable()"
       (refresh)="refreshed = refreshed + 1"
@@ -25,7 +24,6 @@ import { PageHeader, PageTab } from './page-header';
 class HostPage {
   readonly tabs = signal<PageTab[]>([]);
   readonly activeTab = signal<string | null>(null);
-  readonly live = signal(false);
   readonly loading = signal(false);
   readonly refreshable = signal(true);
   refreshed = 0;
@@ -62,9 +60,6 @@ describe('PageHeader', () => {
     expect(element.querySelector('.updated')?.textContent).toContain('common.updated');
     expect(element.querySelectorAll('.status > *')).toHaveLength(2);
 
-    host.live.set(true);
-    fixture.detectChanges();
-    expect(element.querySelector('.updated')?.textContent).toContain('common.live');
   });
 
   it('waits while the data is being read', () => {
