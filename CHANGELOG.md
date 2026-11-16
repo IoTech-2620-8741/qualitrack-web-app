@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Batches (batches): an operator or a quality manager creates a batch from Production Batches with New Batch, choosing the environment and the product in the same form (#112).
+
+- Batches (batches): the release and reject forms show the batch number with its status, product, environment, quantity and start date, and ask for confirmation on a dialog that names the batch (#112).
+
+### Fixed
+
+- Batches (batches): the reject form says that the rejection cannot be undone, and the hint of the batch number no longer covers the Quantity label below about 1280 px (#112).
+
 ## [2.5.0] - 2026-11-13
 
 ### Added
