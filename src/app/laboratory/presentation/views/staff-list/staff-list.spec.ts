@@ -27,15 +27,21 @@ describe('StaffList', () => {
 
   it('offers the quality manager the deactivation of the active members', () => {
     const element = open(true);
-    expect(element.querySelectorAll('thead th').length).toBe(6);
-    expect(element.querySelectorAll('tbody tr:first-child td').length).toBe(6);
+    expect(element.querySelectorAll('thead th').length).toBe(5);
+    expect(element.querySelectorAll('tbody tr:first-child td').length).toBe(5);
     expect(element.querySelectorAll('.danger-icon').length).toBe(1);
   });
 
   it('shows the other roles the members without any action', () => {
     const element = open(false);
-    expect(element.querySelectorAll('thead th').length).toBe(5);
-    expect(element.querySelectorAll('tbody tr:first-child td').length).toBe(5);
+    expect(element.querySelectorAll('thead th').length).toBe(4);
+    expect(element.querySelectorAll('tbody tr:first-child td').length).toBe(4);
     expect(element.querySelector('.danger-icon')).toBeNull();
+  });
+
+  it('shows the email under the name, wrapping only before its @', () => {
+    const email = open(true).querySelector('tbody tr:first-child td.name-cell .email')!;
+    expect(email.textContent).toMatch(/^member\d+@example\.test$/);
+    expect(email.querySelector('wbr')?.nextSibling?.textContent).toBe('@example.test');
   });
 });

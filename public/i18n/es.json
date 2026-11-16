@@ -1315,12 +1315,11 @@
   },
   "staff-list": {
     "title": "Gestión de Personal",
-    "register": "Añadir Personal",
+    "register": "Registrar personal",
     "search": "Buscar nombre, cargo o correo",
     "empty-filtered": "Ningún miembro del personal coincide con estos filtros.",
     "name": "Nombre Completo",
     "role": "Cargo",
-    "email": "Correo Corporativo",
     "status": "Estado Laboral",
     "empty": "No hay personal registrado aún.",
     "access-role": "Acceso",

@@ -125,6 +125,17 @@ export class StaffList implements OnInit {
   protected readonly error = signal<string | null>(null);
 
   /**
+   * Splits an email before its @, so the table can wrap it there.
+   *
+   * @param email - The email of the staff member.
+   * @returns The part before the @ and the rest, which is empty when there is no @.
+   */
+  protected emailLines(email: string): [string, string] {
+    const at = email.indexOf('@');
+    return at > 0 ? [email.slice(0, at), email.slice(at)] : [email, ''];
+  }
+
+  /**
    * Quality managers and auditors can open the activity history of a staff member.
    */
   protected readonly canSeeActivity = computed(

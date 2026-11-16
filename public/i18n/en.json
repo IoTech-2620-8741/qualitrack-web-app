@@ -1315,12 +1315,11 @@
   },
   "staff-list": {
     "title": "Personnel Management",
-    "register": "Add Staff",
+    "register": "Register Staff Member",
     "search": "Search name, job title or email",
     "empty-filtered": "No staff members match these filters.",
     "name": "Full Name",
     "role": "Job title",
-    "email": "Corporate Email",
     "status": "Employment Status",
     "empty": "No staff members registered yet.",
     "access-role": "Access",
