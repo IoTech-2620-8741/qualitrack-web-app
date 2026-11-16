@@ -1,4 +1,4 @@
-import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, computed, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { RouterOutlet } from '@angular/router';
 
@@ -40,6 +40,15 @@ export class App {
 
   /** Injected to provide UI state to the Layout and its projected components. */
   protected readonly iam = inject(IamStore);
+
+  /**
+   * Whether the operational screens and their side menu apply. While the onboarding is being read after a reload,
+   * a signed-in person keeps the menu, so the page does not open under it; the onboarding then confirms or hides it.
+   */
+  protected readonly operationalAccess = computed(() => {
+    const onboarding = this.iam.onboarding();
+    return onboarding ? onboarding.nextStep === 'READY' : this.iam.isSignedIn();
+  });
 
   constructor() {
     this.translate.addLangs(['en', 'es']);

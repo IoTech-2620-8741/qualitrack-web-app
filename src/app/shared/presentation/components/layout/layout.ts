@@ -1,5 +1,5 @@
 import {
-  Component, DestroyRef, computed, effect, inject, input, signal, viewChild, ChangeDetectionStrategy,
+  Component, DestroyRef, computed, inject, input, linkedSignal, viewChild, ChangeDetectionStrategy,
 } from '@angular/core';
 import { NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router';
 import { BreakpointObserver } from '@angular/cdk/layout';
@@ -101,7 +101,11 @@ export class Layout {
 
   /** Accessible name of the logo link, following {@link Layout.brandLink}. */
   protected readonly brandLabel = computed(() => (this.isSignedIn() ? 'brand.go-dashboard' : 'brand.go-home'));
-  protected readonly sidenavOpened = signal(false);
+  /**
+   * Whether the side menu is open: on a desktop it starts open from the first render, so the content never slides
+   * under it; the person can still close it, until the screen size or the access changes.
+   */
+  protected readonly sidenavOpened = linkedSignal(() => !this.mobile() && this.hasOperationalAccess());
 
   /**
    * Navigation sections rendered by the layout template, ordered by how often the laboratory works with them:
@@ -236,7 +240,6 @@ export class Layout {
       .filter((section) => section.options.length > 0);
   });
   constructor(private readonly router: Router) {
-    effect(() => this.sidenavOpened.set(!this.mobile() && this.hasOperationalAccess()));
     router.events
       .pipe(filter((event) => event instanceof NavigationEnd), takeUntilDestroyed(inject(DestroyRef)))
       .subscribe(() => { if (this.mobile()) void this.drawer()?.close(); });
