@@ -1521,6 +1521,11 @@
     }
   },
   "report-generator": {
+    "missing": {
+      "batch": "Choose a batch to generate the report.",
+      "equipment": "Choose an equipment to generate the report.",
+      "period": "Choose a period to generate the report."
+    },
     "title": "Report & Document Generator",
     "subtitle": "Traceability and compliance documents ready for DIGEMID audit.",
     "generating": "Generating report...",

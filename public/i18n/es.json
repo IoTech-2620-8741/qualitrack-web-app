@@ -1520,6 +1520,11 @@
     }
   },
   "report-generator": {
+    "missing": {
+      "batch": "Elige un lote para generar el reporte.",
+      "equipment": "Elige un equipo para generar el reporte.",
+      "period": "Elige un periodo para generar el reporte."
+    },
     "title": "Generador de Reportes y Documentos",
     "subtitle": "Documentos de trazabilidad y cumplimiento listos para auditoría DIGEMID.",
     "generating": "Generando reporte...",
