@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.6.0] - 2026-11-16
+
 ### Added
 
 - Batches (batches): an operator or a quality manager creates a batch from Production Batches with New Batch, choosing the environment and the product in the same form (#112).
@@ -18,6 +20,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Equipment (equipment): the equipment form asks for the environment where the equipment is installed, optional, and locates it right after registering it (#115).
 
 - Inventory (inventory): the Usable stock and Physical balance columns of the raw material table have a help tooltip that says what each one counts (#116).
+
+### Changed
+
+- Release: package and lockfile versions are now 2.6.0.
 
 ### Fixed
 
