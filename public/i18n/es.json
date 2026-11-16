@@ -1184,7 +1184,7 @@
     }
   },
   "equipment-form": {
-    "title": "Nuevo Equipo",
+    "title": "Registrar equipo",
     "subtitle": "Ingrese las especificaciones técnicas del activo",
     "placeholders": {
       "name": "Ej. Autoclave Estándar",
@@ -1937,7 +1937,7 @@
   },
   "device-form": {
     "add-button": "Registrar dispositivo IoT",
-    "title": "Nuevo Dispositivo IoT",
+    "title": "Registrar dispositivo IoT",
     "subtitle": "Dispositivo ambiental o monitor de contenedor ESP32, y el identificador con el que llegan sus lecturas",
     "fields": {
       "device-type": "Tipo de dispositivo",
