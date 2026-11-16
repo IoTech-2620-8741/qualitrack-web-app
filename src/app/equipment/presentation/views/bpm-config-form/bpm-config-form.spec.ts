@@ -8,6 +8,7 @@ import { BpmConfigForm } from './bpm-config-form';
 
 describe('BpmConfigForm', () => {
   const configureBpm = vi.fn();
+  const loadEquipmentById = vi.fn().mockResolvedValue(null);
 
   function create() {
     TestBed.configureTestingModule({
@@ -21,6 +22,7 @@ describe('BpmConfigForm', () => {
       ],
     });
     vi.spyOn(TestBed.inject(EquipmentStore), 'configureBpm').mockImplementation(configureBpm);
+    vi.spyOn(TestBed.inject(EquipmentStore), 'loadEquipmentById').mockImplementation(loadEquipmentById);
     vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
     const fixture = TestBed.createComponent(BpmConfigForm);
     fixture.detectChanges();
@@ -77,6 +79,11 @@ describe('BpmConfigForm', () => {
     component.form.setValue(valid);
     component.onSave();
     expect(configureBpm).toHaveBeenCalled();
+  });
+
+  it('loads the equipment the parameter belongs to', () => {
+    create();
+    expect(loadEquipmentById).toHaveBeenCalledWith(4);
   });
 
   it('fills in the unit when a monitored variable is picked, and still accepts any other name', () => {

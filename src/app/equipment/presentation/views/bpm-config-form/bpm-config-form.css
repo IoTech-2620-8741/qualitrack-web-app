@@ -68,6 +68,25 @@ h1 mat-icon {
   color: var(--qt-primary);
 }
 
+.equipment-line {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  margin: 0 0 8px;
+  color: var(--qt-text-muted);
+  font-size: 14px;
+}
+
+.equipment-line strong {
+  color: var(--qt-heading);
+  font-size: 18px;
+}
+
+.equipment-line mat-icon {
+  color: var(--qt-primary);
+}
+
 .muted {
   margin: 0 0 24px;
   color: var(--qt-text-muted);

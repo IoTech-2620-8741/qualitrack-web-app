@@ -135,6 +135,11 @@ export class BpmConfigForm implements OnInit {
     { key: 'tracking.metrics.LUMINOSITY', unit: 'lux' },
   ];
 
+  /**
+   * The equipment the parameter belongs to, once loaded.
+   */
+  protected readonly equipment = this.store.selectedEquipment;
+
   protected form: FormGroup = this.fb.group(
     {
       parameterName: ['', [Validators.required, notBlankValidator, Validators.maxLength(100)]],
@@ -173,6 +178,7 @@ export class BpmConfigForm implements OnInit {
 
     if (idParam) {
       this.equipmentId.set(Number(idParam));
+      if (this.equipment()?.id !== Number(idParam)) void this.store.loadEquipmentById(Number(idParam));
     }
   }
 
