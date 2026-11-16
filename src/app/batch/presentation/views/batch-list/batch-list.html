@@ -21,6 +21,11 @@
           [activeFilters]="activeFilters()"
           (searchChange)="patchFilter({ search: $event })"
         >
+          @if (store.canOperate()) {
+            <a toolbarActions mat-flat-button routerLink="/batches/new">
+              <mat-icon>add</mat-icon>{{ 'batches.add-button' | translate }}
+            </a>
+          }
           <app-environment-selector
             toolbarContext
             appearance="inline"
@@ -71,6 +76,12 @@
             titleKey="batches.empty-state.none-title"
             messageKey="batches.empty-state.none-message"
           >
+            @if (store.canOperate()) {
+              <a mat-flat-button routerLink="/batches/new">
+                <mat-icon aria-hidden="true">add</mat-icon>
+                {{ 'batches.add-button' | translate }}
+              </a>
+            }
             <a mat-stroked-button routerLink="/batches/environments">
               <mat-icon aria-hidden="true">factory</mat-icon>
               {{ 'product-catalog.title' | translate }}
