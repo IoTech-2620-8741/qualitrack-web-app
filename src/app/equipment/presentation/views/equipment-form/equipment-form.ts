@@ -1,4 +1,4 @@
-import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -37,7 +37,7 @@ import { notBlankValidator } from '../../../../shared/presentation/validators/no
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './equipment-form.css',
 })
-export class EquipmentForm {
+export class EquipmentForm implements OnInit {
   private readonly fb = inject(FormBuilder);
 
   private readonly router = inject(Router);
@@ -65,10 +65,15 @@ export class EquipmentForm {
       '',
       [Validators.required, Validators.maxLength(50), Validators.pattern(/^[a-zA-Z0-9-]+$/)],
     ],
+    environmentId: this.fb.control<number | null>(null),
   });
 
   constructor() {
     this.store.clearMessages();
+  }
+
+  ngOnInit(): void {
+    void this.store.loadEnvironments();
   }
 
   protected async onSave(): Promise<void> {
@@ -77,7 +82,12 @@ export class EquipmentForm {
       this.form.markAllAsTouched();
       return;
     }
-    const equipment = await this.store.registerEquipment(this.form.getRawValue());
-    if (equipment) await this.router.navigate(['/equipments', equipment.id]);
+    const { environmentId, ...command } = this.form.getRawValue();
+    const equipment = await this.store.registerEquipment(command, environmentId);
+    if (!equipment) return;
+    // An equipment whose location failed is still registered: its detail explains why and lets it be located again.
+    const locationError =
+      environmentId !== null && equipment.environmentId === null ? this.store.error() : null;
+    await this.router.navigate(['/equipments', equipment.id], { state: { locationError } });
   }
 }

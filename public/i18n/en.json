@@ -1191,6 +1191,9 @@
       "model": "e.g. RX-200",
       "serial": "e.g. SN-987654321"
     },
+    "hints": {
+      "environment": "Optional; it can also be located later from its detail."
+    },
     "errors": {
       "name-minlength": "The equipment name must have at least 3 characters",
       "serial-pattern": "Only letters, numbers, and hyphens are allowed"
@@ -1211,7 +1214,7 @@
       "move-hint": "Choose another environment if the equipment was moved.",
       "associate": "Associate",
       "move": "Move",
-      "not-recorded": "The device was registered but its environment was not recorded."
+      "not-recorded": "It was registered, but its environment was not recorded."
     },
     "status-change": {
       "title": "Operational status",

@@ -1191,6 +1191,9 @@
       "model": "Ej. RX-200",
       "serial": "Ej. SN-987654321"
     },
+    "hints": {
+      "environment": "Opcional; también se puede ubicar después desde su detalle."
+    },
     "errors": {
       "name-minlength": "El nombre del equipo debe tener al menos 3 caracteres",
       "serial-pattern": "Solo se permiten letras, números y guiones"
@@ -1211,7 +1214,7 @@
       "move-hint": "Elige otro ambiente si el equipo fue trasladado.",
       "associate": "Asociar",
       "move": "Trasladar",
-      "not-recorded": "El dispositivo se registró, pero no se guardó su ambiente."
+      "not-recorded": "Se registró, pero no se guardó su ambiente."
     },
     "status-change": {
       "title": "Estado operativo",
