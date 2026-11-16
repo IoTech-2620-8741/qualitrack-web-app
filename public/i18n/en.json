@@ -5,7 +5,7 @@
     "title": "Inventory",
     "refresh": "Refresh",
     "legacy": "Previous balances",
-    "newMaterial": "New material",
+    "importLegacy": "Import previous balances",
     "code": "Code",
     "name": "Material",
     "unit": "Unit",

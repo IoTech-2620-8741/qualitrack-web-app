@@ -5,7 +5,7 @@
     "title": "Inventario",
     "refresh": "Actualizar",
     "legacy": "Saldos anteriores",
-    "newMaterial": "Nueva materia prima",
+    "importLegacy": "Importar saldos anteriores",
     "code": "Código",
     "name": "Materia prima",
     "unit": "Unidad",
