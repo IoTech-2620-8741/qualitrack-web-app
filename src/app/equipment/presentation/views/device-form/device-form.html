@@ -14,7 +14,7 @@
   }
 
   <form class="editor form-grid" [formGroup]="form" (ngSubmit)="onSave()">
-    <mat-form-field appearance="outline" class="full-width">
+    <mat-form-field appearance="outline" class="full-width" subscriptSizing="dynamic">
       <mat-label>{{ 'device-form.fields.device-type' | translate }}</mat-label>
       <mat-select formControlName="deviceType">
         @for (type of deviceTypes; track type) {
@@ -24,7 +24,7 @@
       <mat-hint>{{ 'device-types.hints.' + form.controls.deviceType.value | translate }}</mat-hint>
     </mat-form-field>
 
-    <mat-form-field appearance="outline">
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
       <mat-label>{{ 'equipment-list.fields.name' | translate }}</mat-label>
       <input matInput formControlName="name" maxlength="150" [placeholder]="'device-form.placeholders.name' | translate">
       @if (form.controls.name.hasError('required')) {
@@ -38,7 +38,7 @@
       }
     </mat-form-field>
 
-    <mat-form-field appearance="outline">
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
       <mat-label>{{ 'device-form.fields.identifier' | translate }}</mat-label>
       <input matInput formControlName="sensorExternalId" maxlength="50" autocomplete="off" [placeholder]="'device-form.placeholders.identifier' | translate">
       <mat-hint>{{ 'device-form.hints.identifier' | translate }}</mat-hint>
@@ -53,7 +53,7 @@
       }
     </mat-form-field>
 
-    <mat-form-field appearance="outline">
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
       <mat-label>{{ 'device-form.fields.serial' | translate }}</mat-label>
       <input matInput formControlName="serialNumber" maxlength="50" autocomplete="off" [placeholder]="'device-form.placeholders.serial' | translate">
       @if (form.controls.serialNumber.hasError('required')) {
@@ -65,9 +65,12 @@
       @if (form.controls.serialNumber.hasError('code')) {
         <mat-error>{{ 'common.invalidCode' | translate }}</mat-error>
       }
+      @if (form.controls.serialNumber.hasError('mac')) {
+        <mat-error>{{ 'device-form.errors.mac' | translate }}</mat-error>
+      }
     </mat-form-field>
 
-    <mat-form-field appearance="outline">
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
       <mat-label>{{ 'equipment-list.fields.model' | translate }}</mat-label>
       <input matInput formControlName="model" maxlength="100">
       @if (form.controls.model.hasError('required')) {
@@ -78,7 +81,7 @@
       }
     </mat-form-field>
 
-    <mat-form-field appearance="outline">
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
       <mat-label>{{ 'device-form.fields.firmware' | translate }}</mat-label>
       <input matInput formControlName="firmwareVersion" maxlength="50" autocomplete="off" [placeholder]="'device-form.placeholders.firmware' | translate">
       @if (form.controls.firmwareVersion.hasError('pattern')) {
@@ -86,7 +89,7 @@
       }
     </mat-form-field>
 
-    <mat-form-field appearance="outline">
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
       <mat-label>{{ 'device-form.fields.environment' | translate }}</mat-label>
       <mat-select formControlName="environmentId">
         <mat-option [value]="null">{{ 'device-form.no-environment' | translate }}</mat-option>

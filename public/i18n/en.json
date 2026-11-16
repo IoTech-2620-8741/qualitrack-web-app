@@ -1954,7 +1954,8 @@
     "no-environment": "Associate later",
     "occupied": "already has an environmental device",
     "errors": {
-      "firmware": "Use a format like 1.2.3, v1.2 or 2.0.1-beta.1"
+      "firmware": "Use a format like 1.2.3, v1.2 or 2.0.1-beta.1",
+      "mac": "A MAC address has six pairs of hexadecimal digits (0-9, A-F) separated by : or -."
     }
   },
   "device-types": {

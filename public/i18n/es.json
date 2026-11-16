@@ -1953,7 +1953,8 @@
     "no-environment": "Asociar después",
     "occupied": "ya tiene un dispositivo ambiental",
     "errors": {
-      "firmware": "Use un formato como 1.2.3, v1.2 o 2.0.1-beta.1"
+      "firmware": "Use un formato como 1.2.3, v1.2 o 2.0.1-beta.1",
+      "mac": "Una dirección MAC tiene seis pares de dígitos hexadecimales (0-9, A-F) separados por : o -."
     }
   },
   "device-types": {
