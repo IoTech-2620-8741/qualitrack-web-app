@@ -1073,6 +1073,7 @@
     "closed-on": "Closed on",
     "closed-notice": "This batch is closed: no more raw materials, equipment or staff can be added.",
     "back-to": "Back to {{product}}",
+    "back-to-batch": "Back to {{batch}}",
     "summary": "Batch summary"
   },
   "batch-release": {
@@ -1093,7 +1094,9 @@
     },
     "notice": "The release is signed with your user and the batch can no longer be modified.",
     "quality-only": "Only quality managers and administrators can release or reject batches.",
-    "saved": "Batch released and signed."
+    "saved": "Batch released and signed.",
+    "confirm-title": "Release batch {{batch}}?",
+    "confirm-action": "Release {{batch}}"
   },
   "batch-reject": {
     "title": "Reject Batch",
@@ -1111,8 +1114,10 @@
     "actions": {
       "submit": "Reject Batch"
     },
-    "notice": "The reason is kept with the batch for traceability and audits.",
-    "saved": "Batch rejected."
+    "notice": "The rejection cannot be undone: the batch can no longer be modified, and the reason is kept for traceability and audits.",
+    "saved": "Batch rejected.",
+    "confirm-title": "Reject batch {{batch}}?",
+    "confirm-action": "Reject {{batch}}"
   },
   "batch-usage": {
     "title": "Register Raw Material Usage",

@@ -3,12 +3,18 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ActivatedRoute, provideRouter } from '@angular/router';
 import { provideTranslateService } from '@ngx-translate/core';
+import { MatDialog } from '@angular/material/dialog';
+import { of } from 'rxjs';
 import { IamStore } from '../../../../iam/application/iam.store';
 import { todayInLima } from '../../../../shared/presentation/utils/local-date';
 import { BatchStore } from '../../../application/batch.store';
+import { BatchDecisionDialog } from '../../components/batch-decision-dialog/batch-decision-dialog';
 import { BatchReleaseForm } from './batch-release-form';
 
 describe('BatchReleaseForm', () => {
+  let answer: boolean | undefined;
+  const dialog = { open: vi.fn(() => ({ afterClosed: () => of(answer) })) };
+
   function create(startDate: string | null = '2026-09-01') {
     TestBed.configureTestingModule({
       imports: [BatchReleaseForm],
@@ -19,6 +25,7 @@ describe('BatchReleaseForm', () => {
         provideRouter([]),
         { provide: IamStore, useValue: { requireLaboratoryId: () => 1, canManageQuality: () => true, canOperate: () => true } },
         { provide: ActivatedRoute, useValue: { snapshot: { paramMap: { get: () => '5' } } } },
+        { provide: MatDialog, useValue: dialog },
       ],
     });
     const store = TestBed.inject(BatchStore);
@@ -29,6 +36,7 @@ describe('BatchReleaseForm', () => {
       form: import('@angular/forms').FormGroup;
       minDate: string;
       maxDate: string;
+      submit(): Promise<void>;
     };
   }
 
@@ -73,5 +81,21 @@ describe('BatchReleaseForm', () => {
 
   it('limits the date input to 2020 while the batch is not loaded', () => {
     expect(create(null).minDate).toBe('2020-01-01');
+  });
+
+  it.each([
+    [undefined, 0],
+    [true, 1],
+  ])('asks to confirm on a dialog that names the batch and only goes on when confirmed (%s)', async (reply, calls) => {
+    answer = reply;
+    dialog.open.mockClear();
+    const component = create();
+    const decide = vi.spyOn(TestBed.inject(BatchStore), 'releaseBatch').mockResolvedValue(false);
+    component.form.setValue({ releaseDate: '2026-09-01', notes: text });
+    await component.submit();
+    expect(dialog.open).toHaveBeenCalledWith(BatchDecisionDialog, {
+      data: { decision: 'release', batch: expect.objectContaining({ id: 5 }) },
+    });
+    expect(decide).toHaveBeenCalledTimes(calls);
   });
 });

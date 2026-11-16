@@ -1073,6 +1073,7 @@
     "closed-on": "Cerrado el",
     "closed-notice": "Este lote está cerrado: ya no se pueden agregar materias primas, equipos ni personal.",
     "back-to": "Volver a {{product}}",
+    "back-to-batch": "Volver a {{batch}}",
     "summary": "Resumen del lote"
   },
   "batch-release": {
@@ -1093,7 +1094,9 @@
     },
     "notice": "La liberación se firma con tu usuario y el lote ya no se podrá modificar.",
     "quality-only": "Solo los responsables de calidad y los administradores pueden liberar o rechazar lotes.",
-    "saved": "Lote liberado y firmado."
+    "saved": "Lote liberado y firmado.",
+    "confirm-title": "¿Liberar el lote {{batch}}?",
+    "confirm-action": "Liberar {{batch}}"
   },
   "batch-reject": {
     "title": "Rechazar Lote",
@@ -1111,8 +1114,10 @@
     "actions": {
       "submit": "Rechazar Lote"
     },
-    "notice": "El motivo se conserva con el lote para la trazabilidad y las auditorías.",
-    "saved": "Lote rechazado."
+    "notice": "El rechazo no se puede deshacer: el lote ya no se podrá modificar y el motivo se conserva para la trazabilidad y las auditorías.",
+    "saved": "Lote rechazado.",
+    "confirm-title": "¿Rechazar el lote {{batch}}?",
+    "confirm-action": "Rechazar {{batch}}"
   },
   "batch-usage": {
     "title": "Registrar Uso de Materia Prima",

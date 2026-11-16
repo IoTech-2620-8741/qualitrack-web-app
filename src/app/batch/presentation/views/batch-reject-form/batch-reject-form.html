@@ -1,10 +1,25 @@
 <main class="operations-page">
   <!-- Back link to the batch -->
-  <a [routerLink]="batchLink">{{ 'batch-detail.title' | translate }}</a>
+  <a [routerLink]="batchLink">
+    @if (store.selectedBatch(); as batch) {
+      {{ 'batch-detail.back-to-batch' | translate: { batch: batch.batchNumber } }}
+    } @else {
+      {{ 'batch-detail.title' | translate }}
+    }
+  </a>
   <header class="page-heading">
     <h1><mat-icon aria-hidden="true">cancel</mat-icon>{{ 'batch-reject.title' | translate }}</h1>
   </header>
   <p class="muted">{{ 'batch-reject.notice' | translate }}</p>
+  <!-- The batch being rejected, so it is not confused with another one -->
+  @if (store.selectedBatch(); as batch) {
+    <div class="batch-line">
+      <mat-icon aria-hidden="true">science</mat-icon>
+      <strong>{{ batch.batchNumber }}</strong>
+      <app-batch-status-chip [status]="batch.status" />
+    </div>
+    <app-batch-summary [batch]="batch" [environmentId]="path.environmentId" />
+  }
   <!-- Notice for users who cannot reject batches -->
   @if (!store.canDecide()) {
     <p class="notice" role="status">{{ 'batch-release.quality-only' | translate }}</p>

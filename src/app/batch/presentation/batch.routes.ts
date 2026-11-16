@@ -33,8 +33,8 @@ const batch = `${product}/batches/:batchId`;
  * Routing of Product Batch Management.
  *
  * @remarks
- * `/batches` lists every batch of the laboratory and `/batches/environments` opens the production environment
- * whose products are shown. Products and batches are addressed inside an environment, mirroring
+ * `/batches` lists every batch of the laboratory, `/batches/new` registers a batch choosing its environment and
+ * product, and `/batches/environments` opens the production environment whose products are shown. Products and batches are addressed inside an environment, mirroring
  * /api/v1/laboratories/{laboratoryId}/environments/{environmentId}/products/{productId}/batches.
  * Links that only know the batch id (`/batches/:batchId`) resolve the full path. The view-named paths used
  * before semantic routes redirect to their new address.
@@ -46,6 +46,7 @@ const batch = `${product}/batches/:batchId`;
  */
 export const batchRoutes: Routes = [
   { path: '', loadComponent: batchList, pathMatch: 'full', title: 'page-titles.batch-list' },
+  { path: 'new', loadComponent: batchForm, canActivate: [operatorGuard], title: 'page-titles.batch-new' },
   { path: 'environments', loadComponent: batchHome, pathMatch: 'full', title: 'page-titles.product-catalog' },
   { path: 'environments/:environmentId/products', loadComponent: productCatalog, title: 'page-titles.product-catalog' },
   { path: 'environments/:environmentId/products/new', loadComponent: productForm, title: 'page-titles.product-new' },

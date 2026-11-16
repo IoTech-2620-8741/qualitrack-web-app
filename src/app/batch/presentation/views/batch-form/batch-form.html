@@ -1,6 +1,6 @@
 <main class="operations-page">
   <!-- Back link to the product -->
-  <a [routerLink]="productLink">{{ store.product()?.name || ('product-catalog.title' | translate) }}</a>
+  <a [routerLink]="productLink">{{ choosing ? ('batches.title' | translate) : store.product()?.name || ('product-catalog.title' | translate) }}</a>
   <header class="page-heading">
     <h1><mat-icon aria-hidden="true">add_box</mat-icon>{{ 'batch-form.title' | translate }}</h1>
   </header>
@@ -10,8 +10,31 @@
   }
   <!-- Registration form of the batch -->
   <form class="editor form-grid" [formGroup]="form" (ngSubmit)="save()">
-    <!-- Traceability code, unique in the laboratory -->
-    <mat-form-field appearance="outline">
+    @if (choosing) {
+      <!-- On /batches/new: the environment and one of its products -->
+      <app-environment-selector
+        class="full-width"
+        [environments]="store.environments()"
+        [selectedId]="environmentId()"
+        (selectedChange)="chooseEnvironment($event)"
+      />
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{ 'batch-form.fields.product' | translate }}</mat-label>
+        <mat-select [formControl]="productId">
+          @for (product of store.products(); track product.id) {
+            <mat-option [value]="product.id">{{ product.code }} · {{ product.name }}</mat-option>
+          }
+        </mat-select>
+        @if (environmentId() !== null && !store.productsLoading() && !store.products().length) {
+          <mat-hint>{{ 'product-catalog.empty' | translate }}</mat-hint>
+        }
+        @if (productId.hasError('required')) {
+          <mat-error>{{ 'common.required' | translate }}</mat-error>
+        }
+      </mat-form-field>
+    }
+    <!-- Traceability code, unique in the laboratory; its hint can take two lines, so the subscript grows -->
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
       <mat-label>{{ 'batch-form.fields.batch-number' | translate }}</mat-label>
       <input matInput formControlName="batchNumber" maxlength="50" autocomplete="off"
              [placeholder]="'batch-form.placeholders.batch-number' | translate" />
