@@ -30,6 +30,11 @@ describe('InventoryMaterialTable', () => {
     expect(rows[1].querySelectorAll('td')[1].classList.contains('warning')).toBe(false);
   });
 
+  it('explains what each stock column counts', () => {
+    const help = [...open([]).querySelectorAll('thead button.help')].map((button) => button.getAttribute('aria-label'));
+    expect(help).toEqual(['inventory.usableStockHelp', 'inventory.physicalStockHelp']);
+  });
+
   it('says so when there are no materials', () => {
     expect(open([]).querySelector('td[colspan="4"]')?.textContent).toBe('inventory.empty');
   });

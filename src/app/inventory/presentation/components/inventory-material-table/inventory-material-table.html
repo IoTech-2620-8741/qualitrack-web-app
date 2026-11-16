@@ -3,8 +3,15 @@
     <thead>
       <tr>
         <th>{{ 'inventory.name' | translate }}</th>
-        <th>{{ 'inventory.usableStock' | translate }}</th>
-        <th>{{ 'inventory.physicalStock' | translate }}</th>
+        <!-- Each stock column says what it counts; the tooltip also opens on keyboard focus and on a long press -->
+        @for (column of stockColumns; track column.label) {
+          <th>
+            {{ column.label | translate }}
+            <button type="button" class="help" [matTooltip]="column.help | translate" [attr.aria-label]="column.help | translate">
+              <mat-icon aria-hidden="true">help_outline</mat-icon>
+            </button>
+          </th>
+        }
         <th>{{ 'inventory.minimum' | translate }}</th>
       </tr>
     </thead>
