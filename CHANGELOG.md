@@ -15,11 +15,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - BPM config (bpm-config): the parameter form suggests the monitored variables and fills in their unit, while any other name can still be typed, and it names the equipment the parameter belongs to (#113).
 
+- Equipment (equipment): the equipment form asks for the environment where the equipment is installed, optional, and locates it right after registering it (#114).
+
 ### Fixed
 
 - Batches (batches): the reject form says that the rejection cannot be undone, and the hint of the batch number no longer covers the Quantity label below about 1280 px (#112).
 
 - BPM config (bpm-config): the button of the BPM Config tab reads Add parameter instead of the field label "+ Parameter Name", and the parameter form registers with Register instead of Save Changes (#113).
+
+- Equipment (equipment): the IoT device form accepts a MAC address such as 24:6F:28:AA:10:01, refuses a malformed one, and no longer uses Edge jargon in its subtitle and identifier hint (#114).
+
+- Equipment (equipment): the location form of the equipment detail starts on the environment where the equipment is, and Move and Register change say what is missing instead of staying disabled (#114).
+
+- Equipment (equipment): the register forms are titled Register Equipment and Register IoT Device, like their menu entries (#114).
 
 ## [2.5.0] - 2026-11-13
 
