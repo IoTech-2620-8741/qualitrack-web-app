@@ -14,6 +14,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { TranslatePipe } from '@ngx-translate/core';
 
 import { EquipmentStore } from '../../../application/equipment.store';
@@ -75,6 +76,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     MatIconModule,
     MatProgressSpinnerModule,
     MatCardModule,
+    MatAutocompleteModule,
     RouterModule,
     TranslatePipe,
   ],
@@ -121,6 +123,17 @@ export class BpmConfigForm implements OnInit {
    * integer or decimal values, including negative values when needed.
    */
   protected readonly maxLimit = MAX_BPM_LIMIT;
+
+  /**
+   * Variables QualiTrack monitors, offered as parameter names with their unit so the same variable is not
+   * written in several ways; any other name (pressure, speed...) can still be typed.
+   */
+  protected readonly suggestions = [
+    { key: 'tracking.metrics.TEMPERATURE', unit: '°C' },
+    { key: 'tracking.metrics.HUMIDITY', unit: '%RH' },
+    { key: 'tracking.metrics.AIR_QUALITY', unit: 'ppm' },
+    { key: 'tracking.metrics.LUMINOSITY', unit: 'lux' },
+  ];
 
   protected form: FormGroup = this.fb.group(
     {

@@ -1225,6 +1225,9 @@
     "title": "Configuración de Parámetros BPM",
     "subtitle": "Establece los rangos de tolerancia para el monitoreo de calidad",
     "empty": "No hay parámetros BPM configurados para este equipo.",
+    "hints": {
+      "parameter": "Elige una variable monitoreada para completar su unidad, o escribe otro nombre."
+    },
     "fields": {
       "parameter": "Nombre del Parámetro",
       "min": "Valor Mínimo",
