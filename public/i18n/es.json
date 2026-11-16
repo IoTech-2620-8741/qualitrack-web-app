@@ -1932,7 +1932,7 @@
   "device-form": {
     "add-button": "Registrar dispositivo IoT",
     "title": "Nuevo Dispositivo IoT",
-    "subtitle": "Dispositivo ambiental o monitor de contenedor ESP32 y la identidad con la que Edge lo reconoce",
+    "subtitle": "Dispositivo ambiental o monitor de contenedor ESP32, y el identificador con el que llegan sus lecturas",
     "fields": {
       "device-type": "Tipo de dispositivo",
       "identifier": "Identificador del dispositivo",
@@ -1947,7 +1947,7 @@
       "firmware": "Ej. 1.0.3"
     },
     "hints": {
-      "identifier": "Único en QualiTrack; Edge lo usa para reconocer el dispositivo.",
+      "identifier": "Único en QualiTrack; las lecturas del dispositivo llegan con él.",
       "environment": "Opcional; también se puede asociar después desde el detalle del dispositivo."
     },
     "no-environment": "Asociar después",
