@@ -1214,6 +1214,8 @@
       "move-hint": "Choose another environment if the equipment was moved.",
       "associate": "Associate",
       "move": "Move",
+      "choose": "Choose the environment where it is installed.",
+      "unchanged": "It is already in this environment; choose another one to move it.",
       "not-recorded": "It was registered, but its environment was not recorded."
     },
     "status-change": {
@@ -1221,7 +1223,8 @@
       "hint": "The change is kept in the equipment history.",
       "new-status": "New status",
       "reason": "Reason (optional)",
-      "register": "Register change"
+      "register": "Register change",
+      "choose": "Choose the new status."
     }
   },
   "bpm-config": {

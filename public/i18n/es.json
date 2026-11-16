@@ -1214,6 +1214,8 @@
       "move-hint": "Elige otro ambiente si el equipo fue trasladado.",
       "associate": "Asociar",
       "move": "Trasladar",
+      "choose": "Elige el ambiente donde está instalado.",
+      "unchanged": "Ya está en este ambiente; elige otro para trasladarlo.",
       "not-recorded": "Se registró, pero no se guardó su ambiente."
     },
     "status-change": {
@@ -1221,7 +1223,8 @@
       "hint": "El cambio queda registrado en el historial del equipo.",
       "new-status": "Nuevo estado",
       "reason": "Motivo (opcional)",
-      "register": "Registrar cambio"
+      "register": "Registrar cambio",
+      "choose": "Elige el nuevo estado."
     }
   },
   "bpm-config": {

@@ -86,4 +86,18 @@ describe('EquipmentDetail', () => {
     const component = fixture.componentInstance as unknown as { locationForm: import('@angular/forms').FormGroup };
     expect(component.locationForm.value).toEqual({ environmentId: 1 });
   });
+
+  it('says what is missing on Move and Register change instead of disabling them', async () => {
+    const { element, fixture, http } = await open('ROLE_QA_MANAGER');
+    const [move, register] = [...element.querySelectorAll<HTMLButtonElement>('form.inline-form button[type="submit"]')];
+    expect(move.disabled).toBe(false);
+    expect(register.disabled).toBe(false);
+    move.click();
+    register.click();
+    fixture.detectChanges();
+
+    expect(element.textContent).toContain('equipment-detail.location.unchanged');
+    expect(element.textContent).toContain('equipment-detail.status-change.choose');
+    expect(http.match((request) => request.method !== 'GET')).toEqual([]);
+  });
 });
