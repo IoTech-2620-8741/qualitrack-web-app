@@ -8,6 +8,7 @@ import { BpmConfigForm } from './bpm-config-form';
 
 describe('BpmConfigForm', () => {
   const configureBpm = vi.fn();
+  const loadEquipmentById = vi.fn().mockResolvedValue(null);
 
   function create() {
     TestBed.configureTestingModule({
@@ -21,13 +22,14 @@ describe('BpmConfigForm', () => {
       ],
     });
     vi.spyOn(TestBed.inject(EquipmentStore), 'configureBpm').mockImplementation(configureBpm);
+    vi.spyOn(TestBed.inject(EquipmentStore), 'loadEquipmentById').mockImplementation(loadEquipmentById);
     vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
     const fixture = TestBed.createComponent(BpmConfigForm);
     fixture.detectChanges();
-    return fixture.componentInstance as unknown as {
+    return Object.assign(fixture.componentInstance as unknown as {
       form: import('@angular/forms').FormGroup;
       onSave(): void;
-    };
+    }, { fixture });
   }
 
   const valid = { parameterName: 'TEMPERATURE', minValue: 2, maxValue: 8, unit: 'Celsius' };
@@ -77,5 +79,24 @@ describe('BpmConfigForm', () => {
     component.form.setValue(valid);
     component.onSave();
     expect(configureBpm).toHaveBeenCalled();
+  });
+
+  it('loads the equipment the parameter belongs to', () => {
+    create();
+    expect(loadEquipmentById).toHaveBeenCalledWith(4);
+  });
+
+  it('fills in the unit when a monitored variable is picked, and still accepts any other name', () => {
+    const { form, fixture } = create();
+    const input: HTMLInputElement = fixture.nativeElement.querySelector('input[formcontrolname="parameterName"]');
+    input.dispatchEvent(new Event('focusin'));
+    fixture.detectChanges();
+    const options = [...document.querySelectorAll<HTMLElement>('mat-option')];
+    expect(options.length).toBe(4);
+    options[1].click();
+    fixture.detectChanges();
+    expect(form.get('unit')?.value).toBe('%RH');
+    form.patchValue({ parameterName: 'Presión', minValue: 1, maxValue: 2.2, unit: 'bar' });
+    expect(form.valid).toBe(true);
   });
 });

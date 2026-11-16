@@ -1,8 +1,16 @@
 <main class="operations-page">
-  <a [routerLink]="['/equipments', equipmentId()]">{{ 'equipment-list.title' | translate }}</a>
+  <a [routerLink]="['/equipments', equipmentId()]">{{ equipment()?.name || ('equipment-list.title' | translate) }}</a>
   <header class="page-heading">
     <h1><mat-icon aria-hidden="true">settings_suggest</mat-icon>{{ 'bpm-config.title' | translate }}</h1>
   </header>
+  @if (equipment(); as current) {
+    <!-- The equipment whose range is being set -->
+    <p class="equipment-line">
+      <mat-icon aria-hidden="true">precision_manufacturing</mat-icon>
+      <strong>{{ current.name }}</strong>
+      <span>{{ current.model }} · {{ current.serialNumber }}</span>
+    </p>
+  }
   <p class="muted">{{ 'bpm-config.subtitle' | translate }}</p>
 
   @if (store.error()) {
@@ -16,8 +24,20 @@
         matInput
         formControlName="parameterName"
         maxlength="100"
+        [matAutocomplete]="names"
         [placeholder]="'bpm-config.placeholders.parameter' | translate">
       <mat-icon matSuffix>label</mat-icon>
+      <!-- Picking a monitored variable also fills in its unit -->
+      <mat-autocomplete #names>
+        @for (suggestion of suggestions; track suggestion.key) {
+          @let name = suggestion.key | translate;
+          <mat-option
+            [value]="name"
+            (onSelectionChange)="$event.isUserInput && form.get('unit')?.setValue(suggestion.unit)"
+          >{{ name }} ({{ suggestion.unit }})</mat-option>
+        }
+      </mat-autocomplete>
+      <mat-hint>{{ 'bpm-config.hints.parameter' | translate }}</mat-hint>
 
       @if (form.get('parameterName')?.hasError('required')) {
         <mat-error>{{ 'common.required' | translate }}</mat-error>
@@ -89,7 +109,7 @@
           <mat-icon>settings_suggest</mat-icon>
         }
 
-        {{ 'common.save' | translate }}
+        {{ 'common.register' | translate }}
       </button>
     </div>
   </form>

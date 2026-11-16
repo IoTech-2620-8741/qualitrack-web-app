@@ -1225,6 +1225,10 @@
     "title": "BPM Parameter Config",
     "subtitle": "Set tolerance ranges for quality monitoring",
     "empty": "No BPM parameters configured for this equipment.",
+    "add": "Add parameter",
+    "hints": {
+      "parameter": "Choose a monitored variable to fill in its unit, or type another name."
+    },
     "fields": {
       "parameter": "Parameter Name",
       "min": "Min Value",
