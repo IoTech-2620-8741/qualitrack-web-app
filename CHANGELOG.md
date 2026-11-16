@@ -13,9 +13,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Batches (batches): the release and reject forms show the batch number with its status, product, environment, quantity and start date, and ask for confirmation on a dialog that names the batch (#112).
 
+- BPM config (bpm-config): the parameter form suggests the monitored variables and fills in their unit, while any other name can still be typed, and it names the equipment the parameter belongs to (#113).
+
 ### Fixed
 
 - Batches (batches): the reject form says that the rejection cannot be undone, and the hint of the batch number no longer covers the Quantity label below about 1280 px (#112).
+
+- BPM config (bpm-config): the button of the BPM Config tab reads Add parameter instead of the field label "+ Parameter Name", and the parameter form registers with Register instead of Save Changes (#113).
 
 ## [2.5.0] - 2026-11-13
 
