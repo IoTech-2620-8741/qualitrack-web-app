@@ -1073,6 +1073,7 @@
     "closed-on": "Cerrado el",
     "closed-notice": "Este lote está cerrado: ya no se pueden agregar materias primas, equipos ni personal.",
     "back-to": "Volver a {{product}}",
+    "back-to-batch": "Volver a {{batch}}",
     "summary": "Resumen del lote"
   },
   "batch-release": {
@@ -1111,7 +1112,7 @@
     "actions": {
       "submit": "Rechazar Lote"
     },
-    "notice": "El motivo se conserva con el lote para la trazabilidad y las auditorías.",
+    "notice": "El rechazo no se puede deshacer: el lote ya no se podrá modificar y el motivo se conserva para la trazabilidad y las auditorías.",
     "saved": "Lote rechazado."
   },
   "batch-usage": {

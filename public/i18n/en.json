@@ -1073,6 +1073,7 @@
     "closed-on": "Closed on",
     "closed-notice": "This batch is closed: no more raw materials, equipment or staff can be added.",
     "back-to": "Back to {{product}}",
+    "back-to-batch": "Back to {{batch}}",
     "summary": "Batch summary"
   },
   "batch-release": {
@@ -1111,7 +1112,7 @@
     "actions": {
       "submit": "Reject Batch"
     },
-    "notice": "The reason is kept with the batch for traceability and audits.",
+    "notice": "The rejection cannot be undone: the batch can no longer be modified, and the reason is kept for traceability and audits.",
     "saved": "Batch rejected."
   },
   "batch-usage": {

@@ -16,6 +16,8 @@ import { notBlankValidator } from '../../../../shared/presentation/validators/no
 import { BatchStore } from '../../../application/batch.store';
 import { IamStore } from '../../../../iam/application/iam.store';
 import { BatchPath } from '../../../domain/model/batch-path';
+import { BatchStatusChip } from '../../components/batch-status-chip/batch-status-chip';
+import { BatchSummary } from '../../components/batch-summary/batch-summary';
 
 /**
  * Releases a batch after quality review. The backend signs the release for the current user.
@@ -36,6 +38,8 @@ import { BatchPath } from '../../../domain/model/batch-path';
     MatIconModule,
     MatInputModule,
     TranslatePipe,
+    BatchStatusChip,
+    BatchSummary,
   ],
   templateUrl: './batch-release-form.html',
   changeDetection: ChangeDetectionStrategy.Eager,
