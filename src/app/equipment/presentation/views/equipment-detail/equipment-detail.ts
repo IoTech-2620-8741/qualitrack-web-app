@@ -135,7 +135,7 @@ export class EquipmentDetail implements OnInit {
     const located = await this.store.assignToEnvironment(equipment, environmentId);
     if (!located) return;
     this.locationNotice.set(null);
-    this.locationForm.reset();
+    this.locationForm.reset({ environmentId: located.environmentId });
     await this.store.loadMaintenanceHistory(located);
   }
 
@@ -188,6 +188,8 @@ export class EquipmentDetail implements OnInit {
   private async load(id: number): Promise<void> {
     const equipment = await this.store.loadEquipmentById(id);
     if (!equipment) return;
+    // The location form starts on the environment where the equipment is
+    this.locationForm.reset({ environmentId: equipment.environmentId });
     // Only a quality manager may read the key status; the platform refuses it to anyone else.
     if (equipment.isEdgeGateway && this.store.canManage()) {
       this.apiKeyIssued.set(await this.store.loadEdgeGatewayApiKeyStatus(id));
