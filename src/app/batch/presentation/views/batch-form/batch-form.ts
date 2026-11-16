@@ -1,4 +1,4 @@
-import { Component, DestroyRef, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AbstractControl, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -7,6 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { TranslatePipe } from '@ngx-translate/core';
+import { EnvironmentSelector } from '../../../../shared/presentation/components/environment-selector/environment-selector';
 import { todayInLima } from '../../../../shared/presentation/utils/local-date';
 import { codeValidator } from '../../../../shared/presentation/validators/code.validator';
 import {
@@ -25,8 +26,9 @@ import { BatchPath } from '../../../domain/model/batch-path';
  * Registers a manufacturing batch of the product taken from the route.
  *
  * @remarks
- * The product is loaded to show its name in the back link. When the batch is registered, the view
- * navigates to its detail.
+ * The product is loaded to show its name in the back link. On `/batches/new` the route has no product, so the form
+ * also asks for the environment (the last one used, by default) and one of its products. When the batch is
+ * registered, the view navigates to its detail.
  *
  * @author Qualitrack
  */
@@ -41,6 +43,7 @@ import { BatchPath } from '../../../domain/model/batch-path';
     MatInputModule,
     MatSelectModule,
     TranslatePipe,
+    EnvironmentSelector,
   ],
   templateUrl: './batch-form.html',
   changeDetection: ChangeDetectionStrategy.Eager,
@@ -84,6 +87,21 @@ export class BatchForm implements OnInit {
   protected path!: BatchPath;
 
   /**
+   * True on `/batches/new`, where the environment and the product are chosen in the form.
+   */
+  protected readonly choosing = !this.route.snapshot.paramMap.get('productId');
+
+  /**
+   * Environment chosen on `/batches/new`.
+   */
+  protected readonly environmentId = signal<number | null>(null);
+
+  /**
+   * Product chosen on `/batches/new`, kept apart from the batch form because the route gives it otherwise.
+   */
+  protected readonly productId = this.fb.control<number | null>(null, Validators.required);
+
+  /**
    * Production unit control, kept apart because the quantity rules depend on it.
    */
   private readonly unit = this.fb.nonNullable.control('units', Validators.required);
@@ -125,22 +143,43 @@ export class BatchForm implements OnInit {
    * Lifecycle hook that reads the route parameters and loads the product of the batch.
    */
   ngOnInit(): void {
+    this.store.clearMessages();
+    if (this.choosing) {
+      void this.store.loadEnvironments().then(() => {
+        const preferred = this.store.preferredProductionEnvironment();
+        if (preferred && this.environmentId() === null) this.chooseEnvironment(preferred.id);
+      });
+      return;
+    }
     const params = this.route.snapshot.paramMap;
     this.path = {
       laboratoryId: this.iam.requireLaboratoryId(),
       environmentId: Number(params.get('environmentId')),
       productId: Number(params.get('productId')),
     };
-    this.store.clearMessages();
     void this.store.loadProduct(this.path.environmentId, this.path.productId);
   }
 
   /**
-   * Route of the product the batch will belong to.
+   * Chooses the environment on `/batches/new` and loads its products.
    *
-   * @returns The router link segments of the product.
+   * @param environmentId - The environment identifier.
+   */
+  protected chooseEnvironment(environmentId: number): void {
+    this.environmentId.set(environmentId);
+    this.productId.reset(null);
+    this.store.rememberProductionEnvironment(environmentId);
+    void this.store.loadProducts(environmentId);
+  }
+
+  /**
+   * Where the back link and Cancel lead: the product the batch will belong to, or the list of batches on
+   * `/batches/new`.
+   *
+   * @returns The router link segments.
    */
   protected get productLink(): (string | number)[] {
+    if (this.choosing) return ['/batches'];
     return ['/batches/environments', this.path.environmentId, 'products', this.path.productId];
   }
 
@@ -149,9 +188,13 @@ export class BatchForm implements OnInit {
    */
   protected async save(): Promise<void> {
     this.form.markAllAsTouched();
-    if (this.form.invalid) return;
+    if (this.choosing) this.productId.markAsTouched();
+    if (this.form.invalid || (this.choosing && this.productId.invalid)) return;
+    const path = this.choosing
+      ? { laboratoryId: this.iam.requireLaboratoryId(), environmentId: this.environmentId()!, productId: this.productId.value! }
+      : this.path;
     const value = this.form.getRawValue();
-    const batch = await this.store.createBatch(this.path, {
+    const batch = await this.store.createBatch(path, {
       batchNumber: value.batchNumber.trim(),
       quantity: Number(value.quantity),
       unit: value.unit,

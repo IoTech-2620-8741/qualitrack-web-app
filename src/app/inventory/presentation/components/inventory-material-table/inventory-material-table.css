@@ -8,6 +8,29 @@ a {
   letter-spacing: 0;
 }
 
+.help {
+  display: inline-flex;
+  margin-left: 2px;
+  padding: 2px;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: var(--qt-text-muted);
+  vertical-align: middle;
+  cursor: help;
+}
+
+.help mat-icon {
+  width: 18px;
+  height: 18px;
+  font-size: 18px;
+}
+
+.help:focus-visible {
+  outline: 3px solid var(--qt-primary);
+  outline-offset: 1px;
+}
+
 .warning {
   color: var(--qt-warning-text);
   font-weight: 600;

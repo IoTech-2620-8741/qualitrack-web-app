@@ -64,7 +64,7 @@ describe('EquipmentDetail', () => {
       await fixture.whenStable();
       fixture.detectChanges();
     }
-    return { element: fixture.nativeElement as HTMLElement, keyRequests };
+    return { element: fixture.nativeElement as HTMLElement, keyRequests, fixture, http };
   }
 
   it('reads and shows the API key status to a quality manager', async () => {
@@ -79,5 +79,25 @@ describe('EquipmentDetail', () => {
     expect(element.textContent).toContain('Edge Gateway almacén');
     expect(keyRequests).toEqual([]);
     expect(element.textContent).not.toContain('edge-gateway.api-key.title');
+  });
+
+  it('starts the location form on the environment where the equipment is', async () => {
+    const { fixture } = await open('ROLE_QA_MANAGER');
+    const component = fixture.componentInstance as unknown as { locationForm: import('@angular/forms').FormGroup };
+    expect(component.locationForm.value).toEqual({ environmentId: 1 });
+  });
+
+  it('says what is missing on Move and Register change instead of disabling them', async () => {
+    const { element, fixture, http } = await open('ROLE_QA_MANAGER');
+    const [move, register] = [...element.querySelectorAll<HTMLButtonElement>('form.inline-form button[type="submit"]')];
+    expect(move.disabled).toBe(false);
+    expect(register.disabled).toBe(false);
+    move.click();
+    register.click();
+    fixture.detectChanges();
+
+    expect(element.textContent).toContain('equipment-detail.location.unchanged');
+    expect(element.textContent).toContain('equipment-detail.status-change.choose');
+    expect(http.match((request) => request.method !== 'GET')).toEqual([]);
   });
 });

@@ -9,7 +9,6 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatButtonModule } from '@angular/material/button';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog } from '@angular/material/dialog';
 
 import { ReportGeneratorState } from '../../views/report-generator/report-generator.state';
@@ -34,7 +33,7 @@ import { ReportPreviewDialog } from '../report-preview-dialog/report-preview-dia
   imports: [
     CommonModule, FormsModule, TranslatePipe, MatIconModule, MatFormFieldModule,
     MatSelectModule, MatDatepickerModule, MatNativeDateModule,
-    MatButtonToggleModule, MatButtonModule, MatTooltipModule
+    MatButtonToggleModule, MatButtonModule
   ],
   templateUrl: './report-params-form.html',
   styleUrl: './report-params-form.css'
@@ -67,6 +66,17 @@ export class ReportParamsForm {
   });
 
   /** Returns the translation key for the current report type title. */
+  /** What the report still needs before it can be generated, or null when nothing is missing. */
+  protected readonly missingKey = computed(() => {
+    const form = this.state.form();
+    if (form.type === 'batch' && !form.batchId) return 'report-generator.missing.batch';
+    if (form.type === 'equipment' && !form.equipmentId) return 'report-generator.missing.equipment';
+    if ((form.type === 'compliance' || form.type === 'equipment') && (!form.startDate || !form.endDate)) {
+      return 'report-generator.missing.period';
+    }
+    return null;
+  });
+
   protected getTitle(): string {
     const titles: Record<string, string> = {
       batch: 'report-generator.batch.title',

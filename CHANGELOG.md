@@ -7,6 +7,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.6.0] - 2026-11-16
+
+### Added
+
+- Batches (batches): an operator or a quality manager creates a batch from Production Batches with New Batch, choosing the environment and the product in the same form (#112).
+
+- Batches (batches): the release and reject forms show the batch number with its status, product, environment, quantity and start date, and ask for confirmation on a dialog that names the batch (#112).
+
+- BPM config (bpm-config): the parameter form suggests the monitored variables and fills in their unit, while any other name can still be typed, and it names the equipment the parameter belongs to (#113).
+
+- Equipment (equipment): the equipment form asks for the environment where the equipment is installed, optional, and locates it right after registering it (#115).
+
+- Inventory (inventory): the Usable stock and Physical balance columns of the raw material table have a help tooltip that says what each one counts (#116).
+
+### Changed
+
+- Release: package and lockfile versions are now 2.6.0.
+
+### Fixed
+
+- Batches (batches): the reject form says that the rejection cannot be undone, and the hint of the batch number no longer covers the Quantity label below about 1280 px (#112).
+
+- BPM config (bpm-config): the button of the BPM Config tab reads Add parameter instead of the field label "+ Parameter Name", and the parameter form registers with Register instead of Save Changes (#113).
+
+- Equipment (equipment): the IoT device form accepts a MAC address such as 24:6F:28:AA:10:01, refuses a malformed one, and no longer uses Edge jargon in its subtitle and identifier hint (#115).
+
+- Equipment (equipment): the location form of the equipment detail starts on the environment where the equipment is, and Move and Register change say what is missing instead of staying disabled (#115).
+
+- Equipment (equipment): the register forms are titled Register Equipment and Register IoT Device, like their menu entries (#115).
+
+- Reports (ra): the report generator says whether a batch, an equipment or a period is missing while it cannot generate, and the preview action reads Preview (#116).
+
+- Inventory (inventory): Previous balances reads Import previous balances and New material reads Register material (#116).
+
+- Laboratory (laboratory): the staff email goes under the name and wraps only before its @, so the table fits at 1024 px without breaking emails mid-word, and Add Staff reads Register Staff Member (#116).
+
+- Shared (shared): opening a page directly or reloading it no longer draws the content under the side menu while the menu opens (#116).
+
 ## [2.5.0] - 2026-11-13
 
 ### Added

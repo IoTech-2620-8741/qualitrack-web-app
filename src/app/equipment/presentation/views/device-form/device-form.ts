@@ -1,6 +1,6 @@
 import { Component, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -17,6 +17,24 @@ import { codeValidator } from '../../../../shared/presentation/validators/code.v
 import { notBlankValidator } from '../../../../shared/presentation/validators/not-blank.validator';
 
 /** Firmware version such as 1.2, v1.2.3 or 2.0.1-beta.1. */
+/** A MAC address: six pairs of hexadecimal digits separated by the same `:` or `-`. */
+export const MAC_ADDRESS = /^[0-9A-Fa-f]{2}([:-])(?:[0-9A-Fa-f]{2}\1){4}[0-9A-Fa-f]{2}$/;
+
+/**
+ * The MAC address or the serial number of a device: a well-formed MAC address, or a serial number made of letters,
+ * digits, `.`, `_`, `/` and `-`. Anything that looks like a MAC address (a `:`, or six pairs separated by `.` or `-`)
+ * must be a valid one, so `20.7B.30.33.Z5.99` is refused.
+ *
+ * @param control - The control with the MAC address or serial number.
+ * @returns `{ mac: true }` for a malformed MAC address, `{ code: true }` for a malformed serial number, or `null`.
+ */
+export function deviceSerialValidator(control: AbstractControl): ValidationErrors | null {
+  const value = String(control.value ?? '').trim();
+  if (!value || MAC_ADDRESS.test(value)) return null;
+  if (value.includes(':') || /^[0-9A-Za-z]{2}([.-][0-9A-Za-z]{2}){5}$/.test(value)) return { mac: true };
+  return codeValidator(control);
+}
+
 export const FIRMWARE_VERSION = /^v?\d+(\.\d+){1,3}([-+][0-9A-Za-z.-]+)?$/;
 
 /**
@@ -72,7 +90,7 @@ export class DeviceForm implements OnInit {
     serialNumber: this.fb.nonNullable.control('', [
       Validators.required,
       notBlankValidator,
-      codeValidator,
+      deviceSerialValidator,
       Validators.maxLength(50),
     ]),
     model: this.fb.nonNullable.control('ESP32', [

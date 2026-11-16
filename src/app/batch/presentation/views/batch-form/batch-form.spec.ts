@@ -12,7 +12,7 @@ import { BatchForm } from './batch-form';
 describe('BatchForm', () => {
   const createBatch = vi.fn().mockResolvedValue(null);
 
-  function create() {
+  function create(productId: string | null = '3') {
     TestBed.configureTestingModule({
       imports: [BatchForm],
       providers: [
@@ -21,15 +21,24 @@ describe('BatchForm', () => {
         provideHttpClientTesting(),
         provideRouter([]),
         { provide: IamStore, useValue: { requireLaboratoryId: () => 1, canManageQuality: () => true, canOperate: () => true } },
-        { provide: ActivatedRoute, useValue: { snapshot: { paramMap: { get: () => '3' } } } },
+        {
+          provide: ActivatedRoute,
+          useValue: { snapshot: { paramMap: { get: (key: string) => (key === 'productId' ? productId : '3') } } },
+        },
       ],
     });
-    vi.spyOn(TestBed.inject(BatchStore), 'loadProduct').mockResolvedValue(undefined as never);
+    const store = TestBed.inject(BatchStore);
+    vi.spyOn(store, 'loadProduct').mockResolvedValue(undefined as never);
+    vi.spyOn(store, 'loadEnvironments').mockResolvedValue(undefined);
+    vi.spyOn(store, 'preferredProductionEnvironment').mockReturnValue({ id: 4 } as never);
+    vi.spyOn(store, 'loadProducts').mockResolvedValue(true);
+    vi.spyOn(store, 'rememberProductionEnvironment').mockImplementation(() => undefined);
     vi.spyOn(TestBed.inject(BatchStore), 'createBatch').mockImplementation(createBatch);
     const fixture = TestBed.createComponent(BatchForm);
     fixture.detectChanges();
     return fixture.componentInstance as unknown as {
       form: import('@angular/forms').FormGroup;
+      productId: import('@angular/forms').FormControl<number | null>;
       save(): Promise<void>;
     };
   }
@@ -86,5 +95,20 @@ describe('BatchForm', () => {
     component.form.setValue({ ...valid, quantity: 2.5 });
     await component.save();
     expect(createBatch).not.toHaveBeenCalled();
+  });
+
+  it('on /batches/new opens the last environment used and registers the batch in the chosen product', async () => {
+    const component = create(null);
+    await Promise.resolve();
+    expect(TestBed.inject(BatchStore).loadProducts).toHaveBeenCalledWith(4);
+    component.form.setValue(valid);
+    await component.save();
+    expect(createBatch).not.toHaveBeenCalled();
+    component.productId.setValue(9);
+    await component.save();
+    expect(createBatch).toHaveBeenCalledWith(
+      { laboratoryId: 1, environmentId: 4, productId: 9 },
+      expect.objectContaining({ batchNumber: 'PB-2026-001' }),
+    );
   });
 });

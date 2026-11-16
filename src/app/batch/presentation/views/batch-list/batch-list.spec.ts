@@ -23,7 +23,7 @@ describe('BatchList', () => {
     });
   }
 
-  function create(batches: Batch[], loading = false) {
+  function create(batches: Batch[], loading = false, canOperate = true) {
     const loadBatches = vi.fn();
     TestBed.configureTestingModule({
       imports: [BatchList],
@@ -39,6 +39,7 @@ describe('BatchList', () => {
             ]),
             isLoading: signal(loading),
             error: signal(null),
+            canOperate: signal(canOperate),
             loadBatches,
             loadEnvironments: () => Promise.resolve(),
           },
@@ -88,5 +89,15 @@ describe('BatchList', () => {
     const { element } = create([]);
     expect(element.querySelector('mat-spinner')).toBeNull();
     expect(element.textContent).toContain('batches.empty-state.none-title');
+  });
+
+  it('offers New Batch to the people who register batches, also when there are none yet', () => {
+    const newBatch = (element: HTMLElement) => element.querySelector('a[href="/batches/new"]');
+
+    expect(newBatch(create([batch(1, 'PENDING')]).element)).not.toBeNull();
+    TestBed.resetTestingModule();
+    expect(newBatch(create([]).element)).not.toBeNull();
+    TestBed.resetTestingModule();
+    expect(newBatch(create([batch(1, 'PENDING')], false, false).element)).toBeNull();
   });
 });

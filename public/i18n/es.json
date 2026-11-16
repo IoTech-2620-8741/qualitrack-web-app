@@ -5,7 +5,7 @@
     "title": "Inventario",
     "refresh": "Actualizar",
     "legacy": "Saldos anteriores",
-    "newMaterial": "Nueva materia prima",
+    "importLegacy": "Importar saldos anteriores",
     "code": "Código",
     "name": "Materia prima",
     "unit": "Unidad",
@@ -21,7 +21,9 @@
     "lowStock": "Stock utilizable bajo",
     "search": "Buscar por nombre o código",
     "usableStock": "Stock utilizable",
+    "usableStockHelp": "Lo que se puede usar en un lote: el saldo de las recepciones liberadas que no han vencido.",
     "physicalStock": "Saldo físico",
+    "physicalStockHelp": "Todo lo que queda en el ambiente, incluidas las recepciones en cuarentena, observadas, rechazadas o vencidas.",
     "empty": "No hay materias primas que coincidan.",
     "loading": "Cargando inventario…",
     "importNotice": "Los saldos anteriores se importan una sola vez, en cuarentena. Los consumos históricos se conservan y no se descuentan nuevamente. Se requiere revisión de calidad antes de usar el saldo.",
@@ -1073,6 +1075,7 @@
     "closed-on": "Cerrado el",
     "closed-notice": "Este lote está cerrado: ya no se pueden agregar materias primas, equipos ni personal.",
     "back-to": "Volver a {{product}}",
+    "back-to-batch": "Volver a {{batch}}",
     "summary": "Resumen del lote"
   },
   "batch-release": {
@@ -1093,7 +1096,9 @@
     },
     "notice": "La liberación se firma con tu usuario y el lote ya no se podrá modificar.",
     "quality-only": "Solo los responsables de calidad y los administradores pueden liberar o rechazar lotes.",
-    "saved": "Lote liberado y firmado."
+    "saved": "Lote liberado y firmado.",
+    "confirm-title": "¿Liberar el lote {{batch}}?",
+    "confirm-action": "Liberar {{batch}}"
   },
   "batch-reject": {
     "title": "Rechazar Lote",
@@ -1111,8 +1116,10 @@
     "actions": {
       "submit": "Rechazar Lote"
     },
-    "notice": "El motivo se conserva con el lote para la trazabilidad y las auditorías.",
-    "saved": "Lote rechazado."
+    "notice": "El rechazo no se puede deshacer: el lote ya no se podrá modificar y el motivo se conserva para la trazabilidad y las auditorías.",
+    "saved": "Lote rechazado.",
+    "confirm-title": "¿Rechazar el lote {{batch}}?",
+    "confirm-action": "Rechazar {{batch}}"
   },
   "batch-usage": {
     "title": "Registrar Uso de Materia Prima",
@@ -1179,12 +1186,15 @@
     }
   },
   "equipment-form": {
-    "title": "Nuevo Equipo",
+    "title": "Registrar equipo",
     "subtitle": "Ingrese las especificaciones técnicas del activo",
     "placeholders": {
       "name": "Ej. Autoclave Estándar",
       "model": "Ej. RX-200",
       "serial": "Ej. SN-987654321"
+    },
+    "hints": {
+      "environment": "Opcional; también se puede ubicar después desde su detalle."
     },
     "errors": {
       "name-minlength": "El nombre del equipo debe tener al menos 3 caracteres",
@@ -1206,20 +1216,27 @@
       "move-hint": "Elige otro ambiente si el equipo fue trasladado.",
       "associate": "Asociar",
       "move": "Trasladar",
-      "not-recorded": "El dispositivo se registró, pero no se guardó su ambiente."
+      "choose": "Elige el ambiente donde está instalado.",
+      "unchanged": "Ya está en este ambiente; elige otro para trasladarlo.",
+      "not-recorded": "Se registró, pero no se guardó su ambiente."
     },
     "status-change": {
       "title": "Estado operativo",
       "hint": "El cambio queda registrado en el historial del equipo.",
       "new-status": "Nuevo estado",
       "reason": "Motivo (opcional)",
-      "register": "Registrar cambio"
+      "register": "Registrar cambio",
+      "choose": "Elige el nuevo estado."
     }
   },
   "bpm-config": {
     "title": "Configuración de Parámetros BPM",
     "subtitle": "Establece los rangos de tolerancia para el monitoreo de calidad",
     "empty": "No hay parámetros BPM configurados para este equipo.",
+    "add": "Agregar parámetro",
+    "hints": {
+      "parameter": "Elige una variable monitoreada para completar su unidad, o escribe otro nombre."
+    },
     "fields": {
       "parameter": "Nombre del Parámetro",
       "min": "Valor Mínimo",
@@ -1298,12 +1315,11 @@
   },
   "staff-list": {
     "title": "Gestión de Personal",
-    "register": "Añadir Personal",
+    "register": "Registrar personal",
     "search": "Buscar nombre, cargo o correo",
     "empty-filtered": "Ningún miembro del personal coincide con estos filtros.",
     "name": "Nombre Completo",
     "role": "Cargo",
-    "email": "Correo Corporativo",
     "status": "Estado Laboral",
     "empty": "No hay personal registrado aún.",
     "access-role": "Acceso",
@@ -1505,6 +1521,11 @@
     }
   },
   "report-generator": {
+    "missing": {
+      "batch": "Elige un lote para generar el reporte.",
+      "equipment": "Elige un equipo para generar el reporte.",
+      "period": "Elige un periodo para generar el reporte."
+    },
     "title": "Generador de Reportes y Documentos",
     "subtitle": "Documentos de trazabilidad y cumplimiento listos para auditoría DIGEMID.",
     "generating": "Generando reporte...",
@@ -1922,8 +1943,8 @@
   },
   "device-form": {
     "add-button": "Registrar dispositivo IoT",
-    "title": "Nuevo Dispositivo IoT",
-    "subtitle": "Dispositivo ambiental o monitor de contenedor ESP32 y la identidad con la que Edge lo reconoce",
+    "title": "Registrar dispositivo IoT",
+    "subtitle": "Dispositivo ambiental o monitor de contenedor ESP32, y el identificador con el que llegan sus lecturas",
     "fields": {
       "device-type": "Tipo de dispositivo",
       "identifier": "Identificador del dispositivo",
@@ -1938,13 +1959,14 @@
       "firmware": "Ej. 1.0.3"
     },
     "hints": {
-      "identifier": "Único en QualiTrack; Edge lo usa para reconocer el dispositivo.",
+      "identifier": "Único en QualiTrack; las lecturas del dispositivo llegan con él.",
       "environment": "Opcional; también se puede asociar después desde el detalle del dispositivo."
     },
     "no-environment": "Asociar después",
     "occupied": "ya tiene un dispositivo ambiental",
     "errors": {
-      "firmware": "Use un formato como 1.2.3, v1.2 o 2.0.1-beta.1"
+      "firmware": "Use un formato como 1.2.3, v1.2 o 2.0.1-beta.1",
+      "mac": "Una dirección MAC tiene seis pares de dígitos hexadecimales (0-9, A-F) separados por : o -."
     }
   },
   "device-types": {

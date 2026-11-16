@@ -88,6 +88,20 @@ h1 mat-icon {
   overflow-wrap: anywhere;
 }
 
+.batch-line {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 10px;
+  margin: 0 0 12px;
+  color: var(--qt-heading);
+  font-size: 20px;
+}
+
+.batch-line mat-icon {
+  color: var(--qt-primary);
+}
+
 .error {
   background: var(--qt-error-surface);
   border-color: var(--qt-error);

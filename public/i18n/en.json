@@ -5,7 +5,7 @@
     "title": "Inventory",
     "refresh": "Refresh",
     "legacy": "Previous balances",
-    "newMaterial": "New material",
+    "importLegacy": "Import previous balances",
     "code": "Code",
     "name": "Material",
     "unit": "Unit",
@@ -21,7 +21,9 @@
     "lowStock": "Low usable stock",
     "search": "Search name or code",
     "usableStock": "Usable stock",
+    "usableStockHelp": "What can be used in a batch: the remaining balance of released receipts that have not expired.",
     "physicalStock": "Physical balance",
+    "physicalStockHelp": "Everything left in the environment, including receipts in quarantine, observed, rejected or expired.",
     "empty": "No materials match this view.",
     "loading": "Loading inventory…",
     "importNotice": "Previous balances are imported once, in quarantine. Historical consumption is preserved and will not be deducted again. Quality review is required before use.",
@@ -1073,6 +1075,7 @@
     "closed-on": "Closed on",
     "closed-notice": "This batch is closed: no more raw materials, equipment or staff can be added.",
     "back-to": "Back to {{product}}",
+    "back-to-batch": "Back to {{batch}}",
     "summary": "Batch summary"
   },
   "batch-release": {
@@ -1093,7 +1096,9 @@
     },
     "notice": "The release is signed with your user and the batch can no longer be modified.",
     "quality-only": "Only quality managers and administrators can release or reject batches.",
-    "saved": "Batch released and signed."
+    "saved": "Batch released and signed.",
+    "confirm-title": "Release batch {{batch}}?",
+    "confirm-action": "Release {{batch}}"
   },
   "batch-reject": {
     "title": "Reject Batch",
@@ -1111,8 +1116,10 @@
     "actions": {
       "submit": "Reject Batch"
     },
-    "notice": "The reason is kept with the batch for traceability and audits.",
-    "saved": "Batch rejected."
+    "notice": "The rejection cannot be undone: the batch can no longer be modified, and the reason is kept for traceability and audits.",
+    "saved": "Batch rejected.",
+    "confirm-title": "Reject batch {{batch}}?",
+    "confirm-action": "Reject {{batch}}"
   },
   "batch-usage": {
     "title": "Register Raw Material Usage",
@@ -1179,12 +1186,15 @@
     }
   },
   "equipment-form": {
-    "title": "New Equipment",
+    "title": "Register Equipment",
     "subtitle": "Enter the technical specifications of the asset",
     "placeholders": {
       "name": "e.g. Standard Autoclave",
       "model": "e.g. RX-200",
       "serial": "e.g. SN-987654321"
+    },
+    "hints": {
+      "environment": "Optional; it can also be located later from its detail."
     },
     "errors": {
       "name-minlength": "The equipment name must have at least 3 characters",
@@ -1206,20 +1216,27 @@
       "move-hint": "Choose another environment if the equipment was moved.",
       "associate": "Associate",
       "move": "Move",
-      "not-recorded": "The device was registered but its environment was not recorded."
+      "choose": "Choose the environment where it is installed.",
+      "unchanged": "It is already in this environment; choose another one to move it.",
+      "not-recorded": "It was registered, but its environment was not recorded."
     },
     "status-change": {
       "title": "Operational status",
       "hint": "The change is kept in the equipment history.",
       "new-status": "New status",
       "reason": "Reason (optional)",
-      "register": "Register change"
+      "register": "Register change",
+      "choose": "Choose the new status."
     }
   },
   "bpm-config": {
     "title": "BPM Parameter Config",
     "subtitle": "Set tolerance ranges for quality monitoring",
     "empty": "No BPM parameters configured for this equipment.",
+    "add": "Add parameter",
+    "hints": {
+      "parameter": "Choose a monitored variable to fill in its unit, or type another name."
+    },
     "fields": {
       "parameter": "Parameter Name",
       "min": "Min Value",
@@ -1298,12 +1315,11 @@
   },
   "staff-list": {
     "title": "Personnel Management",
-    "register": "Add Staff",
+    "register": "Register Staff Member",
     "search": "Search name, job title or email",
     "empty-filtered": "No staff members match these filters.",
     "name": "Full Name",
     "role": "Job title",
-    "email": "Corporate Email",
     "status": "Employment Status",
     "empty": "No staff members registered yet.",
     "access-role": "Access",
@@ -1506,6 +1522,11 @@
     }
   },
   "report-generator": {
+    "missing": {
+      "batch": "Choose a batch to generate the report.",
+      "equipment": "Choose an equipment to generate the report.",
+      "period": "Choose a period to generate the report."
+    },
     "title": "Report & Document Generator",
     "subtitle": "Traceability and compliance documents ready for DIGEMID audit.",
     "generating": "Generating report...",
@@ -1923,8 +1944,8 @@
   },
   "device-form": {
     "add-button": "Register IoT device",
-    "title": "New IoT Device",
-    "subtitle": "ESP32 environmental device or container monitor and the identity Edge uses to recognise it",
+    "title": "Register IoT Device",
+    "subtitle": "ESP32 environmental device or container monitor, and the identifier its readings arrive with",
     "fields": {
       "device-type": "Device type",
       "identifier": "Device identifier",
@@ -1939,13 +1960,14 @@
       "firmware": "e.g. 1.0.3"
     },
     "hints": {
-      "identifier": "Unique in QualiTrack; Edge uses it to recognise the device.",
+      "identifier": "Unique in QualiTrack; the readings of the device arrive with it.",
       "environment": "Optional; it can also be associated later from the device detail."
     },
     "no-environment": "Associate later",
     "occupied": "already has an environmental device",
     "errors": {
-      "firmware": "Use a format like 1.2.3, v1.2 or 2.0.1-beta.1"
+      "firmware": "Use a format like 1.2.3, v1.2 or 2.0.1-beta.1",
+      "mac": "A MAC address has six pairs of hexadecimal digits (0-9, A-F) separated by : or -."
     }
   },
   "device-types": {

@@ -4,10 +4,8 @@ import {
   OnInit,
   computed,
   inject,
-  signal,
   ChangeDetectionStrategy,
 } from '@angular/core';
-import { DecimalPipe } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatTabsModule } from '@angular/material/tabs';
@@ -22,8 +20,8 @@ import { RawMaterialUsageComponent } from '../raw-material-usage/raw-material-us
 import { BatchParticipants } from '../batch-participants/batch-participants';
 import { BatchTraceabilityView } from '../batch-traceability/batch-traceability';
 import { BatchStorage } from '../batch-storage/batch-storage';
-import { DateOnlyPipe } from '../../../../shared/presentation/pipes/date-only.pipe';
 import { BatchStatusChip } from '../../components/batch-status-chip/batch-status-chip';
+import { BatchSummary } from '../../components/batch-summary/batch-summary';
 
 /**
  * Detail of a product batch: its data, the raw materials it consumed, the equipment and
@@ -41,8 +39,7 @@ import { BatchStatusChip } from '../../components/batch-status-chip/batch-status
   standalone: true,
   imports: [
     BatchStatusChip,
-    DateOnlyPipe,
-    DecimalPipe,
+    BatchSummary,
     RouterLink,
     MatTabsModule,
     MatButtonModule,
@@ -75,25 +72,12 @@ export class BatchDetail implements OnInit {
   protected batchId = 0;
 
   /**
-   * Environment of the batch, taken from the route.
-   */
-  private readonly environmentId = signal<number | null>(null);
-
-  /**
    * Name of the product of the batch; null until the batch is loaded.
    */
   protected readonly productName = computed(
     () =>
       this.store.traceability()?.product?.name ?? this.store.selectedBatch()?.productName ?? null,
   );
-
-  /**
-   * Code and name of the environment of the batch; null while the environments are not loaded.
-   */
-  protected readonly environmentName = computed(() => {
-    const environment = this.store.environments().find((item) => item.id === this.environmentId());
-    return environment ? `${environment.code} · ${environment.name}` : null;
-  });
 
   /**
    * Lifecycle hook that reads the route parameters and loads the batch with its traceability, plus the environments
@@ -109,7 +93,6 @@ export class BatchDetail implements OnInit {
         productId: Number(params.get('productId')),
       };
       this.batchId = Number(params.get('batchId'));
-      this.environmentId.set(this.path.environmentId);
       this.store.clearMessages();
       void this.store.loadBatch(this.path, this.batchId);
     });
