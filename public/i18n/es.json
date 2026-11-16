@@ -1184,12 +1184,15 @@
     }
   },
   "equipment-form": {
-    "title": "Nuevo Equipo",
+    "title": "Registrar equipo",
     "subtitle": "Ingrese las especificaciones técnicas del activo",
     "placeholders": {
       "name": "Ej. Autoclave Estándar",
       "model": "Ej. RX-200",
       "serial": "Ej. SN-987654321"
+    },
+    "hints": {
+      "environment": "Opcional; también se puede ubicar después desde su detalle."
     },
     "errors": {
       "name-minlength": "El nombre del equipo debe tener al menos 3 caracteres",
@@ -1211,14 +1214,17 @@
       "move-hint": "Elige otro ambiente si el equipo fue trasladado.",
       "associate": "Asociar",
       "move": "Trasladar",
-      "not-recorded": "El dispositivo se registró, pero no se guardó su ambiente."
+      "choose": "Elige el ambiente donde está instalado.",
+      "unchanged": "Ya está en este ambiente; elige otro para trasladarlo.",
+      "not-recorded": "Se registró, pero no se guardó su ambiente."
     },
     "status-change": {
       "title": "Estado operativo",
       "hint": "El cambio queda registrado en el historial del equipo.",
       "new-status": "Nuevo estado",
       "reason": "Motivo (opcional)",
-      "register": "Registrar cambio"
+      "register": "Registrar cambio",
+      "choose": "Elige el nuevo estado."
     }
   },
   "bpm-config": {
@@ -1931,8 +1937,8 @@
   },
   "device-form": {
     "add-button": "Registrar dispositivo IoT",
-    "title": "Nuevo Dispositivo IoT",
-    "subtitle": "Dispositivo ambiental o monitor de contenedor ESP32 y la identidad con la que Edge lo reconoce",
+    "title": "Registrar dispositivo IoT",
+    "subtitle": "Dispositivo ambiental o monitor de contenedor ESP32, y el identificador con el que llegan sus lecturas",
     "fields": {
       "device-type": "Tipo de dispositivo",
       "identifier": "Identificador del dispositivo",
@@ -1947,13 +1953,14 @@
       "firmware": "Ej. 1.0.3"
     },
     "hints": {
-      "identifier": "Único en QualiTrack; Edge lo usa para reconocer el dispositivo.",
+      "identifier": "Único en QualiTrack; las lecturas del dispositivo llegan con él.",
       "environment": "Opcional; también se puede asociar después desde el detalle del dispositivo."
     },
     "no-environment": "Asociar después",
     "occupied": "ya tiene un dispositivo ambiental",
     "errors": {
-      "firmware": "Use un formato como 1.2.3, v1.2 o 2.0.1-beta.1"
+      "firmware": "Use un formato como 1.2.3, v1.2 o 2.0.1-beta.1",
+      "mac": "Una dirección MAC tiene seis pares de dígitos hexadecimales (0-9, A-F) separados por : o -."
     }
   },
   "device-types": {

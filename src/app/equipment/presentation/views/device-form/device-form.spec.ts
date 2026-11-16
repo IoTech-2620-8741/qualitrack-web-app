@@ -57,4 +57,22 @@ describe('DeviceForm', () => {
     form.setValue({ ...valid, firmwareVersion: version });
     expect(form.get('firmwareVersion')?.valid).toBe(true);
   });
+
+  it.each(['24:6F:28:AA:10:01', '24-6f-28-aa-10-01', 'SN-0001', '246F28AA1001', 'ESP32/A.1'])(
+    'accepts the MAC address or serial number %s',
+    (serial) => {
+      const form = create();
+      form.setValue({ ...valid, serialNumber: serial });
+      expect(form.get('serialNumber')?.valid).toBe(true);
+    },
+  );
+
+  it.each(['20.7B.30.33.Z5.99', '24:6F:28:AA:10', '24:6F-28:AA:10:01', 'GG:6F:28:AA:10:01', '24-6F-28-AA-10-ZZ'])(
+    'rejects the malformed MAC address %s',
+    (serial) => {
+      const form = create();
+      form.setValue({ ...valid, serialNumber: serial });
+      expect(form.get('serialNumber')?.hasError('mac')).toBe(true);
+    },
+  );
 });

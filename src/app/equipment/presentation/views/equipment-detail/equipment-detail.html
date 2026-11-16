@@ -143,7 +143,7 @@
               </mat-card-header>
               <mat-card-content>
                 <form class="inline-form" [formGroup]="locationForm" (ngSubmit)="onLocate(current)">
-                  <mat-form-field appearance="outline">
+                  <mat-form-field appearance="outline" class="grow">
                     <mat-label>{{ 'equipment-list.fields.environment' | translate }}</mat-label>
                     <mat-select formControlName="environmentId">
                       @for (environment of store.environments(); track environment.id) {
@@ -155,8 +155,13 @@
                         </mat-option>
                       }
                     </mat-select>
+                    @if (locationForm.controls.environmentId.hasError('unchanged')) {
+                      <mat-error>{{ 'equipment-detail.location.unchanged' | translate }}</mat-error>
+                    } @else if (locationForm.controls.environmentId.hasError('required')) {
+                      <mat-error>{{ 'equipment-detail.location.choose' | translate }}</mat-error>
+                    }
                   </mat-form-field>
-                  <button mat-flat-button class="primary-btn" type="submit" [disabled]="locationForm.invalid || store.saving()">
+                  <button mat-flat-button class="primary-btn" type="submit" [disabled]="store.saving()">
                     <mat-icon>place</mat-icon>
                     {{ (current.isLocated ? 'equipment-detail.location.move' : 'equipment-detail.location.associate') | translate }}
                   </button>
@@ -173,7 +178,7 @@
               </mat-card-header>
               <mat-card-content>
                 @if (current.isLocated) {
-                  <form class="inline-form" [formGroup]="statusForm" (ngSubmit)="onChangeStatus(current)">
+                  <form class="inline-form" [formGroup]="statusForm" #statusDirective="ngForm" (ngSubmit)="onChangeStatus(current, statusDirective)">
                     <mat-form-field appearance="outline">
                       <mat-label>{{ 'equipment-detail.status-change.new-status' | translate }}</mat-label>
                       <mat-select formControlName="status">
@@ -181,6 +186,9 @@
                           <mat-option [value]="status">{{ 'equipment-status.' + status.toLowerCase() | translate }}</mat-option>
                         }
                       </mat-select>
+                      @if (statusForm.controls.status.hasError('required')) {
+                        <mat-error>{{ 'equipment-detail.status-change.choose' | translate }}</mat-error>
+                      }
                     </mat-form-field>
                     <mat-form-field appearance="outline" class="grow">
                       <mat-label>{{ 'equipment-detail.status-change.reason' | translate }}</mat-label>
@@ -189,7 +197,7 @@
                         <mat-error>{{ 'common.notBlank' | translate }}</mat-error>
                       }
                     </mat-form-field>
-                    <button mat-flat-button class="primary-btn" type="submit" [disabled]="statusForm.invalid || store.saving()">
+                    <button mat-flat-button class="primary-btn" type="submit" [disabled]="store.saving()">
                       <mat-icon>published_with_changes</mat-icon>
                       {{ 'equipment-detail.status-change.register' | translate }}
                     </button>

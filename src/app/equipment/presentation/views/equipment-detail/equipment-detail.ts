@@ -7,7 +7,7 @@ import {
   ChangeDetectionStrategy,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroupDirective, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatCardModule } from '@angular/material/card';
@@ -130,19 +130,29 @@ export class EquipmentDetail implements OnInit {
   }
 
   protected async onLocate(equipment: Equipment): Promise<void> {
-    const environmentId = this.locationForm.controls.environmentId.value;
-    if (environmentId === null || environmentId === equipment.environmentId) return;
+    // The button stays usable; pressing it with nothing to change says what is missing
+    const control = this.locationForm.controls.environmentId;
+    const environmentId = control.value;
+    if (environmentId === null || environmentId === equipment.environmentId) {
+      if (environmentId !== null) control.setErrors({ unchanged: true });
+      control.markAsTouched();
+      return;
+    }
     const located = await this.store.assignToEnvironment(equipment, environmentId);
     if (!located) return;
     this.locationNotice.set(null);
-    this.locationForm.reset();
+    this.locationForm.reset({ environmentId: located.environmentId });
     await this.store.loadMaintenanceHistory(located);
   }
 
-  protected async onChangeStatus(equipment: Equipment): Promise<void> {
+  protected async onChangeStatus(equipment: Equipment, directive: FormGroupDirective): Promise<void> {
     const { status, reason } = this.statusForm.getRawValue();
-    if (this.statusForm.invalid || status === null) return;
-    if (await this.store.changeStatus(equipment, { status, reason })) this.statusForm.reset();
+    if (this.statusForm.invalid || status === null) {
+      this.statusForm.markAllAsTouched();
+      return;
+    }
+    // Resetting the directive too, so the emptied form does not show its errors as if it were submitted again
+    if (await this.store.changeStatus(equipment, { status, reason })) directive.resetForm();
   }
 
   /**
@@ -188,6 +198,8 @@ export class EquipmentDetail implements OnInit {
   private async load(id: number): Promise<void> {
     const equipment = await this.store.loadEquipmentById(id);
     if (!equipment) return;
+    // The location form starts on the environment where the equipment is
+    this.locationForm.reset({ environmentId: equipment.environmentId });
     // Only a quality manager may read the key status; the platform refuses it to anyone else.
     if (equipment.isEdgeGateway && this.store.canManage()) {
       this.apiKeyIssued.set(await this.store.loadEdgeGatewayApiKeyStatus(id));

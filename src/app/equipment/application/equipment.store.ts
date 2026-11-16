@@ -243,10 +243,12 @@ export class EquipmentStore {
    * The text fields of the command are trimmed before being sent.
    *
    * @param command - The data of the equipment to register.
-   * @returns The registered equipment, or `null` when it could not be registered.
+   * @param environmentId - The environment where it is installed, or `null` to locate it later.
+   * @returns The registered equipment (still unlocated when the location failed), or `null` when it could not be
+   * registered.
    */
-  async registerEquipment(command: RegisterEquipmentCommand): Promise<Equipment | null> {
-    return this.save(async () => {
+  async registerEquipment(command: RegisterEquipmentCommand, environmentId: number | null): Promise<Equipment | null> {
+    const equipment = await this.save(async () => {
       const equipment = await firstValueFrom(this.api.registerEquipment(this.laboratoryId, {
         name: command.name.trim(),
         type: command.type.trim(),
@@ -256,6 +258,8 @@ export class EquipmentStore {
       this.replace(equipment);
       return equipment;
     });
+    if (!equipment || environmentId === null) return equipment;
+    return (await this.assignToEnvironment(equipment, environmentId)) ?? equipment;
   }
 
   /**
