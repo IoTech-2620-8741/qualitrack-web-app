@@ -4,6 +4,8 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
+import { MatDialog } from '@angular/material/dialog';
+import { firstValueFrom } from 'rxjs';
 import { TranslatePipe } from '@ngx-translate/core';
 import { todayInLima } from '../../../../shared/presentation/utils/local-date';
 import {
@@ -16,6 +18,7 @@ import { notBlankValidator } from '../../../../shared/presentation/validators/no
 import { BatchStore } from '../../../application/batch.store';
 import { IamStore } from '../../../../iam/application/iam.store';
 import { BatchPath } from '../../../domain/model/batch-path';
+import { BatchDecisionDialog } from '../../components/batch-decision-dialog/batch-decision-dialog';
 import { BatchStatusChip } from '../../components/batch-status-chip/batch-status-chip';
 import { BatchSummary } from '../../components/batch-summary/batch-summary';
 
@@ -51,6 +54,7 @@ export class BatchRejectForm implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  private readonly dialog = inject(MatDialog);
 
   /**
    * Laboratory, environment and product of the batch, taken from the route.
@@ -147,7 +151,13 @@ export class BatchRejectForm implements OnInit {
    */
   protected async submit(): Promise<void> {
     this.form.markAllAsTouched();
-    if (this.form.invalid) return;
+    const batch = this.store.selectedBatch();
+    if (this.form.invalid || !batch) return;
+    // The rejection cannot be undone, so the person confirms it on a dialog that names the batch
+    const confirmed = await firstValueFrom(
+      this.dialog.open(BatchDecisionDialog, { data: { decision: 'reject', batch } }).afterClosed(),
+    );
+    if (!confirmed) return;
     const value = this.form.getRawValue();
     if (
       await this.store.rejectBatch(this.path, this.batchId, {
