@@ -33,8 +33,8 @@
         }
       </mat-form-field>
     }
-    <!-- Traceability code, unique in the laboratory -->
-    <mat-form-field appearance="outline">
+    <!-- Traceability code, unique in the laboratory; its hint can take two lines, so the subscript grows -->
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
       <mat-label>{{ 'batch-form.fields.batch-number' | translate }}</mat-label>
       <input matInput formControlName="batchNumber" maxlength="50" autocomplete="off"
              [placeholder]="'batch-form.placeholders.batch-number' | translate" />
