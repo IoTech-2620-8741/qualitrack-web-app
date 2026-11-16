@@ -261,8 +261,10 @@ mat-button-toggle-group ::ng-deep .mat-button-toggle-button:focus-visible {
 
 .panel-footer {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: flex-end;
+  gap: 12px;
   margin-top: 24px;
   padding-top: 20px;
   border-top: 1px solid var(--qt-border);
@@ -298,8 +300,18 @@ mat-button-toggle-group ::ng-deep .mat-button-toggle-button:focus-visible {
   color: var(--qt-neutral-text);
 }
 
-.preview-btn {
+.missing {
+  margin: 0 auto 0 0;
   color: var(--qt-text-muted);
+  font-size: 14px;
+}
+
+.preview-btn {
+  min-height: 48px;
+  padding: 8px 20px;
+  border-radius: 999px;
+  color: var(--qt-text-muted);
+  font-weight: 600;
 }
 
 .preview-btn:hover:not(:disabled) {

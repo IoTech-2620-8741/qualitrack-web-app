@@ -113,12 +113,15 @@
     }
 
     <div class="panel-footer">
+      <!-- The actions stay disabled until the parameters are complete; this says which one is missing -->
+      @if (missingKey(); as key) {
+        <p class="missing" role="status">{{ key | translate }}</p>
+      }
       <div class="actions">
         @if (state.form().format === 'PDF') {
-          <button mat-icon-button class="preview-btn" type="button" (click)="onPreview()" [disabled]="!isValid() || store.isLoading()"
-                  [attr.aria-label]="'report-generator.preview' | translate"
-                  [matTooltip]="'report-generator.preview' | translate">
+          <button mat-button class="preview-btn" type="button" (click)="onPreview()" [disabled]="!isValid() || store.isLoading()">
             <mat-icon aria-hidden="true">visibility</mat-icon>
+            {{ 'report-generator.preview' | translate }}
           </button>
         }
 

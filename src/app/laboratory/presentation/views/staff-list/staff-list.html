@@ -55,7 +55,6 @@
               <th>{{ 'staff-list.name' | translate }}</th>
               <th>{{ 'staff-list.role' | translate }}</th>
               <th>{{ 'staff-list.access-role' | translate }}</th>
-              <th>{{ 'staff-list.email' | translate }}</th>
               <th>{{ 'staff-list.status' | translate }}</th>
               @if (iamStore.canManageQuality()) {
                 <th>{{ 'common.actions.label' | translate }}</th>
@@ -74,6 +73,9 @@
                     } @else {
                       {{ member.fullName }}
                     }
+                    <!-- Under the name, so the table fits beside the side menu; it wraps before its @, never mid-name -->
+                    @let email = emailLines(member.email);
+                    <small class="email">{{ email[0] }}<wbr>{{ email[1] }}</small>
                   </td>
 
                   <td [attr.data-label]="'staff-list.role' | translate">
@@ -88,10 +90,6 @@
                         {{ 'staff.no-account' | translate }}
                       </span>
                     }
-                  </td>
-
-                  <td class="long-value" [attr.data-label]="'staff-list.email' | translate">
-                    {{ member.email }}
                   </td>
 
                   <td [attr.data-label]="'staff-list.status' | translate">
@@ -122,7 +120,7 @@
                 </tr>
               } @empty {
                 <tr>
-                  <td [attr.colspan]="iamStore.canManageQuality() ? 6 : 5" class="empty-cell">
+                  <td [attr.colspan]="iamStore.canManageQuality() ? 5 : 4" class="empty-cell">
                     {{ 'staff-list.empty-filtered' | translate }}
                   </td>
                 </tr>

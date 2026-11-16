@@ -5,7 +5,7 @@
     "title": "Inventory",
     "refresh": "Refresh",
     "legacy": "Previous balances",
-    "newMaterial": "New material",
+    "importLegacy": "Import previous balances",
     "code": "Code",
     "name": "Material",
     "unit": "Unit",
@@ -21,7 +21,9 @@
     "lowStock": "Low usable stock",
     "search": "Search name or code",
     "usableStock": "Usable stock",
+    "usableStockHelp": "What can be used in a batch: the remaining balance of released receipts that have not expired.",
     "physicalStock": "Physical balance",
+    "physicalStockHelp": "Everything left in the environment, including receipts in quarantine, observed, rejected or expired.",
     "empty": "No materials match this view.",
     "loading": "Loading inventory…",
     "importNotice": "Previous balances are imported once, in quarantine. Historical consumption is preserved and will not be deducted again. Quality review is required before use.",
@@ -1313,12 +1315,11 @@
   },
   "staff-list": {
     "title": "Personnel Management",
-    "register": "Add Staff",
+    "register": "Register Staff Member",
     "search": "Search name, job title or email",
     "empty-filtered": "No staff members match these filters.",
     "name": "Full Name",
     "role": "Job title",
-    "email": "Corporate Email",
     "status": "Employment Status",
     "empty": "No staff members registered yet.",
     "access-role": "Access",
@@ -1521,6 +1522,11 @@
     }
   },
   "report-generator": {
+    "missing": {
+      "batch": "Choose a batch to generate the report.",
+      "equipment": "Choose an equipment to generate the report.",
+      "period": "Choose a period to generate the report."
+    },
     "title": "Report & Document Generator",
     "subtitle": "Traceability and compliance documents ready for DIGEMID audit.",
     "generating": "Generating report...",
