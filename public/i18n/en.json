@@ -1207,9 +1207,16 @@
     "tabs": {
       "general": "General Info",
       "bpm": "BPM Config",
+      "thresholds": "Monitoring thresholds",
       "maintenance": "Maintenance"
     },
     "requires-location": "Associate the equipment with an environment to register status changes and maintenance.",
+    "thresholds": {
+      "title": "Environmental profile thresholds",
+      "hint": "These limits classify each reading as normal, warning or critical and raise the alerts. They are edited in Environmental profiles.",
+      "open-profiles": "Open in Environmental profiles",
+      "requires-location": "Locate the device in an environment to see its thresholds."
+    },
     "location": {
       "title": "Location",
       "hint": "Associate the equipment with the environment where it is installed.",

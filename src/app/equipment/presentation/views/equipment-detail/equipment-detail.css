@@ -398,6 +398,25 @@ mat-form-field {
   text-align: center;
 }
 
+.profile-version {
+  color: var(--qt-text-muted);
+  font-size: 12px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.muted {
+  margin: 0;
+  color: var(--qt-text-muted);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* The link keeps its own width instead of stretching across the tab. */
+.profiles-link {
+  align-self: flex-start;
+}
+
 @media (max-width: 760px) {
   .operations-page {
     padding: 20px 16px 36px;

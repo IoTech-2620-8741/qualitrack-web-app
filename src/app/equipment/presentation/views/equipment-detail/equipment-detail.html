@@ -211,7 +211,73 @@
         </div>
       </mat-tab>
 
-      @if (!current.isEdgeGateway) {
+      @if (current.isIotDevice) {
+        <mat-tab>
+          <ng-template mat-tab-label>
+            <mat-icon class="tab-icon">tune</mat-icon>
+            {{ 'equipment-detail.tabs.thresholds' | translate }}
+          </ng-template>
+
+          <div class="tab-content">
+            <div class="tab-header">
+              <h3>{{ 'equipment-detail.thresholds.title' | translate }}</h3>
+
+              @if (store.monitoringProfile(); as profile) {
+                <span class="profile-version">
+                  {{ 'tracking.profiles.version' | translate: { version: profile.version } }}
+                  @if (profile.updatedAt) { · {{ profile.updatedAt | dateTime }} }
+                </span>
+              }
+            </div>
+
+            <p class="muted">{{ 'equipment-detail.thresholds.hint' | translate }}</p>
+
+            @if (!current.isLocated) {
+              <p class="empty-msg">{{ 'equipment-detail.thresholds.requires-location' | translate }}</p>
+            } @else {
+              @if (store.monitoringProfile(); as profile) {
+                <div class="table-card">
+                  <table class="data-table">
+                    <thead>
+                      <tr>
+                        <th>{{ 'tracking.profiles.metric' | translate }}</th>
+                        <th>{{ 'tracking.profiles.critical-min' | translate }}</th>
+                        <th>{{ 'tracking.profiles.normal-min' | translate }}</th>
+                        <th>{{ 'tracking.profiles.normal-max' | translate }}</th>
+                        <th>{{ 'tracking.profiles.critical-max' | translate }}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      @for (threshold of profile.thresholds; track threshold.metric) {
+                        <tr>
+                          <td [attr.data-label]="'tracking.profiles.metric' | translate">
+                            {{ ('tracking.metrics.' + threshold.metric) | translate }}{{ threshold.unit ? ' (' + threshold.unit + ')' : '' }}
+                          </td>
+                          <td [attr.data-label]="'tracking.profiles.critical-min' | translate">{{ threshold.criticalMin ?? '—' }}</td>
+                          <td [attr.data-label]="'tracking.profiles.normal-min' | translate">{{ threshold.normalMin ?? '—' }}</td>
+                          <td [attr.data-label]="'tracking.profiles.normal-max' | translate">{{ threshold.normalMax ?? '—' }}</td>
+                          <td [attr.data-label]="'tracking.profiles.critical-max' | translate">{{ threshold.criticalMax ?? '—' }}</td>
+                        </tr>
+                      }
+                    </tbody>
+                  </table>
+                </div>
+              } @else {
+                <p class="empty-msg">{{ 'tracking.profiles.not-configured' | translate }}</p>
+              }
+
+              <a
+                mat-stroked-button
+                class="profiles-link"
+                [routerLink]="['/tracking/profiles']"
+                [queryParams]="{ environmentId: current.environmentId }">
+                <mat-icon>tune</mat-icon>
+                {{ 'equipment-detail.thresholds.open-profiles' | translate }}
+              </a>
+            }
+          </div>
+        </mat-tab>
+      } @else if (!current.isEdgeGateway) {
         <mat-tab>
           <ng-template mat-tab-label>
             <mat-icon class="tab-icon">settings_input_component</mat-icon>

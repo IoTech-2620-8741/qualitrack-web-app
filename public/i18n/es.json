@@ -1207,9 +1207,16 @@
     "tabs": {
       "general": "Información General",
       "bpm": "Configuración BPM",
+      "thresholds": "Umbrales de monitoreo",
       "maintenance": "Mantenimiento"
     },
     "requires-location": "Asocia el equipo con un ambiente para registrar cambios de estado y mantenimientos.",
+    "thresholds": {
+      "title": "Umbrales del perfil ambiental",
+      "hint": "Estos límites clasifican cada lectura como normal, advertencia o crítica y generan las alertas. Se editan en Perfiles ambientales.",
+      "open-profiles": "Ver en Perfiles ambientales",
+      "requires-location": "Ubica el dispositivo en un ambiente para ver sus umbrales."
+    },
     "location": {
       "title": "Ubicación",
       "hint": "Asocia el equipo con el ambiente donde está instalado.",

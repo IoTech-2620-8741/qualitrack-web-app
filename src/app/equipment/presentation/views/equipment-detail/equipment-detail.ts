@@ -26,6 +26,7 @@ import { Equipment } from '../../../domain/model/equipment.entity';
 import { EQUIPMENT_STATUSES, EquipmentStatus } from '../../../domain/model/equipment-status';
 import { notBlankValidator } from '../../../../shared/presentation/validators/not-blank.validator';
 import { DateOnlyPipe } from '../../../../shared/presentation/pipes/date-only.pipe';
+import { DateTimePipe } from '../../../../shared/presentation/pipes/date-time.pipe';
 import { EdgeGatewayApiKeyDialog } from '../../components/edge-gateway-api-key-dialog/edge-gateway-api-key-dialog';
 
 /**
@@ -41,6 +42,7 @@ import { EdgeGatewayApiKeyDialog } from '../../components/edge-gateway-api-key-d
   selector: 'app-equipment-detail',
   standalone: true,
   imports: [DateOnlyPipe,
+    DateTimePipe,
     CommonModule,
     ReactiveFormsModule,
     MatTabsModule,
@@ -99,7 +101,6 @@ export class EquipmentDetail implements OnInit {
     this.equipmentId.set(id);
     void this.store.loadEnvironments();
     this.store.loadEquipment();
-    this.store.loadBpmConfig(id);
     void this.load(id);
   }
 
@@ -143,6 +144,8 @@ export class EquipmentDetail implements OnInit {
     this.locationNotice.set(null);
     this.locationForm.reset({ environmentId: located.environmentId });
     await this.store.loadMaintenanceHistory(located);
+    // A device that changes environment follows the profile of the new one
+    await this.store.loadMonitoringProfile(located);
   }
 
   protected async onChangeStatus(equipment: Equipment, directive: FormGroupDirective): Promise<void> {
@@ -200,6 +203,9 @@ export class EquipmentDetail implements OnInit {
     if (!equipment) return;
     // The location form starts on the environment where the equipment is
     this.locationForm.reset({ environmentId: equipment.environmentId });
+    // The limits of an IoT device are the thresholds of its environmental profile; BPM limits are for process equipment
+    if (equipment.isIotDevice) void this.store.loadMonitoringProfile(equipment);
+    else if (!equipment.isEdgeGateway) this.store.loadBpmConfig(id);
     // Only a quality manager may read the key status; the platform refuses it to anyone else.
     if (equipment.isEdgeGateway && this.store.canManage()) {
       this.apiKeyIssued.set(await this.store.loadEdgeGatewayApiKeyStatus(id));
