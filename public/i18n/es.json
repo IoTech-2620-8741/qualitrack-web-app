@@ -1238,11 +1238,11 @@
   },
   "bpm-config": {
     "title": "Configuración de Parámetros BPM",
-    "subtitle": "Establece los rangos de tolerancia para el monitoreo de calidad",
+    "subtitle": "Registra el rango de operación que exigen las BPM para un parámetro de proceso del equipo.",
     "empty": "No hay parámetros BPM configurados para este equipo.",
     "add": "Agregar parámetro",
     "hints": {
-      "parameter": "Elige una variable monitoreada para completar su unidad, o escribe otro nombre."
+      "parameter": "Por ejemplo Presión, Velocidad o Temperatura de cámara. QualiTrack no lo mide con sensores."
     },
     "fields": {
       "parameter": "Nombre del Parámetro",

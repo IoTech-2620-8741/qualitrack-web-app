@@ -24,19 +24,8 @@
         matInput
         formControlName="parameterName"
         maxlength="100"
-        [matAutocomplete]="names"
         [placeholder]="'bpm-config.placeholders.parameter' | translate">
       <mat-icon matSuffix>label</mat-icon>
-      <!-- Picking a monitored variable also fills in its unit -->
-      <mat-autocomplete #names>
-        @for (suggestion of suggestions; track suggestion.key) {
-          @let name = suggestion.key | translate;
-          <mat-option
-            [value]="name"
-            (onSelectionChange)="$event.isUserInput && form.get('unit')?.setValue(suggestion.unit)"
-          >{{ name }} ({{ suggestion.unit }})</mat-option>
-        }
-      </mat-autocomplete>
       <mat-hint>{{ 'bpm-config.hints.parameter' | translate }}</mat-hint>
 
       @if (form.get('parameterName')?.hasError('required')) {

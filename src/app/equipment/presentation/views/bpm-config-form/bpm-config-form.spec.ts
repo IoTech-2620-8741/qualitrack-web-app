@@ -86,16 +86,12 @@ describe('BpmConfigForm', () => {
     expect(loadEquipmentById).toHaveBeenCalledWith(4);
   });
 
-  it('fills in the unit when a monitored variable is picked, and still accepts any other name', () => {
+  it('accepts any parameter name without offering monitored variables', () => {
     const { form, fixture } = create();
     const input: HTMLInputElement = fixture.nativeElement.querySelector('input[formcontrolname="parameterName"]');
     input.dispatchEvent(new Event('focusin'));
     fixture.detectChanges();
-    const options = [...document.querySelectorAll<HTMLElement>('mat-option')];
-    expect(options.length).toBe(4);
-    options[1].click();
-    fixture.detectChanges();
-    expect(form.get('unit')?.value).toBe('%RH');
+    expect(document.querySelectorAll('mat-option').length).toBe(0);
     form.patchValue({ parameterName: 'Presión', minValue: 1, maxValue: 2.2, unit: 'bar' });
     expect(form.valid).toBe(true);
   });

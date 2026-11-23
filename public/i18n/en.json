@@ -1238,11 +1238,11 @@
   },
   "bpm-config": {
     "title": "BPM Parameter Config",
-    "subtitle": "Set tolerance ranges for quality monitoring",
+    "subtitle": "Record the operating range that GMP requires for a process parameter of the equipment.",
     "empty": "No BPM parameters configured for this equipment.",
     "add": "Add parameter",
     "hints": {
-      "parameter": "Choose a monitored variable to fill in its unit, or type another name."
+      "parameter": "For example Pressure, Speed or Chamber temperature. QualiTrack does not measure it with sensors."
     },
     "fields": {
       "parameter": "Parameter Name",
