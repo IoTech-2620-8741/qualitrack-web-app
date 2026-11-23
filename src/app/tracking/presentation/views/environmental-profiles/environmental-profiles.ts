@@ -1,5 +1,5 @@
 import { Component, OnInit, computed, inject, ChangeDetectionStrategy } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -87,6 +87,7 @@ export class EnvironmentalProfiles implements OnInit {
    */
   protected readonly store = inject(TrackingStore);
   protected readonly iam = inject(IamStore);
+  private readonly route = inject(ActivatedRoute);
 
   /**
    * Metrics configurable for environmental devices.
@@ -123,15 +124,19 @@ export class EnvironmentalProfiles implements OnInit {
   /**
    * Initializes the environmental profiles view.
    *
-   * Loads available environments when required and restores
-   * the previously selected environment.
+   * Loads available environments and opens the one given in the link
+   * (`?environmentId=`) when it belongs to the laboratory; otherwise
+   * restores the previously selected environment.
    *
    * After selecting an environment, the component loads
    * its active environmental profiles.
    */
   async ngOnInit(): Promise<void> {
     await this.store.loadEnvironments();
+    const requested = Number(this.route.snapshot.queryParamMap.get('environmentId'));
+    const linked = this.store.environments().some((environment) => environment.id === requested) ? requested : null;
     const current =
+      linked ??
       this.store.environmentId() ??
       this.store.preferredEnvironmentId() ??
       null;
