@@ -85,6 +85,17 @@ package "equipment.domain.model" {
     +id / code / name
     +usage: string | null
   }
+  class MonitoringProfile {
+    +id: number
+    +version: number
+    +updatedAt: string | null
+    +thresholds: MonitoringThreshold[]
+  }
+  interface MonitoringThreshold {
+    +metric / unit: string
+    +normalMin / normalMax: number | null
+    +criticalMin / criticalMax: number | null
+  }
   class MaintenanceTechnician {
     +id / fullName / role
     +active: boolean
@@ -97,9 +108,11 @@ package "equipment.domain.model" {
 Equipment ..|> BaseEntity
 MaintenanceRecord ..|> BaseEntity
 BpmParameterConfig ..|> BaseEntity
+MonitoringProfile ..|> BaseEntity
 Equipment --> IotDeviceType
 Equipment --> EquipmentStatus
 EdgeGatewayCoverage --> EdgeGatewayLoad
+MonitoringProfile --> MonitoringThreshold
 note right of Equipment
   An IoT device is an equipment with a device type and the identity
   Edge uses to recognise it. Only IoT devices send telemetry.
@@ -123,6 +136,7 @@ package "equipment.infrastructure" {
     +getBpmConfig(lab, equipmentId)
     +configureBpm(lab, request)
     +getEnvironments(lab)
+    +getMonitoringProfile(lab, environmentId, deviceType, deviceId)
     +getTechnicians(lab)
     +getEquipmentByEnvironment(lab, environmentId, iotOnly)
     +registerEdgeGateway(lab, request)
@@ -140,6 +154,8 @@ package "equipment.infrastructure" {
   class BpmConfigAssembler
   class InstallationEnvironmentApiEndpoint
   class InstallationEnvironmentAssembler
+  class MonitoringProfileApiEndpoint
+  class MonitoringProfileAssembler
   class MaintenanceTechnicianApiEndpoint
   class MaintenanceTechnicianAssembler
 }
@@ -172,6 +188,15 @@ MaintenanceTechnicianAssembler ..> MaintenanceTechnician
 note bottom of InstallationEnvironmentApiEndpoint
   Laboratory -> Equipment (Customer/Supplier):
   GET /laboratories/{id}/environments and /staff in Equipment's own models.
+end note
+EquipmentApi --> MonitoringProfileApiEndpoint
+MonitoringProfileApiEndpoint --> MonitoringProfileAssembler
+MonitoringProfileAssembler ..> MonitoringProfile
+note bottom of MonitoringProfileApiEndpoint
+  Tracking -> Equipment (Customer/Supplier), read only:
+  GET .../environments/{environmentId}/environmental-profile (environmental device)
+  GET .../environments/{environmentId}/container-monitors/{deviceId}/environmental-profile
+  404 means the device has no profile yet.
 end note
 MaintenanceAssembler ..|> BaseAssembler
 BpmConfigAssembler ..|> BaseAssembler
@@ -211,6 +236,8 @@ package "equipment.application" {
     +registerMaintenance(equipment, command)
     +environments: Signal<InstallationEnvironment[]>
     +loadEnvironments(): Promise<void>
+    +monitoringProfile: Signal<MonitoringProfile | null>
+    +loadMonitoringProfile(equipment)
     +loadTechnicians(): Promise<MaintenanceTechnician[]>
     +registerEdgeGateway(command, environmentId)
     +loadEdgeGatewayApiKeyStatus(equipmentId): Promise<boolean | null>
