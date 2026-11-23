@@ -80,9 +80,9 @@ describe('EquipmentDetail', () => {
 
   /**
    * Opens the detail of an equipment with a session of the given role and answers what it reads; an IoT device gets
-   * the given environmental profile, or a 404 when it is `null`.
+   * the given environmental profile, a 404 when it is `null`, a 500 with `'failure'`, or no answer with `'pending'`.
    */
-  async function open(role: string, equipment: object = gateway, profile: object | null = null) {
+  async function open(role: string, equipment: object = gateway, profile: object | null | 'pending' | 'failure' = null) {
     localStorage.setItem('token', 'test.' + btoa(JSON.stringify({ exp: Date.now() / 1000 + 3600 })) + '.test');
     localStorage.setItem('userId', '27');
     localStorage.setItem('username', 'Detail fixture');
@@ -117,7 +117,10 @@ describe('EquipmentDetail', () => {
           } else if (url.endsWith('/equipments/5')) {
             request.flush(equipment);
           } else if (url.endsWith('/environmental-profile')) {
-            if (profile) request.flush(profile);
+            // A 'pending' profile request is taken off the open list without an answer, so it stays in flight.
+            if (profile === 'failure') request.flush({ message: 'Server error' }, { status: 500, statusText: 'Server Error' });
+            else if (profile === 'pending') continue;
+            else if (profile) request.flush(profile);
             else request.flush({ message: 'Profile not found' }, { status: 404, statusText: 'Not Found' });
           } else {
             request.flush([]);
@@ -211,6 +214,25 @@ describe('EquipmentDetail', () => {
 
     expect(element.textContent).toContain('tracking.profiles.not-configured');
     expect(element.querySelector('.error')).toBeNull();
+  });
+
+  it('says the thresholds are loading instead of not configured while the profile is read', async () => {
+    const { element, fixture } = await open('ROLE_QA_MANAGER', containerMonitor, 'pending');
+
+    await openTab(fixture, 'equipment-detail.tabs.thresholds');
+
+    expect(element.textContent).toContain('common.status-loading');
+    expect(element.textContent).not.toContain('tracking.profiles.not-configured');
+  });
+
+  it('does not call the thresholds not configured when the profile cannot be read', async () => {
+    const { element, fixture } = await open('ROLE_QA_MANAGER', containerMonitor, 'failure');
+
+    await openTab(fixture, 'equipment-detail.tabs.thresholds');
+
+    expect(element.querySelector('.error')).not.toBeNull();
+    expect(element.textContent).not.toContain('tracking.profiles.not-configured');
+    expect(element.textContent).not.toContain('common.status-loading');
   });
 
   it('asks to locate an IoT device before reading its thresholds', async () => {

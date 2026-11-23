@@ -236,7 +236,8 @@ package "equipment.application" {
     +registerMaintenance(equipment, command)
     +environments: Signal<InstallationEnvironment[]>
     +loadEnvironments(): Promise<void>
-    +monitoringProfile: Signal<MonitoringProfile | null>
+    +monitoringProfile: Signal<MonitoringProfile | null | undefined>
+    +monitoringProfileLoading: Signal<boolean>
     +loadMonitoringProfile(equipment)
     +loadTechnicians(): Promise<MaintenanceTechnician[]>
     +registerEdgeGateway(command, environmentId)

@@ -102,8 +102,11 @@ export class EquipmentStore {
   /** Maintenance records of the last equipment loaded. */
   private readonly _maintenanceHistory = signal<MaintenanceRecord[]>([]);
 
-  /** Environmental profile that monitors the last IoT device loaded, or `null` if there is none. */
-  private readonly _monitoringProfile = signal<MonitoringProfile | null>(null);
+  /** Environmental profile that monitors the last IoT device loaded: `null` if it has none, `undefined` while unknown. */
+  private readonly _monitoringProfile = signal<MonitoringProfile | null | undefined>(undefined);
+
+  /** Whether the environmental profile of the last IoT device is loading. */
+  private readonly _monitoringProfileLoading = signal<boolean>(false);
 
   /** Whether the equipment list is loading. */
   private readonly _listLoading = signal<boolean>(false);
@@ -135,8 +138,14 @@ export class EquipmentStore {
   /** Maintenance records of the last equipment loaded (read-only). */
   readonly maintenanceHistory = this._maintenanceHistory.asReadonly();
 
-  /** Environmental profile that monitors the last IoT device loaded, or `null` if there is none (read-only). */
+  /**
+   * Environmental profile that monitors the last IoT device loaded, or `null` if it has none (read-only).
+   * It is `undefined` while it is not known: loading, after a failure, or for other equipment.
+   */
   readonly monitoringProfile = this._monitoringProfile.asReadonly();
+
+  /** Whether the environmental profile of the last IoT device is loading (read-only). */
+  readonly monitoringProfileLoading = this._monitoringProfileLoading.asReadonly();
 
   /** Whether the equipment list or the selected equipment is loading. */
   readonly isLoading = computed(() => this._listLoading() || this._itemLoading());
@@ -447,22 +456,27 @@ export class EquipmentStore {
    * Loads the environmental profile that monitors an IoT device located in an environment.
    *
    * @remarks
-   * The profile is cleared first, and it stays empty for equipment that is not an IoT device or is not located.
-   * An answer that arrives after a later load started is discarded, so a slow response never shows the limits of
-   * another device or of a previous environment. A failure is exposed through `error`.
+   * The profile is unknown (`undefined`) until the answer arrives, and stays so for equipment that is not an IoT device
+   * or is not located. `null` means the device has no profile; a failure leaves it unknown and is exposed through
+   * `error`, so a failed read never looks like a device without limits. An answer that arrives after a later load
+   * started is discarded, so a slow response never shows the limits of another device or of a previous environment.
    *
    * @param equipment - The IoT device whose profile is loaded.
    */
   async loadMonitoringProfile(equipment: Equipment): Promise<void> {
     const generation = ++this.profileGeneration;
-    this._monitoringProfile.set(null);
+    this._monitoringProfile.set(undefined);
+    this._monitoringProfileLoading.set(false);
     if (equipment.deviceType === null || equipment.environmentId === null) return;
+    this._monitoringProfileLoading.set(true);
     try {
       const profile = await firstValueFrom(this.api.getMonitoringProfile(
         this.laboratoryId, equipment.environmentId, equipment.deviceType, equipment.id));
       if (generation === this.profileGeneration) this._monitoringProfile.set(profile);
     } catch (error) {
       if (generation === this.profileGeneration) this._error.set(equipmentError(error));
+    } finally {
+      if (generation === this.profileGeneration) this._monitoringProfileLoading.set(false);
     }
   }
 

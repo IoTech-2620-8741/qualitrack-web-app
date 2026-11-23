@@ -235,7 +235,9 @@
             @if (!current.isLocated) {
               <p class="empty-msg">{{ 'equipment-detail.thresholds.requires-location' | translate }}</p>
             } @else {
-              @if (store.monitoringProfile(); as profile) {
+              @if (store.monitoringProfileLoading()) {
+                <p class="empty-msg">{{ 'common.status-loading' | translate }}</p>
+              } @else if (store.monitoringProfile(); as profile) {
                 <div class="table-card">
                   <table class="data-table">
                     <thead>
@@ -262,7 +264,8 @@
                     </tbody>
                   </table>
                 </div>
-              } @else {
+              } @else if (store.monitoringProfile() === null) {
+                <!-- Only a device without a profile; after a failed read the error says what happened. -->
                 <p class="empty-msg">{{ 'tracking.profiles.not-configured' | translate }}</p>
               }
 
