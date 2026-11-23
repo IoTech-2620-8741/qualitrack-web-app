@@ -8,6 +8,7 @@ import { BpmParameterConfig } from '../domain/model/bpm-parameter-config.entity'
 import { MaintenanceRecord } from '../domain/model/maintenance-record.entity';
 import { IotDeviceType } from '../domain/model/iot-device-type';
 import { InstallationEnvironment } from '../domain/model/installation-environment.entity';
+import { MonitoringProfile } from '../domain/model/monitoring-profile.entity';
 import { MaintenanceTechnician } from '../domain/model/maintenance-technician.entity';
 import { EdgeGatewayApiKey } from '../domain/model/edge-gateway-api-key';
 import { EdgeGatewayCoverage } from '../domain/model/edge-gateway-coverage.entity';
@@ -16,6 +17,7 @@ import { EquipmentApiEndpoint } from './equipment-api-endpoint';
 import { BpmConfigApiEndpoint } from './bpm-config-api-endpoint';
 import { MaintenanceApiEndpoint } from './maintenance-api-endpoint';
 import { InstallationEnvironmentApiEndpoint } from './installation-environment-api-endpoint';
+import { MonitoringProfileApiEndpoint } from './monitoring-profile-api-endpoint';
 import { MaintenanceTechnicianApiEndpoint } from './maintenance-technician-api-endpoint';
 import { EdgeGatewayApiEndpoint } from './edge-gateway-api-endpoint';
 
@@ -61,6 +63,9 @@ export class EquipmentApi extends BaseApi {
   /** Endpoint for the environments of Laboratory Management where equipment is installed. */
   private readonly _environmentEndpoint: InstallationEnvironmentApiEndpoint;
 
+  /** Endpoint for the environmental profiles of Tracking that monitor the IoT devices. */
+  private readonly _monitoringProfileEndpoint: MonitoringProfileApiEndpoint;
+
   /** Endpoint for the staff of Laboratory Management who perform maintenance. */
   private readonly _technicianEndpoint: MaintenanceTechnicianApiEndpoint;
 
@@ -78,6 +83,7 @@ export class EquipmentApi extends BaseApi {
     this._bpmEndpoint = new BpmConfigApiEndpoint(http);
     this._maintenanceEndpoint = new MaintenanceApiEndpoint(http);
     this._environmentEndpoint = new InstallationEnvironmentApiEndpoint(http);
+    this._monitoringProfileEndpoint = new MonitoringProfileApiEndpoint(http);
     this._technicianEndpoint = new MaintenanceTechnicianApiEndpoint(http);
     this._edgeGatewayEndpoint = new EdgeGatewayApiEndpoint(http);
   }
@@ -90,6 +96,24 @@ export class EquipmentApi extends BaseApi {
    */
   getEnvironments(laboratoryId: number): Observable<InstallationEnvironment[]> {
     return this._environmentEndpoint.getEnvironments(laboratoryId);
+  }
+
+  /**
+   * Retrieves the environmental profile that monitors an IoT device.
+   *
+   * @param laboratoryId - The identifier of the laboratory.
+   * @param environmentId - The identifier of the environment where the device is located.
+   * @param deviceType - The type of the device, which decides whose profile it follows.
+   * @param deviceId - The identifier of the device.
+   * @returns An observable that emits the profile, or `null` when it has not been configured yet.
+   */
+  getMonitoringProfile(
+    laboratoryId: number,
+    environmentId: number,
+    deviceType: IotDeviceType,
+    deviceId: number,
+  ): Observable<MonitoringProfile | null> {
+    return this._monitoringProfileEndpoint.getProfile(laboratoryId, environmentId, deviceType, deviceId);
   }
 
   /**
