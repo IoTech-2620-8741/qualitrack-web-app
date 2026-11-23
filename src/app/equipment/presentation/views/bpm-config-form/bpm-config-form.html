@@ -17,89 +17,93 @@
     <p class="error" role="alert">{{ store.error()! | translate }}</p>
   }
 
-  <form class="editor form-grid" [formGroup]="form" (ngSubmit)="onSave()">
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>{{ 'bpm-config.fields.parameter' | translate }}</mat-label>
-      <input
-        matInput
-        formControlName="parameterName"
-        maxlength="100"
-        [placeholder]="'bpm-config.placeholders.parameter' | translate">
-      <mat-icon matSuffix>label</mat-icon>
-      <mat-hint>{{ 'bpm-config.hints.parameter' | translate }}</mat-hint>
+  @if (equipment()?.isIotDevice) {
+    <p class="notice">{{ 'bpm-config.iot-device' | translate }}</p>
+  } @else {
+    <form class="editor form-grid" [formGroup]="form" (ngSubmit)="onSave()">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{ 'bpm-config.fields.parameter' | translate }}</mat-label>
+        <input
+          matInput
+          formControlName="parameterName"
+          maxlength="100"
+          [placeholder]="'bpm-config.placeholders.parameter' | translate">
+        <mat-icon matSuffix>label</mat-icon>
+        <mat-hint>{{ 'bpm-config.hints.parameter' | translate }}</mat-hint>
 
-      @if (form.get('parameterName')?.hasError('required')) {
-        <mat-error>{{ 'common.required' | translate }}</mat-error>
-      } @else if (form.get('parameterName')?.hasError('notBlank')) {
-        <mat-error>{{ 'common.notBlank' | translate }}</mat-error>
-      }
-    </mat-form-field>
-
-    <mat-form-field appearance="outline">
-      <mat-label>{{ 'bpm-config.fields.min' | translate }}</mat-label>
-      <input
-        matInput
-        type="number"
-        formControlName="minValue"
-        step="any"
-        [min]="-maxLimit"
-        [max]="maxLimit"
-        placeholder="0.0">
-
-      @if (form.get('minValue')?.hasError('required')) {
-        <mat-error>{{ 'common.required' | translate }}</mat-error>
-      } @else if (form.get('minValue')?.hasError('min') || form.get('minValue')?.hasError('max')) {
-        <mat-error>{{ 'bpm-config.errors.limit' | translate }}</mat-error>
-      }
-    </mat-form-field>
-
-    <mat-form-field appearance="outline">
-      <mat-label>{{ 'bpm-config.fields.max' | translate }}</mat-label>
-      <input
-        matInput
-        type="number"
-        formControlName="maxValue"
-        step="any"
-        [min]="-maxLimit"
-        [max]="maxLimit"
-        placeholder="100.0">
-
-      @if (form.get('maxValue')?.hasError('required')) {
-        <mat-error>{{ 'common.required' | translate }}</mat-error>
-      } @else if (form.get('maxValue')?.hasError('min') || form.get('maxValue')?.hasError('max')) {
-        <mat-error>{{ 'bpm-config.errors.limit' | translate }}</mat-error>
-      } @else if (form.hasError('bpmRange') && form.get('maxValue')?.touched) {
-        <mat-error>{{ 'bpm-config.errors.range' | translate }}</mat-error>
-      }
-    </mat-form-field>
-
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>{{ 'bpm-config.fields.unit' | translate }}</mat-label>
-      <input
-        matInput
-        formControlName="unit"
-        maxlength="20"
-        [placeholder]="'bpm-config.placeholders.unit' | translate">
-
-      @if (form.get('unit')?.hasError('required')) {
-        <mat-error>{{ 'common.required' | translate }}</mat-error>
-      } @else if (form.get('unit')?.hasError('notBlank')) {
-        <mat-error>{{ 'common.notBlank' | translate }}</mat-error>
-      }
-    </mat-form-field>
-
-    <div class="actions full-width">
-      <a mat-button [routerLink]="['/equipments', equipmentId()]">{{ 'common.cancel' | translate }}</a>
-
-      <button mat-flat-button type="submit" [disabled]="form.invalid || store.saving()">
-        @if (store.saving()) {
-          <mat-spinner diameter="18"></mat-spinner>
-        } @else {
-          <mat-icon>settings_suggest</mat-icon>
+        @if (form.get('parameterName')?.hasError('required')) {
+          <mat-error>{{ 'common.required' | translate }}</mat-error>
+        } @else if (form.get('parameterName')?.hasError('notBlank')) {
+          <mat-error>{{ 'common.notBlank' | translate }}</mat-error>
         }
+      </mat-form-field>
 
-        {{ 'common.register' | translate }}
-      </button>
-    </div>
-  </form>
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'bpm-config.fields.min' | translate }}</mat-label>
+        <input
+          matInput
+          type="number"
+          formControlName="minValue"
+          step="any"
+          [min]="-maxLimit"
+          [max]="maxLimit"
+          placeholder="0.0">
+
+        @if (form.get('minValue')?.hasError('required')) {
+          <mat-error>{{ 'common.required' | translate }}</mat-error>
+        } @else if (form.get('minValue')?.hasError('min') || form.get('minValue')?.hasError('max')) {
+          <mat-error>{{ 'bpm-config.errors.limit' | translate }}</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'bpm-config.fields.max' | translate }}</mat-label>
+        <input
+          matInput
+          type="number"
+          formControlName="maxValue"
+          step="any"
+          [min]="-maxLimit"
+          [max]="maxLimit"
+          placeholder="100.0">
+
+        @if (form.get('maxValue')?.hasError('required')) {
+          <mat-error>{{ 'common.required' | translate }}</mat-error>
+        } @else if (form.get('maxValue')?.hasError('min') || form.get('maxValue')?.hasError('max')) {
+          <mat-error>{{ 'bpm-config.errors.limit' | translate }}</mat-error>
+        } @else if (form.hasError('bpmRange') && form.get('maxValue')?.touched) {
+          <mat-error>{{ 'bpm-config.errors.range' | translate }}</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{ 'bpm-config.fields.unit' | translate }}</mat-label>
+        <input
+          matInput
+          formControlName="unit"
+          maxlength="20"
+          [placeholder]="'bpm-config.placeholders.unit' | translate">
+
+        @if (form.get('unit')?.hasError('required')) {
+          <mat-error>{{ 'common.required' | translate }}</mat-error>
+        } @else if (form.get('unit')?.hasError('notBlank')) {
+          <mat-error>{{ 'common.notBlank' | translate }}</mat-error>
+        }
+      </mat-form-field>
+
+      <div class="actions full-width">
+        <a mat-button [routerLink]="['/equipments', equipmentId()]">{{ 'common.cancel' | translate }}</a>
+
+        <button mat-flat-button type="submit" [disabled]="form.invalid || store.saving()">
+          @if (store.saving()) {
+            <mat-spinner diameter="18"></mat-spinner>
+          } @else {
+            <mat-icon>settings_suggest</mat-icon>
+          }
+
+          {{ 'common.register' | translate }}
+        </button>
+      </div>
+    </form>
+  }
 </main>

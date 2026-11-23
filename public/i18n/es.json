@@ -1239,6 +1239,7 @@
   "bpm-config": {
     "title": "Configuración de Parámetros BPM",
     "subtitle": "Registra el rango de operación que exigen las BPM para un parámetro de proceso del equipo.",
+    "iot-device": "Los límites de un dispositivo IoT son los umbrales de su perfil ambiental; míralos en su detalle.",
     "empty": "No hay parámetros BPM configurados para este equipo.",
     "add": "Agregar parámetro",
     "hints": {

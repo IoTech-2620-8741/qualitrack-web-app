@@ -1239,6 +1239,7 @@
   "bpm-config": {
     "title": "BPM Parameter Config",
     "subtitle": "Record the operating range that GMP requires for a process parameter of the equipment.",
+    "iot-device": "The limits of an IoT device are the thresholds of its environmental profile; see them in its detail.",
     "empty": "No BPM parameters configured for this equipment.",
     "add": "Add parameter",
     "hints": {
