@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.7.0] - 2026-11-23
+
+### Added
+
+- Equipment (equipment): the detail of an IoT device shows the thresholds of its environmental profile, with its version and a link to Environmental profiles, instead of the BPM Config tab (#119).
+
+- Tracking (tracking): Environmental profiles opens on the environment of the link, as in /tracking/profiles?environmentId=1 (#119).
+
+### Changed
+
+- Release: package and lockfile versions are now 2.7.0.
+
+- BPM config (bpm-config): BPM limits are for process equipment only, and the parameter form of an IoT device points to its thresholds (#119).
+
+### Removed
+
+- BPM config (bpm-config): the parameter form no longer suggests the monitored variables, which saved a translated name and implied that the parameter was measured (#119).
+
 ## [2.6.0] - 2026-11-16
 
 ### Added

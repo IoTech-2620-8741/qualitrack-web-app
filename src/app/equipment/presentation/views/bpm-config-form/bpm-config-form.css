@@ -107,6 +107,20 @@ h1 mat-icon {
   overflow-wrap: anywhere;
 }
 
+/* An IoT device has no BPM limits: its limits are the thresholds of its environmental profile. */
+.notice {
+  max-width: 880px;
+  margin: 0 0 20px;
+  padding: 16px;
+  background: var(--qt-warning-surface);
+  border: 1px solid var(--qt-warning);
+  border-radius: 12px;
+  color: var(--qt-warning-text);
+  font-size: 14px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
 .editor {
   max-width: 880px;
   margin: 0;
