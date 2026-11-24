@@ -31,12 +31,14 @@ import { EdgeGatewayApiKeyDialog } from '../../components/edge-gateway-api-key-d
 
 /**
  * Technical file of an equipment, IoT device or Edge Gateway: identity, location, operational
- * status, BPM limits and maintenance history (US46-US50).
+ * status, limits and maintenance history (US46-US50).
  *
  * @remarks
- * For an Edge Gateway it also tells whether its API key was already issued and lets a quality
- * manager generate it. The key is shown once in a dialog and is not kept anywhere else. A gateway
- * has no process parameters, so its detail hides the BPM limits.
+ * The limits of process equipment are its BPM parameters, and those of an IoT device are the
+ * thresholds of the environmental profile that monitors it, which Tracking owns; an Edge Gateway
+ * has neither. For an Edge Gateway the detail also tells whether its API key was already issued
+ * and lets a quality manager generate it. The key is shown once in a dialog and is not kept
+ * anywhere else.
  */
 @Component({
   selector: 'app-equipment-detail',
