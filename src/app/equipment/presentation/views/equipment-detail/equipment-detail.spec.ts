@@ -216,6 +216,14 @@ describe('EquipmentDetail', () => {
     expect(element.querySelector('.error')).toBeNull();
   });
 
+  it('says the profile has no thresholds when every metric is disabled', async () => {
+    const { element, fixture } = await open('ROLE_QA_MANAGER', containerMonitor, profileWith('CONTAINER_MONITOR', []));
+
+    await openTab(fixture, 'equipment-detail.tabs.thresholds');
+
+    expect(cells(element)).toEqual(['equipment-detail.thresholds.empty']);
+  });
+
   it('says the thresholds are loading instead of not configured while the profile is read', async () => {
     const { element, fixture } = await open('ROLE_QA_MANAGER', containerMonitor, 'pending');
 
