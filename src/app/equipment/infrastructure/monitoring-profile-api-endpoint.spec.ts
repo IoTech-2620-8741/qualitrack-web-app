@@ -63,6 +63,6 @@ describe('MonitoringProfileApiEndpoint', () => {
       .expectOne((request) => request.url.endsWith('/environmental-profile'))
       .flush(null, { status: 500, statusText: 'Server Error' });
 
-    await expect(profile).rejects.toBeDefined();
+    await expect(profile).rejects.toMatchObject({ status: 500, message: 'Failed to fetch the monitoring profile: Server Error' });
   });
 });

@@ -1214,6 +1214,7 @@
     "thresholds": {
       "title": "Environmental profile thresholds",
       "hint": "These limits classify each reading as normal, warning or critical and raise the alerts. They are edited in Environmental profiles.",
+      "empty": "This profile has no active thresholds, so the readings of the device are not classified and raise no alerts.",
       "open-profiles": "Open in Environmental profiles",
       "requires-location": "Locate the device in an environment to see its thresholds."
     },

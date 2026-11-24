@@ -1,4 +1,4 @@
-import { TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ActivatedRoute, Router, provideRouter } from '@angular/router';
@@ -36,6 +36,41 @@ describe('BpmConfigForm', () => {
   }
 
   const valid = { parameterName: 'TEMPERATURE', minValue: 2, maxValue: 8, unit: 'Celsius' };
+
+  /** Contenedor PT-B1, a container monitor located in environment 1, as the API returns it. */
+  const containerMonitor = {
+    id: 4,
+    laboratoryId: 42,
+    environmentId: 1,
+    name: 'Contenedor PT-B1',
+    type: 'CONTAINER_MONITOR',
+    model: 'ESP32-S3 + SHT31 + BH1750 + RC522',
+    serialNumber: 'SN-CTN-24012',
+    status: 'OPERATIONAL',
+    deviceType: 'CONTAINER_MONITOR',
+    sensorExternalId: 'ESP32-CTN-PTB1',
+    firmwareVersion: '2.1.0',
+    createdAt: '2026-09-01T10:00:00Z',
+  };
+
+  /** Process equipment without telemetry, as the API returns it. */
+  const autoclave = {
+    ...containerMonitor,
+    name: 'Autoclave AV-200',
+    type: 'Autoclave',
+    model: 'Tuttnauer 3870EL',
+    serialNumber: 'TT-3870-1182',
+    deviceType: null,
+    sensorExternalId: null,
+    firmwareVersion: null,
+  };
+
+  /** Answers the request for equipment 4 with the given equipment and renders the page. */
+  async function answerEquipment(fixture: ComponentFixture<BpmConfigForm>, equipment: object) {
+    TestBed.inject(HttpTestingController).expectOne((request) => request.url.endsWith('/equipments/4')).flush(equipment);
+    await fixture.whenStable();
+    fixture.detectChanges();
+  }
 
   beforeEach(() => configureBpm.mockClear());
 
@@ -89,8 +124,9 @@ describe('BpmConfigForm', () => {
     expect(loadEquipmentById).toHaveBeenCalledWith(4);
   });
 
-  it('accepts any parameter name without offering monitored variables', () => {
-    const { form, fixture } = create();
+  it('accepts any parameter name without offering monitored variables', async () => {
+    const { form, fixture } = create({ readsEquipment: true });
+    await answerEquipment(fixture, autoclave);
     const input: HTMLInputElement = fixture.nativeElement.querySelector('input[formcontrolname="parameterName"]');
     input.dispatchEvent(new Event('focusin'));
     fixture.detectChanges();
@@ -101,28 +137,32 @@ describe('BpmConfigForm', () => {
 
   it('points an IoT device to its thresholds instead of the form', async () => {
     const { fixture } = create({ readsEquipment: true });
+    await answerEquipment(fixture, containerMonitor);
+
+    const element: HTMLElement = fixture.nativeElement;
+    expect(element.querySelector('form')).toBeNull();
+    expect(element.textContent).toContain('bpm-config.iot-device');
+  });
+
+  it('shows neither the form nor the notice while the equipment loads', () => {
+    const { fixture } = create({ readsEquipment: true });
+
+    const element: HTMLElement = fixture.nativeElement;
+    expect(element.querySelector('form')).toBeNull();
+    expect(element.textContent).not.toContain('bpm-config.iot-device');
+  });
+
+  it('keeps the form hidden when the equipment cannot be read', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => undefined);
+    const { fixture } = create({ readsEquipment: true });
     TestBed.inject(HttpTestingController)
       .expectOne((request) => request.url.endsWith('/equipments/4'))
-      .flush({
-        id: 4,
-        laboratoryId: 42,
-        environmentId: 1,
-        name: 'Contenedor PT-B1',
-        type: 'CONTAINER_MONITOR',
-        model: 'ESP32-S3 + SHT31 + BH1750 + RC522',
-        serialNumber: 'SN-CTN-24012',
-        status: 'OPERATIONAL',
-        deviceType: 'CONTAINER_MONITOR',
-        sensorExternalId: 'ESP32-CTN-PTB1',
-        firmwareVersion: '2.1.0',
-        createdAt: '2026-09-01T10:00:00Z',
-      });
+      .flush(null, { status: 500, statusText: 'Server Error' });
     await fixture.whenStable();
     fixture.detectChanges();
 
     const element: HTMLElement = fixture.nativeElement;
     expect(element.querySelector('form')).toBeNull();
-    expect(element.textContent).toContain('bpm-config.iot-device');
-    expect(configureBpm).not.toHaveBeenCalled();
+    expect(element.querySelector('.error')).not.toBeNull();
   });
 });

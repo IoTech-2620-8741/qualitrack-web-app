@@ -216,6 +216,14 @@ describe('EquipmentDetail', () => {
     expect(element.querySelector('.error')).toBeNull();
   });
 
+  it('says the profile has no thresholds when every metric is disabled', async () => {
+    const { element, fixture } = await open('ROLE_QA_MANAGER', containerMonitor, profileWith('CONTAINER_MONITOR', []));
+
+    await openTab(fixture, 'equipment-detail.tabs.thresholds');
+
+    expect(cells(element)).toEqual(['equipment-detail.thresholds.empty']);
+  });
+
   it('says the thresholds are loading instead of not configured while the profile is read', async () => {
     const { element, fixture } = await open('ROLE_QA_MANAGER', containerMonitor, 'pending');
 
@@ -271,5 +279,34 @@ describe('EquipmentDetail', () => {
     expect(urls.some((url) => url.endsWith('/environments/1/container-monitors/5/environmental-profile'))).toBe(true);
     await openTab(fixture, 'equipment-detail.tabs.thresholds');
     expect(cells(element)).toEqual(['tracking.metrics.TEMPERATURE (°C)', '10', '15', '25', '30']);
+  });
+
+  it('reads the thresholds of the new environment as soon as the device moves', async () => {
+    const coldRoom = { ...temperature, normalMin: 2, normalMax: 8, criticalMin: 0, criticalMax: 10 };
+    const { element, answer, fixture, http } =
+      await open('ROLE_QA_MANAGER', containerMonitor, profileWith('CONTAINER_MONITOR', [temperature]));
+    const component = fixture.componentInstance as unknown as {
+      locationForm: import('@angular/forms').FormGroup;
+      equipment(): unknown;
+      onLocate(equipment: unknown): Promise<void>;
+    };
+    await openTab(fixture, 'equipment-detail.tabs.thresholds');
+
+    component.locationForm.setValue({ environmentId: 2 });
+    const moving = component.onLocate(component.equipment());
+    http.expectOne((request) => request.method === 'POST').flush({ ...containerMonitor, environmentId: 2 });
+    // Lets the move go on until it waits for the maintenance history
+    await new Promise((resolve) => setTimeout(resolve));
+    fixture.detectChanges();
+
+    expect(cells(element)).toEqual([]);
+    expect(element.textContent).toContain('common.status-loading');
+    http.expectOne((request) => request.url.endsWith('/environments/2/container-monitors/5/environmental-profile'))
+      .flush(profileWith('CONTAINER_MONITOR', [coldRoom]));
+    await answer();
+    await moving;
+
+    expect(cells(element)).toEqual(['tracking.metrics.TEMPERATURE (°C)', '0', '2', '8', '10']);
+    expect(element.querySelector('a[href^="/tracking/profiles"]')?.getAttribute('href')).toBe('/tracking/profiles?environmentId=2');
   });
 });

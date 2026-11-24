@@ -1214,6 +1214,7 @@
     "thresholds": {
       "title": "Umbrales del perfil ambiental",
       "hint": "Estos límites clasifican cada lectura como normal, advertencia o crítica y generan las alertas. Se editan en Perfiles ambientales.",
+      "empty": "Este perfil no tiene umbrales activos, así que las lecturas del dispositivo no se clasifican ni generan alertas.",
       "open-profiles": "Ver en Perfiles ambientales",
       "requires-location": "Ubica el dispositivo en un ambiente para ver sus umbrales."
     },
