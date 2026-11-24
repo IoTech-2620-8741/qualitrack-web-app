@@ -508,11 +508,13 @@ export class EquipmentStore {
    * Loads the BPM parameter limits of an equipment.
    *
    * @remarks
+   * The limits of the previous equipment are cleared first, so they never show under this one while it loads.
    * The result is exposed through `bpmConfigs` and any failure through `error`.
    *
    * @param equipmentId - The identifier of the equipment.
    */
   loadBpmConfig(equipmentId: number): void {
+    this._bpmConfigs.set([]);
     this.api.getBpmConfig(this.iam.requireLaboratoryId(), equipmentId).subscribe({
       next: (configs) => this._bpmConfigs.set(configs),
       error: (error: unknown) => this._error.set(equipmentError(error)),

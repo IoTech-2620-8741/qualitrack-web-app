@@ -25,6 +25,10 @@ describe('EquipmentStore', () => {
 
   const profile = (version: number) => ({ id: 9, version, updatedAt: null, thresholds: [] });
 
+  /** A BPM limit of an equipment, as the API returns it. */
+  const bpmLimit = (equipmentId: number) =>
+    ({ id: 1, equipmentId, parameterName: 'Presión', minValue: 1, maxValue: 2.2, unit: 'bar', createdAt: '2026-09-01T10:00:00Z' });
+
   function setUp() {
     TestBed.configureTestingModule({ providers: [provideHttpClient(), provideHttpClientTesting()] });
     vi.spyOn(TestBed.inject(IamStore), 'requireLaboratoryId').mockReturnValue(42);
@@ -42,5 +46,16 @@ describe('EquipmentStore', () => {
     await first;
 
     expect(store.monitoringProfile()?.version).toBe(2);
+  });
+
+  it('forgets the BPM limits of the previous equipment while the next ones load', () => {
+    const { store, http } = setUp();
+    store.loadBpmConfig(5);
+    http.expectOne((request) => request.url.endsWith('/equipments/5/bpm-configs')).flush([bpmLimit(5)]);
+    expect(store.bpmConfigs()).toHaveLength(1);
+
+    store.loadBpmConfig(6);
+
+    expect(store.bpmConfigs()).toEqual([]);
   });
 });
