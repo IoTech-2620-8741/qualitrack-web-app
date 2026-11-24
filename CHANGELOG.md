@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Equipment (equipment): opening another equipment no longer shows the BPM limits of the previous one, or the error of a thresholds read that was still running for it (#122).
+
+- Equipment (equipment): moving an IoT device reads the thresholds of its new environment right away, and a profile without active thresholds says so instead of showing an empty table (#122).
+
+- BPM config (bpm-config): the parameter form shows only once the equipment is known, so an IoT device never gets it while it loads and an equipment that cannot be read shows only the error (#122).
+
 ## [2.7.0] - 2026-11-23
 
 ### Added
