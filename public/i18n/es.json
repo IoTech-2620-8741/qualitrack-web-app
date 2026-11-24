@@ -1207,9 +1207,16 @@
     "tabs": {
       "general": "Información General",
       "bpm": "Configuración BPM",
+      "thresholds": "Umbrales de monitoreo",
       "maintenance": "Mantenimiento"
     },
     "requires-location": "Asocia el equipo con un ambiente para registrar cambios de estado y mantenimientos.",
+    "thresholds": {
+      "title": "Umbrales del perfil ambiental",
+      "hint": "Estos límites clasifican cada lectura como normal, advertencia o crítica y generan las alertas. Se editan en Perfiles ambientales.",
+      "open-profiles": "Ver en Perfiles ambientales",
+      "requires-location": "Ubica el dispositivo en un ambiente para ver sus umbrales."
+    },
     "location": {
       "title": "Ubicación",
       "hint": "Asocia el equipo con el ambiente donde está instalado.",
@@ -1231,11 +1238,12 @@
   },
   "bpm-config": {
     "title": "Configuración de Parámetros BPM",
-    "subtitle": "Establece los rangos de tolerancia para el monitoreo de calidad",
+    "subtitle": "Registra el rango de operación que exigen las BPM para un parámetro de proceso del equipo.",
+    "iot-device": "Los límites de un dispositivo IoT son los umbrales de su perfil ambiental; míralos en su detalle.",
     "empty": "No hay parámetros BPM configurados para este equipo.",
     "add": "Agregar parámetro",
     "hints": {
-      "parameter": "Elige una variable monitoreada para completar su unidad, o escribe otro nombre."
+      "parameter": "Por ejemplo Presión, Velocidad o Temperatura de cámara. QualiTrack no lo mide con sensores."
     },
     "fields": {
       "parameter": "Nombre del Parámetro",

@@ -1,8 +1,9 @@
 import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
-import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ActivatedRoute, Router, provideRouter } from '@angular/router';
 import { provideTranslateService } from '@ngx-translate/core';
+import { IamStore } from '../../../../iam/application/iam.store';
 import { EquipmentStore } from '../../../application/equipment.store';
 import { BpmConfigForm } from './bpm-config-form';
 
@@ -10,7 +11,8 @@ describe('BpmConfigForm', () => {
   const configureBpm = vi.fn();
   const loadEquipmentById = vi.fn().mockResolvedValue(null);
 
-  function create() {
+  /** Creates the form; with `readsEquipment` the page reads its equipment from the API instead of a stub. */
+  function create({ readsEquipment = false } = {}) {
     TestBed.configureTestingModule({
       imports: [BpmConfigForm],
       providers: [
@@ -22,7 +24,8 @@ describe('BpmConfigForm', () => {
       ],
     });
     vi.spyOn(TestBed.inject(EquipmentStore), 'configureBpm').mockImplementation(configureBpm);
-    vi.spyOn(TestBed.inject(EquipmentStore), 'loadEquipmentById').mockImplementation(loadEquipmentById);
+    if (readsEquipment) vi.spyOn(TestBed.inject(IamStore), 'requireLaboratoryId').mockReturnValue(42);
+    else vi.spyOn(TestBed.inject(EquipmentStore), 'loadEquipmentById').mockImplementation(loadEquipmentById);
     vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
     const fixture = TestBed.createComponent(BpmConfigForm);
     fixture.detectChanges();
@@ -86,17 +89,40 @@ describe('BpmConfigForm', () => {
     expect(loadEquipmentById).toHaveBeenCalledWith(4);
   });
 
-  it('fills in the unit when a monitored variable is picked, and still accepts any other name', () => {
+  it('accepts any parameter name without offering monitored variables', () => {
     const { form, fixture } = create();
     const input: HTMLInputElement = fixture.nativeElement.querySelector('input[formcontrolname="parameterName"]');
     input.dispatchEvent(new Event('focusin'));
     fixture.detectChanges();
-    const options = [...document.querySelectorAll<HTMLElement>('mat-option')];
-    expect(options.length).toBe(4);
-    options[1].click();
-    fixture.detectChanges();
-    expect(form.get('unit')?.value).toBe('%RH');
+    expect(document.querySelectorAll('mat-option').length).toBe(0);
     form.patchValue({ parameterName: 'Presión', minValue: 1, maxValue: 2.2, unit: 'bar' });
     expect(form.valid).toBe(true);
+  });
+
+  it('points an IoT device to its thresholds instead of the form', async () => {
+    const { fixture } = create({ readsEquipment: true });
+    TestBed.inject(HttpTestingController)
+      .expectOne((request) => request.url.endsWith('/equipments/4'))
+      .flush({
+        id: 4,
+        laboratoryId: 42,
+        environmentId: 1,
+        name: 'Contenedor PT-B1',
+        type: 'CONTAINER_MONITOR',
+        model: 'ESP32-S3 + SHT31 + BH1750 + RC522',
+        serialNumber: 'SN-CTN-24012',
+        status: 'OPERATIONAL',
+        deviceType: 'CONTAINER_MONITOR',
+        sensorExternalId: 'ESP32-CTN-PTB1',
+        firmwareVersion: '2.1.0',
+        createdAt: '2026-09-01T10:00:00Z',
+      });
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const element: HTMLElement = fixture.nativeElement;
+    expect(element.querySelector('form')).toBeNull();
+    expect(element.textContent).toContain('bpm-config.iot-device');
+    expect(configureBpm).not.toHaveBeenCalled();
   });
 });
