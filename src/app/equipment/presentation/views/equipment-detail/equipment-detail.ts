@@ -143,9 +143,11 @@ export class EquipmentDetail implements OnInit {
     if (!located) return;
     this.locationNotice.set(null);
     this.locationForm.reset({ environmentId: located.environmentId });
+    // A device that changes environment follows the profile of the new one; reading it right away keeps the old
+    // thresholds from showing next to the link to the new environment while the maintenance history loads
+    const profile = this.store.loadMonitoringProfile(located);
     await this.store.loadMaintenanceHistory(located);
-    // A device that changes environment follows the profile of the new one
-    await this.store.loadMonitoringProfile(located);
+    await profile;
   }
 
   protected async onChangeStatus(equipment: Equipment, directive: FormGroupDirective): Promise<void> {
