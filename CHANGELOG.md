@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Tracking & Telemetry (tracking): the luminosity of the environment, which the environmental device reports since the platform 2.1.0 and the Environment Monitor 1.1.0. The environment profile configures its thresholds next to the air quality, the environment card of the monitoring view shows its latest reading, and the telemetry history charts it.
+
 ### Fixed
 
 - Equipment (equipment): opening another equipment no longer shows the BPM limits of the previous one, or the error of a thresholds read that was still running for it (#122).

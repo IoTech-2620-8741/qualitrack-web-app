@@ -4,7 +4,7 @@ import { MonitoredDeviceType } from './monitored-device.entity';
  * Represents a measurement type reported by an IoT device.
  *
  * Each device type provides different monitoring capabilities:
- * - Environmental devices report air quality and motion events.
+ * - Environmental devices report air quality, the luminosity of the room and motion events.
  * - Container monitors report temperature, humidity, luminosity and RFID information.
  *
  * These metrics are used by the platform to evaluate environmental conditions
@@ -25,7 +25,7 @@ export type EnvironmentalState = 'NORMAL' | 'WARNING' | 'CRITICAL';
  *
  * Provides information about:
  * - Measurement unit.
- * - Device type responsible for reporting the metric.
+ * - Device types responsible for reporting the metric.
  * - Threshold configuration availability.
  *
  * This definition allows the application to dynamically handle
@@ -44,9 +44,11 @@ export interface MetricDefinition {
   unit: string;
 
   /**
-   * Type of IoT device responsible for generating this metric.
+   * Types of IoT device that report this metric.
+   *
+   * The luminosity is the only metric that both types report: the light of the room and the light inside a container.
    */
-  deviceType: MonitoredDeviceType;
+  deviceTypes: readonly MonitoredDeviceType[];
 
   /**
    * Indicates whether quality managers can configure
@@ -78,12 +80,19 @@ export interface MetricDefinition {
  * defining their units, supported devices and configuration rules.
  */
 export const METRICS: readonly MetricDefinition[] = [
-  { metric: 'AIR_QUALITY', unit: 'ppm', deviceType: 'ENVIRONMENTAL_DEVICE', configurable: true, upperOnly: true, range: { min: 0, max: 10000 } },
-  { metric: 'MOTION', unit: 'event', deviceType: 'ENVIRONMENTAL_DEVICE', configurable: false, upperOnly: false },
-  { metric: 'TEMPERATURE', unit: '°C', deviceType: 'CONTAINER_MONITOR', configurable: true, upperOnly: false, range: { min: -100, max: 150 } },
-  { metric: 'HUMIDITY', unit: '%RH', deviceType: 'CONTAINER_MONITOR', configurable: true, upperOnly: false, range: { min: 0, max: 100 } },
-  { metric: 'LUMINOSITY', unit: 'lux', deviceType: 'CONTAINER_MONITOR', configurable: true, upperOnly: false, range: { min: 0, max: 100000 } },
-  { metric: 'RFID_TAG', unit: 'tag', deviceType: 'CONTAINER_MONITOR', configurable: false, upperOnly: false },
+  { metric: 'AIR_QUALITY', unit: 'ppm', deviceTypes: ['ENVIRONMENTAL_DEVICE'], configurable: true, upperOnly: true, range: { min: 0, max: 10000 } },
+  { metric: 'MOTION', unit: 'event', deviceTypes: ['ENVIRONMENTAL_DEVICE'], configurable: false, upperOnly: false },
+  { metric: 'TEMPERATURE', unit: '°C', deviceTypes: ['CONTAINER_MONITOR'], configurable: true, upperOnly: false, range: { min: -100, max: 150 } },
+  { metric: 'HUMIDITY', unit: '%RH', deviceTypes: ['CONTAINER_MONITOR'], configurable: true, upperOnly: false, range: { min: 0, max: 100 } },
+  {
+    metric: 'LUMINOSITY',
+    unit: 'lux',
+    deviceTypes: ['ENVIRONMENTAL_DEVICE', 'CONTAINER_MONITOR'],
+    configurable: true,
+    upperOnly: false,
+    range: { min: 0, max: 100000 },
+  },
+  { metric: 'RFID_TAG', unit: 'tag', deviceTypes: ['CONTAINER_MONITOR'], configurable: false, upperOnly: false },
 ];
 
 /**
@@ -96,7 +105,7 @@ export const METRICS: readonly MetricDefinition[] = [
  * @returns List of metrics reported by the specified device type.
  */
 export function metricsOf(deviceType: MonitoredDeviceType): MetricDefinition[] {
-  return METRICS.filter((definition) => definition.deviceType === deviceType);
+  return METRICS.filter((definition) => definition.deviceTypes.includes(deviceType));
 }
 
 /**
@@ -116,7 +125,7 @@ export function configurableMetricsOf(deviceType: MonitoredDeviceType): MetricDe
 /**
  * Finds the definition of a specific monitoring metric.
  *
- * Provides access to metric metadata such as unit, device type,
+ * Provides access to metric metadata such as unit, device types,
  * and configuration capabilities.
  *
  * @param metric Metric identifier to search.

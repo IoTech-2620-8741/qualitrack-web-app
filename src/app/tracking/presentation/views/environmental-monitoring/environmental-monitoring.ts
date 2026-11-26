@@ -22,21 +22,7 @@ import { TRACKING_TABS } from '../../tracking-tabs';
  *
  * This view provides a real-time overview of IoT devices within a selected environment,
  * including:
- * - Air quality and motion information from environmental devices.
- * - Temperature, humidity, luminosity and RFID information from container monitors.
- * - Latest device actions and connectivity information.
- *
- * The component coordinates environment selection and delegates
- * telemetry state management to the TrackingStore.
- *
- * It provides the main user interface for monitoring current environmental
- * conditions according to the configured IoT devices.
- *//**
- * Component responsible for displaying the current environmental monitoring status.
- *
- * This view provides a real-time overview of IoT devices within a selected environment,
- * including:
- * - Air quality and motion information from environmental devices.
+ * - Air quality, luminosity and motion information from environmental devices.
  * - Temperature, humidity, luminosity and RFID information from container monitors.
  * - Latest device actions and connectivity information.
  *
@@ -77,6 +63,13 @@ export class EnvironmentalMonitoring implements OnInit {
    */
   protected readonly store = inject(TrackingStore);
   protected readonly iam = inject(IamStore);
+
+  /**
+   * Metrics with a value displayed for the environmental device of the environment.
+   *
+   * Motion is shown apart, with its last detection.
+   */
+  protected readonly environmentMetrics: MonitoredMetric[] = ['AIR_QUALITY', 'LUMINOSITY'];
 
   /**
    * Metrics displayed for container monitoring devices.
