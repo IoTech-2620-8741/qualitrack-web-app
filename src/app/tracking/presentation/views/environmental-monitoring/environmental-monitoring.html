@@ -44,16 +44,18 @@
               <p class="error">{{ 'tracking.errors.device' | translate }}</p>
             }
             <div class="readings">
-              <div class="reading">
-                <span class="label">{{ 'tracking.metrics.AIR_QUALITY' | translate }}</span>
-                @if (reading(snapshot, 'AIR_QUALITY'); as air) {
-                  <strong>{{ air.value | number: '1.0-2' }} <small>{{ air.unit }}</small></strong>
-                  @if (air.state) { <span class="state" [class]="'state ' + air.state.toLowerCase()">{{ 'tracking.states.' + air.state | translate }}</span> }
-                  <small class="muted">{{ air.measuredAt | dateTime }}</small>
-                } @else {
-                  <p class="muted">{{ 'tracking.monitoring.no-recent-reading' | translate }}</p>
-                }
-              </div>
+              @for (metric of environmentMetrics; track metric) {
+                <div class="reading">
+                  <span class="label">{{ 'tracking.metrics.' + metric | translate }}</span>
+                  @if (reading(snapshot, metric); as value) {
+                    <strong>{{ value.value | number: '1.0-2' }} <small>{{ value.unit }}</small></strong>
+                    @if (value.state) { <span [class]="'state ' + value.state.toLowerCase()">{{ 'tracking.states.' + value.state | translate }}</span> }
+                    <small class="muted">{{ value.measuredAt | dateTime }}</small>
+                  } @else {
+                    <p class="muted">{{ 'tracking.monitoring.no-recent-reading' | translate }}</p>
+                  }
+                </div>
+              }
               <div class="reading">
                 <span class="label">{{ 'tracking.metrics.MOTION' | translate }}</span>
                 @if (snapshot?.lastMotion; as motion) {
