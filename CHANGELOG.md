@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.0] - 2026-11-26
+
+### Added
+
+- Tracking & Telemetry (tracking): the luminosity of the environment, which the environmental device reports since the platform 2.1.0 and the Environment Monitor 1.1.0. The environment profile configures its thresholds next to the air quality, the environment card of the monitoring view shows its latest reading, and the telemetry history charts it (#123).
+
+### Changed
+
+- Release: package and lockfile versions are now 2.8.0.
+
+- Tracking & Telemetry (tracking): the environmental monitoring view leaves no empty space. Each container monitor is a full-width row with its readings, RFID tag and last action side by side, instead of a narrow card of five stacked boxes; the readings of the last row grow to fill the width; the condition of a reading sits next to its metric; and the history link moves to the header of the environment card (#124).
+
+### Fixed
+
+- Equipment (equipment): opening another equipment no longer shows the BPM limits of the previous one, or the error of a thresholds read that was still running for it (#122).
+
+- Equipment (equipment): moving an IoT device reads the thresholds of its new environment right away, and a profile without active thresholds says so instead of showing an empty table (#122).
+
+- BPM config (bpm-config): the parameter form shows only once the equipment is known, so an IoT device never gets it while it loads and an equipment that cannot be read shows only the error (#122).
+
 ## [2.7.0] - 2026-11-23
 
 ### Added

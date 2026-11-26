@@ -25,6 +25,26 @@ describe('EquipmentStore', () => {
 
   const profile = (version: number) => ({ id: 9, version, updatedAt: null, thresholds: [] });
 
+  /** Process equipment without telemetry, as the API returns it. */
+  const autoclave = {
+    id: 6,
+    laboratoryId: 42,
+    environmentId: 2,
+    name: 'Autoclave AV-200',
+    type: 'Autoclave',
+    model: 'Tuttnauer 3870EL',
+    serialNumber: 'TT-3870-1182',
+    status: 'OPERATIONAL',
+    deviceType: null,
+    sensorExternalId: null,
+    firmwareVersion: null,
+    createdAt: '2026-09-01T10:00:00Z',
+  };
+
+  /** A BPM limit of an equipment, as the API returns it. */
+  const bpmLimit = (equipmentId: number) =>
+    ({ id: 1, equipmentId, parameterName: 'Presión', minValue: 1, maxValue: 2.2, unit: 'bar', createdAt: '2026-09-01T10:00:00Z' });
+
   function setUp() {
     TestBed.configureTestingModule({ providers: [provideHttpClient(), provideHttpClientTesting()] });
     vi.spyOn(TestBed.inject(IamStore), 'requireLaboratoryId').mockReturnValue(42);
@@ -42,5 +62,48 @@ describe('EquipmentStore', () => {
     await first;
 
     expect(store.monitoringProfile()?.version).toBe(2);
+  });
+
+  it('drops the error of an earlier profile load that fails late', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => undefined);
+    const { store, http } = setUp();
+    const first = store.loadMonitoringProfile(container(3));
+    const second = store.loadMonitoringProfile(container(4));
+
+    http.expectOne((request) => request.url.endsWith('/container-monitors/4/environmental-profile')).flush(profile(2));
+    await second;
+    http.expectOne((request) => request.url.endsWith('/container-monitors/3/environmental-profile'))
+      .flush(null, { status: 500, statusText: 'Server Error' });
+    await first;
+
+    expect(store.error()).toBeNull();
+    expect(store.monitoringProfile()?.version).toBe(2);
+  });
+
+  it('drops a late profile error once another equipment is opened', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => undefined);
+    const { store, http } = setUp();
+    const late = store.loadMonitoringProfile(container(3));
+    const opening = store.loadEquipmentById(6);
+    http.expectOne((request) => request.url.endsWith('/equipments/6')).flush(autoclave);
+    await opening;
+
+    http.expectOne((request) => request.url.endsWith('/container-monitors/3/environmental-profile'))
+      .flush(null, { status: 500, statusText: 'Server Error' });
+    await late;
+
+    expect(store.error()).toBeNull();
+    expect(store.monitoringProfileLoading()).toBe(false);
+  });
+
+  it('forgets the BPM limits of the previous equipment while the next ones load', () => {
+    const { store, http } = setUp();
+    store.loadBpmConfig(5);
+    http.expectOne((request) => request.url.endsWith('/equipments/5/bpm-configs')).flush([bpmLimit(5)]);
+    expect(store.bpmConfigs()).toHaveLength(1);
+
+    store.loadBpmConfig(6);
+
+    expect(store.bpmConfigs()).toEqual([]);
   });
 });

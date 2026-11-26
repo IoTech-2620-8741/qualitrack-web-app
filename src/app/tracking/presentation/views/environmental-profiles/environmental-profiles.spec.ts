@@ -30,6 +30,7 @@ describe('EnvironmentalProfiles', () => {
     const store = TestBed.inject(TrackingStore);
     vi.spyOn(store, 'loadEnvironments').mockResolvedValue(undefined);
     vi.spyOn(store, 'environments').mockReturnValue([{ id: 1 }, { id: 6 }] as never);
+    vi.spyOn(store, 'preferredEnvironmentId').mockReturnValue(1);
     vi.spyOn(store, 'selectEnvironment').mockImplementation(selectEnvironment);
     vi.spyOn(store, 'loadProfiles').mockResolvedValue(undefined);
     vi.spyOn(store, 'rememberEnvironment').mockImplementation(() => undefined);
@@ -47,5 +48,7 @@ describe('EnvironmentalProfiles', () => {
   it('ignores a linked environment outside the laboratory', async () => {
     await create('99').ngOnInit();
     expect(selectEnvironment).not.toHaveBeenCalledWith(99);
+    // It opens the environment it would open without a link: the preferred one
+    expect(selectEnvironment).toHaveBeenCalledWith(1);
   });
 });

@@ -229,14 +229,18 @@ export class EquipmentStore {
    * Loads one equipment of the laboratory and keeps it as the selected equipment.
    *
    * @remarks
-   * The previous selection is cleared before loading. If a newer load starts before this one
-   * finishes, the late response is discarded.
+   * The previous selection and its monitoring profile are cleared before loading, and a profile load still running
+   * for it is discarded, so its late answer or failure never lands on this equipment. If a newer load starts before
+   * this one finishes, the late response is discarded.
    *
    * @param equipmentId - The identifier of the equipment to load.
    * @returns The equipment, or `null` when it could not be loaded or the response was discarded.
    */
   async loadEquipmentById(equipmentId: number): Promise<Equipment | null> {
     const generation = ++this.itemGeneration;
+    ++this.profileGeneration;
+    this._monitoringProfile.set(undefined);
+    this._monitoringProfileLoading.set(false);
     this._selectedEquipment.set(null);
     this._itemLoading.set(true);
     this._error.set(null);
@@ -508,11 +512,13 @@ export class EquipmentStore {
    * Loads the BPM parameter limits of an equipment.
    *
    * @remarks
+   * The limits of the previous equipment are cleared first, so they never show under this one while it loads.
    * The result is exposed through `bpmConfigs` and any failure through `error`.
    *
    * @param equipmentId - The identifier of the equipment.
    */
   loadBpmConfig(equipmentId: number): void {
+    this._bpmConfigs.set([]);
     this.api.getBpmConfig(this.iam.requireLaboratoryId(), equipmentId).subscribe({
       next: (configs) => this._bpmConfigs.set(configs),
       error: (error: unknown) => this._error.set(equipmentError(error)),

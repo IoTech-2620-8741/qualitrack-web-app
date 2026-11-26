@@ -260,6 +260,8 @@
                           <td [attr.data-label]="'tracking.profiles.normal-max' | translate">{{ threshold.normalMax ?? '—' }}</td>
                           <td [attr.data-label]="'tracking.profiles.critical-max' | translate">{{ threshold.criticalMax ?? '—' }}</td>
                         </tr>
+                      } @empty {
+                        <tr><td colspan="5">{{ 'equipment-detail.thresholds.empty' | translate }}</td></tr>
                       }
                     </tbody>
                   </table>

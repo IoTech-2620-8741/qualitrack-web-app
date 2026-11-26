@@ -17,9 +17,10 @@
     <p class="error" role="alert">{{ store.error()! | translate }}</p>
   }
 
+  <!-- Neither the form nor the notice until the equipment is known, so an IoT device never gets the form -->
   @if (equipment()?.isIotDevice) {
     <p class="notice">{{ 'bpm-config.iot-device' | translate }}</p>
-  } @else {
+  } @else if (equipment()) {
     <form class="editor form-grid" [formGroup]="form" (ngSubmit)="onSave()">
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>{{ 'bpm-config.fields.parameter' | translate }}</mat-label>
