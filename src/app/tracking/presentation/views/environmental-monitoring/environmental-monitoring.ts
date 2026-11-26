@@ -1,5 +1,5 @@
 import { Component, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
-import { DecimalPipe } from '@angular/common';
+import { DecimalPipe, NgTemplateOutlet } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 import { MatButtonModule } from '@angular/material/button';
@@ -41,6 +41,7 @@ import { TRACKING_TABS } from '../../tracking-tabs';
     SetupNotice,
     DateTimePipe,
     DecimalPipe,
+    NgTemplateOutlet,
     RouterLink,
     TranslatePipe,
     MatButtonModule,

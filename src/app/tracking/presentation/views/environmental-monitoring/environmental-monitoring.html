@@ -34,45 +34,38 @@
                 <h3>{{ device.name }}</h3>
                 <small class="muted">{{ 'device-types.ENVIRONMENTAL_DEVICE' | translate }}</small>
               </div>
-              @if (snapshot?.connection; as connection) {
-                <span class="connection" [class.connected]="connection.isConnected">
-                  {{ 'tracking.connection.' + connection.connectionStatus | translate }}
-                </span>
-              }
+              <div class="device-status">
+                @if (snapshot?.connection; as connection) {
+                  <span class="connection" [class.connected]="connection.isConnected">
+                    {{ 'tracking.connection.' + connection.connectionStatus | translate }}
+                  </span>
+                }
+                <a class="history-link" routerLink="/tracking/history">{{ 'tracking.monitoring.see-history' | translate }}</a>
+              </div>
             </header>
             @if (snapshot?.failed) {
               <p class="error">{{ 'tracking.errors.device' | translate }}</p>
             }
             <div class="readings">
               @for (metric of environmentMetrics; track metric) {
-                <div class="reading">
-                  <span class="label">{{ 'tracking.metrics.' + metric | translate }}</span>
-                  @if (reading(snapshot, metric); as value) {
-                    <strong>{{ value.value | number: '1.0-2' }} <small>{{ value.unit }}</small></strong>
-                    @if (value.state) { <span [class]="'state ' + value.state.toLowerCase()">{{ 'tracking.states.' + value.state | translate }}</span> }
-                    <small class="muted">{{ value.measuredAt | dateTime }}</small>
-                  } @else {
-                    <p class="muted">{{ 'tracking.monitoring.no-recent-reading' | translate }}</p>
-                  }
-                </div>
+                <ng-container [ngTemplateOutlet]="metricReading" [ngTemplateOutletContext]="{ snapshot, metric }" />
               }
               <div class="reading">
                 <span class="label">{{ 'tracking.metrics.MOTION' | translate }}</span>
                 @if (snapshot?.lastMotion; as motion) {
-                  <strong>{{ 'tracking.monitoring.motion-detected' | translate }}</strong>
-                  <small class="muted">{{ motion.measuredAt | dateTime }}</small>
+                  <strong class="text-value">{{ 'tracking.monitoring.motion-detected' | translate }}</strong>
+                  <small>{{ motion.measuredAt | dateTime }}</small>
                 } @else {
                   <p class="muted">{{ 'tracking.monitoring.no-motion' | translate }}</p>
                 }
               </div>
             </div>
-            <a class="history-link" routerLink="/tracking/history">{{ 'tracking.monitoring.see-history' | translate }}</a>
           </article>
         }
 
         @if (store.containerMonitors().length) {
           <h2>{{ 'tracking.monitoring.containers' | translate }}</h2>
-          <div class="device-grid">
+          <div class="device-list">
             @for (device of store.containerMonitors(); track device.id) {
               @let snapshot = snapshotOf(device.id);
               <article class="device-card">
@@ -92,22 +85,13 @@
                 }
                 <div class="readings">
                   @for (metric of containerMetrics; track metric) {
-                    <div class="reading">
-                      <span class="label">{{ 'tracking.metrics.' + metric | translate }}</span>
-                      @if (reading(snapshot, metric); as value) {
-                        <strong>{{ value.value | number: '1.0-2' }} <small>{{ value.unit }}</small></strong>
-                        @if (value.state) { <span [class]="'state ' + value.state.toLowerCase()">{{ 'tracking.states.' + value.state | translate }}</span> }
-                        <small class="muted">{{ value.measuredAt | dateTime }}</small>
-                      } @else {
-                        <p class="muted">{{ 'tracking.monitoring.no-recent-reading' | translate }}</p>
-                      }
-                    </div>
+                    <ng-container [ngTemplateOutlet]="metricReading" [ngTemplateOutletContext]="{ snapshot, metric }" />
                   }
                   <div class="reading">
                     <span class="label">{{ 'tracking.metrics.RFID_TAG' | translate }}</span>
                     @if (reading(snapshot, 'RFID_TAG'); as tag) {
                       <strong class="tag">{{ tag.textValue }}</strong>
-                      <small class="muted">{{ tag.measuredAt | dateTime }}</small>
+                      <small>{{ tag.measuredAt | dateTime }}</small>
                     } @else {
                       <p class="muted">{{ 'tracking.monitoring.no-rfid' | translate }}</p>
                     }
@@ -115,11 +99,11 @@
                   <div class="reading">
                     <span class="label">{{ 'tracking.monitoring.last-action' | translate }}</span>
                     @if (snapshot?.lastAction; as action) {
-                      <strong>{{ 'tracking.actions.' + action.action | translate }}</strong>
+                      <strong class="text-value">{{ 'tracking.actions.' + action.action | translate }}</strong>
                       @if (action.triggerMetric && action.triggerState) {
                         <small>{{ 'tracking.metrics.' + action.triggerMetric | translate }} · {{ 'tracking.states.' + action.triggerState | translate }}</small>
                       }
-                      <small class="muted">{{ action.occurredAt | dateTime }}</small>
+                      <small>{{ action.occurredAt | dateTime }}</small>
                     } @else {
                       <p class="muted">{{ 'tracking.monitoring.no-action' | translate }}</p>
                     }
@@ -133,3 +117,20 @@
     </div>
   </app-page-header>
 </section>
+
+<!-- One numeric reading: the metric and its condition on top, then the value and when it was measured -->
+<ng-template #metricReading let-snapshot="snapshot" let-metric="metric">
+  <div class="reading">
+    @let value = reading(snapshot, metric);
+    <div class="reading-head">
+      <span class="label">{{ 'tracking.metrics.' + metric | translate }}</span>
+      @if (value?.state; as state) { <span [class]="'state ' + state.toLowerCase()">{{ 'tracking.states.' + state | translate }}</span> }
+    </div>
+    @if (value) {
+      <strong>{{ value.value | number: '1.0-2' }} <small>{{ value.unit }}</small></strong>
+      <small>{{ value.measuredAt | dateTime }}</small>
+    } @else {
+      <p class="muted">{{ 'tracking.monitoring.no-recent-reading' | translate }}</p>
+    }
+  </div>
+</ng-template>
