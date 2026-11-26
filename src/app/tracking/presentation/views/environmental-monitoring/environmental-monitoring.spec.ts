@@ -15,7 +15,9 @@ describe('EnvironmentalMonitoring', () => {
     environmentId: 1,
   });
 
-  function render(readings: Map<string, unknown>) {
+  const containerMonitor = new MonitoredDevice({ id: 9, name: 'CNT-001', deviceType: 'CONTAINER_MONITOR', environmentId: 1 });
+
+  function render(readings: Map<string, unknown>, containerSnapshot: unknown = null) {
     const snapshot = { device: environmentalDevice, readings, lastMotion: null, lastAction: null, connection: null, failed: false };
     TestBed.configureTestingModule({
       imports: [EnvironmentalMonitoring],
@@ -32,9 +34,9 @@ describe('EnvironmentalMonitoring', () => {
             isLoading: signal(false),
             error: signal(null),
             devices: signal([environmentalDevice]),
-            snapshots: signal([snapshot]),
+            snapshots: signal(containerSnapshot ? [snapshot, containerSnapshot] : [snapshot]),
             environmentalDevice: signal(environmentalDevice),
-            containerMonitors: signal([]),
+            containerMonitors: signal(containerSnapshot ? [containerMonitor] : []),
             preferredEnvironmentId: () => 1,
             loadEnvironments: () => Promise.resolve(),
             rememberEnvironment: () => undefined,
@@ -77,5 +79,37 @@ describe('EnvironmentalMonitoring', () => {
     );
 
     expect(readingOf(page, 'tracking.metrics.LUMINOSITY')?.textContent).toContain('tracking.monitoring.no-recent-reading');
+  });
+
+  it('keeps the readings, the RFID tag and the last action of a container in one row of readings', () => {
+    const measuredAt = '2026-11-26T05:00:00Z';
+    const page = render(new Map(), {
+      device: containerMonitor,
+      readings: new Map([
+        ['TEMPERATURE', { metric: 'TEMPERATURE', value: 26.4, unit: '°C', state: 'WARNING', measuredAt }],
+        ['HUMIDITY', { metric: 'HUMIDITY', value: 45, unit: '%RH', state: 'NORMAL', measuredAt }],
+        ['RFID_TAG', { metric: 'RFID_TAG', value: null, textValue: 'DE:AD:BE:EF', unit: 'tag', state: null, measuredAt }],
+      ]),
+      lastMotion: null,
+      lastAction: { action: 'VENTILATION_ON', triggerMetric: 'TEMPERATURE', triggerState: 'WARNING', occurredAt: measuredAt },
+      connection: null,
+      failed: false,
+    });
+
+    const container = page.querySelectorAll<HTMLElement>('.device-list .device-card');
+    expect(container.length).toBe(1);
+    const labels = Array.from(container[0].querySelectorAll('.readings > .reading .label')).map((label) => label.textContent?.trim());
+    expect(labels).toEqual([
+      'tracking.metrics.TEMPERATURE',
+      'tracking.metrics.HUMIDITY',
+      'tracking.metrics.LUMINOSITY',
+      'tracking.metrics.RFID_TAG',
+      'tracking.monitoring.last-action',
+    ]);
+    // The condition of a reading sits next to its metric
+    expect(readingOf(page, 'tracking.metrics.TEMPERATURE')?.querySelector('.reading-head .state')?.textContent).toContain(
+      'tracking.states.WARNING',
+    );
+    expect(readingOf(page, 'tracking.metrics.RFID_TAG')?.querySelector('.tag')?.textContent).toContain('DE:AD:BE:EF');
   });
 });
