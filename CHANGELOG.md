@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Tracking & Telemetry (tracking): the monitoring view tells whether the lock of each container is open or closed, from the last movement its servo executed in the last 7 days (`SERVO_OPEN` or `SERVO_CLOSE`), with what opened it (an RFID tag or a rule of the profile) and since when. A lock that did not move is closed, since the node starts with it closed; the lock of a container that is not reporting is unknown; and a movement the node could not execute is warned. Before, the card showed only the latest action of any kind, so a fan action after an opening hid that the container was open (#130).
+
+- Tracking & Telemetry (tracking): above the containers, the open ones and the ones whose lock is unknown are named, or all are said to be closed. The view reads the devices again every 30 seconds while the tab is visible, without the loading state, as the alerts view does (#130).
+
+### Changed
+
+- Tracking & Telemetry (tracking): the latest action of a container says when it failed, and the history gives "With an RFID tag" as the cause of an opening no rule caused, and "With the RFID tag or at the end of the opening time" for such a closing, instead of a dash (#130).
+
 ## [2.9.0] - 2026-11-28
 
 ### Added
