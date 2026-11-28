@@ -1,4 +1,3 @@
-import { staffActivityGuard } from '../../iam/infrastructure/role-guards';
 import { Routes } from '@angular/router';
 
 const kpiDashboard = () =>
@@ -25,13 +24,13 @@ const deviationDetailPage = () =>
  * - `deviation-trends`: deviation trend chart.
  * - `new`: generation of a new report.
  * - `audit-log`: audit log viewer.
- * - `staff/:staffId/activity`: activity of a staff member; protected by `staffActivityGuard`.
  * - empty path: redirects to `kpis`.
  *
  * The view-named paths used before semantic routes redirect to their new address.
  */
 const raRoutes: Routes = [
-  { path: 'staff/:staffId/activity', loadComponent: () => import('./views/staff-activity/staff-activity').then((m) => m.StaffActivity), canActivate: [staffActivityGuard], title: 'page-titles.staff-activity' },
+  // The activity of a staff member is part of their detail in Laboratory.
+  { path: 'staff/:staffId/activity', redirectTo: '/laboratories/staff/:staffId' },
   { path: 'kpis', loadComponent: kpiDashboard, title: 'page-titles.kpis' },
   { path: 'deviation-trends/:equipmentId/:parameter', loadComponent: deviationDetailPage, title: 'page-titles.deviation-detail' },
   { path: 'deviation-trends', loadComponent: deviationTrendChart, title: 'page-titles.deviation-trends' },
@@ -41,7 +40,7 @@ const raRoutes: Routes = [
   // View-named paths used before semantic routes.
   { path: 'kpi-dashboard', redirectTo: '/reports/kpis', pathMatch: 'full' },
   { path: 'report-generator', redirectTo: '/reports/new', pathMatch: 'full' },
-  { path: 'staff-activity/:staffId', redirectTo: '/reports/staff/:staffId/activity' },
+  { path: 'staff-activity/:staffId', redirectTo: '/laboratories/staff/:staffId' },
 ];
 
 export { raRoutes };

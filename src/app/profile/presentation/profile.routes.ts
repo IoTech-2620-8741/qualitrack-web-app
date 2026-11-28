@@ -1,4 +1,3 @@
-import { qualityManagerGuard } from '../../iam/infrastructure/role-guards';
 import { Routes } from '@angular/router';
 
 /** Lazy loader of the profile page. */
@@ -13,7 +12,8 @@ const profilePage = () =>
  * as `/profile#notifications` opens the corresponding preferences page in CA.
  */
 const profileRoutes: Routes = [
-  { path: 'staff/:staffId', loadComponent: () => import('./views/staff-profile/staff-profile').then((m) => m.StaffProfilePage), canActivate: [qualityManagerGuard], title: 'page-titles.staff-profile' },
+  // The profile of a staff member is part of their detail in Laboratory.
+  { path: 'staff/:staffId', redirectTo: '/laboratories/staff/:staffId' },
   { path: '', loadComponent: profilePage, title: 'page-titles.profile' },
 ];
 

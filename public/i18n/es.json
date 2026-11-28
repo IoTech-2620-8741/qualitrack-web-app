@@ -2020,16 +2020,25 @@
     },
     "no-account": "Sin cuenta",
     "detail": {
-      "view-profile": "Ver perfil",
-      "view-activity": "Ver actividad",
-      "back": "Volver al detalle del trabajador",
       "load-error": "No se pudo cargar al miembro del personal.",
       "activities": "Actividades registradas",
       "last-activity": "Última actividad",
       "history": "Historial de actividad",
       "filter": "Tipo de registro",
       "all-activity": "Toda la actividad",
-      "no-activity": "Esta persona aún no ha registrado actividad."
+      "no-activity": "Esta persona aún no ha registrado actividad.",
+      "summary": "Resumen del miembro del personal",
+      "period": "Periodo",
+      "periods": {
+        "all": "Todo",
+        "7": "Últimos 7 días",
+        "30": "Últimos 30 días",
+        "90": "Últimos 90 días"
+      },
+      "action": "Acción",
+      "all-actions": "Todas las acciones",
+      "no-matching": "Ninguna actividad coincide con estos filtros.",
+      "clear-filters": "Limpiar filtros"
     },
     "activity": {
       "entities": {
