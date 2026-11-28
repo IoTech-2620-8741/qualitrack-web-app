@@ -1,12 +1,12 @@
 import { ChangeDetectionStrategy, Component, computed, effect, inject, input, signal } from '@angular/core';
 
-import { ProfileStore } from '../../../application/profile.store';
+import { LaboratoryStore } from '../../../application/laboratory.store';
 
 /**
  * Round photo of a staff member, or their initials when there is none, so people are recognized at a glance.
  *
  * @remarks
- * With `load`, it downloads the photo through {@link ProfileStore.staffPhoto}, which keeps it for the session, so a
+ * With `load`, it downloads the photo through {@link LaboratoryStore.staffPhoto}, which keeps it for the session, so a
  * list only asks once per person. A page that already holds the photo passes it in `photoUrl` instead. The image is
  * decorative: the name is always written next to it.
  *
@@ -49,7 +49,7 @@ export class StaffAvatar {
   /** Diameter in pixels. */
   readonly size = input(36);
 
-  private readonly profiles = inject(ProfileStore);
+  private readonly laboratory = inject(LaboratoryStore);
 
   /** Photo downloaded for this staff member. */
   private readonly downloaded = signal<string | null>(null);
@@ -73,7 +73,7 @@ export class StaffAvatar {
       const staffId = this.staffId();
       this.downloaded.set(null);
       if (!this.load() || this.photoUrl() || laboratoryId === null || staffId === null) return;
-      const subscription = this.profiles
+      const subscription = this.laboratory
         .staffPhoto(laboratoryId, staffId)
         .subscribe((url) => this.downloaded.set(url));
       onCleanup(() => subscription.unsubscribe());

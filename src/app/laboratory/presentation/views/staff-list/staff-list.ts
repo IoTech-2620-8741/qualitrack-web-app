@@ -24,7 +24,7 @@ import { PageHeader } from '../../../../shared/presentation/components/page-head
 import { ListToolbar } from '../../../../shared/presentation/components/list-toolbar/list-toolbar';
 import { FilterChip } from '../../../../shared/presentation/components/filter-chip/filter-chip';
 import { LABORATORY_TABS } from '../../laboratory-tabs';
-import { StaffAvatar } from '../../../../profile/presentation/components/staff-avatar/staff-avatar';
+import { StaffAvatar } from '../../components/staff-avatar/staff-avatar';
 
 /** Which staff members the list shows. */
 type StatusFilter = 'all' | 'active' | 'inactive';

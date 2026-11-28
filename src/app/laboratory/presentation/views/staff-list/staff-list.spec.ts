@@ -5,7 +5,6 @@ import { provideTranslateService } from '@ngx-translate/core';
 import { of } from 'rxjs';
 import { IamStore } from '../../../../iam/application/iam.store';
 import { LaboratoryStore } from '../../../application/laboratory.store';
-import { ProfileStore } from '../../../../profile/application/profile.store';
 import { StaffMember } from '../../../domain/model/staff-member.entity';
 import { StaffList } from './staff-list';
 
@@ -18,10 +17,10 @@ describe('StaffList', () => {
   const open = (canManage: boolean) => {
     TestBed.configureTestingModule({ imports: [StaffList], providers: [
       provideRouter([]), provideTranslateService(),
-      { provide: ProfileStore, useValue: { staffPhoto: staffPhoto.mockReturnValue(of('blob:photo')) } },
       { provide: IamStore, useValue: { canManageQuality: signal(canManage), isAuditor: signal(!canManage), requireLaboratoryId: () => 7 } },
       { provide: LaboratoryStore, useValue: {
         staffList: signal([member(1, true), member(2, false)]), isLoading: signal(false), loadStaff: vi.fn(), deactivateStaff: vi.fn(),
+        staffPhoto: staffPhoto.mockReturnValue(of('blob:photo')),
       } },
     ] });
     const fixture = TestBed.createComponent(StaffList);

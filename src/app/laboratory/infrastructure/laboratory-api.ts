@@ -11,6 +11,10 @@ import { Environment } from '../domain/model/environment.entity';
 import { LaboratoryApiEndpoint } from './laboratory-api-endpoint';
 import { StaffApiEndpoint } from './staff-api-endpoint';
 import { EnvironmentApiEndpoint } from './environment-api-endpoint';
+import { StaffProfileApiEndpoint } from './staff-profile-api-endpoint';
+import { StaffActivityApiEndpoint } from './staff-activity-api-endpoint';
+import { StaffMemberProfile } from '../domain/model/staff-member-profile.entity';
+import { StaffActivityEntry } from '../domain/model/staff-activity-entry.entity';
 
 import { CreateLaboratoryRequest, UpdateLaboratoryRequest } from './laboratory.request';
 import { RegisterStaffRequest } from './staff.request';
@@ -49,6 +53,16 @@ export class LaboratoryApi extends BaseApi {
   private readonly environmentsEndpoint: EnvironmentApiEndpoint;
 
   /**
+   * Anti-corruption layer that reads the profile and photo of a staff member from Profile.
+   */
+  private readonly staffProfileEndpoint: StaffProfileApiEndpoint;
+
+  /**
+   * Anti-corruption layer that reads the activity of a staff member from Reporting & Audit.
+   */
+  private readonly staffActivityEndpoint: StaffActivityApiEndpoint;
+
+  /**
    * Creates a new LaboratoryApi facade.
    *
    * @param http - Angular HttpClient used by the internal endpoint clients
@@ -58,6 +72,8 @@ export class LaboratoryApi extends BaseApi {
     this.laboratoryEndpoint = new LaboratoryApiEndpoint(http);
     this.staffEndpoint = new StaffApiEndpoint(http);
     this.environmentsEndpoint = new EnvironmentApiEndpoint(http);
+    this.staffProfileEndpoint = new StaffProfileApiEndpoint(http);
+    this.staffActivityEndpoint = new StaffActivityApiEndpoint(http);
   }
 
   /**
@@ -110,6 +126,39 @@ export class LaboratoryApi extends BaseApi {
    */
   getStaffMember(laboratoryId: number, staffId: number): Observable<StaffMember> {
     return this.staffEndpoint.getStaffMember(laboratoryId, staffId);
+  }
+
+  /**
+   * Reads the profile of a staff member; only the quality manager may.
+   *
+   * @param laboratoryId - Numeric identifier of the laboratory
+   * @param staffId - Numeric identifier of the staff member
+   * @returns Observable stream emitting the profile of the staff member
+   */
+  getStaffProfile(laboratoryId: number, staffId: number): Observable<StaffMemberProfile> {
+    return this.staffProfileEndpoint.getStaffProfile(laboratoryId, staffId);
+  }
+
+  /**
+   * Downloads the photo of a staff member; only the quality manager may.
+   *
+   * @param laboratoryId - Numeric identifier of the laboratory
+   * @param staffId - Numeric identifier of the staff member
+   * @returns Observable stream emitting the image as a binary Blob
+   */
+  getStaffPhoto(laboratoryId: number, staffId: number): Observable<Blob> {
+    return this.staffProfileEndpoint.getStaffPhoto(laboratoryId, staffId);
+  }
+
+  /**
+   * Reads what a staff member registered with their account.
+   *
+   * @param laboratoryId - Numeric identifier of the laboratory
+   * @param staffId - Numeric identifier of the staff member
+   * @returns Observable stream emitting the entries of the staff member
+   */
+  getStaffActivity(laboratoryId: number, staffId: number): Observable<StaffActivityEntry[]> {
+    return this.staffActivityEndpoint.getStaffActivity(laboratoryId, staffId);
   }
 
   /**
