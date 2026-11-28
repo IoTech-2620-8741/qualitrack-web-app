@@ -155,12 +155,16 @@ export class NotificationBell {
    * Style class that sets the color of a notification.
    *
    * @param notification - The notification to color
-   * @returns `tone-critical` for rejected batches and critical alerts being opened or escalated, `tone-warning` for
-   * the other alerts being opened or escalated, and `tone-done` for the rest
+   * @returns `tone-critical` for rejected batches and critical alerts being opened, escalated or deviating again,
+   * `tone-warning` for the other alerts in those steps, and `tone-done` for the rest
    */
   protected tone(notification: Notification): string {
     if (notification.type === 'BATCH_REJECTED') return 'tone-critical';
-    if (notification.type === 'ALERT_OPENED' || notification.type === 'ALERT_ESCALATED') {
+    if (
+      notification.type === 'ALERT_OPENED' ||
+      notification.type === 'ALERT_ESCALATED' ||
+      notification.type === 'ALERT_RECURRED'
+    ) {
       return notification.severity === 'CRITICAL' ? 'tone-critical' : 'tone-warning';
     }
     return 'tone-done';

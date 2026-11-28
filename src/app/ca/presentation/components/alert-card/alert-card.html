@@ -63,6 +63,20 @@
       <mat-icon aria-hidden="true">schedule</mat-icon>
       {{ 'ca-alerts.active.card.opened' | translate: { time: (alert().timestamp | relativeTime: now()) } }}
     </span>
+    @if (alert().latestDeviation; as latest) {
+      <span class="latest" [attr.title]="latest.at | dateTime">
+        <mat-icon aria-hidden="true">replay</mat-icon>
+        {{
+          'ca-alerts.active.card.latest'
+            | translate
+              : {
+                  value: (latest.value | number: '1.0-2'),
+                  unit: alert().unit,
+                  time: (latest.at | relativeTime: now()),
+                }
+        }}
+      </span>
+    }
     @if (alert().status === 'UNRESOLVED') {
       <span class="owner unowned">
         <mat-icon aria-hidden="true">person_off</mat-icon>{{ 'ca-alerts.active.card.no-owner' | translate }}

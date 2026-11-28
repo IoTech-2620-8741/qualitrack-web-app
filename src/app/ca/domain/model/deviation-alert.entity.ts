@@ -113,6 +113,8 @@ export class DeviationAlert implements BaseEntity {
   deviationCount: number;
   /** When the latest deviation of the incident was detected. */
   lastDetectedAt: string | null;
+  /** Value of the latest deviation; `null` for alerts the platform stored before it kept it. */
+  lastRecordedValue: number | null;
   /** When the condition returned to normal; the alert stays open until a person resolves it. */
   normalizedAt: string | null;
   /** User who acknowledged the alert. */
@@ -155,6 +157,7 @@ export class DeviationAlert implements BaseEntity {
     status: AlertStatus;
     deviationCount?: number | null;
     lastDetectedAt?: string | null;
+    lastRecordedValue?: number | null;
     normalizedAt?: string | null;
     acknowledgedBy?: number | null;
     acknowledgedAt?: string | null;
@@ -180,6 +183,7 @@ export class DeviationAlert implements BaseEntity {
     this.status = params.status;
     this.deviationCount = params.deviationCount ?? 1;
     this.lastDetectedAt = params.lastDetectedAt ?? null;
+    this.lastRecordedValue = params.lastRecordedValue ?? null;
     this.normalizedAt = params.normalizedAt ?? null;
     this.acknowledgedBy = params.acknowledgedBy ?? null;
     this.acknowledgedAt = params.acknowledgedAt ?? null;
@@ -208,6 +212,16 @@ export class DeviationAlert implements BaseEntity {
     return this.thresholdValue === 0 || UNITS_WITHOUT_RELATIVE_EXCESS.has(this.unit)
       ? { direction, amount: Math.abs(distance), measure: 'unit' }
       : { direction, amount: Math.abs(distance / this.thresholdValue) * 100, measure: 'percent' };
+  }
+
+  /**
+   * Latest deviation of an incident with several, which may differ from the one that set its severity.
+   *
+   * @returns Its value and when it was detected, or `null` for a single deviation or an alert without that value
+   */
+  get latestDeviation(): { value: number; at: string } | null {
+    if (this.deviationCount < 2 || this.lastRecordedValue === null || this.lastDetectedAt === null) return null;
+    return { value: this.lastRecordedValue, at: this.lastDetectedAt };
   }
 
   /** `true` when the condition returned to normal after the latest deviation but the alert is still open. */

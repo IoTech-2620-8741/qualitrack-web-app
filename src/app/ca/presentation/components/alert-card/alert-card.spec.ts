@@ -10,7 +10,14 @@ import {
 import { AlertCard } from './alert-card';
 
 const alertOf = (
-  changes: { severity?: AlertSeverity; status?: AlertStatus; normalizedAt?: string } = {},
+  changes: {
+    severity?: AlertSeverity;
+    status?: AlertStatus;
+    normalizedAt?: string;
+    deviationCount?: number;
+    lastDetectedAt?: string;
+    lastRecordedValue?: number;
+  } = {},
 ) =>
   new DeviationAlert({
     id: 7,
@@ -150,6 +157,18 @@ describe('AlertCard', () => {
     const { element } = create(alertOf({ normalizedAt: '2026-10-06T00:00:00Z' }));
 
     expect(element.querySelector('.normalized')?.textContent).toContain('ca-alerts.normalized');
+  });
+
+  it('shows the latest deviation of an incident with several', () => {
+    const { element } = create(
+      alertOf({ deviationCount: 3, lastDetectedAt: '2026-11-01T21:30:00Z', lastRecordedValue: 2821.8 }),
+    );
+
+    expect(element.querySelector('.latest')?.textContent).toContain('ca-alerts.active.card.latest');
+  });
+
+  it('does not repeat the deviation of an alert with only one', () => {
+    expect(create(alertOf()).element.querySelector('.latest')).toBeNull();
   });
 
   it('warns the view before leaving the inbox', async () => {

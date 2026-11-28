@@ -883,6 +883,7 @@
       "card": {
         "limit": "límite {{value}} {{unit}}",
         "opened": "Abierta {{time}}",
+        "latest": "Última desviación {{value}} {{unit}} · {{time}}",
         "no-owner": "Sin responsable",
         "attending": "En atención {{time}}",
         "attending-by": "En atención por {{name}} · {{time}}",
@@ -943,6 +944,7 @@
     "types": {
       "ALERT_OPENED": "Nueva alerta {{severity}} en {{environment}}: {{variable}} en {{value}} {{unit}}.",
       "ALERT_ESCALATED": "La alerta de {{variable}} en {{environment}} pasó a {{level}}: {{value}} {{unit}}.",
+      "ALERT_RECURRED": "La alerta de {{variable}} en {{environment}} volvió a desviarse ({{level}}): {{value}} {{unit}}.",
       "ALERT_ACKNOWLEDGED": "{{actor}} está atendiendo la alerta de {{variable}} en {{environment}}.",
       "ALERT_RESOLVED": "{{actor}} resolvió la alerta de {{variable}} en {{environment}}.",
       "BATCH_RELEASED": "{{actor}} liberó el lote {{batch}}.",

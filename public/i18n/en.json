@@ -883,6 +883,7 @@
       "card": {
         "limit": "limit {{value}} {{unit}}",
         "opened": "Opened {{time}}",
+        "latest": "Last deviation {{value}} {{unit}} · {{time}}",
         "no-owner": "No one assigned",
         "attending": "In progress {{time}}",
         "attending-by": "In progress by {{name}} · {{time}}",
@@ -943,6 +944,7 @@
     "types": {
       "ALERT_OPENED": "New {{severity}} alert in {{environment}}: {{variable}} at {{value}} {{unit}}.",
       "ALERT_ESCALATED": "The alert of {{variable}} in {{environment}} rose to {{level}}: {{value}} {{unit}}.",
+      "ALERT_RECURRED": "The alert of {{variable}} in {{environment}} deviated again ({{level}}): {{value}} {{unit}}.",
       "ALERT_ACKNOWLEDGED": "{{actor}} is attending the alert of {{variable}} in {{environment}}.",
       "ALERT_RESOLVED": "{{actor}} resolved the alert of {{variable}} in {{environment}}.",
       "BATCH_RELEASED": "{{actor}} released batch {{batch}}.",
