@@ -1836,6 +1836,7 @@
       "errors": {
         "incomplete": "Cada límite necesita su valor normal y su valor crítico.",
         "no-limits": "Ingresa al menos los máximos o los mínimos de la métrica.",
+        "none-enabled": "Activa al menos una métrica e ingresa sus límites: los dispositivos ignoran un perfil sin umbrales.",
         "out-of-range": "{{metric}}: los valores deben estar entre {{min}} y {{max}} {{unit}}.",
         "critical-min": "El mínimo crítico debe ser menor que el mínimo normal.",
         "critical-max": "El máximo crítico debe ser mayor que el máximo normal.",
