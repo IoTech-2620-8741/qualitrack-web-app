@@ -33,11 +33,31 @@
           <dd>{{ plan.priceAmount | currency: plan.currency : 'code' }}</dd>
         </div>
         <div>
-          <dt>{{ 'dashboard.overview.equipment-limit' | translate }}</dt>
-          <dd>{{ plan.maxEquipment ?? ('subscription.plans.unlimited' | translate) }}</dd>
+          <dt>{{ 'dashboard.overview.iot-devices' | translate }}</dt>
+          <dd [class.limit-reached]="limitReached()">
+            @if (iotDeviceCount() !== null) {
+              {{
+                plan.maxEquipment === null
+                  ? ('dashboard.overview.iot-devices-unlimited' | translate: { count: iotDeviceCount() })
+                  : ('dashboard.overview.iot-devices-usage'
+                    | translate: { count: iotDeviceCount(), limit: plan.maxEquipment })
+              }}
+            } @else {
+              {{ plan.maxEquipment ?? ('subscription.plans.unlimited' | translate) }}
+            }
+          </dd>
         </div>
       }
     </dl>
+    @if (limitReached()) {
+      <p class="limit-warning" role="status">
+        <mat-icon aria-hidden="true">warning</mat-icon>
+        {{
+          'dashboard.overview.iot-limit-reached'
+            | translate: { count: iotDeviceCount(), limit: currentPlan()?.maxEquipment }
+        }}
+      </p>
+    }
     @if (plansStatus() === 'error') {
       <p class="muted">{{ 'dashboard.overview.plan-unavailable' | translate }}</p>
     }

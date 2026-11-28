@@ -442,6 +442,10 @@
       "period-end": "Fin del período actual",
       "catalog-price": "Precio de catálogo / ciclo",
       "equipment-limit": "Límite de equipos del plan",
+      "iot-devices": "Dispositivos IoT",
+      "iot-devices-usage": "{{count}} de {{limit}}",
+      "iot-devices-unlimited": "{{count}} (sin límite)",
+      "iot-limit-reached": "El plan permite {{limit}} dispositivos IoT y el laboratorio tiene {{count}}: para registrar más, cambia de plan.",
       "manage-billing": "Gestionar facturación",
       "plan-unavailable": "Los detalles del plan no están disponibles.",
       "attention": "Alertas por atender",
@@ -1949,6 +1953,7 @@
       "connection": "No se pudo conectar con el servidor. Revisa tu conexión e inténtalo de nuevo.",
       "forbidden": "Tu cuenta no puede realizar esta acción.",
       "not-found": "No se encontró el equipo o el ambiente en este laboratorio.",
+      "plan-limit": "El plan del laboratorio no permite más dispositivos IoT. Para registrar este, cambia de plan en Suscripción y facturación.",
       "failed": "No se pudo completar la operación."
     }
   },

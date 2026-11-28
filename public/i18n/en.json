@@ -442,6 +442,10 @@
       "period-end": "Current period ends",
       "catalog-price": "Catalog price / cycle",
       "equipment-limit": "Plan equipment limit",
+      "iot-devices": "IoT devices",
+      "iot-devices-usage": "{{count}} of {{limit}}",
+      "iot-devices-unlimited": "{{count}} (no limit)",
+      "iot-limit-reached": "The plan allows {{limit}} IoT devices and the laboratory has {{count}}: to register more, change the plan.",
       "manage-billing": "Manage billing",
       "plan-unavailable": "Plan details are currently unavailable.",
       "attention": "Alerts requiring attention",
@@ -1950,6 +1954,7 @@
       "connection": "The server could not be reached. Check your connection and try again.",
       "forbidden": "Your account cannot perform this action.",
       "not-found": "The equipment or environment was not found in this laboratory.",
+      "plan-limit": "The plan of the laboratory does not allow more IoT devices. To register this one, change the plan in Subscription & Billing.",
       "failed": "The operation could not be completed."
     }
   },
