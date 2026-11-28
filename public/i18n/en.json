@@ -1760,6 +1760,23 @@
       "never": "No communication received yet",
       "not-located": "Associate the device with an environment to know its connection status."
     },
+    "lock": {
+      "title": "Lock",
+      "OPEN": "Open",
+      "CLOSED": "Closed",
+      "UNKNOWN": "Unknown",
+      "by-tag": "With an RFID tag",
+      "closed-by-tag-or-time": "With the RFID tag or at the end of the opening time",
+      "since": "Since {{time}}",
+      "no-movement": "No movement in the last 7 days",
+      "not-reporting": "The device is not reporting, so the lock may have moved.",
+      "last-movement": "Last movement: {{action}}, {{time}}",
+      "failed-SERVO_OPEN": "It did not open ({{time}})",
+      "failed-SERVO_CLOSE": "It did not close ({{time}})",
+      "summary-open": "Open containers: {{names}}",
+      "summary-unknown": "Lock unknown, not reporting: {{names}}",
+      "summary-closed": "All the containers are closed"
+    },
     "monitoring": {
       "title": "Environmental monitoring",
       "subtitle": "Latest readings of the last 24 hours of the IoT devices of the environment and their condition.",

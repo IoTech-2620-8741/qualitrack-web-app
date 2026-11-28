@@ -255,6 +255,34 @@ p.muted {
   border-radius: 4px;
 }
 
+/* The open containers and the unknown locks as notices, or one pill when all are closed */
+.lock-summary {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.lock-summary .notice,
+.lock-summary .state {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+}
+
+/* Above the color of .reading strong */
+.reading .lock.open {
+  color: var(--qt-warning-text);
+}
+
+.reading .lock.closed {
+  color: var(--qt-success-text);
+}
+
+.reading .failed {
+  color: var(--qt-error-text);
+}
+
 @media (max-width: 760px) {
   .operations-page {
     padding: 20px 16px 36px;

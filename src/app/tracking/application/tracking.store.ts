@@ -5,6 +5,7 @@ import { DeviceTarget } from '../infrastructure/device-target';
 import { TelemetryPeriod } from '../infrastructure/telemetry-period';
 import { Measurement, latestByMetric } from '../domain/model/measurement.entity';
 import { ActuationEvent } from '../domain/model/actuation-event.entity';
+import { ContainerLock } from '../domain/model/container-lock';
 import { DeviceConnection } from '../domain/model/device-connection.entity';
 import { ActuationRule, EnvironmentalProfile, ThresholdInput } from '../domain/model/environmental-profile.entity';
 import { MonitoredMetric } from '../domain/model/monitored-metric';
@@ -21,6 +22,7 @@ import { EnvironmentPreference } from '../../shared/infrastructure/environment-p
  * - Latest readings grouped by monitored metric.
  * - Most recent motion detection event.
  * - Latest actuation event executed.
+ * - Lock of a container monitor, open or closed.
  * - Current device connection status.
  *
  * It provides a consolidated view of the device operational state
@@ -33,6 +35,8 @@ export interface DeviceSnapshot {
   /** Latest reading of MOTION with a detection (value 1) in the period. */
   lastMotion: Measurement | null;
   lastAction: ActuationEvent | null;
+  /** Lock of a container monitor, from its movements of the last 7 days; null for other devices. */
+  lock: ContainerLock | null;
   connection: DeviceConnection | null;
   failed: boolean;
 }
@@ -58,6 +62,12 @@ export interface DeviceHistory {
 
 /** Period of the current conditions: a reading older than this is not current. */
 const RECENT_PERIOD_HOURS = 24;
+
+/**
+ * Period read for the lock of a container: an RFID tag closes what it opened within 2 minutes, and
+ * a lock that did not move in this period is closed, as the node starts with it closed.
+ */
+const LOCK_PERIOD_DAYS = 7;
 
 /**
  * Main state management store for the Tracking & Telemetry module.
@@ -86,6 +96,7 @@ export class TrackingStore {
   private readonly _environmentId = signal<number | null>(null);
   private readonly _devices = signal<MonitoredDevice[]>([]);
   private readonly _snapshots = signal<DeviceSnapshot[]>([]);
+  private readonly _snapshotsUpdatedAt = signal<Date | null>(null);
   private readonly _history = signal<DeviceHistory | null>(null);
   private readonly _environmentProfile = signal<EnvironmentalProfile | null>(null);
   private readonly _containerProfiles = signal<Map<number, EnvironmentalProfile>>(new Map());
@@ -104,6 +115,8 @@ export class TrackingStore {
   readonly environmentId = this._environmentId.asReadonly();
   readonly devices = this._devices.asReadonly();
   readonly snapshots = this._snapshots.asReadonly();
+  /** When the devices of the environment were read for the last time, quietly or not. */
+  readonly snapshotsUpdatedAt = this._snapshotsUpdatedAt.asReadonly();
   readonly history = this._history.asReadonly();
   readonly environmentProfile = this._environmentProfile.asReadonly();
   readonly containerProfiles = this._containerProfiles.asReadonly();
@@ -176,6 +189,7 @@ export class TrackingStore {
     this._environmentId.set(environmentId);
     this._devices.set([]);
     this._snapshots.set([]);
+    this._snapshotsUpdatedAt.set(null);
     this._history.set(null);
     this._environmentProfile.set(null);
     this._containerProfiles.set(new Map());
@@ -203,19 +217,23 @@ export class TrackingStore {
    *
    * The collected information is transformed into DeviceSnapshot
    * objects to provide a summarized monitoring view.
+   *
+   * @param quiet - Whether to refresh without showing the loading state, as the periodic refresh of
+   *   the monitoring view does
    */
-  async loadSnapshots(): Promise<void> {
+  async loadSnapshots(quiet = false): Promise<void> {
     const environmentId = this._environmentId();
     if (environmentId === null) return;
     const generation = this.generation;
-    this._loading.set(true);
+    if (!quiet) this._loading.set(true);
     const period = recentPeriod();
     const snapshots = await Promise.all(
       this._devices().map((device) => this.snapshot(device, environmentId, period)),
     );
     if (generation !== this.generation) return;
     this._snapshots.set(snapshots);
-    this._loading.set(false);
+    this._snapshotsUpdatedAt.set(new Date());
+    if (!quiet) this._loading.set(false);
   }
 
   /**
@@ -402,22 +420,26 @@ export class TrackingStore {
   ): Promise<DeviceSnapshot> {
     const laboratoryId = this.iam.requireLaboratoryId();
     const target = this.target(device, environmentId);
+    const container = device.deviceType === 'CONTAINER_MONITOR';
     try {
       const [measurements, actuationEvents, connection] = await Promise.all([
         firstValueFrom(this.api.getMeasurements(target, period)),
-        device.deviceType === 'CONTAINER_MONITOR'
-          ? firstValueFrom(this.api.getActuationEvents(target, period))
-          : [],
+        // The actions of a longer period, to know the lock although it did not move today
+        container ? firstValueFrom(this.api.getActuationEvents(target, lockPeriod())) : [],
         firstValueFrom(this.api.getDeviceConnection(laboratoryId, environmentId, device.id)),
       ]);
       const detections = measurements.filter(
         (reading) => reading.metric === 'MOTION' && reading.value === 1,
       );
+      const recentActions = actuationEvents.filter(
+        (event) => Date.parse(event.occurredAt) >= Date.parse(period.from),
+      );
       return {
         device,
         readings: latestByMetric(measurements),
         lastMotion: detections.at(-1) ?? null,
-        lastAction: actuationEvents.at(-1) ?? null,
+        lastAction: recentActions.at(-1) ?? null,
+        lock: container ? ContainerLock.fromActions(actuationEvents, connection.isConnected) : null,
         connection,
         failed: false,
       };
@@ -427,6 +449,7 @@ export class TrackingStore {
         readings: new Map(),
         lastMotion: null,
         lastAction: null,
+        lock: container ? ContainerLock.unknown() : null,
         connection: null,
         failed: true,
       };
@@ -467,5 +490,14 @@ export class TrackingStore {
 export function recentPeriod(): TelemetryPeriod {
   const to = new Date();
   const from = new Date(to.getTime() - RECENT_PERIOD_HOURS * 3600_000);
+  return { from: from.toISOString(), to: to.toISOString() };
+}
+
+/**
+ * Generates the period read for the lock of a container monitor: the last 7 days.
+ */
+export function lockPeriod(): TelemetryPeriod {
+  const to = new Date();
+  const from = new Date(to.getTime() - LOCK_PERIOD_DAYS * 24 * 3600_000);
   return { from: from.toISOString(), to: to.toISOString() };
 }

@@ -1759,6 +1759,23 @@
       "never": "Aún no se recibe ninguna comunicación",
       "not-located": "Asocia el dispositivo a un ambiente para conocer su estado de conexión."
     },
+    "lock": {
+      "title": "Cerradura",
+      "OPEN": "Abierta",
+      "CLOSED": "Cerrada",
+      "UNKNOWN": "Desconocida",
+      "by-tag": "Con una etiqueta RFID",
+      "closed-by-tag-or-time": "Con la etiqueta RFID o al terminar el tiempo de apertura",
+      "since": "Desde {{time}}",
+      "no-movement": "Sin movimientos en los últimos 7 días",
+      "not-reporting": "El dispositivo no está reportando, así que la cerradura pudo moverse.",
+      "last-movement": "Último movimiento: {{action}}, {{time}}",
+      "failed-SERVO_OPEN": "No se abrió ({{time}})",
+      "failed-SERVO_CLOSE": "No se cerró ({{time}})",
+      "summary-open": "Contenedores abiertos: {{names}}",
+      "summary-unknown": "Cerradura desconocida, sin reportar: {{names}}",
+      "summary-closed": "Todos los contenedores están cerrados"
+    },
     "monitoring": {
       "title": "Monitoreo ambiental",
       "subtitle": "Últimas lecturas de las últimas 24 horas de los dispositivos IoT del ambiente y su condición.",
