@@ -6,6 +6,7 @@
     [tabs]="tabs"
     activeTab="/tracking/monitoring"
     [loading]="store.isLoading()"
+    [updatedAt]="store.snapshotsUpdatedAt()"
     [refreshable]="store.environmentId() !== null"
     (refresh)="refresh()"
   >
@@ -65,6 +66,29 @@
 
         @if (store.containerMonitors().length) {
           <h2>{{ 'tracking.monitoring.containers' | translate }}</h2>
+          @let locks = lockSummary();
+          @if (locks.total) {
+            <div class="lock-summary" role="status">
+              @if (locks.open.length) {
+                <p class="notice lock-open">
+                  <mat-icon aria-hidden="true">lock_open</mat-icon>
+                  {{ 'tracking.lock.summary-open' | translate: { names: locks.open.join(', ') } }}
+                </p>
+              }
+              @if (locks.unknown.length) {
+                <p class="notice lock-unknown">
+                  <mat-icon aria-hidden="true">help_outline</mat-icon>
+                  {{ 'tracking.lock.summary-unknown' | translate: { names: locks.unknown.join(', ') } }}
+                </p>
+              }
+              @if (!locks.open.length && !locks.unknown.length) {
+                <p class="state normal lock-closed">
+                  <mat-icon aria-hidden="true">lock</mat-icon>
+                  {{ 'tracking.lock.summary-closed' | translate }}
+                </p>
+              }
+            </div>
+          }
           <div class="device-list">
             @for (device of store.containerMonitors(); track device.id) {
               @let snapshot = snapshotOf(device.id);
@@ -88,6 +112,45 @@
                     <ng-container [ngTemplateOutlet]="metricReading" [ngTemplateOutletContext]="{ snapshot, metric }" />
                   }
                   <div class="reading">
+                    <span class="label">{{ 'tracking.lock.title' | translate }}</span>
+                    @if (snapshot?.lock; as lock) {
+                      <strong [class]="'text-value lock ' + lock.status.toLowerCase()">
+                        {{ 'tracking.lock.' + lock.status | translate }}
+                      </strong>
+                      @if (lock.lastMovement; as movement) {
+                        @if (lock.status === 'UNKNOWN') {
+                          <small>
+                            {{ 'tracking.lock.last-movement' | translate: {
+                              action: ('tracking.actions.' + movement.action | translate),
+                              time: (movement.occurredAt | dateTime) } }}
+                          </small>
+                        } @else {
+                          @if (lock.openedByTag) {
+                            <small>{{ 'tracking.lock.by-tag' | translate }}</small>
+                          } @else if (lock.isOpen && movement.triggerMetric && movement.triggerState) {
+                            <small>
+                              {{ 'tracking.metrics.' + movement.triggerMetric | translate }} ·
+                              {{ 'tracking.states.' + movement.triggerState | translate }}
+                            </small>
+                          }
+                          <small>
+                            {{ 'tracking.lock.since' | translate: { time: (movement.occurredAt | dateTime) } }}
+                          </small>
+                        }
+                      } @else if (lock.status === 'CLOSED') {
+                        <small>{{ 'tracking.lock.no-movement' | translate }}</small>
+                      }
+                      @if (lock.status === 'UNKNOWN' && snapshot?.connection?.isConnected === false) {
+                        <small>{{ 'tracking.lock.not-reporting' | translate }}</small>
+                      }
+                      @if (lock.failure; as failure) {
+                        <small class="failed">
+                          {{ 'tracking.lock.failed-' + failure.action | translate: { time: (failure.occurredAt | dateTime) } }}
+                        </small>
+                      }
+                    }
+                  </div>
+                  <div class="reading">
                     <span class="label">{{ 'tracking.metrics.RFID_TAG' | translate }}</span>
                     @if (reading(snapshot, 'RFID_TAG'); as tag) {
                       <strong class="tag">{{ tag.textValue }}</strong>
@@ -104,6 +167,9 @@
                         <small>{{ 'tracking.metrics.' + action.triggerMetric | translate }} · {{ 'tracking.states.' + action.triggerState | translate }}</small>
                       }
                       <small>{{ action.occurredAt | dateTime }}</small>
+                      @if (action.result === 'FAILED') {
+                        <small class="failed">{{ 'tracking.results.FAILED' | translate }}</small>
+                      }
                     } @else {
                       <p class="muted">{{ 'tracking.monitoring.no-action' | translate }}</p>
                     }

@@ -157,6 +157,10 @@
                           <td [attr.data-label]="'tracking.history.cause' | translate">
                             @if (event.triggerMetric && event.triggerState) {
                               {{ 'tracking.metrics.' + event.triggerMetric | translate }} · {{ 'tracking.states.' + event.triggerState | translate }}
+                            } @else if (event.action === 'SERVO_OPEN') {
+                              {{ 'tracking.lock.by-tag' | translate }}
+                            } @else if (event.action === 'SERVO_CLOSE') {
+                              {{ 'tracking.lock.closed-by-tag-or-time' | translate }}
                             } @else {
                               <span class="muted">—</span>
                             }
