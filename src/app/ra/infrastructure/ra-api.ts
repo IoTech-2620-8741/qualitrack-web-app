@@ -1,5 +1,3 @@
-import { AuditedStaffMember } from '../domain/model/audited-staff-member.entity';
-import { AuditedStaffMemberApiEndpoint } from './audited-staff-member-api-endpoint';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -69,8 +67,6 @@ export class RaApi extends BaseApi {
    */
   private readonly _reportEndpoint: ReportApiEndpoint;
 
-  private readonly _auditedStaffEndpoint: AuditedStaffMemberApiEndpoint;
-
   private readonly _overviewEndpoint: OperationalOverviewApiEndpoint;
 
   /**
@@ -88,7 +84,6 @@ export class RaApi extends BaseApi {
     this._deviationTrendEndpoint = new DeviationTrendApiEndpoint(http);
     this._auditLogEndpoint = new AuditLogApiEndpoint(http);
     this._reportEndpoint = new ReportApiEndpoint(http);
-    this._auditedStaffEndpoint = new AuditedStaffMemberApiEndpoint(http);
     this._overviewEndpoint = new OperationalOverviewApiEndpoint(http);
   }
 
@@ -156,22 +151,6 @@ export class RaApi extends BaseApi {
    * Delegates the request to {@link ReportApiEndpoint}, which calls:
    * `POST /reports/batches`.
    */
-  /**
-   * Retrieves what a staff member did with their account.
-   *
-   * @param laboratoryId - Numeric identifier of the laboratory
-   * @param staffId - Numeric identifier of the staff member
-   * @returns Observable stream emitting the audit log entries performed by the staff member
-   */
-  getStaffActivity(laboratoryId: number, staffId: number): Observable<AuditLogEntry[]> {
-    return this._auditLogEndpoint.getStaffActivity(laboratoryId, staffId);
-  }
-
-  /** Reads the staff identity used as the activity heading. */
-  getAuditedStaffMember(laboratoryId: number, staffId: number): Observable<AuditedStaffMember> {
-    return this._auditedStaffEndpoint.getStaffMember(laboratoryId, staffId);
-  }
-
   /**
    * Requests the generation of a production batch report (US96).
    *

@@ -12,8 +12,8 @@ const myProfileUrl =
   `${environment.serverBasePath}${environment.usersEndpointPath}${environment.profileCurrentUserEndpointPath}`;
 
 /**
- * HTTP endpoint client of the profiles: the one of the signed-in user (/users/me/profile) and, for the quality
- * manager, the one of a staff member (/laboratories/{laboratoryId}/staff/{staffId}/profile).
+ * HTTP endpoint client of the profile of the signed-in user (/users/me/profile). Laboratory reads the profile of a
+ * staff member through its own anti-corruption layer.
  *
  * @remarks
  * Every method fails with an `ApiError` that keeps the HTTP status and the details sent by the server. The photo
@@ -95,45 +95,5 @@ export class ProfileApiEndpoint extends ErrorHandlingEnabledBaseType {
     return this.http.delete<void>(`${myProfileUrl}${environment.profilePhotoEndpointPath}`).pipe(
       catchError(this.handleError('Failed to remove the profile photo')),
     );
-  }
-
-  /**
-   * Retrieves the profile of a staff member of a laboratory. Only the quality manager can read it.
-   *
-   * @param laboratoryId - Numeric id of the laboratory
-   * @param staffId - Numeric id of the staff member
-   * @returns Observable emitting the profile of the staff member
-   */
-  getStaffProfile(laboratoryId: number, staffId: number): Observable<Profile> {
-    return this.http.get<ProfileResource>(this.staffProfileUrl(laboratoryId, staffId)).pipe(
-      map((resource) => this.assembler.toEntityFromResource(resource)),
-      catchError(this.handleError(`Failed to fetch the profile of staff member ${staffId}`)),
-    );
-  }
-
-  /**
-   * Downloads the photo of a staff member of a laboratory.
-   *
-   * @param laboratoryId - Numeric id of the laboratory
-   * @param staffId - Numeric id of the staff member
-   * @returns Observable emitting the image as a binary Blob
-   */
-  getStaffPhoto(laboratoryId: number, staffId: number): Observable<Blob> {
-    return this.http.get(`${this.staffProfileUrl(laboratoryId, staffId)}${environment.profilePhotoEndpointPath}`,
-      { responseType: 'blob' }).pipe(
-      catchError(this.handleError(`Failed to fetch the photo of staff member ${staffId}`)),
-    );
-  }
-
-  /**
-   * Builds the URL of the profile of a staff member.
-   *
-   * @param laboratoryId - Numeric id of the laboratory
-   * @param staffId - Numeric id of the staff member
-   * @returns `/laboratories/{laboratoryId}/staff/{staffId}/profile` under the server base path
-   */
-  private staffProfileUrl(laboratoryId: number, staffId: number): string {
-    return `${environment.serverBasePath}${environment.laboratoryLabsEndpointPath}/${laboratoryId}`
-      + `${environment.laboratoryStaffEndpointPath}/${staffId}${environment.profileEndpointPath}`;
   }
 }

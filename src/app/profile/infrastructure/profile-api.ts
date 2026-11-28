@@ -74,26 +74,4 @@ export class ProfileApi extends BaseApi {
   removeMyPhoto(): Observable<void> {
     return this.profileEndpoint.removeMyPhoto();
   }
-
-  /**
-   * Profile of a staff member; only the quality manager of the laboratory can read it.
-   *
-   * @param laboratoryId - Numeric id of the laboratory
-   * @param staffId - Numeric id of the staff member
-   * @returns Observable emitting the profile of the staff member
-   */
-  getStaffProfile(laboratoryId: number, staffId: number): Observable<Profile> {
-    return this.profileEndpoint.getStaffProfile(laboratoryId, staffId);
-  }
-
-  /**
-   * Downloads the photo of a staff member of a laboratory.
-   *
-   * @param laboratoryId - Numeric id of the laboratory
-   * @param staffId - Numeric id of the staff member
-   * @returns Observable emitting the image as a binary Blob
-   */
-  getStaffPhoto(laboratoryId: number, staffId: number): Observable<Blob> {
-    return this.profileEndpoint.getStaffPhoto(laboratoryId, staffId);
-  }
 }
