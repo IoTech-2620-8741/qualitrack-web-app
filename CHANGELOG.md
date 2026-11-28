@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.0] - 2026-11-28
+
 ### Added
 
 - Compliance & Alerting (ca): the bell tells when the condition of an open alert returned to normal and deviated again (`ALERT_RECURRED`, platform #49), with its severity; the alert card shows the latest deviation of an incident with several and the timeline of the alert gives its value (#127).
@@ -16,6 +18,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Reporting & Audit (ra): the subscription card of the dashboard shows the IoT devices of the laboratory against the allowance of its plan ("5 of 5") and warns when no more can be registered (#127).
 
 ### Changed
+
+- Release: package and lockfile versions are now 2.9.0.
 
 - Equipment (equipment) and Subscription (subscription): the registration of an IoT device beyond the allowance of the plan tells the refusal of the platform in the language of the page, and the plan features name IoT devices instead of equipment records (#127).
 
