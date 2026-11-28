@@ -9,7 +9,7 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { catchError, of, switchMap } from 'rxjs';
+import { catchError, map, of, switchMap } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -17,12 +17,11 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 
 import { IamStore } from '../../../../iam/application/iam.store';
-import { LaboratoryStore } from '../../../application/laboratory.store';
+import { LaboratoryStore, StaffProfile } from '../../../application/laboratory.store';
 import { StaffMember } from '../../../domain/model/staff-member.entity';
-import { ProfileStore, StaffProfile } from '../../../../profile/application/profile.store';
-import { StaffAvatar } from '../../../../profile/presentation/components/staff-avatar/staff-avatar';
-import { RaStore } from '../../../../ra/application/ra.store';
-import { activityActionKey, activityEntityKey } from '../../../../ra/presentation/staff-activity-labels';
+import { StaffActivityEntry } from '../../../domain/model/staff-activity-entry.entity';
+import { StaffAvatar } from '../../components/staff-avatar/staff-avatar';
+import { activityActionKey, activityEntityKey } from '../../staff-activity-labels';
 import { DateTimePipe } from '../../../../shared/presentation/pipes/date-time.pipe';
 import { ListToolbar } from '../../../../shared/presentation/components/list-toolbar/list-toolbar';
 import { FilterChip } from '../../../../shared/presentation/components/filter-chip/filter-chip';
@@ -43,7 +42,8 @@ const ALL = 'ALL';
  * @remarks
  * Quality managers and auditors open it from the staff list. The profile (DNI, phone, location and photo) is read
  * only by the quality manager and only for members with an account; the activity history can be narrowed by period,
- * action and type of record. The quality manager can also deactivate the member from here.
+ * action and type of record. The quality manager can also deactivate the member from here. The profile and the
+ * activity come from Profile and Reporting & Audit through the anti-corruption layers of Laboratory.
  */
 @Component({
   selector: 'app-staff-detail',
@@ -68,11 +68,8 @@ const ALL = 'ALL';
 })
 export class StaffDetail {
   protected readonly iam = inject(IamStore);
-  /** Activity of the staff member. */
-  protected readonly activity = inject(RaStore);
   private readonly route = inject(ActivatedRoute);
   private readonly laboratoryStore = inject(LaboratoryStore);
-  private readonly profiles = inject(ProfileStore);
   private readonly translate = inject(TranslateService);
   private readonly destroyRef = inject(DestroyRef);
 
@@ -80,6 +77,13 @@ export class StaffDetail {
   protected readonly error = signal<string | null>(null);
   protected readonly member = signal<StaffMember | null>(null);
   protected readonly deactivating = signal(false);
+
+  /** What the member registered, newest first. */
+  protected readonly activity = signal<StaffActivityEntry[]>([]);
+  /** Whether the activity is being read. */
+  protected readonly activityLoading = signal(false);
+  /** Translation key of the error that kept the activity from being read. */
+  protected readonly activityError = signal<string | null>(null);
 
   /** Profile of the member with its photo; null while it loads, when there is none or when it cannot be read. */
   protected readonly profile = signal<StaffProfile | null>(null);
@@ -101,11 +105,11 @@ export class StaffDetail {
 
   /** Actions present in the activity, for the select. */
   protected readonly actions = computed(() =>
-    [...new Set(this.activity.staffActivity().map((entry) => entry.action as string))].sort(),
+    [...new Set(this.activity().map((entry) => entry.action))].sort(),
   );
   /** Types of record present in the activity, for the select. */
   protected readonly entityTypes = computed(() =>
-    [...new Set(this.activity.staffActivity().map((entry) => entry.entityType))].sort(),
+    [...new Set(this.activity().map((entry) => entry.entityType))].sort(),
   );
 
   /** Activity of the chosen period, action and type of record, newest first. */
@@ -114,8 +118,7 @@ export class StaffDetail {
     const since = days ? Date.now() - days * 24 * 60 * 60 * 1000 : null;
     const action = this.action();
     const entityType = this.entityType();
-    return this.activity
-      .staffActivity()
+    return this.activity()
       .filter((entry) => since === null || new Date(entry.timestamp).getTime() >= since)
       .filter((entry) => action === ALL || entry.action === action)
       .filter((entry) => entityType === ALL || entry.entityType === entityType);
@@ -130,16 +133,14 @@ export class StaffDetail {
   );
 
   /** Moment of the latest activity. */
-  protected readonly lastActivity = computed(() => this.activity.staffActivity()[0]?.timestamp ?? null);
+  protected readonly lastActivity = computed(() => this.activity()[0]?.timestamp ?? null);
 
   protected readonly actionKey = activityActionKey;
   protected readonly entityKey = activityEntityKey;
 
   constructor() {
-    this.destroyRef.onDestroy(() => {
-      this.activity.clearStaffActivity();
-      this.showProfile(null);
-    });
+    this.destroyRef.onDestroy(() => this.showProfile(null));
+    this.watchActivity();
     this.route.paramMap
       .pipe(
         switchMap((params) => {
@@ -150,7 +151,6 @@ export class StaffDetail {
           this.clearFilters();
           const staffId = Number(params.get('staffId'));
           if (!Number.isSafeInteger(staffId) || staffId <= 0) return of(null);
-          this.activity.loadStaffActivity(staffId);
           return this.laboratoryStore
             .staffMember(this.iam.requireLaboratoryId(), staffId)
             .pipe(catchError(() => of(null)));
@@ -164,7 +164,7 @@ export class StaffDetail {
           }
           if (!this.showsProfile()) return of(null);
           this.profileLoading.set(true);
-          return this.profiles
+          return this.laboratoryStore
             .staffProfile(member.laboratoryId, member.id)
             .pipe(catchError(() => of(null)));
         }),
@@ -173,6 +173,30 @@ export class StaffDetail {
       .subscribe((profile) => {
         this.showProfile(profile);
         this.profileLoading.set(false);
+      });
+  }
+
+  /** Reads the activity of the member of the route, dropping the answer for a member left behind. */
+  private watchActivity(): void {
+    this.route.paramMap
+      .pipe(
+        switchMap((params) => {
+          this.activity.set([]);
+          this.activityError.set(null);
+          const staffId = Number(params.get('staffId'));
+          if (!Number.isSafeInteger(staffId) || staffId <= 0) return of(null);
+          this.activityLoading.set(true);
+          return this.laboratoryStore.staffActivity(this.iam.requireLaboratoryId(), staffId).pipe(
+            map((entries) => ({ entries })),
+            catchError(() => of(null)),
+          );
+        }),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe((result) => {
+        this.activityLoading.set(false);
+        if (result) this.activity.set(result.entries);
+        else this.activityError.set('staff.detail.load-error');
       });
   }
 

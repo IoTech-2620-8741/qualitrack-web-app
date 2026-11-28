@@ -44,7 +44,7 @@
       </div>
       <div>
         <span>{{ 'staff.detail.activities' | translate }}</span>
-        <strong>{{ activity.staffActivityLoading() ? '…' : activity.staffActivity().length }}</strong>
+        <strong>{{ activityLoading() ? '…' : activity().length }}</strong>
       </div>
       <div>
         <span>{{ 'staff.detail.last-activity' | translate }}</span>
@@ -82,11 +82,11 @@
     <section class="activity" aria-labelledby="activity-title">
       <h2 id="activity-title">{{ 'staff.detail.history' | translate }}</h2>
 
-      @if (activity.staffActivityLoading()) {
+      @if (activityLoading()) {
         <div class="loading small"><mat-spinner diameter="28" [attr.aria-label]="'onboarding.loading-data' | translate" /></div>
-      } @else if (activity.staffActivityError(); as activityError) {
-        <p class="error" role="alert">{{ activityError | translate }}</p>
-      } @else if (activity.staffActivity().length) {
+      } @else if (activityError(); as message) {
+        <p class="error" role="alert">{{ message | translate }}</p>
+      } @else if (activity().length) {
         <app-list-toolbar [searchKey]="null" [activeFilters]="activeFilters()">
           <div toolbarFilters class="period-chips" role="group" [attr.aria-label]="'staff.detail.period' | translate">
             @for (days of periods; track days) {

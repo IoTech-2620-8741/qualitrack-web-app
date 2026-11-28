@@ -50,11 +50,6 @@ package "ra.domain.model" {
     +normalMin / normalMax: number | null
     +criticalMin / criticalMax: number | null
   }
-  class AuditedStaffMember {
-    +id: number
-    +fullName: string
-    +role: string
-  }
   class KpiDashboard {
     +id: number
     +laboratoryId: number
@@ -207,13 +202,7 @@ package "ra.domain.model" {
 }
 
 package "ra.infrastructure" {
-  interface AuditedStaffMemberResource
-  class AuditedStaffMemberAssembler
-  class AuditedStaffMemberApiEndpoint {
-    +getStaffMember(laboratoryId, staffId)
-  }
   class RaApi {
-    +getAuditedStaffMember(laboratoryId, staffId)
     -_kpiEndpoint: KpiApiEndpoint
     -_deviationTrendEndpoint: DeviationTrendApiEndpoint
     -_auditLogEndpoint: AuditLogApiEndpoint
@@ -222,7 +211,6 @@ package "ra.infrastructure" {
     +getDashboardByLaboratory(laboratoryId, period?, environmentId?)
     +getTrendsByEnvironment(laboratoryId, environmentId, period)
     +getAuditLog(laboratoryId: number, filters?)
-    +getStaffActivity(laboratoryId: number, staffId: number)
     +generateBatchReport(request: GenerateBatchReportRequest)
     +generateComplianceReport(request: GenerateComplianceReportRequest)
     +generateInventoryReport(request: GenerateInventoryReportRequest)
@@ -247,7 +235,6 @@ package "ra.infrastructure" {
 
   class AuditLogApiEndpoint {
     +getAuditLog(laboratoryId: number, filters?)
-    +getStaffActivity(laboratoryId: number, staffId: number)
   }
 
   class ReportApiEndpoint {
@@ -387,12 +374,6 @@ package "ra.application" {
     +profiles
     +loadProfile(deviceId, environmentId): void
     +clearProfiles(): void
-    +staffActivity
-    +auditedStaffMember
-    +staffActivityLoading
-    +staffActivityError
-    +loadStaffActivity(staffId): void
-    +clearStaffActivity(): void
     -api: RaApi
     -_dashboard
     -_deviationTrends
@@ -449,12 +430,6 @@ package "ra.application" {
 package "ra.presentation" {
   class "REPORTS_TABS" as ReportsTabs <<const>>
   class AuditLogTable <<component>>
-  class StaffActivity {
-    #entityFilter
-    #entityTypes
-    #visibleActivity
-    #lastActivity
-  }
   class RaRoutes
 
   class Dashboard {
@@ -735,20 +710,10 @@ RaRoutes ..> DeviationDetailPage : deviation-trends/:equipmentId/:parameter
 RaRoutes ..> ReportGeneratorComponent
 RaRoutes ..> AuditLogViewerComponent
 
-AuditedStaffMember ..|> BaseEntity
-RaApi --> AuditedStaffMemberApiEndpoint
-AuditedStaffMemberApiEndpoint --|> ErrorHandlingEnabledBaseType
-AuditedStaffMemberApiEndpoint --> AuditedStaffMemberAssembler
-AuditedStaffMemberAssembler ..> AuditedStaffMemberResource
-AuditedStaffMemberAssembler ..> AuditedStaffMember
-RaStore ..> AuditedStaffMember
-StaffActivity --> RaStore
-RaRoutes ..> StaffActivity : staffActivityGuard
-note bottom of StaffActivity
-  /reports/staff/:staffId/activity: newest activity first, type filter,
-  latest activity and a link back to the Laboratory staff detail.
-  RA reads the staff identity through its own Laboratory ACL:
-  GET /laboratories/{lab}/staff/{staffId}.
+note right of RaRoutes
+  /reports/staff/:staffId/activity redirects to the staff detail in
+  Laboratory, which reads the activity through its own anti-corruption
+  layer: GET /laboratories/{lab}/staff/{staffId}/audit-logs.
 end note
 
 note left of RaRoutes
@@ -776,7 +741,6 @@ AuditLogTable ..> AuditLogEntry
 AuditLogTable ..> TablePaginator
 DeviationTable ..> TablePaginator
 KpiTable ..> TablePaginator
-StaffActivity ..> TablePaginator
 note bottom of ReportsTabs
   Summary, Deviations, New report and Audit log are the tabs of the page
   header of the reports module.

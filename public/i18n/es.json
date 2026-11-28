@@ -2209,13 +2209,11 @@
     "deviation-detail": "Detalle de la desviación",
     "report-generator": "Generador de reportes",
     "audit-log": "Registro de auditoría",
-    "staff-activity": "Actividad del personal",
     "plans": "Planes de suscripción",
     "checkout": "Pago",
     "payment-success": "Pago confirmado",
     "payment-cancel": "Pago cancelado",
     "billing": "Resumen de facturación",
-    "profile": "Perfil",
-    "staff-profile": "Perfil del personal"
+    "profile": "Perfil"
   }
 }
