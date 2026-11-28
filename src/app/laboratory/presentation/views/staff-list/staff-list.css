@@ -63,6 +63,16 @@
   font-weight: 600;
 }
 
+.person {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.person-text {
+  min-width: 0;
+}
+
 .name-cell .email {
   display: block;
   margin-top: 2px;

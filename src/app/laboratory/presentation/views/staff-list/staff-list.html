@@ -66,16 +66,27 @@
               @for (member of staffPage.rows(); track member.id) {
                 <tr>
                   <td class="name-cell">
-                    @if (canSeeActivity()) {
-                      <a [routerLink]="['/laboratories/staff', member.id]">
-                        {{ member.fullName }}
-                      </a>
-                    } @else {
-                      {{ member.fullName }}
-                    }
-                    <!-- Under the name, so the table fits beside the side menu; it wraps before its @, never mid-name -->
-                    @let email = emailLines(member.email);
-                    <small class="email">{{ email[0] }}<wbr>{{ email[1] }}</small>
+                    <!-- The photo beside the name, to recognize each person at a glance -->
+                    <div class="person">
+                      <app-staff-avatar
+                        [laboratoryId]="laboratoryId"
+                        [staffId]="member.id"
+                        [name]="member.fullName"
+                        [load]="iamStore.canManageQuality() && member.userId !== null"
+                      />
+                      <div class="person-text">
+                        @if (canSeeActivity()) {
+                          <a [routerLink]="['/laboratories/staff', member.id]">
+                            {{ member.fullName }}
+                          </a>
+                        } @else {
+                          {{ member.fullName }}
+                        }
+                        <!-- Under the name, so the table fits beside the side menu; it wraps before its @, never mid-name -->
+                        @let email = emailLines(member.email);
+                        <small class="email">{{ email[0] }}<wbr>{{ email[1] }}</small>
+                      </div>
+                    </div>
                   </td>
 
                   <td [attr.data-label]="'staff-list.role' | translate">

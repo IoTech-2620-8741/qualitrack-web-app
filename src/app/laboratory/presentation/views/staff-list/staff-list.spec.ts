@@ -2,8 +2,10 @@ import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { provideTranslateService } from '@ngx-translate/core';
+import { of } from 'rxjs';
 import { IamStore } from '../../../../iam/application/iam.store';
 import { LaboratoryStore } from '../../../application/laboratory.store';
+import { ProfileStore } from '../../../../profile/application/profile.store';
 import { StaffMember } from '../../../domain/model/staff-member.entity';
 import { StaffList } from './staff-list';
 
@@ -12,9 +14,11 @@ const member = (id: number, active: boolean) => new StaffMember({
 });
 
 describe('StaffList', () => {
+  const staffPhoto = vi.fn();
   const open = (canManage: boolean) => {
     TestBed.configureTestingModule({ imports: [StaffList], providers: [
       provideRouter([]), provideTranslateService(),
+      { provide: ProfileStore, useValue: { staffPhoto: staffPhoto.mockReturnValue(of('blob:photo')) } },
       { provide: IamStore, useValue: { canManageQuality: signal(canManage), isAuditor: signal(!canManage), requireLaboratoryId: () => 7 } },
       { provide: LaboratoryStore, useValue: {
         staffList: signal([member(1, true), member(2, false)]), isLoading: signal(false), loadStaff: vi.fn(), deactivateStaff: vi.fn(),
@@ -43,5 +47,18 @@ describe('StaffList', () => {
     const email = open(true).querySelector('tbody tr:first-child td.name-cell .email')!;
     expect(email.textContent).toMatch(/^member\d+@example\.test$/);
     expect(email.querySelector('wbr')?.nextSibling?.textContent).toBe('@example.test');
+  });
+
+  it('shows the photo beside each name, downloaded only for the quality manager', () => {
+    staffPhoto.mockClear();
+    const element = open(true);
+    expect(element.querySelector<HTMLImageElement>('.person app-staff-avatar img')?.getAttribute('src')).toBe('blob:photo');
+    expect(staffPhoto).toHaveBeenCalledWith(7, 1);
+
+    TestBed.resetTestingModule();
+    staffPhoto.mockClear();
+    const auditorView = open(false);
+    expect(staffPhoto).not.toHaveBeenCalled();
+    expect(auditorView.querySelector('.person app-staff-avatar')?.textContent?.trim()).toBe('M1');
   });
 });

@@ -1,0 +1,25 @@
+:host {
+  display: inline-flex;
+  flex: none;
+}
+
+/* A circle in the brand teal with the initials, replaced by the photo when there is one */
+.avatar {
+  display: grid;
+  place-items: center;
+  width: var(--avatar-size, 36px);
+  height: var(--avatar-size, 36px);
+  overflow: hidden;
+  background: var(--qt-primary-strong);
+  border-radius: 50%;
+  color: var(--qt-surface);
+  font-size: calc(var(--avatar-size, 36px) * 0.38);
+  font-weight: 700;
+  line-height: 1;
+}
+
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}

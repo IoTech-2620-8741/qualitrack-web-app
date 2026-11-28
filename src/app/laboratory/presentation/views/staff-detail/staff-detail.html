@@ -6,13 +6,14 @@
       <mat-spinner diameter="40" [attr.aria-label]="'onboarding.loading-data' | translate"></mat-spinner>
     </div>
   } @else if (member(); as current) {
+    <!-- Who the person is: photo, name, job title and e-mail; the quality manager can deactivate them -->
     <header class="page-heading">
-      <div>
-        <h1>
-          <mat-icon aria-hidden="true">badge</mat-icon>
-          {{ current.fullName }}
-        </h1>
-        <p class="muted">{{ current.role }} · {{ current.email }}</p>
+      <div class="identity">
+        <app-staff-avatar [name]="current.fullName" [photoUrl]="profile()?.photoUrl ?? null" [size]="72" />
+        <div class="identity-text">
+          <h1>{{ current.fullName }}</h1>
+          <p class="muted">{{ current.role }} · {{ current.email }}</p>
+        </div>
       </div>
       @if (iam.canManageQuality() && current.active) {
         <div class="actions">
@@ -28,7 +29,7 @@
       <p class="error" role="alert">{{ message | translate }}</p>
     }
 
-    <section class="summary-strip">
+    <section class="summary-strip" [attr.aria-label]="'staff.detail.summary' | translate">
       <div>
         <span>{{ 'staff-list.access-role' | translate }}</span>
         <strong>
@@ -41,18 +42,131 @@
           {{ (current.active ? 'common.active' : 'common.inactive') | translate }}
         </strong>
       </div>
+      <div>
+        <span>{{ 'staff.detail.activities' | translate }}</span>
+        <strong>{{ activity.staffActivityLoading() ? '…' : activity.staffActivity().length }}</strong>
+      </div>
+      <div>
+        <span>{{ 'staff.detail.last-activity' | translate }}</span>
+        <strong>{{ lastActivity() ? (lastActivity() | dateTime) : '—' }}</strong>
+      </div>
     </section>
 
-    <div class="actions staff-links">
-      @if (iam.canManageQuality() && current.userId !== null) {
-        <a mat-stroked-button class="secondary-btn" [routerLink]="['/profile/staff', current.id]">
-          <mat-icon>person</mat-icon>{{ 'staff.detail.view-profile' | translate }}
-        </a>
+    <!-- The profile, which only the quality manager reads, and only for members with an account -->
+    @if (showsProfile()) {
+      <section class="card profile" aria-labelledby="profile-title">
+        <h2 id="profile-title">{{ 'staff.profile.title' | translate }}</h2>
+        @if (profileLoading()) {
+          <div class="loading small"><mat-spinner diameter="28" [attr.aria-label]="'onboarding.loading-data' | translate" /></div>
+        } @else if (profile(); as staffProfile) {
+          @if (staffProfile.profile.updatedAt) {
+            <p class="muted">{{ 'profile.updated-at' | translate: { date: (staffProfile.profile.updatedAt | dateTime) } }}</p>
+          } @else {
+            <p class="muted">{{ 'staff.profile.not-completed' | translate }}</p>
+          }
+          <dl>
+            <div><dt>{{ 'profile.personal.full-name' | translate }}</dt><dd>{{ staffProfile.profile.fullName ?? '—' }}</dd></div>
+            <div><dt>{{ 'profile.personal.dni' | translate }}</dt><dd>{{ staffProfile.profile.dni ?? '—' }}</dd></div>
+            <div><dt>{{ 'profile.personal.phone' | translate }}</dt><dd>{{ staffProfile.profile.phoneNumber ?? '—' }}</dd></div>
+            <div><dt>{{ 'profile.personal.location' | translate }}</dt><dd>{{ staffProfile.profile.location ?? '—' }}</dd></div>
+            <div><dt>{{ 'profile.account.username' | translate }}</dt><dd>{{ staffProfile.profile.username }}</dd></div>
+            <div><dt>{{ 'profile.account.email' | translate }}</dt><dd>{{ staffProfile.profile.email ?? '—' }}</dd></div>
+          </dl>
+        } @else {
+          <p class="notice" role="status">{{ 'staff.profile.unavailable' | translate }}</p>
+        }
+      </section>
+    }
+
+    <!-- What the person registered, narrowed by period, action and type of record -->
+    <section class="activity" aria-labelledby="activity-title">
+      <h2 id="activity-title">{{ 'staff.detail.history' | translate }}</h2>
+
+      @if (activity.staffActivityLoading()) {
+        <div class="loading small"><mat-spinner diameter="28" [attr.aria-label]="'onboarding.loading-data' | translate" /></div>
+      } @else if (activity.staffActivityError(); as activityError) {
+        <p class="error" role="alert">{{ activityError | translate }}</p>
+      } @else if (activity.staffActivity().length) {
+        <app-list-toolbar [searchKey]="null" [activeFilters]="activeFilters()">
+          <div toolbarFilters class="period-chips" role="group" [attr.aria-label]="'staff.detail.period' | translate">
+            @for (days of periods; track days) {
+              <app-filter-chip
+                [labelKey]="'staff.detail.periods.' + (days || 'all')"
+                [pressed]="period() === days"
+                (toggled)="period.set(days)"
+              />
+            }
+          </div>
+          <div toolbarMore class="selects">
+            <mat-form-field appearance="outline" subscriptSizing="dynamic">
+              <mat-label>{{ 'staff.detail.action' | translate }}</mat-label>
+              <mat-select [value]="action()" (selectionChange)="action.set($event.value)">
+                <mat-option [value]="all">{{ 'staff.detail.all-actions' | translate }}</mat-option>
+                @for (value of actions(); track value) {
+                  <mat-option [value]="value">
+                    @if (actionKey(value); as key) { {{ key | translate }} } @else { {{ value }} }
+                  </mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field appearance="outline" subscriptSizing="dynamic">
+              <mat-label>{{ 'staff.detail.filter' | translate }}</mat-label>
+              <mat-select [value]="entityType()" (selectionChange)="entityType.set($event.value)">
+                <mat-option [value]="all">{{ 'staff.detail.all-activity' | translate }}</mat-option>
+                @for (type of entityTypes(); track type) {
+                  <mat-option [value]="type">
+                    @if (entityKey(type); as key) { {{ key | translate }} } @else { {{ type }} }
+                  </mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </app-list-toolbar>
+
+        <div class="table-card">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th scope="col">{{ 'audit-log.table.timestamp' | translate }}</th>
+                <th scope="col">{{ 'audit-log.table.action' | translate }}</th>
+                <th scope="col">{{ 'audit-log.table.entity' | translate }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (entry of activityPage.rows(); track entry.id) {
+                <tr>
+                  <td [attr.data-label]="'audit-log.table.timestamp' | translate">{{ entry.timestamp | dateTime }}</td>
+                  <td [attr.data-label]="'audit-log.table.action' | translate">
+                    @if (actionKey(entry.action); as key) { {{ key | translate }} } @else { {{ entry.action }} }
+                  </td>
+                  <td [attr.data-label]="'audit-log.table.entity' | translate">
+                    @if (entityKey(entry.entityType); as key) { {{ key | translate }} } @else { {{ entry.entityType }} }
+                    @if (entry.entityType === 'EQUIPMENT') {
+                      <a [routerLink]="['/equipments', entry.entityId]">#{{ entry.entityId }}</a>
+                    } @else {
+                      <span class="muted-id">#{{ entry.entityId }}</span>
+                    }
+                  </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="3" class="empty-cell">
+                    <p>{{ 'staff.detail.no-matching' | translate }}</p>
+                    <button mat-stroked-button type="button" (click)="clearFilters()">
+                      <mat-icon aria-hidden="true">filter_alt_off</mat-icon>
+                      {{ 'staff.detail.clear-filters' | translate }}
+                    </button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+          <app-table-paginator [page]="activityPage" />
+        </div>
+      } @else {
+        <p class="muted">{{ 'staff.detail.no-activity' | translate }}</p>
       }
-      <a mat-stroked-button class="secondary-btn" [routerLink]="['/reports/staff', current.id, 'activity']">
-        <mat-icon>history</mat-icon>{{ 'staff.detail.view-activity' | translate }}
-      </a>
-    </div>
+    </section>
   } @else {
     <p class="error" role="alert">{{ (error() ?? 'staff.detail.load-error') | translate }}</p>
   }
