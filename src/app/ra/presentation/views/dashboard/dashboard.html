@@ -43,6 +43,7 @@
         [currentPlan]="store.overviewCurrentPlan()"
         [plansStatus]="store.overviewPlans().status"
         [formatDate]="formatDate.bind(this)"
+        [iotDeviceCount]="store.overviewEquipment().status === 'ready' ? store.overviewDevices().length : null"
         (retry)="retrySubscription()"
       />
     }

@@ -1,9 +1,9 @@
 import { TestBed } from '@angular/core/testing';
-import { provideHttpClient } from '@angular/common/http';
+import { HttpErrorResponse, provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { IamStore } from '../../iam/application/iam.store';
 import { Equipment } from '../domain/model/equipment.entity';
-import { EquipmentStore } from './equipment.store';
+import { EquipmentStore, equipmentError } from './equipment.store';
 
 describe('EquipmentStore', () => {
   /** A container monitor located in environment 1. */
@@ -105,5 +105,22 @@ describe('EquipmentStore', () => {
     store.loadBpmConfig(6);
 
     expect(store.bpmConfigs()).toEqual([]);
+  });
+});
+
+describe('equipmentError', () => {
+  const conflict = (message: string) =>
+    new HttpErrorResponse({ status: 409, error: { code: 'CONFLICT', message } });
+
+  it('tells in the language of the page that the plan allows no more IoT devices', () => {
+    expect(equipmentError(conflict('The plan of the laboratory allows 5 IoT devices and 5 are already registered'))).toBe(
+      'equipment.errors.plan-limit',
+    );
+  });
+
+  it('keeps the message of the platform for other conflicts', () => {
+    expect(equipmentError(conflict("Device with identifier 'CNT-1' already exists"))).toBe(
+      "Device with identifier 'CNT-1' already exists",
+    );
   });
 });

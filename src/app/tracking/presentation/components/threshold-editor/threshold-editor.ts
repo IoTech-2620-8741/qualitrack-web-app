@@ -114,6 +114,7 @@ export class ThresholdEditor {
    * Validates and submits the configured environmental thresholds.
    *
    * The method ensures that:
+   * - At least one metric is enabled: the devices ignore a profile without thresholds.
    * - Enabled metrics contain valid limits.
    * - Threshold ranges follow business rules.
    * - Critical and normal boundaries are consistent.
@@ -123,7 +124,12 @@ export class ThresholdEditor {
    */
   protected submit(): void {
     const thresholds: ThresholdInput[] = [];
-    for (const row of this.rows().filter((item) => item.enabled)) {
+    const enabled = this.rows().filter((item) => item.enabled);
+    if (enabled.length === 0) {
+      this.error.set({ key: 'tracking.profiles.errors.none-enabled' });
+      return;
+    }
+    for (const row of enabled) {
       const problem = validate(row);
       if (problem) {
         const metric = problem.params?.['metric'];

@@ -7,6 +7,8 @@ export type NotificationType =
   | 'ALERT_OPENED'
   /** The severity of an open alert rose. */
   | 'ALERT_ESCALATED'
+  /** The condition of an open alert had returned to normal and deviated again. */
+  | 'ALERT_RECURRED'
   /** Somebody started attending an alert. */
   | 'ALERT_ACKNOWLEDGED'
   /** Somebody resolved an alert. */
@@ -130,13 +132,14 @@ export class Notification implements BaseEntity {
   /**
    * Material icon of the notification.
    *
-   * @returns `error` for critical openings and escalations, `warning` for the others, and a fixed icon for each
-   * other type.
+   * @returns `error` for critical openings, escalations and recurrences, `warning` for the others, and a fixed icon
+   * for each other type.
    */
   get icon(): string {
     switch (this.type) {
       case 'ALERT_OPENED':
       case 'ALERT_ESCALATED':
+      case 'ALERT_RECURRED':
         return this.severity === 'CRITICAL' ? 'error' : 'warning';
       case 'ALERT_ACKNOWLEDGED':
         return 'visibility';

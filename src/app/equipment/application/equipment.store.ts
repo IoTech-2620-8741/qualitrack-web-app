@@ -45,6 +45,12 @@ export function equipmentError(error: unknown): string {
   if (status === 0) return 'equipment.errors.connection';
   if (status === 403) return 'equipment.errors.forbidden';
   if (status === 404) return 'equipment.errors.not-found';
+  const text =
+    error instanceof ApiError ? error.details || error.message
+    : error instanceof HttpErrorResponse ? error.error?.details || error.error?.message
+    : null;
+  // The platform refuses an IoT device beyond the allowance of the plan with 409; told in the language of the page.
+  if (status === 409 && /allows \d+ IoT devices/.test(text ?? '')) return 'equipment.errors.plan-limit';
   if (error instanceof ApiError) return error.details || error.message;
   if (error instanceof HttpErrorResponse) return error.error?.details || error.error?.message || 'equipment.errors.failed';
   return 'equipment.errors.failed';
@@ -365,6 +371,20 @@ export class EquipmentStore {
    */
   async issueEdgeGatewayApiKey(equipmentId: number): Promise<EdgeGatewayApiKey | null> {
     return this.save(() => firstValueFrom(this.api.issueEdgeGatewayApiKey(this.laboratoryId, equipmentId)));
+  }
+
+  /**
+   * Replaces the API key of an Edge Gateway, for example when the station lost it.
+   *
+   * @remarks
+   * The cloud answers with the new key only this once and the previous key stops working at once. The key is
+   * returned to the caller and is not kept in the store; a rejection is exposed through `error`.
+   *
+   * @param equipmentId - The equipment identifier of the Edge Gateway.
+   * @returns The identifier of the Edge Gateway and its new API key, or `null` when it could not be replaced.
+   */
+  async rotateEdgeGatewayApiKey(equipmentId: number): Promise<EdgeGatewayApiKey | null> {
+    return this.save(() => firstValueFrom(this.api.rotateEdgeGatewayApiKey(this.laboratoryId, equipmentId)));
   }
 
   /**
