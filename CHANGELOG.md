@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.10.0] - 2026-11-28
+
 ### Added
 
 - Tracking & Telemetry (tracking): the monitoring view tells whether the lock of each container is open or closed, from the last movement its servo executed in the last 7 days (`SERVO_OPEN` or `SERVO_CLOSE`), with what opened it (an RFID tag or a rule of the profile) and since when. A lock that did not move is closed, since the node starts with it closed; the lock of a container that is not reporting is unknown; and a movement the node could not execute is warned. Before, the card showed only the latest action of any kind, so a fan action after an opening hid that the container was open (#130).
@@ -16,6 +18,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Laboratory (laboratory): the staff list shows the photo of each member beside their name, or their initials when there is none; only the quality manager downloads the photos, once per session. The detail of a staff member gathers their photo, account, profile (for the quality manager) and activity, which can be narrowed by period (7, 30 or 90 days), action and type of record (#131).
 
 ### Changed
+
+- Release: package and lockfile versions are now 2.10.0.
 
 - Tracking & Telemetry (tracking): the latest action of a container says when it failed, and the history gives "With an RFID tag" as the cause of an opening no rule caused, and "With the RFID tag or at the end of the opening time" for such a closing, instead of a dash (#130).
 
