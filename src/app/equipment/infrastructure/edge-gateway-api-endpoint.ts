@@ -98,6 +98,24 @@ export class EdgeGatewayApiEndpoint extends ErrorHandlingEnabledBaseType {
   }
 
   /**
+   * Replaces the API key of an Edge Gateway that already has one.
+   *
+   * @remarks
+   * The cloud answers with the new key only this once, and the previous key stops working at once.
+   *
+   * @param laboratoryId - The identifier of the laboratory.
+   * @param equipmentId - The equipment identifier of the Edge Gateway.
+   * @returns An observable that emits the identifier of the Edge Gateway and its new API key.
+   */
+  rotateApiKey(laboratoryId: number, equipmentId: number): Observable<EdgeGatewayApiKey> {
+    const url = `${this.apiKey(laboratoryId, equipmentId)}${environment.edgeGatewayApiKeyRotationsEndpointPath}`;
+    return this.http.post<EdgeGatewayApiKeyResource>(url, null).pipe(
+      map((resource) => this.assembler.toApiKeyFromResource(resource)),
+      catchError(this.handleError(`Failed to replace the API key of Edge Gateway ${equipmentId}`)),
+    );
+  }
+
+  /**
    * Reads how the Edge Gateways of an environment cover its IoT devices.
    *
    * @param laboratoryId - The identifier of the laboratory.

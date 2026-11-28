@@ -52,6 +52,8 @@ export const environment = {
   // Edge Gateways, under /laboratories/{laboratoryId}; their coverage, under .../environments/{environmentId}
   edgeGatewaysEndpointPath: '/edge-gateways',
   edgeGatewayApiKeyEndpointPath: '/api-key',
+  // Replacement of the API key of an Edge Gateway, under .../edge-gateways/{equipmentId}/api-key
+  edgeGatewayApiKeyRotationsEndpointPath: '/rotations',
   edgeGatewayCoverageEndpointPath: '/edge-gateway-coverage',
   // Records of an equipment, under /laboratories/{laboratoryId}/equipments/{equipmentId}
   equipmentBpmConfigEndpointPath: '/bpm-configs',

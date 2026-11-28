@@ -216,6 +216,17 @@ export class EquipmentApi extends BaseApi {
   }
 
   /**
+   * Replaces the API key of an Edge Gateway; the cloud answers the new key only once.
+   *
+   * @param laboratoryId - The identifier of the laboratory.
+   * @param equipmentId - The equipment identifier of the Edge Gateway.
+   * @returns An observable that emits the identifier of the Edge Gateway and its new API key.
+   */
+  rotateEdgeGatewayApiKey(laboratoryId: number, equipmentId: number): Observable<EdgeGatewayApiKey> {
+    return this._edgeGatewayEndpoint.rotateApiKey(laboratoryId, equipmentId);
+  }
+
+  /**
    * Reads how the Edge Gateways of an environment cover its IoT devices.
    *
    * @param laboratoryId - The identifier of the laboratory.

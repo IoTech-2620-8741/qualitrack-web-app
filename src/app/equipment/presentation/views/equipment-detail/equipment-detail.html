@@ -119,6 +119,16 @@
                       <mat-icon>key</mat-icon>
                       {{ 'edge-gateway.api-key.generate' | translate }}
                     </button>
+                  } @else if (apiKeyIssued() === true) {
+                    <button
+                      mat-stroked-button
+                      class="regenerate-key"
+                      type="button"
+                      (click)="onRotateApiKey(current)"
+                      [disabled]="store.saving()">
+                      <mat-icon>autorenew</mat-icon>
+                      {{ 'edge-gateway.api-key.regenerate' | translate }}
+                    </button>
                   }
                 </div>
 

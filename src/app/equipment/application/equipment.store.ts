@@ -368,6 +368,20 @@ export class EquipmentStore {
   }
 
   /**
+   * Replaces the API key of an Edge Gateway, for example when the station lost it.
+   *
+   * @remarks
+   * The cloud answers with the new key only this once and the previous key stops working at once. The key is
+   * returned to the caller and is not kept in the store; a rejection is exposed through `error`.
+   *
+   * @param equipmentId - The equipment identifier of the Edge Gateway.
+   * @returns The identifier of the Edge Gateway and its new API key, or `null` when it could not be replaced.
+   */
+  async rotateEdgeGatewayApiKey(equipmentId: number): Promise<EdgeGatewayApiKey | null> {
+    return this.save(() => firstValueFrom(this.api.rotateEdgeGatewayApiKey(this.laboratoryId, equipmentId)));
+  }
+
+  /**
    * Reads the equipment, IoT devices and Edge Gateways located in an environment.
    *
    * @remarks

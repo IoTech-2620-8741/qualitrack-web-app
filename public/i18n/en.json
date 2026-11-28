@@ -2081,11 +2081,13 @@
     },
     "api-key": {
       "title": "API key",
-      "hint": "The Edge Gateway uses it to connect to QualiTrack. It is generated only once.",
+      "hint": "The Edge Gateway uses it to connect to QualiTrack. It is shown only once; a lost key can be regenerated.",
       "issued": "API key already generated",
       "not-issued": "No API key yet",
       "unknown": "The API key status could not be checked.",
       "generate": "Generate API key",
+      "regenerate": "Regenerate API key",
+      "regenerate-confirm": "The current API key will stop working at once and the Edge Gateway will need the new one in CLOUD_API_KEY. Regenerate it?",
       "requires-location": "Locate the Edge Gateway in an environment to generate its API key.",
       "requires-operational": "The Edge Gateway must be operational to generate its API key.",
       "dialog": {
