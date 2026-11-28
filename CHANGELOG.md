@@ -13,9 +13,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Tracking & Telemetry (tracking): above the containers, the open ones and the ones whose lock is unknown are named, or all are said to be closed. The view reads the devices again every 30 seconds while the tab is visible, without the loading state, as the alerts view does (#130).
 
+- Laboratory (laboratory): the staff list shows the photo of each member beside their name, or their initials when there is none; only the quality manager downloads the photos, once per session. The detail of a staff member gathers their photo, account, profile (for the quality manager) and activity, which can be narrowed by period (7, 30 or 90 days), action and type of record (#131).
+
 ### Changed
 
 - Tracking & Telemetry (tracking): the latest action of a container says when it failed, and the history gives "With an RFID tag" as the cause of an opening no rule caused, and "With the RFID tag or at the end of the opening time" for such a closing, instead of a dash (#130).
+
+- Laboratory (laboratory): the detail of a staff member reads the profile and photo of Profile and the activity of Reporting & Audit through anti-corruption layers of its own, with models of its own, so it imports no code of those contexts. The avatar of the staff belongs to Laboratory (#132).
+
+### Removed
+
+- Profile (profile) and Reporting & Audit (ra): the pages of the profile and of the activity of a staff member, now part of their detail; their former addresses redirect to it (#131). The code they used, the staff profile of the Profile store and the staff activity of the Reporting & Audit store with its Laboratory ACL, and their two page titles are removed (#132).
 
 ## [2.9.0] - 2026-11-28
 
