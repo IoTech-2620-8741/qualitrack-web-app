@@ -11,6 +11,9 @@ package "shared" {
   interface PageTab
   class ListToolbar <<component>>
   class TablePaginator <<component>>
+  class FilterChip <<component>>
+  class DateTimePipe <<pipe>>
+  class ErrorHandlingEnabledBaseType
   interface BaseEntity
   class BaseApi
   class BaseApiEndpoint
@@ -22,6 +25,7 @@ package "iam.application" {
   class IamStore {
     +requireLaboratoryId(): number
     +canManageQuality: Signal<boolean>
+    +currentUserId: Signal<number | null>
   }
 }
 
@@ -73,6 +77,20 @@ package "laboratory.domain.model" {
     PRODUCT_STORAGE
     OTHER
   }
+  class StaffMemberProfile {
+    +id: number
+    +username: string
+    +email / fullName / dni / phoneNumber / location: string | null
+    +hasPhoto: boolean
+    +updatedAt: string | null
+  }
+  class StaffActivityEntry {
+    +id: number
+    +action: string
+    +entityType: string
+    +entityId: number
+    +timestamp: string
+  }
   interface CreateLaboratoryCommand
   interface UpdateLaboratoryCommand
   interface RegisterStaffCommand
@@ -87,6 +105,8 @@ RegisteredStaff --> StaffMember
 RegisteredStaff --> StaffCredentials
 Environment ..|> BaseEntity
 Environment --> EnvironmentUsage
+StaffMemberProfile ..|> BaseEntity
+StaffActivityEntry ..|> BaseEntity
 
 package "laboratory.infrastructure" {
   class LaboratoryApi {
@@ -97,6 +117,9 @@ package "laboratory.infrastructure" {
     +getStaffMember(laboratoryId, staffId)
     +registerStaff(laboratoryId, request): Observable<RegisteredStaff>
     +deactivateStaff(laboratoryId, staffId): Observable<StaffMember>
+    +getStaffProfile(laboratoryId, staffId): Observable<StaffMemberProfile>
+    +getStaffPhoto(laboratoryId, staffId): Observable<Blob>
+    +getStaffActivity(laboratoryId, staffId): Observable<StaffActivityEntry[]>
     +getEnvironments(laboratoryId)
     +getEnvironment(laboratoryId, environmentId)
     +createEnvironment(laboratoryId, request)
@@ -109,6 +132,17 @@ package "laboratory.infrastructure" {
   class LaboratoryAssembler
   class StaffAssembler
   class EnvironmentAssembler
+  class StaffProfileApiEndpoint {
+    +getStaffProfile(laboratoryId, staffId)
+    +getStaffPhoto(laboratoryId, staffId)
+  }
+  interface StaffProfileResource
+  class StaffProfileAssembler
+  class StaffActivityApiEndpoint {
+    +getStaffActivity(laboratoryId, staffId)
+  }
+  interface StaffActivityEntryResource
+  class StaffActivityAssembler
 }
 
 LaboratoryApi --|> BaseApi
@@ -125,6 +159,22 @@ note bottom of StaffApiEndpoint
   GET/POST /laboratories/{laboratoryId}/staff, GET .../staff/{staffId},
   POST .../staff/{staffId}/deactivations
 end note
+LaboratoryApi --> StaffProfileApiEndpoint
+LaboratoryApi --> StaffActivityApiEndpoint
+StaffProfileApiEndpoint --|> ErrorHandlingEnabledBaseType
+StaffActivityApiEndpoint --|> ErrorHandlingEnabledBaseType
+StaffProfileApiEndpoint --> StaffProfileAssembler
+StaffProfileAssembler ..> StaffProfileResource
+StaffProfileAssembler ..> StaffMemberProfile
+StaffActivityApiEndpoint --> StaffActivityAssembler
+StaffActivityAssembler ..> StaffActivityEntryResource
+StaffActivityAssembler ..> StaffActivityEntry
+note bottom of StaffProfileApiEndpoint
+  Anti-corruption layers of Laboratory: Profile owns
+  GET .../staff/{staffId}/profile[/photo] and Reporting & Audit owns
+  GET .../staff/{staffId}/audit-logs; Laboratory keeps only what the
+  staff detail shows, in models of its own.
+end note
 
 package "laboratory.application" {
   class LaboratoryStore {
@@ -138,6 +188,9 @@ package "laboratory.application" {
     +staffMember(laboratoryId, staffId): Observable<StaffMember>
     +registerStaff(laboratoryId, command): Observable<RegisteredStaff>
     +deactivateStaff(laboratoryId, staffId): Observable<StaffMember>
+    +staffProfile(laboratoryId, staffId): Observable<StaffProfile>
+    +staffPhoto(laboratoryId, staffId): Observable<string | null>
+    +staffActivity(laboratoryId, staffId): Observable<StaffActivityEntry[]>
     +environments: Signal<Environment[]>
     +environmentsLoading / environmentError / environmentsEmpty
     +canManageEnvironments: Signal<boolean>
@@ -147,7 +200,12 @@ package "laboratory.application" {
     +updateEnvironment(environmentId, command)
     +assignEnvironmentUsage(environmentId, usage)
   }
+  interface StaffProfile {
+    +profile: StaffMemberProfile
+    +photoUrl: string | null
+  }
 }
+LaboratoryStore ..> StaffProfile
 
 LaboratoryStore --> LaboratoryApi
 LaboratoryStore --> IamStore
@@ -155,6 +213,8 @@ note right of LaboratoryStore
   Single store of the context (application/laboratory.store.ts).
   The other contexts read environments and staff through their
   own models; each one remembers its environment in this browser.
+  The photos of the staff are downloaded once in the session and
+  released when another person signs in.
 end note
 
 package "laboratory.presentation" {
@@ -165,7 +225,13 @@ package "laboratory.presentation" {
   class EnvironmentForm
   class StaffList
   class StaffForm
-  class StaffDetail
+  class StaffDetail {
+    #member / profile / activity
+    #period / action / entityType
+    #visibleActivity
+  }
+  class StaffAvatar <<component>>
+  class "staff-activity-labels" as StaffActivityLabels <<functions>>
   class LaboratoryRoutes
 }
 
@@ -183,11 +249,22 @@ note right of StaffForm
   Quality managers register operators and auditors; the credentials are e-mailed
   or shown once (username and temporary password) when the e-mail cannot be sent.
 end note
+StaffDetail --> IamStore
+StaffDetail ..> StaffAvatar
+StaffDetail ..> StaffActivityLabels
+StaffDetail ..> ListToolbar
+StaffDetail ..> FilterChip
+StaffDetail ..> TablePaginator
+StaffDetail ..> DateTimePipe
+StaffList ..> StaffAvatar
+StaffAvatar --> LaboratoryStore : staffPhoto
 note right of StaffDetail
-  Laboratory data and deactivation only. Navigation links open
-  /profile/staff/:staffId (quality managers with a staff account) and
-  /reports/staff/:staffId/activity (quality managers and auditors).
-  No Profile or Reporting & Audit code is imported.
+  The member, their account and deactivation, the profile with its photo
+  (quality managers, members with an account) and the activity narrowed by
+  period, action and type of record. /profile/staff/:staffId and
+  /reports/staff/:staffId/activity redirect here. No Profile or
+  Reporting & Audit code is imported: both are read through the
+  anti-corruption layers of Laboratory.
 end note
 
 note bottom of LaboratoryRoutes

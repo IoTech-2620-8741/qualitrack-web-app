@@ -67,12 +67,6 @@ package "profile.application" {
     +update(command: UpdateProfileCommand): Observable<Profile>
     +replacePhoto(image: File): Observable<Profile>
     +removePhoto(): Observable<void>
-    +staffProfile(laboratoryId, staffId): Observable<StaffProfile>
-  }
-
-  interface StaffProfile {
-    +profile: Profile
-    +photoUrl: string | null
   }
 
   class MAX_PHOTO_BYTES <<const>>
@@ -81,7 +75,6 @@ package "profile.application" {
 
 ProfileStore --> IamStore : clears on another sign-in
 ProfileStore ..> UpdateProfileCommand
-ProfileStore ..> StaffProfile
 note right of ProfileStore
   Provided in root: the toolbar and the profile page share it.
   Photos are kept as object URLs and revoked when replaced.
@@ -94,8 +87,6 @@ package "profile.infrastructure" {
     +getMyPhoto(): Observable<Blob>
     +replaceMyPhoto(image: File): Observable<Profile>
     +removeMyPhoto(): Observable<void>
-    +getStaffProfile(laboratoryId, staffId): Observable<Profile>
-    +getStaffPhoto(laboratoryId, staffId): Observable<Blob>
   }
 
   class ProfileApiEndpoint
@@ -123,18 +114,12 @@ ProfileAssembler ..> Profile
 note bottom of ProfileApiEndpoint
   GET/PUT    /users/me/profile
   GET/PUT/DELETE /users/me/profile/photo (the image is the PUT body)
-  GET        /laboratories/{laboratoryId}/staff/{staffId}/profile[/photo]
-             (quality managers)
+  The profile of a staff member is read by Laboratory through its own
+  anti-corruption layer.
 end note
 
 package "profile.presentation" {
   class ProfileRoutes <<Routes>>
-  class StaffProfilePage {
-    #staffId
-    #loading
-    #profile: Signal<StaffProfile | null>
-    -showProfile(profile): void
-  }
 
   class ProfilePage {
     #personalForm
@@ -176,13 +161,9 @@ note bottom of UserProfileBadge
   At mobile widths it keeps the previous identity sizing and visibility.
 end note
 
-StaffProfilePage --> ProfileStore : staffProfile(lab, staffId)
-StaffProfilePage --> IamStore : laboratory session
-ProfileRoutes --> StaffProfilePage : qualityManagerGuard
-note bottom of StaffProfilePage
-  /profile/staff/:staffId: photo and personal data, with a link
-  back to Laboratory staff detail. Cancels stale requests and
-  revokes photo object URLs on route changes and destruction.
+note right of ProfileRoutes
+  /profile/staff/:staffId redirects to the staff detail in Laboratory,
+  /laboratories/staff/:staffId, which shows the profile of the member.
 end note
 
 note left of ProfileRoutes
