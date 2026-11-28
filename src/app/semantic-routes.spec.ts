@@ -6,6 +6,7 @@ import { batchRoutes } from './batch/presentation/batch.routes';
 import { caRoutes } from './ca/presentation/ca.routes';
 import { equipmentRoutes } from './equipment/presentation/equipment.routes';
 import { laboratoryRoutes } from './laboratory/presentation/laboratory.routes';
+import { profileRoutes } from './profile/presentation/profile.routes';
 import { raRoutes } from './ra/presentation/ra.routes';
 import { subscriptionRoutes } from './subscription/presentation/subscription.routes';
 import { trackingRoutes } from './tracking/presentation/tracking.routes';
@@ -45,7 +46,7 @@ describe('Semantic routes', () => {
       providers: [provideRouter([
         ...tree('equipments', equipmentRoutes), ...tree('alerts', caRoutes), ...tree('reports', raRoutes),
         ...tree('laboratories', laboratoryRoutes), ...tree('batches', batchRoutes),
-        ...tree('tracking', trackingRoutes), ...tree('subscriptions', subscriptionRoutes),
+        ...tree('tracking', trackingRoutes), ...tree('subscriptions', subscriptionRoutes), ...tree('profile', profileRoutes),
       ])],
     });
   });
@@ -63,7 +64,10 @@ describe('Semantic routes', () => {
     ['/alerts/deviation-detail/42', '/alerts/42'],
     ['/reports/kpi-dashboard', '/reports/kpis'],
     ['/reports/report-generator', '/reports/new'],
-    ['/reports/staff-activity/2', '/reports/staff/2/activity'],
+    // The profile and the activity of a staff member are part of their detail.
+    ['/reports/staff-activity/2', '/laboratories/staff/2'],
+    ['/reports/staff/2/activity', '/laboratories/staff/2'],
+    ['/profile/staff/2', '/laboratories/staff/2'],
     ['/laboratories/create', '/laboratories/new'],
     ['/laboratories/lab-profile', '/laboratories/profile'],
     ['/laboratories/staff-list', '/laboratories/staff'],
