@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -39,6 +39,20 @@ export class DashboardSubscription {
 
   /** Utility function to format dates. */
   readonly formatDate = input.required<(value: string | number, short?: boolean) => string>();
+
+  /** IoT devices of the laboratory, which the plan limits; `null` while they are unknown. */
+  readonly iotDeviceCount = input<number | null>(null);
+
+  /**
+   * Whether the laboratory reached the IoT devices its plan allows, so it cannot register more.
+   *
+   * @returns `false` for a plan without limit or while the devices are unknown
+   */
+  protected readonly limitReached = computed(() => {
+    const limit = this.currentPlan()?.maxEquipment ?? null;
+    const count = this.iotDeviceCount();
+    return limit !== null && count !== null && count >= limit;
+  });
 
   /** Emits when the user clicks retry. */
   readonly retry = output<void>();

@@ -37,6 +37,8 @@ export interface AlertResource extends BaseResource {
   deviationCount: number | null;
   /** When the latest deviation was detected. */
   lastDetectedAt: string | null;
+  /** Value of the latest deviation; `null` for alerts stored before the platform kept it. */
+  lastRecordedValue?: number | null;
   /** When the condition returned to normal. */
   normalizedAt: string | null;
   /** User who acknowledged the alert. */

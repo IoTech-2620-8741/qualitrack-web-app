@@ -154,3 +154,25 @@ dd {
     padding: 20px 16px;
   }
 }
+
+/* The plan does not let the laboratory register more IoT devices */
+.limit-reached {
+  color: var(--qt-warning-text);
+  font-weight: 700;
+}
+
+.limit-warning {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 12px 0 0;
+  color: var(--qt-warning-text);
+  font-size: 13px;
+}
+
+.limit-warning mat-icon {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  font-size: 18px;
+}

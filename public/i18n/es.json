@@ -442,6 +442,10 @@
       "period-end": "Fin del período actual",
       "catalog-price": "Precio de catálogo / ciclo",
       "equipment-limit": "Límite de equipos del plan",
+      "iot-devices": "Dispositivos IoT",
+      "iot-devices-usage": "{{count}} de {{limit}}",
+      "iot-devices-unlimited": "{{count}} (sin límite)",
+      "iot-limit-reached": "El plan permite {{limit}} dispositivos IoT y el laboratorio tiene {{count}}: para registrar más, cambia de plan.",
       "manage-billing": "Gestionar facturación",
       "plan-unavailable": "Los detalles del plan no están disponibles.",
       "attention": "Alertas por atender",
@@ -883,6 +887,7 @@
       "card": {
         "limit": "límite {{value}} {{unit}}",
         "opened": "Abierta {{time}}",
+        "latest": "Última desviación {{value}} {{unit}} · {{time}}",
         "no-owner": "Sin responsable",
         "attending": "En atención {{time}}",
         "attending-by": "En atención por {{name}} · {{time}}",
@@ -943,6 +948,7 @@
     "types": {
       "ALERT_OPENED": "Nueva alerta {{severity}} en {{environment}}: {{variable}} en {{value}} {{unit}}.",
       "ALERT_ESCALATED": "La alerta de {{variable}} en {{environment}} pasó a {{level}}: {{value}} {{unit}}.",
+      "ALERT_RECURRED": "La alerta de {{variable}} en {{environment}} volvió a desviarse ({{level}}): {{value}} {{unit}}.",
       "ALERT_ACKNOWLEDGED": "{{actor}} está atendiendo la alerta de {{variable}} en {{environment}}.",
       "ALERT_RESOLVED": "{{actor}} resolvió la alerta de {{variable}} en {{environment}}.",
       "BATCH_RELEASED": "{{actor}} liberó el lote {{batch}}.",
@@ -1830,6 +1836,7 @@
       "errors": {
         "incomplete": "Cada límite necesita su valor normal y su valor crítico.",
         "no-limits": "Ingresa al menos los máximos o los mínimos de la métrica.",
+        "none-enabled": "Activa al menos una métrica e ingresa sus límites: los dispositivos ignoran un perfil sin umbrales.",
         "out-of-range": "{{metric}}: los valores deben estar entre {{min}} y {{max}} {{unit}}.",
         "critical-min": "El mínimo crítico debe ser menor que el mínimo normal.",
         "critical-max": "El máximo crítico debe ser mayor que el máximo normal.",
@@ -1947,6 +1954,7 @@
       "connection": "No se pudo conectar con el servidor. Revisa tu conexión e inténtalo de nuevo.",
       "forbidden": "Tu cuenta no puede realizar esta acción.",
       "not-found": "No se encontró el equipo o el ambiente en este laboratorio.",
+      "plan-limit": "El plan del laboratorio no permite más dispositivos IoT. Para registrar este, cambia de plan en Suscripción y facturación.",
       "failed": "No se pudo completar la operación."
     }
   },
@@ -2078,11 +2086,13 @@
     },
     "api-key": {
       "title": "API key",
-      "hint": "El Edge Gateway la usa para conectarse a QualiTrack. Se genera una sola vez.",
+      "hint": "El Edge Gateway la usa para conectarse a QualiTrack. Se muestra una sola vez; si se pierde, se puede regenerar.",
       "issued": "API key ya generada",
       "not-issued": "Aún sin API key",
       "unknown": "No se pudo consultar el estado de la API key.",
       "generate": "Generar API key",
+      "regenerate": "Regenerar API key",
+      "regenerate-confirm": "La API key actual dejará de funcionar al instante y el Edge Gateway necesitará la nueva en CLOUD_API_KEY. ¿Regenerarla?",
       "requires-location": "Ubica el Edge Gateway en un ambiente para generar su API key.",
       "requires-operational": "El Edge Gateway debe estar operativo para generar su API key.",
       "dialog": {

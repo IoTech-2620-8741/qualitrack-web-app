@@ -54,7 +54,7 @@ export interface SubscriptionPlanResource extends BaseResource {
   maxUsers: number;
 
   /**
-   * Maximum number of equipment records; null means unlimited.
+   * Maximum number of IoT devices of the laboratory; null means unlimited.
    */
   maxEquipment: number | null;
 

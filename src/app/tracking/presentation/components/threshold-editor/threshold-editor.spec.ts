@@ -89,6 +89,13 @@ describe('ThresholdEditor', () => {
     ]);
   });
 
+  it('saves nothing until at least one metric is enabled', () => {
+    const { component, saved } = create();
+    component.submit();
+    expect(saved).not.toHaveBeenCalled();
+    expect(component.error()?.key).toBe('tracking.profiles.errors.none-enabled');
+  });
+
   it('shows the range of the metric, with its name, and saves nothing', () => {
     const { component, saved } = create();
     Object.assign(component.rows()[0], { enabled: true, criticalMin: -500, normalMin: 2, normalMax: 8, criticalMax: 10 });

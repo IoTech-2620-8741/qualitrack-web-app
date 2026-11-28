@@ -88,8 +88,8 @@ export class SubscriptionPlanAssembler implements BaseAssembler<
     return [
       `${resource.maxUsers} users included`,
       resource.maxEquipment === null
-        ? 'Unlimited equipment connections'
-        : `${resource.maxEquipment} equipment records`,
+        ? 'Unlimited IoT devices'
+        : `Up to ${resource.maxEquipment} IoT devices`,
       `${resource.billingCycle.toLowerCase()} billing`,
     ];
   }

@@ -52,3 +52,30 @@ describe('DeviationAlert.thresholdExcess', () => {
     expect(alertOf(900, 900, 'ppm').thresholdExcess).toBeNull();
   });
 });
+
+describe('DeviationAlert.latestDeviation', () => {
+  const withDeviations = (deviationCount: number, lastRecordedValue: number | null) =>
+    new DeviationAlert({
+      id: 1,
+      equipmentId: 1,
+      parameterName: 'AIR_QUALITY',
+      recordedValue: 935,
+      thresholdValue: 900,
+      unit: 'ppm',
+      timestamp: '2026-10-01T10:00:00Z',
+      severity: 'CRITICAL',
+      status: 'ACKNOWLEDGED',
+      deviationCount,
+      lastDetectedAt: '2026-11-28T04:12:58Z',
+      lastRecordedValue,
+    });
+
+  it('is the value and time of the latest deviation of an incident with several', () => {
+    expect(withDeviations(5, 2821.8).latestDeviation).toEqual({ value: 2821.8, at: '2026-11-28T04:12:58Z' });
+  });
+
+  it('does not exist for a single deviation or an alert stored without that value', () => {
+    expect(withDeviations(1, 935).latestDeviation).toBeNull();
+    expect(withDeviations(5, null).latestDeviation).toBeNull();
+  });
+});

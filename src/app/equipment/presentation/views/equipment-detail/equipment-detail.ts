@@ -19,9 +19,10 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDialog } from '@angular/material/dialog';
-import { TranslatePipe } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 import { EquipmentStore } from '../../../application/equipment.store';
+import { EdgeGatewayApiKey } from '../../../domain/model/edge-gateway-api-key';
 import { Equipment } from '../../../domain/model/equipment.entity';
 import { EQUIPMENT_STATUSES, EquipmentStatus } from '../../../domain/model/equipment-status';
 import { notBlankValidator } from '../../../../shared/presentation/validators/not-blank.validator';
@@ -69,6 +70,7 @@ export class EquipmentDetail implements OnInit {
   private readonly fb = inject(FormBuilder);
 
   private readonly dialog = inject(MatDialog);
+  private readonly translate = inject(TranslateService);
 
   protected readonly store = inject(EquipmentStore);
 
@@ -194,6 +196,25 @@ export class EquipmentDetail implements OnInit {
       return;
     }
     this.apiKeyIssued.set(true);
+    this.showApiKey(issued);
+  }
+
+  /**
+   * Replaces the API key of an Edge Gateway after the person confirms it, and shows the new key once.
+   *
+   * @remarks
+   * The previous key stops working at once, so the Edge Gateway must be given the new one.
+   *
+   * @param equipment - Edge Gateway whose key is replaced
+   */
+  protected async onRotateApiKey(equipment: Equipment): Promise<void> {
+    if (!confirm(this.translate.instant('edge-gateway.api-key.regenerate-confirm'))) return;
+    const issued = await this.store.rotateEdgeGatewayApiKey(equipment.id);
+    if (issued) this.showApiKey(issued);
+  }
+
+  /** Shows an API key the cloud just issued, which is never shown again. */
+  private showApiKey(issued: EdgeGatewayApiKey): void {
     this.dialog.open(EdgeGatewayApiKeyDialog, {
       data: issued,
       disableClose: true,

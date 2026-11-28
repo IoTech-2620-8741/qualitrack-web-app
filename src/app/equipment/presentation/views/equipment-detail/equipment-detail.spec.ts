@@ -82,7 +82,12 @@ describe('EquipmentDetail', () => {
    * Opens the detail of an equipment with a session of the given role and answers what it reads; an IoT device gets
    * the given environmental profile, a 404 when it is `null`, a 500 with `'failure'`, or no answer with `'pending'`.
    */
-  async function open(role: string, equipment: object = gateway, profile: object | null | 'pending' | 'failure' = null) {
+  async function open(
+    role: string,
+    equipment: object = gateway,
+    profile: object | null | 'pending' | 'failure' = null,
+    keyIssued = false,
+  ) {
     localStorage.setItem('token', 'test.' + btoa(JSON.stringify({ exp: Date.now() / 1000 + 3600 })) + '.test');
     localStorage.setItem('userId', '27');
     localStorage.setItem('username', 'Detail fixture');
@@ -113,7 +118,7 @@ describe('EquipmentDetail', () => {
           urls.push(url);
           if (url.endsWith('/api-key')) {
             keyRequests.push(url);
-            request.flush({ issued: false });
+            request.flush({ issued: keyIssued });
           } else if (url.endsWith('/equipments/5')) {
             request.flush(equipment);
           } else if (url.endsWith('/environmental-profile')) {
@@ -156,6 +161,24 @@ describe('EquipmentDetail', () => {
     expect(keyRequests).toHaveLength(1);
     expect(element.textContent).toContain('edge-gateway.api-key.title');
     expect(element.textContent).toContain('edge-gateway.api-key.generate');
+  });
+
+  it('replaces an issued API key only after the person confirms it', async () => {
+    const { element, http, fixture } = await open('ROLE_QA_MANAGER', gateway, null, true);
+    const regenerate = element.querySelector<HTMLButtonElement>('button.regenerate-key');
+    expect(regenerate?.textContent).toContain('edge-gateway.api-key.regenerate');
+
+    const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(false);
+    regenerate!.click();
+    http.expectNone((request) => request.url.endsWith('/api-key/rotations'));
+
+    confirmSpy.mockReturnValue(true);
+    regenerate!.click();
+    await fixture.whenStable();
+    const rotation = http.expectOne((request) => request.url.endsWith('/laboratories/42/edge-gateways/5/api-key/rotations'));
+    expect(rotation.request.method).toBe('POST');
+    rotation.flush({ sensorExternalId: 'EDGE-001', apiKey: 'new-key' });
+    confirmSpy.mockRestore();
   });
 
   it.each(['ROLE_OPERATOR', 'ROLE_AUDITOR'])('neither asks nor shows the API key to %s', async (role) => {
