@@ -24,6 +24,7 @@ import { PageHeader } from '../../../../shared/presentation/components/page-head
 import { ListToolbar } from '../../../../shared/presentation/components/list-toolbar/list-toolbar';
 import { FilterChip } from '../../../../shared/presentation/components/filter-chip/filter-chip';
 import { LABORATORY_TABS } from '../../laboratory-tabs';
+import { StaffAvatar } from '../../components/staff-avatar/staff-avatar';
 
 /** Which staff members the list shows. */
 type StatusFilter = 'all' | 'active' | 'inactive';
@@ -48,6 +49,7 @@ type StatusFilter = 'all' | 'active' | 'inactive';
     PageHeader,
     ListToolbar,
     FilterChip,
+    StaffAvatar,
   ],
   templateUrl: './staff-list.html',
   changeDetection: ChangeDetectionStrategy.Eager,
@@ -103,6 +105,9 @@ export class StaffList implements OnInit {
    * Store that exposes authenticated user context.
    */
   protected readonly iamStore = inject(IamStore);
+
+  /** Laboratory whose staff is listed, to download their photos. */
+  protected readonly laboratoryId = this.iamStore.requireLaboratoryId();
 
   /**
    * Router used to navigate after user actions.

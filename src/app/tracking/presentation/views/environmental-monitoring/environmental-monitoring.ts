@@ -1,5 +1,7 @@
-import { Component, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
-import { DecimalPipe, NgTemplateOutlet } from '@angular/common';
+import { ChangeDetectionStrategy, Component, OnInit, computed, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { DOCUMENT, DecimalPipe, NgTemplateOutlet } from '@angular/common';
+import { filter, fromEvent, merge, timer } from 'rxjs';
 import { RouterLink } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 import { MatButtonModule } from '@angular/material/button';
@@ -18,13 +20,33 @@ import { ListToolbar } from '../../../../shared/presentation/components/list-too
 import { TRACKING_TABS } from '../../tracking-tabs';
 
 /**
+ * How often the view reads the devices again while it is open: a container monitor sends its
+ * climate every 30 seconds and every action at once.
+ */
+const REFRESH_INTERVAL_MS = 30_000;
+
+/** The containers whose lock needs a look, for the summary above them. */
+export interface ContainerLockSummary {
+  /** Names of the containers with the lock open. */
+  open: string[];
+  /** Names of the containers whose lock is unknown, because they are not reporting. */
+  unknown: string[];
+  /** Number of containers with a lock read. */
+  total: number;
+}
+
+/**
  * Component responsible for displaying the current environmental monitoring status.
  *
  * This view provides a real-time overview of IoT devices within a selected environment,
  * including:
  * - Air quality, luminosity and motion information from environmental devices.
  * - Temperature, humidity, luminosity and RFID information from container monitors.
+ * - The lock of each container, open or closed, and which ones are open.
  * - Latest device actions and connectivity information.
+ *
+ * While it is open and visible, it reads the devices again every 30 seconds without the loading
+ * state, and when the tab comes back, as the alerts view does.
  *
  * The component coordinates environment selection and delegates
  * telemetry state management to the TrackingStore.
@@ -64,6 +86,9 @@ export class EnvironmentalMonitoring implements OnInit {
    */
   protected readonly store = inject(TrackingStore);
   protected readonly iam = inject(IamStore);
+  private readonly document = inject(DOCUMENT);
+  /** Whether a periodic refresh is still waiting for its answers. */
+  private refreshing = false;
 
   /**
    * Metrics with a value displayed for the environmental device of the environment.
@@ -83,6 +108,29 @@ export class EnvironmentalMonitoring implements OnInit {
     'HUMIDITY',
     'LUMINOSITY',
   ];
+
+  /** The open containers and the ones whose lock is unknown, in the order of the containers. */
+  protected readonly lockSummary = computed<ContainerLockSummary>(() => {
+    const locked = this.store.snapshots().filter((snapshot) => snapshot.lock !== null);
+    const named = (status: string) =>
+      locked
+        .filter((snapshot) => snapshot.lock?.status === status)
+        .map((snapshot) => snapshot.device.name);
+    return { open: named('OPEN'), unknown: named('UNKNOWN'), total: locked.length };
+  });
+
+  constructor() {
+    // An opened container shows up without the user refreshing the page
+    merge(
+      timer(REFRESH_INTERVAL_MS, REFRESH_INTERVAL_MS),
+      fromEvent(this.document, 'visibilitychange'),
+    )
+      .pipe(
+        filter(() => !this.document.hidden),
+        takeUntilDestroyed(),
+      )
+      .subscribe(() => void this.refreshQuietly());
+  }
 
   /**
    * Initializes the monitoring view.
@@ -126,6 +174,20 @@ export class EnvironmentalMonitoring implements OnInit {
    */
   protected refresh(): void {
     void this.store.loadSnapshots();
+  }
+
+  /**
+   * Reads the devices again without the loading state, unless a load is under way or the previous
+   * refresh has not answered yet.
+   */
+  private async refreshQuietly(): Promise<void> {
+    if (this.refreshing || this.store.isLoading()) return;
+    this.refreshing = true;
+    try {
+      await this.store.loadSnapshots(true);
+    } finally {
+      this.refreshing = false;
+    }
   }
 
   /**

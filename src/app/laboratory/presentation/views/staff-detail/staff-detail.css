@@ -102,8 +102,7 @@ h1 mat-icon {
   gap: 12px;
 }
 
-.danger-btn,
-.secondary-btn {
+.danger-btn {
   height: auto;
   min-height: 48px;
   padding: 8px 24px;
@@ -122,15 +121,127 @@ h1 mat-icon {
   background: var(--qt-error-surface);
 }
 
-.secondary-btn {
-  color: var(--qt-text);
-  border-color: var(--qt-border);
-}
-
-.danger-btn:focus-visible,
-.secondary-btn:focus-visible {
+.danger-btn:focus-visible {
   outline: 3px solid var(--qt-primary);
   outline-offset: 2px;
+}
+
+/* The photo beside the name, job title and e-mail */
+.identity {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  min-width: 0;
+}
+
+.identity-text {
+  min-width: 0;
+}
+
+.identity-text .muted {
+  margin-top: 4px;
+}
+
+h2 {
+  margin: 0 0 16px;
+  color: var(--qt-text);
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.loading.small {
+  padding: 16px 0;
+}
+
+.notice {
+  margin: 0;
+  padding: 16px;
+  background: var(--qt-warning-surface);
+  border: 1px solid var(--qt-warning);
+  border-radius: 12px;
+  color: var(--qt-warning-text);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* The profile: a card with the personal data in a grid */
+.card {
+  margin: 0 0 24px;
+  padding: 24px;
+  background: var(--qt-surface);
+  border: 1px solid var(--qt-border);
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+}
+
+.profile .muted {
+  margin: -8px 0 16px;
+}
+
+.profile dl {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px 24px;
+  margin: 0;
+}
+
+.profile dt {
+  color: var(--qt-text-muted);
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.profile dd {
+  margin: 6px 0 0;
+  color: var(--qt-text);
+  font-size: 16px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+/* The activity: periods as chips, action and type of record in the foldable row, then the table */
+.activity {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+.activity h2 {
+  margin: 0;
+}
+
+.period-chips,
+.selects {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+}
+
+.selects mat-form-field {
+  flex: 1 1 220px;
+  max-width: 320px;
+}
+
+.muted-id {
+  margin-left: 6px;
+  color: var(--qt-text-muted);
+}
+
+.data-table td.empty-cell {
+  padding: 32px 16px;
+  text-align: center;
+}
+
+.empty-cell p {
+  margin: 0 0 12px;
+  color: var(--qt-text-muted);
+}
+
+.empty-cell button {
+  border-radius: 999px;
+  font-weight: 600;
 }
 
 .summary-strip {
@@ -197,16 +308,12 @@ h1 mat-icon {
     justify-content: center;
   }
 
-  .staff-links {
-    width: 100%;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 12px;
+  .identity {
+    gap: 14px;
   }
 
-  .staff-links .secondary-btn {
-    width: 100%;
-    justify-content: center;
+  .card {
+    padding: 16px;
   }
 
   .summary-strip {

@@ -1759,6 +1759,23 @@
       "never": "Aún no se recibe ninguna comunicación",
       "not-located": "Asocia el dispositivo a un ambiente para conocer su estado de conexión."
     },
+    "lock": {
+      "title": "Cerradura",
+      "OPEN": "Abierta",
+      "CLOSED": "Cerrada",
+      "UNKNOWN": "Desconocida",
+      "by-tag": "Con una etiqueta RFID",
+      "closed-by-tag-or-time": "Con la etiqueta RFID o al terminar el tiempo de apertura",
+      "since": "Desde {{time}}",
+      "no-movement": "Sin movimientos en los últimos 7 días",
+      "not-reporting": "El dispositivo no está reportando, así que la cerradura pudo moverse.",
+      "last-movement": "Último movimiento: {{action}}, {{time}}",
+      "failed-SERVO_OPEN": "No se abrió ({{time}})",
+      "failed-SERVO_CLOSE": "No se cerró ({{time}})",
+      "summary-open": "Contenedores abiertos: {{names}}",
+      "summary-unknown": "Cerradura desconocida, sin reportar: {{names}}",
+      "summary-closed": "Todos los contenedores están cerrados"
+    },
     "monitoring": {
       "title": "Monitoreo ambiental",
       "subtitle": "Últimas lecturas de las últimas 24 horas de los dispositivos IoT del ambiente y su condición.",
@@ -2003,16 +2020,25 @@
     },
     "no-account": "Sin cuenta",
     "detail": {
-      "view-profile": "Ver perfil",
-      "view-activity": "Ver actividad",
-      "back": "Volver al detalle del trabajador",
       "load-error": "No se pudo cargar al miembro del personal.",
       "activities": "Actividades registradas",
       "last-activity": "Última actividad",
       "history": "Historial de actividad",
       "filter": "Tipo de registro",
       "all-activity": "Toda la actividad",
-      "no-activity": "Esta persona aún no ha registrado actividad."
+      "no-activity": "Esta persona aún no ha registrado actividad.",
+      "summary": "Resumen del miembro del personal",
+      "period": "Periodo",
+      "periods": {
+        "all": "Todo",
+        "7": "Últimos 7 días",
+        "30": "Últimos 30 días",
+        "90": "Últimos 90 días"
+      },
+      "action": "Acción",
+      "all-actions": "Todas las acciones",
+      "no-matching": "Ninguna actividad coincide con estos filtros.",
+      "clear-filters": "Limpiar filtros"
     },
     "activity": {
       "entities": {
@@ -2183,13 +2209,11 @@
     "deviation-detail": "Detalle de la desviación",
     "report-generator": "Generador de reportes",
     "audit-log": "Registro de auditoría",
-    "staff-activity": "Actividad del personal",
     "plans": "Planes de suscripción",
     "checkout": "Pago",
     "payment-success": "Pago confirmado",
     "payment-cancel": "Pago cancelado",
     "billing": "Resumen de facturación",
-    "profile": "Perfil",
-    "staff-profile": "Perfil del personal"
+    "profile": "Perfil"
   }
 }

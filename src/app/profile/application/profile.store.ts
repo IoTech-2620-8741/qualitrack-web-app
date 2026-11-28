@@ -1,5 +1,5 @@
 import { Injectable, computed, effect, inject, signal, untracked } from '@angular/core';
-import { Observable, catchError, map, of, switchMap, tap } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 
 import { Profile } from '../domain/model/profile.entity';
 import { UpdateProfileCommand } from '../domain/model/update-profile.command';
@@ -13,14 +13,6 @@ export const MAX_PHOTO_BYTES = 2 * 1024 * 1024;
 
 /** Image types the platform accepts as photo. */
 export const PHOTO_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
-
-/** Profile of a staff member with its photo, as the quality manager sees it. */
-export interface StaffProfile {
-  /** Profile of the staff member. */
-  profile: Profile;
-  /** Object URL of the photo; the view that shows it revokes it. */
-  photoUrl: string | null;
-}
 
 /**
  * Application store of the profile of the signed-in user: personal data and photo, shown in the toolbar and edited
@@ -151,27 +143,6 @@ export class ProfileStore {
       if (profile) this.profileSignal.set(new Profile({ ...profile, hasPhoto: false, photoUpdatedAt: null }));
       this.setPhotoUrl(null);
     }));
-  }
-
-  /**
-   * Profile and photo of a staff member of the laboratory; only the quality manager can read them.
-   *
-   * @remarks
-   * If the photo cannot be downloaded, the profile is still returned without it.
-   *
-   * @param laboratoryId - Numeric id of the laboratory
-   * @param staffId - Numeric id of the staff member
-   * @returns Observable emitting the profile and the object URL of its photo (the caller must revoke it)
-   */
-  staffProfile(laboratoryId: number, staffId: number): Observable<StaffProfile> {
-    return this.api.getStaffProfile(laboratoryId, staffId).pipe(
-      switchMap((profile): Observable<StaffProfile> => !profile.hasPhoto
-        ? of({ profile, photoUrl: null })
-        : this.api.getStaffPhoto(laboratoryId, staffId).pipe(
-          map((blob) => ({ profile, photoUrl: URL.createObjectURL(blob) })),
-          catchError(() => of({ profile, photoUrl: null })),
-        )),
-    );
   }
 
   /** Downloads the photo of the signed-in user and keeps it as an object URL. */
