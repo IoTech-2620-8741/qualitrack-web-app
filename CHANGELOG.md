@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Compliance & Alerting (ca): the bell tells when the condition of an open alert returned to normal and deviated again (`ALERT_RECURRED`, platform #49), with its severity; the alert card shows the latest deviation of an incident with several and the timeline of the alert gives its value (#127).
+
+- Equipment (equipment): the detail of an Edge Gateway that already has an API key offers to regenerate it. After a confirmation that the current key stops working at once, the new key is shown once, like the first one (#127).
+
+- Reporting & Audit (ra): the subscription card of the dashboard shows the IoT devices of the laboratory against the allowance of its plan ("5 of 5") and warns when no more can be registered (#127).
+
+### Changed
+
+- Equipment (equipment) and Subscription (subscription): the registration of an IoT device beyond the allowance of the plan tells the refusal of the platform in the language of the page, and the plan features name IoT devices instead of equipment records (#127).
+
+### Fixed
+
+- Tracking & Telemetry (tracking): the threshold editor saved a profile without thresholds when no metric was enabled, which the devices ignore. It now asks for at least one metric (#127).
+
 ## [2.8.0] - 2026-11-26
 
 ### Added
