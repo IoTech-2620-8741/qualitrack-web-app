@@ -1,5 +1,5 @@
 import { Injectable, computed, effect, inject, signal, untracked } from '@angular/core';
-import { Observable, catchError, map, of, switchMap, tap } from 'rxjs';
+import { Observable, catchError, map, of, shareReplay, switchMap, tap } from 'rxjs';
 
 import { Profile } from '../domain/model/profile.entity';
 import { UpdateProfileCommand } from '../domain/model/update-profile.command';
@@ -35,6 +35,10 @@ export class ProfileStore {
   private readonly api = inject(ProfileApi);
   /** Session store; tells who is signed in. */
   private readonly iam = inject(IamStore);
+  /** Photos of staff members already asked for in the session, by laboratory and staff member. */
+  private readonly staffPhotos = new Map<string, Observable<string | null>>();
+  /** Object URLs of those photos, revoked when another person signs in. */
+  private readonly staffPhotoUrls = new Set<string>();
 
   /** Profile of the signed-in user, or null until it is loaded. */
   private readonly profileSignal = signal<Profile | null>(null);
@@ -174,6 +178,37 @@ export class ProfileStore {
     );
   }
 
+  /**
+   * Photo of a staff member for the lists of the laboratory, downloaded once in the session.
+   *
+   * @remarks
+   * The store keeps the object URL until another person signs in, so pages and rows can show it without revoking it.
+   * A failed download is not remembered, so the next view tries again.
+   *
+   * @param laboratoryId - Numeric id of the laboratory
+   * @param staffId - Numeric id of the staff member
+   * @returns Observable emitting the object URL of the photo, or null when the person has none or it cannot be read
+   */
+  staffPhoto(laboratoryId: number, staffId: number): Observable<string | null> {
+    const key = `${laboratoryId}/${staffId}`;
+    let photo = this.staffPhotos.get(key);
+    if (!photo) {
+      photo = this.staffProfile(laboratoryId, staffId).pipe(
+        map(({ photoUrl }) => {
+          if (photoUrl) this.staffPhotoUrls.add(photoUrl);
+          return photoUrl;
+        }),
+        catchError(() => {
+          this.staffPhotos.delete(key);
+          return of(null);
+        }),
+        shareReplay(1),
+      );
+      this.staffPhotos.set(key, photo);
+    }
+    return photo;
+  }
+
   /** Downloads the photo of the signed-in user and keeps it as an object URL. */
   private loadPhoto(): void {
     this.api.getMyPhoto().subscribe({
@@ -199,6 +234,9 @@ export class ProfileStore {
     this.profileSignal.set(null);
     this.errorSignal.set(false);
     this.setPhotoUrl(null);
+    for (const url of this.staffPhotoUrls) URL.revokeObjectURL(url);
+    this.staffPhotoUrls.clear();
+    this.staffPhotos.clear();
   }
 }
 
